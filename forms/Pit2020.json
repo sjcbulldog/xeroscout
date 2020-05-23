@@ -1,0 +1,177 @@
+{
+  "form": "pit",
+  "sections": [
+    {
+      "name": "General",
+      "items": [
+        {
+          "type": "text",
+          "tag": "scouter",
+          "name": "Scouter",
+          "maxlen": 32
+        },
+        {
+          "type": "numeric",
+          "tag": "pit_weight",
+          "name": "Weight (w/ bumpers)",
+          "minimum": 0,
+          "maximum": 200
+        },
+        {
+          "type": "choice",
+          "choices": [ "C++", "Java", "LV", "Python", "Other" ],
+          "tag": "pit_language",
+          "name": "Programming Language"
+        }
+      ]
+    },
+    {
+      "name": "ControlPanel",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "cpanel_under",
+          "name": "Drives Under Control Panel"
+        },
+        {
+          "type": "boolean",
+          "tag": "cpanel_rotate",
+          "name": "Rotate Control Panel"
+        },
+        {
+          "type": "boolean",
+          "tag": "cpanel_position",
+          "name": "Position Control Panel"
+        }
+      ]
+    },
+    {
+      "name": "DriveBase",
+      "items": [
+        {
+          "type": "choice",
+          "choices": [ "West Coast", "Mecanum", "Swerve", "Other" ],
+          "tag": "db_type",
+          "name": "Drive Base"
+        },
+        {
+          "type": "updown",
+          "tag": "db_wheels",
+          "name": "Wheels",
+          "minimum": 4,
+          "maximum": 12
+        },
+        {
+          "type": "updown",
+          "tag": "db_cims",
+          "name": "CIMs",
+          "minimum": 0,
+          "maximum": 8
+        },
+        {
+          "type": "updown",
+          "tag": "db_neos",
+          "name": "NEOs",
+          "minimum": 0,
+          "maximum": 8
+        },
+        {
+          "type": "updown",
+          "tag": "db_falcoms",
+          "name": "Falcons",
+          "minimum": 0,
+          "maximum": 8
+        },
+        {
+          "type": "updown",
+          "tag": "db_others",
+          "name": "Other Motors",
+          "minimum": 0,
+          "maximum": 8
+        }
+      ]
+    },
+    {
+      "name": "Collecting && Scoring",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "collect_ground",
+          "name": "Ground Collect"
+        },
+        {
+          "type": "boolean",
+          "tag": "score_lowgoal",
+          "name": "Score Low Goal"
+        },
+        {
+          "type": "boolean",
+          "tag": "score_highgoal",
+          "name": "Score High Goal"
+        },
+        {
+          "type": "boolean",
+          "tag": "score_trench",
+          "name": "Score From Trench"
+        }
+      ]
+    },
+    {
+      "name": "Auto",
+      "items": [
+        {
+          "type": "choice",
+          "choices": [ "Far Left", "Left", "Right", "Center" ],
+          "tag": "auto_perferred_start_pos",
+          "name": "Preferred Starting Position"
+        },
+        {
+          "type": "updown",
+          "tag": "auto_max_low",
+          "name": "Max Auto Balls Low",
+          "minimum": 0,
+          "maximum": 16
+        },
+        {
+          "type": "updown",
+          "tag": "auto_max_high",
+          "name": "Max Auto Balls High",
+          "minimum": 0,
+          "maximum": 16
+        }
+      ]
+    },
+    {
+      "name": "Endgame",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "climb_center",
+          "name": "Climb Center"
+        },
+        {
+          "type": "boolean",
+          "tag": "climb_sides",
+          "name": "Climb Sides"
+        },
+        {
+          "type": "boolean",
+          "tag": "climb_tilt",
+          "name": "Climb Tilted"
+        },
+        {
+          "type": "boolean",
+          "tag": "climb_leveler",
+          "name": "Level Mechanism"
+        },
+        {
+          "type": "updown",
+          "tag": "climb_assists",
+          "name": "Climb Assists",
+          "minimum": 0,
+          "maximum": 2
+        }
+      ]
+    }
+  ]
+}

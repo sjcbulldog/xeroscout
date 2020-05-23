@@ -1,0 +1,124 @@
+{
+  "form": "match",
+  "sections": [
+    {
+      "name": "PreMatch",
+      "items": [
+        {
+          "type": "text",
+          "name": "Scouter",
+          "tag": "scouter",
+          "maxlen": 32
+        },
+        {
+          "type": "choice",
+          "choices": [ "Far Left", "Left", "Right", "Center" ],
+          "tag": "starting_position",
+          "name": "Starting Position"
+        }
+      ]
+    },
+    {
+      "name": "Autonomous",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "auto_line",
+          "name": "Auto Line"
+        },
+        {
+          "type": "updown",
+          "tag": "auto_balls_high",
+          "name": "Balls High",
+          "minimum": 0,
+          "maximum": 16
+        },
+        {
+          "type": "updown",
+          "tag": "auto_balls_low",
+          "name": "Balls Low",
+          "minimum": 0,
+          "maximum": 16
+        }
+      ]
+    },
+    {
+      "name": "Teleop",
+      "items": [
+        {
+          "type": "updown",
+          "tag": "teleop_balls_high",
+          "name": "Balls High",
+          "minimum": 0,
+          "maximum": 100
+        },
+        {
+          "type": "updown",
+          "tag": "teleop_balls_low",
+          "name": "Balls Low",
+          "minimum": 0,
+          "maximum": 100
+        },
+        {
+          "type": "updown",
+          "tag": "teleop_balls_ejected",
+          "name": "Balls Ejected",
+          "minimum": 0,
+          "maximum": 100
+        },
+        {
+          "type": "boolean",
+          "tag": "teleop_rotate_wheel",
+          "name": "Rotate Color Wheel"
+        },
+        {
+          "type": "boolean",
+          "tag": "teleop_position_wheel",
+          "name": "Position Color Wheel"
+        }
+      ]
+    },
+    {
+      "name": "End Game",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "endgame_parked",
+          "name": "Parked"
+        },
+        {
+          "type": "boolean",
+          "tag": "endgame_climbed",
+          "name": "Climb"
+        },
+        {
+          "type": "boolean",
+          "tag": "endgame_level",
+          "name": "Bar Level"
+        },
+        {
+          "type": "updown",
+          "tag": "endgame_assists",
+          "name": "Assists",
+          "minimum": 0,
+          "maximum": 2
+        }
+      ]
+    },
+    {
+      "name": "General",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "general_brownout",
+          "name": "Brownout"
+        },
+        {
+          "type": "boolean",
+          "tag": "general_breakdown",
+          "name": "Breakdown"
+        }
+      ]
+    }
+  ]
+}

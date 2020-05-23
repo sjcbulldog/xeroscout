@@ -1,0 +1,19 @@
+Program			Item
+-------			---------------------------------------------------------
+ScoutCentral	Need a way to edit scouting data
+ScoutCentral	Need a way to bring in additional matches (elims)
+Scoutcentral	Handle replay matches
+ScoutCentral	Add new tablets into the mix
+ScoutCentral	Tablet scheduling algorithms that allow for charge time
+ScoutCentral	Need a model for merges
+ScoutCentral	A model for archiving scouting data
+ScoutCentral	Key Performance Indicators from Blue Alliance
+ScoutCentral	Work without scouting forms for a Blue Alliance data analysis
+All				Clean up the data model for tablet identities
+All				Check automatic sync (broadcast packet) across network
+All				Pit scouting across any tablet
+All				Pit scouting - rescout during event (broken, fixed, notes)
+All				Data Quality (thresholds for highlighting entries)
+All				New Form Item - Event, start and stop, count and duration
+All				Port bluetooth to the new transport architecture
+All				Better discovery with bluetooth synchronization

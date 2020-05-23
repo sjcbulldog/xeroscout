@@ -1,0 +1,321 @@
+#include "ZebraViewWidget.h"
+#include "RobotTrack.h"
+#include <QBoxLayout>
+
+using namespace xero::scouting::datamodel;
+
+namespace xero
+{
+	namespace scouting
+	{
+		namespace views
+		{
+			ZebraViewWidget::ZebraViewWidget(QWidget* parent) : QWidget(parent)
+			{
+				QVBoxLayout* vlay = new QVBoxLayout();
+				setLayout(vlay);
+
+				QWidget* top = new QWidget(this);
+				vlay->addWidget(top);
+
+				QHBoxLayout* hlay = new QHBoxLayout();
+				top->setLayout(hlay);
+
+				matches_ = new QRadioButton("Match", top);
+				hlay->addWidget(matches_);
+				(void)connect(matches_, &QRadioButton::toggled, this, &ZebraViewWidget::matchesSelected);
+
+				robot_ = new QRadioButton("Robot", top);
+				hlay->addWidget(robot_);
+				(void)connect(robot_, &QRadioButton::toggled, this, &ZebraViewWidget::robotSelected);
+
+				box_ = new QComboBox(top);
+				hlay->addWidget(box_);
+				(void)connect(box_, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged), this, &ZebraViewWidget::comboxChanged);
+
+				field_ = new PathFieldView(this);
+				QSizePolicy p(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+				field_->setSizePolicy(p);
+				vlay->addWidget(field_);
+
+				matches_->setChecked(true);
+				matchesSelected(true);
+			}
+
+			ZebraViewWidget::~ZebraViewWidget()
+			{
+			}
+
+			void ZebraViewWidget::clearView()
+			{
+				box_->clear();
+				field_->clearTracks();
+			}
+
+			void ZebraViewWidget::refreshView()
+			{
+				matches_->setChecked(true);
+				matchesSelected(true);
+			}
+
+			void ZebraViewWidget::matchesSelected(bool checked)
+			{
+				setNeedRefresh();
+				box_->clear();
+				if (dataModel() != nullptr)
+				{
+					for (auto m : dataModel()->matches())
+					{
+						if (!m->zebra().isEmpty())
+							box_->addItem(m->title(), m->key());
+					}
+					box_->setCurrentIndex(0);
+					createPlot();
+				}
+			}
+
+			void ZebraViewWidget::robotSelected(bool checked)
+			{
+				setNeedRefresh();
+				box_->clear();
+				if (dataModel() != nullptr)
+				{
+					auto dm = dataModel();
+					if (dm != nullptr) {
+						std::list<std::shared_ptr<const DataModelTeam>> teams = dm->teams();
+						teams.sort([](std::shared_ptr<const DataModelTeam> a, std::shared_ptr<const DataModelTeam> b) -> bool
+							{
+								return a->number() < b->number();
+							});
+
+						for (auto t : teams)
+							box_->addItem(QString::number(t->number()) + " - " + t->name(), t->key());
+					}
+					box_->setCurrentIndex(0);
+					createPlot();
+				}
+			}
+
+			void ZebraViewWidget::comboxChanged(int which)
+			{
+				setNeedRefresh();
+				createPlot();
+				field_->update();
+			}
+
+			void ZebraViewWidget::createPlot()
+			{
+				if (matches_->isChecked())
+				{
+					QVariant v = box_->itemData(box_->currentIndex());
+					if (v.type() == QVariant::String)
+						createPlotMatch(v.toString());
+				}
+				else
+				{
+					QVariant v = box_->itemData(box_->currentIndex());
+					if (v.type() == QVariant::String)
+						createPlotTeam(v.toString());
+				}
+			}
+
+
+			QColor ZebraViewWidget::matchRobotColor(xero::scouting::datamodel::DataModelMatch::Alliance c, int slot)
+			{
+				QColor ret(0, 0, 0, 255);
+
+				if (c == DataModelMatch::Alliance::Red)
+				{
+					switch (slot)
+					{
+					case 1:
+						ret = QColor(255, 0, 0, 255);
+						break;
+					case 2:
+						ret = QColor(128, 0, 0, 255);
+						break;
+					case 3:
+						ret = QColor(255, 128, 128, 255);
+						break;
+					}
+				}
+				else
+				{
+					switch (slot)
+					{
+					case 1:
+						ret = QColor(0, 0, 255, 255);
+						break;
+					case 2:
+						ret = QColor(128, 128, 255, 255);
+						break;
+					case 3:
+						ret = QColor(50, 168, 158, 255);
+						break;
+					}
+				}
+
+				return ret;
+			}
+
+			void ZebraViewWidget::createPlotMatch(const QString &key)
+			{
+				if (!needsRefresh())
+					return;
+
+				field_->clearTracks();
+
+				auto m = dataModel()->findMatchByKey(key);
+				if (m == nullptr)
+					return;
+
+				const QJsonObject& zebra = m->zebra();
+				QStringList keys = zebra.keys();
+
+				if (!zebra.contains("times") || !zebra.value("times").isArray())
+					return;
+
+				if (!zebra.contains("alliances") || !zebra.value("alliances").isObject())
+					return;
+
+				std::vector<std::shared_ptr<RobotTrack>> tracks;
+				DataModelMatch::Alliance c = DataModelMatch::Alliance::Red;
+				for (int i = 1; i <= 3; i++)
+				{
+					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i));
+					tracks.push_back(t);
+				}
+				c = DataModelMatch::Alliance::Blue;
+				for (int i = 1; i <= 3; i++)
+				{
+					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i));
+					tracks.push_back(t);
+				}
+
+				QJsonArray times = zebra.value("times").toArray();
+				for (int i = 0; i < times.size(); i++) {
+					if (!times[i].isDouble())
+						return;
+
+					for (int j = 0; j < tracks.size(); j++)
+						tracks[j]->addTime(times[i].toDouble());
+				}
+
+				const QJsonObject& aobj = zebra.value("alliances").toObject();
+
+				if (!aobj.contains("blue") || !aobj.value("blue").isArray())
+					return;
+
+				if (!aobj.contains("red") || !aobj.value("red").isArray())
+					return;
+
+				processAlliance(aobj.value("red").toArray(), DataModelMatch::Alliance::Red, tracks);
+				processAlliance(aobj.value("blue").toArray(), DataModelMatch::Alliance::Blue, tracks);
+
+				for (auto t : tracks)
+				{
+					if (t->locSize() > 1)
+						field_->addTrack(t);
+				}
+			}
+
+			bool ZebraViewWidget::extractOneAlliance(const QJsonArray& arr, DataModelMatch::Alliance c, int slot, std::shared_ptr<RobotTrack> track)
+			{
+				int which = slot - 1;
+				if (!arr[which].isObject())
+					return false;
+
+				const QJsonObject& obj = arr[which].toObject();
+
+				if (!obj.contains("xs") || !obj.value("xs").isArray())
+					return false;
+
+				if (!obj.contains("ys") || !obj.value("ys").isArray())
+					return false;
+
+				const QJsonArray& xa = obj.value("xs").toArray();
+				const QJsonArray& ya = obj.value("ys").toArray();
+
+				if (xa.size() != ya.size())
+					return false;
+
+				for (int k = 0; k < xa.size(); k++)
+				{
+					if (xa[k].isUndefined() || ya[k].isUndefined())
+						continue;
+
+					if (xa[k].isNull() || ya[k].isNull())
+						continue;
+
+					if (!xa[k].isDouble() || !ya[k].isDouble())
+						continue;
+
+					double xv = xa[k].toDouble();
+					double yv = ya[k].toDouble();
+
+					track->addPoint(xero::paths::Translation2d(xv, yv));
+				}
+				return true;
+			}
+
+			void ZebraViewWidget::processAlliance(const QJsonArray& arr, DataModelMatch::Alliance c, std::vector<std::shared_ptr<RobotTrack>>& tracks)
+			{
+				for (int slot = 1; slot <= 3; slot++)
+				{
+					int which = slot - 1;
+					if (c == DataModelMatch::Alliance::Blue)
+						which += 3;
+
+					extractOneAlliance(arr, c, slot, tracks[which]);
+				}
+			}
+
+			void ZebraViewWidget::createPlotTeam(const QString& key)
+			{
+				if (!needsRefresh())
+					return;
+
+				std::list<std::shared_ptr<RobotTrack>> tracks;
+
+				for (auto m : dataModel()->matches())
+				{
+					DataModelMatch::Alliance c;
+					int slot;
+
+					if (!m->teamToAllianceSlot(key, c, slot))
+						continue;
+
+					auto track = std::make_shared<RobotTrack>(key, matchRobotColor(c, 1));
+					tracks.push_back(track);
+
+					const QJsonObject& zebra = m->zebra();
+
+					if (!zebra.contains("times") || !zebra.value("times").isArray())
+						continue;
+
+					if (!zebra.contains("alliances") || !zebra.value("alliances").isObject())
+						continue;
+
+					const QJsonObject& aobj = zebra.value("alliances").toObject();
+
+					if (!aobj.contains("blue") || !aobj.value("blue").isArray())
+						return;
+
+					if (!aobj.contains("red") || !aobj.value("red").isArray())
+						return;
+
+					const QJsonArray& arr = aobj.value(DataModelMatch::toString(c)).toArray();
+					extractOneAlliance(arr, c, slot, track);
+				}
+
+				field_->clearTracks();
+				for (auto t : tracks)
+				{
+					if (t->locSize() > 1)
+						field_->addTrack(t);
+				}
+			}
+		}
+	}
+}
+
