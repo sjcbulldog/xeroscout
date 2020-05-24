@@ -58,7 +58,7 @@ namespace xero
 
 				void generateCharts();
 				bool generateOneChart(std::shared_ptr<const xero::scouting::datamodel::GraphDescriptor::GraphPane> pane, std::shared_ptr<ChartViewWrapper> chart, const QStringList& teams);
-				bool getData(std::map<QString, std::vector<double>>& data, const QStringList& teams, const QStringList& vars);
+				bool getData(std::map<QString, std::vector<QVariant>>& data, const QStringList& teams, const QStringList& vars);
 
 				void newPane();
 				void addVariable(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane, const QString& var);

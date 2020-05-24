@@ -1,6 +1,8 @@
 #include "GraphView.h"
 #include "SelectTeamsDialog.h"
 #include "ChartViewWrapper.h"
+#include "Expr.h"
+#include "ScoutDataExprContext.h"
 #include <QBoxLayout>
 #include <QBarSet>
 #include <QBarSeries>
@@ -14,6 +16,7 @@
 #include <QInputDialog>
 
 using namespace QtCharts;
+using namespace xero::expr;
 using namespace xero::scouting::datamodel;
 
 namespace xero
@@ -341,30 +344,87 @@ namespace xero
 				}
 			}
 
-			bool GraphView::getData(std::map<QString, std::vector<double>>& data, const QStringList& teams, const QStringList& vars)
+			bool GraphView::getData(std::map<QString, std::vector<QVariant>>& data, const QStringList& teams, const QStringList& vars)
 			{
+				assert(false); // Pass in this context
+				ScoutDataExprContext ctxt(nullptr);
 				ScoutingDataSet ds;
 				QString err;
 
 				data.clear();
 				for (const QString& team : teams)
 				{
-					std::vector<double> values;
+					QStringList fields = dataModel()->getMatchFieldNames();
 
-					for (const QString& var : vars)
+					std::vector<std::shared_ptr<Expr>> exprs;
+					QStringList allused;
+
+					//
+					// Create the expressions and get the fields needed
+					//
+					for (const QString& exprtxt : vars)
 					{
-						QString query;
+						//
+						// Parse expressions against all fields
+						//
+						auto expr = std::make_shared<Expr>();
+						QString err;
 
-						ds.clear();
-						query = "SELECT " + var + " from matches where TeamKey='" + team + "'";
-						if (!dataModel()->createCustomDataSet(ds, query, err))
-							return false;
+						if (!expr->parse(ctxt, exprtxt, err))
+						{
+							// Return error message to the user
+							continue;
+						}
 
+						QStringList used = expr->allVariables();
+						for (const QString& var : used)
+						{
+							if (!allused.contains(var))
+								allused.push_back(var);
+						}
+
+					}
+
+					//
+					// Query for the field values across all matches
+					//
+					QString query;
+					ds.clear();
+					query = "SELECT ";
+					for (int i = 0; i < allused.count(); i++)
+					{
+						if (i != 0)
+							query += ",";
+
+						query += allused.at(i);
+					}
+					query += " from matches where TeamKey='" + team + "'";
+					if (!dataModel()->createCustomDataSet(ds, query, err))
+					{
+						// This should never happen
+						data.clear();
+						return false ;
+					}
+
+					//
+					// Now, compute averages for all of the fields we needed
+					//
+					ScoutingDataMapPtr averages = std::make_shared<ScoutingDataMap>();
+					for (int i = 0; i < allused.count(); i++)
+					{
 						double total = 0.0;
 						for (int row = 0; row < ds.rowCount(); row++)
-							total += ds.get(row, 0).toDouble();
+							total += ds.get(row, i).toDouble();
 
-						values.push_back(total / (double)ds.rowCount());
+						averages->insert_or_assign(allused.at(i), QVariant(total / ds.rowCount()));
+					}
+
+					std::vector<QVariant> values;
+					ScoutDataExprContext ctxt(averages);
+					for (auto e : exprs)
+					{
+						QVariant v = e->eval(ctxt);
+						values.push_back(v);
 					}
 
 					data.insert_or_assign(team, values);
@@ -374,7 +434,7 @@ namespace xero
 
 			bool GraphView::generateOneChart(std::shared_ptr<const GraphDescriptor::GraphPane> pane, std::shared_ptr<ChartViewWrapper> chart, const QStringList& teams)
 			{
-				std::map<QString, std::vector<double>> data;
+				std::map<QString, std::vector<QVariant>> data;
 				double ymax = 0;
 
 				if (!getData(data, teams, pane->x()))
@@ -390,17 +450,31 @@ namespace xero
 					QBarSet* set = new QBarSet(var);
 					for (const QString& team : teams)
 					{
-						const std::vector<double>& one = data[team];
-						double x = one[i];
-						if (isnan(x) || isinf(x))
-							*set << 0;
+						double yval;
+						const std::vector<QVariant>& one = data[team];
+
+						if (one[i].type() == QVariant::Type::Int || one[i].type() == QVariant::Type::Double)
+						{
+							yval = one[i].toDouble();
+						}
+						else if (one[i].type() == QVariant::Type::Bool)
+						{
+							if (one[i].toBool())
+								yval = 1.0;
+							else
+								yval = 0.0;
+						}
 						else
-							*set << x;
+						{
+							yval = 0.0;
+						}
 
-						cnt++;
+						if (isnan(yval) || isinf(yval))
+							yval = 0;
 
-						if (one[i] > ymax)
-							ymax = one[i];
+						*set << yval;
+						if (yval > ymax)
+							ymax = yval;
 					}
 					series->append(set);
 				}

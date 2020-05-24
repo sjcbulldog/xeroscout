@@ -36,6 +36,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScoutTransport", "ScoutTran
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PCScoutData", "PCScoutData\PCScoutData.vcxproj", "{B70DF2C8-843D-4373-BD18-E6B91E73EAE4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExprLib", "ExprLib\ExprLib.vcxproj", "{4C701381-AE3C-4A78-B372-9920849B81C5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExprLibTest", "ExprLibTest\ExprLibTest.vcxproj", "{546EA281-A566-46B9-9AF2-82E838313D74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -88,6 +92,18 @@ Global
 		{B70DF2C8-843D-4373-BD18-E6B91E73EAE4}.Release|x64.ActiveCfg = Release|x64
 		{B70DF2C8-843D-4373-BD18-E6B91E73EAE4}.Release|x64.Build.0 = Release|x64
 		{B70DF2C8-843D-4373-BD18-E6B91E73EAE4}.Release|x86.ActiveCfg = Release|x64
+		{4C701381-AE3C-4A78-B372-9920849B81C5}.Debug|x64.ActiveCfg = Debug|x64
+		{4C701381-AE3C-4A78-B372-9920849B81C5}.Debug|x64.Build.0 = Debug|x64
+		{4C701381-AE3C-4A78-B372-9920849B81C5}.Debug|x86.ActiveCfg = Debug|x64
+		{4C701381-AE3C-4A78-B372-9920849B81C5}.Release|x64.ActiveCfg = Release|x64
+		{4C701381-AE3C-4A78-B372-9920849B81C5}.Release|x64.Build.0 = Release|x64
+		{4C701381-AE3C-4A78-B372-9920849B81C5}.Release|x86.ActiveCfg = Release|x64
+		{546EA281-A566-46B9-9AF2-82E838313D74}.Debug|x64.ActiveCfg = Debug|x64
+		{546EA281-A566-46B9-9AF2-82E838313D74}.Debug|x64.Build.0 = Debug|x64
+		{546EA281-A566-46B9-9AF2-82E838313D74}.Debug|x86.ActiveCfg = Debug|x64
+		{546EA281-A566-46B9-9AF2-82E838313D74}.Release|x64.ActiveCfg = Release|x64
+		{546EA281-A566-46B9-9AF2-82E838313D74}.Release|x64.Build.0 = Release|x64
+		{546EA281-A566-46B9-9AF2-82E838313D74}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
