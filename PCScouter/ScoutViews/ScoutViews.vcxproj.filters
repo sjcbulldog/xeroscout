@@ -90,9 +90,6 @@
     <ClCompile Include="RobotTrack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DelimitedCompleter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GraphView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -211,9 +208,6 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="PathFieldView.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="DelimitedCompleter.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

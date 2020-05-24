@@ -61,6 +61,23 @@ namespace xero
 							}
 						}
 					}
+					else if (t == QVariant::Type::Double)
+					{
+						auto field = std::make_shared<IntField>(dataset.colHeader(col));
+						fields_.push_back(field);
+						for (int row = 0; row < dataset.rowCount(); row++)
+						{
+							QVariant v = dataset.get(row, col);
+							if (v.isValid())
+							{
+								field->addSample(v.toDouble());
+							}
+							else
+							{
+								field->addEmpty();
+							}
+						}
+					}
 					else if (t == QVariant::Type::String)
 					{
 						auto field = std::make_shared<ChoiceField>(dataset.colHeader(col));
@@ -104,6 +121,12 @@ namespace xero
 					{
 						auto f = std::make_shared<IntField>(pair.first);
 						f->addSample(pair.second.toInt());
+						fields_.push_back(f);
+					}
+					else if (pair.second.type() == QVariant::Double)
+					{
+						auto f = std::make_shared<IntField>(pair.first);
+						f->addSample(pair.second.toDouble());
 						fields_.push_back(f);
 					}
 					else if (pair.second.type() == QVariant::Bool)

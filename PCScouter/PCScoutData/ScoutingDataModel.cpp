@@ -576,8 +576,11 @@ namespace xero
 
 				auto m = matches().front();
 				auto ba = m->blueAllianceData(DataModelMatch::Alliance::Red, 1);
-				for (auto pair : *ba)
-					list.push_back(pair.first);
+				if (ba != nullptr)
+				{
+					for (auto pair : *ba)
+						list.push_back(pair.first);
+				}
 
 				return list;
 			}

@@ -176,6 +176,42 @@ namespace xero
 						auto dist = std::make_shared<std::normal_distribution<double>>(mean, stddev);
 						numeric_.insert_or_assign(tag, dist);
 					}
+					else if (type == "real")
+					{
+						if (!obj.contains("mean"))
+						{
+							QString msg = "entry " + QString::number(i + 1) + ": does not have a 'mean' field";
+							emit error(msg);
+							continue;
+						}
+
+						if (!obj.value("mean").isDouble())
+						{
+							QString msg = "entry " + QString::number(i + 1) + ": has a 'mean' field but it is not a double";
+							emit error(msg);
+							continue;
+						}
+
+						if (!obj.contains("stddev"))
+						{
+							QString msg = "entry " + QString::number(i + 1) + ": does not have a 'stddev' field";
+							emit error(msg);
+							continue;
+						}
+
+						if (!obj.value("stddev").isDouble())
+						{
+							QString msg = "entry " + QString::number(i + 1) + ": has a 'stddev' field but it is not a double";
+							emit error(msg);
+							continue;
+						}
+
+						double mean = obj.value("mean").toDouble();
+						double stddev = obj.value("stddev").toDouble();
+
+						auto dist = std::make_shared<std::normal_distribution<double>>(mean, stddev);
+						numeric_.insert_or_assign(tag, dist);
+					}
 				}
 			}
 
@@ -282,7 +318,7 @@ namespace xero
 				return ret;
 			}
 
-			QVariant GameRandomProfile::generateRandomNumeric(const QString& field, int minv, int maxv)
+			QVariant GameRandomProfile::generateRandomInteger(const QString& field, int minv, int maxv)
 			{
 				QVariant ret;
 
@@ -306,6 +342,34 @@ namespace xero
 						vi = maxv;
 
 					ret = QVariant(vi);
+				}
+
+				return ret;
+			}
+
+			QVariant GameRandomProfile::generateRandomReal(const QString& field, double minv, double maxv)
+			{
+				QVariant ret;
+
+				auto itp = db_params_.find(field);
+				if (itp != db_params_.end())
+					return itp->second;
+
+				auto it = numeric_.find(field);
+				if (it == numeric_.end())
+				{
+					qDebug() << "no profile for field '" << field << "'";
+					ret = QVariant(random_.generateDouble() * (maxv - minv) + minv);
+				}
+				else
+				{
+					double v = (*it->second)(*gen_);
+					if (v < minv)
+						v = minv;
+					else if (v > maxv)
+						v = maxv;
+
+					ret = QVariant(v);
 				}
 
 				return ret;

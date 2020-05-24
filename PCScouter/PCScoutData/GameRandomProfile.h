@@ -33,8 +33,10 @@ namespace xero
 				QVariant generateRandomBool(const QString& field);
 				QVariant generateRandomChoice(const QString& field, const QStringList &choices);
 
-				QVariant generateRandomNumeric(const QString& field, int minv, int maxv);
+				QVariant generateRandomInteger(const QString& field, int minv, int maxv);
 				QVariant generateRandomText(const QString& field);
+
+				QVariant generateRandomReal(const QString& field, double minv, double maxv);
 
 			signals:
 				void error(const QString& str);

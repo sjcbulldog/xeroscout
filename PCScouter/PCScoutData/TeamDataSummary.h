@@ -65,7 +65,7 @@ namespace xero
 						maxv_ = std::numeric_limits<int>::min();
 					}
 
-					void addSample(int s) {
+					void addSample(double s) {
 						count_++;
 						total_ += s;
 						minv_ = qMin(minv_, s);
@@ -103,8 +103,8 @@ namespace xero
 				private:
 					int count_;
 					double total_;
-					int minv_;
-					int maxv_;
+					double minv_;
+					double maxv_;
 				};
 
 				class BooleanField : public Field

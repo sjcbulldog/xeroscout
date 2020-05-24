@@ -53,7 +53,7 @@ namespace xero
 				virtual DataCollection random(GameRandomProfile& profile) const
 				{
 					DataCollection d;
-					QVariant v = profile.generateRandomNumeric(tag(), minv_, maxv_);
+					QVariant v = profile.generateRandomInteger(tag(), minv_, maxv_);
 					d.add(tag(), v);
 					return d;
 				}

@@ -82,6 +82,10 @@ namespace xero
 							{
 								ds_.addHeader(field->name(), QVariant::Double);
 							}
+							else if (field->type() == QVariant::Double)
+							{
+								ds_.addHeader(field->name(), QVariant::Double);
+							}
 							else if (field->type() == QVariant::Bool)
 							{
 								ds_.addHeader(field->name() + "/TRUE", QVariant::Double);
@@ -103,6 +107,11 @@ namespace xero
 					for (auto field : summary->fields())
 					{
 						if (field->type() == QVariant::Int)
+						{
+							auto intf = std::dynamic_pointer_cast<TeamDataSummary::IntField>(field);
+							ds_.addData(intf->average());
+						}
+						else if (field->type() == QVariant::Double)
 						{
 							auto intf = std::dynamic_pointer_cast<TeamDataSummary::IntField>(field);
 							ds_.addData(intf->average());

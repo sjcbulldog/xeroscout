@@ -1,4 +1,5 @@
 #include "FormInstance.h"
+#include <QDebug>
 
 namespace xero
 {
@@ -46,7 +47,14 @@ namespace xero
 						}
 					}
 
-					item.second->setValues(d);
+					if (d.count() == item.second->desc()->getFields().size())
+					{
+						item.second->setValues(d);
+					}
+					else
+					{
+						qDebug() << "Missing Data";
+					}
 				}
 			}
 		}

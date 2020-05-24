@@ -99,6 +99,7 @@
     <ClInclude Include="GraphDescriptorCollection.h" />
     <ClInclude Include="JSonDataModelConverter.h" />
     <ClInclude Include="NumericItemDisplay.h" />
+    <QtMoc Include="StartStopWidget.h" />
     <ClInclude Include="TeamDataSummary.h" />
     <ClInclude Include="NumericFormItem.h" />
     <ClInclude Include="pcscoutdata_global.h" />
@@ -113,6 +114,8 @@
     <ClInclude Include="TabletIdentity.h" />
     <ClInclude Include="TextFormItem.h" />
     <ClInclude Include="TextItemDisplay.h" />
+    <ClInclude Include="TimerCountFormItem.h" />
+    <ClInclude Include="TimerCountItemDisplay.h" />
     <ClInclude Include="UpDownFormItem.h" />
     <ClInclude Include="UpDownItemDisplay.h" />
   </ItemGroup>
@@ -127,6 +130,7 @@
     <ClCompile Include="GraphDescriptorCollection.cpp" />
     <ClCompile Include="JSonDataModelConverter.cpp" />
     <ClCompile Include="NumericItemDisplay.cpp" />
+    <ClCompile Include="StartStopWidget.cpp" />
     <ClCompile Include="TeamSummaryData.cpp" />
     <ClCompile Include="ScoutingDatabase.cpp" />
     <ClCompile Include="ScoutingDataModel.cpp" />
@@ -134,6 +138,7 @@
     <ClCompile Include="ScoutingForm.cpp" />
     <ClCompile Include="TabletAssigner.cpp" />
     <ClCompile Include="TextItemDisplay.cpp" />
+    <ClCompile Include="TimerCountItemDisplay.cpp" />
     <ClCompile Include="UpDownItemDisplay.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

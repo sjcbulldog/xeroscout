@@ -93,7 +93,6 @@
     <ClCompile Include="ChartViewWrapper.cpp" />
     <ClCompile Include="DataMergeListWidget.cpp" />
     <ClCompile Include="DataSetViewWidget.cpp" />
-    <ClCompile Include="DelimitedCompleter.cpp" />
     <ClCompile Include="DocumentView.cpp" />
     <ClCompile Include="FlowLayout.cpp" />
     <ClCompile Include="FormView.cpp" />
@@ -122,7 +121,6 @@
   <ItemGroup>
     <ClInclude Include="AllianceGraphView.h" />
     <ClInclude Include="ChangeHistoryView.h" />
-    <QtMoc Include="DelimitedCompleter.h" />
     <ClInclude Include="ChartViewWrapper.h" />
     <ClInclude Include="GameField.h" />
     <ClInclude Include="GameFieldManager.h" />

@@ -1303,6 +1303,11 @@ namespace xero
 							obj[JsonTypeName] = JsonBoolName;
 							obj[JsonValueName] = v.toBool();
 						}
+						else if (v.type() == QVariant::Type::Double)
+						{
+							obj[JsonTypeName] = JsonDoubleName;
+							obj[JsonValueName] = v.toDouble();
+						}
 						else {
 							assert(false);
 							qDebug() << "variant not handled: " << v;

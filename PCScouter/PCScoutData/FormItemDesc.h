@@ -34,6 +34,9 @@ namespace xero
 			class FormItemDesc
 			{
 			public:
+				static constexpr const char* FieldSeperator = "__";
+
+			public:
 				FormItemDesc(const QString& display, const QString& tag) {
 					display_ = display;
 					base_tag_ = tag;
@@ -56,6 +59,10 @@ namespace xero
 
 				virtual DataCollection random(GameRandomProfile &profile) const = 0;
 				virtual FormItemDisplay* createDisplay(QWidget* parent) const = 0;
+
+				static QString genComplexName(const QString& tag, const QString& field) {
+					return tag + FormItemDesc::FieldSeperator + field;
+				}
 
 			protected:
 				const QString& basetag() {

@@ -109,6 +109,9 @@ namespace xero
 					else if (types[i] == QVariant::Type::Int) {
 						qstr += "INTEGER";
 					}
+					else if (types[i] == QVariant::Type::Double) {
+						qstr += "REAL";
+					}
 					else if (types[i] == QVariant::Type::String) {
 						qstr += "TEXT";
 					}
@@ -143,6 +146,13 @@ namespace xero
 						else if (types[col] == QVariant::Type::Int) {
 							if (v.isValid())
 								qstr += QString::number(v.toInt());
+							else
+								qstr += "NULL";
+						}
+						else if (types[col] == QVariant::Type::Double)
+						{
+							if (v.isValid())
+								qstr += QString::number(v.toDouble());
 							else
 								qstr += "NULL";
 						}

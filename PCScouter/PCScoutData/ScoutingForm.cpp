@@ -20,6 +20,7 @@
 #include "UpDownFormItem.h"
 #include "NumericFormItem.h"
 #include "TextFormItem.h"
+#include "TimerCountFormItem.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -33,7 +34,6 @@ namespace xero
 	{
 		namespace datamodel
 		{
-
 			ScoutingForm::ScoutingForm(const QString& filename)
 			{
 				parsed_ok_ = false;
@@ -206,14 +206,47 @@ namespace xero
 					tag = obj.value("tag").toString();
 					name = obj.value("name").toString();
 
-					if (tag.contains(':')) {
+					if (tag.length() == 0) {
 						errors_.push_back("in section '" + sectname + "', entry " + QString::number(i + 1)
-							+ " the field 'tag' contains a ':' character which is not legal");
+							+ " the tag field is an empty string");
 						return false;
+					}
+
+					if (!tag.at(0).isLetter()) {
+						errors_.push_back("in section '" + sectname + "', entry " + QString::number(i + 1)
+							+ " the tag field must start with a letter");
+						return false;
+					}
+
+					for (int i = 1; i < tag.length(); i++)
+					{
+						if (!tag.at(i).isLetterOrNumber() && tag.at(i) != '_') {
+							errors_.push_back("in section '" + sectname + "', entry " + QString::number(i + 1)
+								+ " the tag field must start with a letter and consists of letters, numbers, and '_'");
+							return false;
+						}
 					}
 
 					if (type == "boolean") {
 						section->addItem(std::make_shared<BooleanFormItem>(name, tag));
+					}
+					else if (type == "timercnt") {
+						int minv, maxv;
+						if (!obj.contains("minimum") || !obj.value("minimum").isDouble()) {
+							errors_.push_back("in section '" + sectname + "', entry " + QString::number(i + 1)
+								+ " type type 'updown' requires a double named 'minimum' as a field");
+							return false;
+						}
+
+						if (!obj.contains("maximum") || !obj.value("maximum").isDouble()) {
+							errors_.push_back("in section '" + sectname + "', entry " + QString::number(i + 1)
+								+ " type type 'updown' requires a double named 'maximum' as a field");
+							return false;
+						}
+
+						minv = obj.value("minimum").toInt();
+						maxv = obj.value("maximum").toInt();
+						section->addItem(std::make_shared<TimerCountFormItem>(name, tag, minv, maxv));
 					}
 					else if (type == "updown") {
 						int minv, maxv;

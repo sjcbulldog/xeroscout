@@ -111,6 +111,12 @@
     <ClInclude Include="UpDownItemDisplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TimerCountFormItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerCountItemDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoutingDatabase.cpp">
@@ -167,6 +173,12 @@
     <ClCompile Include="UpDownItemDisplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TimerCountItemDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StartStopWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ScoutingDataModel.h">
@@ -176,6 +188,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="GameRandomProfile.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="StartStopWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

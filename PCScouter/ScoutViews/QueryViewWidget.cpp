@@ -15,7 +15,6 @@
 // 
 
 #include "QueryViewWidget.h"
-#include "DelimitedCompleter.h"
 #include <QMessageBox>
 
 namespace xero
@@ -61,12 +60,6 @@ namespace xero
 
 			void QueryViewWidget::madeActive()
 			{
-				if (completer_ != nullptr) 
-				{
-					query_widget_->setCompleter(nullptr);
-					delete completer_;
-				}
-
 				QStringList list = dataModel()->getAllFieldNames();
 				list.append("SELECT");
 				list.append("WHERE");
@@ -75,9 +68,6 @@ namespace xero
 				list.append("OR");
 				list.append("matches");
 				list.append("teams");
-
-				completer_ = new DelimitedCompleter(query_widget_, ' ', list);
-				query_widget_->setCompleter(completer_);
 			}
 
 			void QueryViewWidget::refreshView()

@@ -125,7 +125,6 @@ namespace xero
 				for (const QString& hdr : data_.headers())
 				{
 					QString newhdr = hdr;
-					newhdr = newhdr.replace("/", "\n");
 					headers.push_back(newhdr);
 				}
 
