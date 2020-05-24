@@ -447,7 +447,11 @@ namespace xero
 				{
 					for (auto item : section->items())
 					{
-						data->insert(std::make_pair(item->tag(), item->random(gen)));
+						DataCollection coll = item->random(gen);
+						for (int i = 0; i < coll.count(); i++)
+						{
+							data->insert_or_assign(coll.tag(i), coll.data(i));
+						}
 					}
 				}
 

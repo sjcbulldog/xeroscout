@@ -50,7 +50,7 @@ namespace xero
 			{
 			}
 
-			std::shared_ptr<FormItem> ScoutingForm::itemByName(const QString& name) const
+			std::shared_ptr<FormItemDesc> ScoutingForm::itemByName(const QString& name) const
 			{
 				for (auto section : sections_)
 				{
@@ -69,7 +69,8 @@ namespace xero
 				for (auto s : sections_) {
 					for (auto i : s->items())
 					{
-						result.push_back(std::make_pair(i->tag(), i->dataType()));
+						auto fields = i->getFields();
+						result.insert(result.end(), fields.begin(), fields.end());
 					}
 				}
 				return result;
@@ -204,6 +205,12 @@ namespace xero
 					type = obj.value("type").toString();
 					tag = obj.value("tag").toString();
 					name = obj.value("name").toString();
+
+					if (tag.contains(':')) {
+						errors_.push_back("in section '" + sectname + "', entry " + QString::number(i + 1)
+							+ " the field 'tag' contains a ':' character which is not legal");
+						return false;
+					}
 
 					if (type == "boolean") {
 						section->addItem(std::make_shared<BooleanFormItem>(name, tag));

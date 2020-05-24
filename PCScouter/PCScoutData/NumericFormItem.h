@@ -16,7 +16,8 @@
 
 #pragma once
 
-#include "FormItem.h"
+#include "FormItemDesc.h"
+#include "NumericItemDisplay.h"
 #include <QLineEdit>
 
 namespace xero
@@ -26,100 +27,44 @@ namespace xero
 		namespace datamodel
 		{
 
-			class NumericFormItem : public FormItem
+			class NumericFormItem : public FormItemDesc
 			{
 			public:
-				NumericFormItem(const QString& display, const QString& tag, int minv, int maxv) : FormItem(display, tag)
+				NumericFormItem(const QString& display, const QString& tag, int minv, int maxv) : FormItemDesc(display, tag)
 				{
 					minv_ = minv;
 					maxv_ = maxv;
+					addField(std::make_pair(tag, QVariant::Int));
 				}
 
 				virtual ~NumericFormItem()
 				{
 				}
 
-				QVariant random(GameRandomProfile &profile) const override {
-					return profile.generateRandomNumeric(tag(), minv_, maxv_);
+				int minValue() const {
+					return minv_;
 				}
 
-				QVariant::Type dataType()  const override {
-					return QVariant::Type::Int;
+				int maxValue() const {
+					return maxv_;
 				}
 
-				QWidget* createWidget(const QString& name, QWidget* parent) const override {
-					auto it = editors_.find(name);
-					assert(it == editors_.end());
-
-					QWidget* w = new QWidget();
-					QHBoxLayout* layout = new QHBoxLayout();
-					w->setLayout(layout);
-
-					QLabel* label = new QLabel(display(), w);
-					layout->addWidget(label);
-					QFont font = label->font();
-					font.setPointSizeF(16.0);
-					label->setFont(font);
-
-					QLineEdit* edit = new QLineEdit(parent);
-					edit->setValidator(new QIntValidator(minv_, maxv_, parent));
-					layout->addWidget(edit);
-					font = edit->font();
-					font.setPointSizeF(16.0);
-					edit->setFont(font);
-
-					edit->setText(QString::number(minv_));
-
-					//
-					// HACK: fix this with a data storage model for scouting form items
-					//
-					NumericFormItem* here = const_cast<NumericFormItem*>(this);
-					here->editors_.insert(std::make_pair(name, edit));
-
-					return w;
+				virtual DataCollection random(GameRandomProfile& profile) const
+				{
+					DataCollection d;
+					QVariant v = profile.generateRandomNumeric(tag(), minv_, maxv_);
+					d.add(tag(), v);
+					return d;
 				}
 
-				void destroyWidget(const QString& name)  const override {
-
-					auto it = editors_.find(name);
-					assert(it != editors_.end());
-
-					delete it->second;
-
-					//
-					// HACK: fix this with a data storage model for scouting form items
-					//
-					NumericFormItem* here = const_cast<NumericFormItem*>(this);
-					here->editors_.erase(it);
-				}
-
-				QVariant getValue(const QString& name) const override {
-					QVariant v;
-
-					auto it = editors_.find(name);
-					assert(it != editors_.end());
-
-					int i = it->second->text().toInt();
-					v = QVariant(i);
-
-					return v;
-				}
-
-				void setValue(const QString& name, const QVariant& v) const override {
-
-					auto it = editors_.find(name);
-					assert(it != editors_.end());
-
-					if (v.type() == QVariant::Type::Int) {
-						QString txt = QString::number(v.toInt());
-						it->second->setText(txt);
-					}
+				virtual FormItemDisplay* createDisplay(QWidget* parent) const
+				{
+					return new NumericItemDisplay(this, parent);
 				}
 
 			private:
 				int minv_;
 				int maxv_;
-				std::map<QString, QLineEdit*> editors_;
 			};
 
 		}

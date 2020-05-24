@@ -32,6 +32,7 @@ namespace xero
 			{
 				name_ = name;
 				title_txt_ = title;
+				instance_ = nullptr;
 
 				QVBoxLayout* lay = new QVBoxLayout();
 				setLayout(lay);
@@ -69,8 +70,9 @@ namespace xero
 				tab->setLayout(layout);
 
 				for (auto item : section->items()) {
-					QWidget* w = item->createWidget(name_, tab);
+					FormItemDisplay* w = item->createDisplay(this);
 					layout->addWidget(w);
+					instance_->addDisplayItem(item->tag(), w);
 				}
 
 				tabs_->addTab(tab, section->name());
@@ -81,6 +83,7 @@ namespace xero
 				clearView();
 
 				form_ = form;
+				instance_ = std::make_shared<FormInstance>(form);
 				auto& sections = form_->sections();
 				for (auto section : sections) {
 					createSection(section);
@@ -89,15 +92,7 @@ namespace xero
 
 			void FormView::clearView()
 			{
-				if (form_ != nullptr) {
-					auto& sections = form_->sections();
-					for (auto section : sections) {
-						for (auto item : section->items()) {
-							item->destroyWidget(name_);
-						}
-					}
-				}
-
+				instance_->clear();
 				for (int i = 0; i < tabs_->count(); i++) {
 					delete tabs_->widget(i);
 				}
@@ -106,27 +101,12 @@ namespace xero
 
 			void FormView::extractData(ScoutingDataMapPtr ptr)
 			{
-				ptr->clear();
-
-				auto& sections = form_->sections();
-				for (auto section : sections) {
-					for (auto item : section->items()) {
-						QVariant v = item->getValue(name_);
-						ptr->insert(std::make_pair(item->tag(), v));
-					}
-				}
+				instance_->extract(ptr);
 			}
 
 			void FormView::assignData(ConstScoutingDataMapPtr ptr)
 			{
-				auto& sections = form_->sections();
-				for (auto section : sections) {
-					for (auto item : section->items()) {
-						auto it = ptr->find(item->tag());
-						if (it != ptr->end())
-							item->setValue(name_, it->second);
-					}
-				}
+				instance_->assign(ptr);
 			}
 		}
 	}

@@ -71,7 +71,7 @@ namespace xero
 
 				std::vector<std::pair<QString, QVariant::Type>> fields() const;
 
-				std::shared_ptr<FormItem> itemByName(const QString& name) const;
+				std::shared_ptr<FormItemDesc> itemByName(const QString& name) const;
 
 			private:
 				void parse(const QString& filename);

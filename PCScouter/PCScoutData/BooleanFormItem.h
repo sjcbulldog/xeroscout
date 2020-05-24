@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "FormItem.h"
+#include "FormItemDesc.h"
 #include <QCheckBox>
-#include "BooleanWidget.h"
+#include "BooleanItemDisplay.h"
 
 namespace xero
 {
@@ -26,85 +26,31 @@ namespace xero
 	{
 		namespace datamodel
 		{
-
-			class BooleanFormItem : public FormItem
+			class BooleanFormItem : public FormItemDesc
 			{
 			public:
-				BooleanFormItem(const QString& display, const QString& tag) : FormItem(display, tag)
+				BooleanFormItem(const QString& display, const QString& tag) : FormItemDesc(display, tag)
 				{
+					addField(std::make_pair(tag, QVariant::Bool));
 				}
 
 				virtual ~BooleanFormItem()
 				{
 				}
 
-				QVariant random(GameRandomProfile &profile) const override {
-					return profile.generateRandomBool(tag());
+				virtual DataCollection random(GameRandomProfile& profile) const
+				{
+					DataCollection d;
+					QVariant v = profile.generateRandomBool(tag());
+					d.add(tag(), v);
+					return d;
 				}
 
-				QVariant::Type dataType() const override {
-					return QVariant::Type::Bool;
+				virtual FormItemDisplay* createDisplay(QWidget *parent) const
+				{
+					return new BooleanItemDisplay(this, parent);
 				}
-
-				QWidget* createWidget(const QString& name, QWidget* parent) const override {
-					auto it = boxes_.find(name);
-					assert(it == boxes_.end());
-
-					BooleanWidget* box = new BooleanWidget(display(), parent);
-					box->setChecked(false);
-
-					//
-					// HACK: fix this with a data storage model for scouting form items
-					//
-					BooleanFormItem* here = const_cast<BooleanFormItem*>(this);
-					here->boxes_.insert(std::make_pair(name, box));
-					return box;
-				}
-
-				void destroyWidget(const QString& name) const {
-
-					auto it = boxes_.find(name);
-					assert(it != boxes_.end());
-
-					delete it->second;
-
-					//
-					// HACK: fix this with a data storage model for scouting form items
-					//
-					BooleanFormItem* here = const_cast<BooleanFormItem*>(this);
-					here->boxes_.erase(it);
-				}
-
-				QVariant getValue(const QString& name) const override {
-					QVariant v;
-
-					auto it = boxes_.find(name);
-					assert(it != boxes_.end());
-
-					if (it->second->isChecked())
-						v = QVariant(true);
-					else
-						v = QVariant(false);
-
-					return v;
-				}
-
-				void setValue(const QString& name, const QVariant& v) const override {
-					auto it = boxes_.find(name);
-					assert(it != boxes_.end());
-
-					if (v.type() == QVariant::Type::Bool) {
-						if (v.toBool())
-							it->second->setChecked(true);
-						else
-							it->second->setChecked(false);
-					}
-				}
-
-			private:
-				std::map<QString, BooleanWidget*> boxes_;
 			};
-
 		}
 	}
 }

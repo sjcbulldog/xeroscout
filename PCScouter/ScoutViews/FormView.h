@@ -20,6 +20,7 @@
 #include "ViewBase.h"
 #include "ScoutingForm.h"
 #include "ScoutingDataMap.h"
+#include "FormInstance.h"
 #include <QTabWidget>
 #include <QLabel>
 
@@ -61,6 +62,7 @@ namespace xero
 				QLabel* titles_;
 
 				std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form_;
+				std::shared_ptr<xero::scouting::datamodel::FormInstance> instance_;
 			};
 		}
 	}

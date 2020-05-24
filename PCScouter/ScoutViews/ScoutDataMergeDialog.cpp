@@ -43,6 +43,7 @@ namespace xero
 
 			void ScoutDataMergeDialog::accept()
 			{
+#ifdef NOTYET
 				//
 				// Extract the data from the last column of the
 				//
@@ -50,11 +51,12 @@ namespace xero
 				for (auto pair : *list_.front())
 					headers.push_back(pair.first);
 
+
 				result_ = std::make_shared<ScoutingDataMap>();
 				int col = table_->columnCount() - 1;
 				for (int row = 0; row < list_.front()->size(); row++)
 				{
-					std::shared_ptr<FormItem> fitem = form_->itemByName(headers.at(row));
+					std::shared_ptr<FormItemDesc> fitem = form_->itemByName(headers.at(row));
 					auto it = list_.back()->find(headers.at(row));
 					const QString& name = headers.at(row);
 
@@ -102,6 +104,7 @@ namespace xero
 						}
 					}
 				}
+#endif
 				QDialog::accept();
 			}
 
@@ -149,7 +152,7 @@ namespace xero
 				//
 				for (int row = 0; row < list_.front()->size(); row++)
 				{
-					std::shared_ptr<FormItem> fitem = form_->itemByName(headers.at(row));
+					std::shared_ptr<FormItemDesc> fitem = form_->itemByName(headers.at(row));
 					auto it = list_.back()->find(headers.at(row));
 
 					if (fitem == nullptr)
@@ -163,6 +166,7 @@ namespace xero
 					}
 					else
 					{
+#ifdef NOTYET
 						if (fitem->dataType() == QVariant::Type::Int)
 						{
 							QTableWidgetItem* item = new QTableWidgetItem(it->second.toString());
@@ -209,6 +213,7 @@ namespace xero
 						{
 							assert(false);
 						}
+#endif
 					}
 				}
 

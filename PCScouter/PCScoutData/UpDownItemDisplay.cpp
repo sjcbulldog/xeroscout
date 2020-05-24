@@ -14,7 +14,8 @@
 // limitations under the License.
 // 
 
-#include "UpDownWidget.h"
+#include "UpDownItemDisplay.h"
+#include "UpDownFormItem.h"
 #include <QEvent>
 #include <QIntValidator>
 #include <QFont>
@@ -26,16 +27,15 @@ namespace xero
 	{
 		namespace datamodel
 		{
-
-			UpDownWidget::UpDownWidget(const QString& label, QWidget* parent) : QWidget(parent)
+			UpDownItemDisplay::UpDownItemDisplay(const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(desc, parent)
 			{
-				label_ = new QLabel(label, this);
+				label_ = new QLabel(desc->display(), this);
 
 				up_ = new QPushButton("-", this);
-				(void)connect(up_, &QPushButton::pressed, this, &UpDownWidget::upButtonPressed);
+				(void)connect(up_, &QPushButton::pressed, this, &UpDownItemDisplay::upButtonPressed);
 
 				down_ = new QPushButton("+", this);
-				(void)connect(down_, &QPushButton::pressed, this, &UpDownWidget::downButtonPressed);
+				(void)connect(down_, &QPushButton::pressed, this, &UpDownItemDisplay::downButtonPressed);
 
 				editor_ = new QLineEdit(this);
 
@@ -52,59 +52,63 @@ namespace xero
 
 				doLayout();
 
-				minv_ = std::numeric_limits<int>::min();
-				maxv_ = std::numeric_limits<int>::max();
+				const UpDownFormItem* fdesc = dynamic_cast<const UpDownFormItem*>(desc);
 
-				setValue(0);
-
-				editor_->setValidator(new QIntValidator(minv_, maxv_, this));
+				editor_->setText(QString::number(fdesc->minValue()));
+				editor_->setValidator(new QIntValidator(fdesc->minValue(), fdesc->maxValue(), this));
 			}
 
-			UpDownWidget::~UpDownWidget()
+			UpDownItemDisplay::~UpDownItemDisplay()
 			{
 			}
 
-			int UpDownWidget::value()
+			void UpDownItemDisplay::setValues(const DataCollection& data)
 			{
+				assert(data.count() == 1);
+				
+				editor_->setText(QString::number(data.data(0).toInt()));
+			}
+
+			DataCollection UpDownItemDisplay::getValues()
+			{
+				DataCollection d;
+
+				d.add(desc()->tag(), editor_->text().toInt());
+				return d;
+			}
+
+			int UpDownItemDisplay::value() const {
 				return editor_->text().toInt();
 			}
 
-			void UpDownWidget::setValue(int v)
+			void UpDownItemDisplay::upButtonPressed()
 			{
-				if (v < minv_)
-					editor_->setText(QString::number(minv_));
-				else if (v > maxv_)
-					editor_->setText(QString::number(maxv_));
-				else
-					editor_->setText(QString::number(v));
-			}
-
-			void UpDownWidget::upButtonPressed()
-			{
+				const UpDownFormItem* fdesc = dynamic_cast<const UpDownFormItem*>(desc());
 				int v = value() - 1;
-				if (v >= minv_ && v <= maxv_)
+				if (v >= fdesc->minValue() && v <= fdesc->maxValue())
 					editor_->setText(QString::number(v));
 			}
 
-			void UpDownWidget::downButtonPressed()
+			void UpDownItemDisplay::downButtonPressed()
 			{
+				const UpDownFormItem* fdesc = dynamic_cast<const UpDownFormItem*>(desc());
 				int v = value() + 1;
-				if (v >= minv_ && v <= maxv_)
+				if (v >= fdesc->minValue() && v <= fdesc->maxValue())
 					editor_->setText(QString::number(v));
 			}
 
-			void UpDownWidget::changeEvent(QEvent* ev)
+			void UpDownItemDisplay::changeEvent(QEvent* ev)
 			{
 				if (ev->type() == QEvent::FontChange)
 					doLayout();
 			}
 
-			void UpDownWidget::resizeEvent(QResizeEvent* ev)
+			void UpDownItemDisplay::resizeEvent(QResizeEvent* ev)
 			{
 				doLayout();
 			}
 
-			void UpDownWidget::doLayout()
+			void UpDownItemDisplay::doLayout()
 			{
 				int button_width = 30;
 				int button_height = 30;

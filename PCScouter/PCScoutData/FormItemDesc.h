@@ -17,6 +17,7 @@
 #pragma once
 
 #include "GameRandomProfile.h"
+#include "DataCollection.h"
 #include <QString>
 #include <QWidget>
 #include <QVariant>
@@ -28,15 +29,17 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			class FormItem
+			class FormItemDisplay;
+
+			class FormItemDesc
 			{
 			public:
-				FormItem(const QString& display, const QString& tag) {
+				FormItemDesc(const QString& display, const QString& tag) {
 					display_ = display;
-					tag_ = tag;
+					base_tag_ = tag;
 				}
 
-				virtual ~FormItem() {
+				virtual ~FormItemDesc() {
 				}
 
 				const QString& display() const {
@@ -44,26 +47,30 @@ namespace xero
 				}
 
 				const QString& tag() const {
-					return tag_;
+					return base_tag_;
 				}
 
-				virtual QVariant::Type dataType() const = 0;
+				virtual std::vector<std::pair<QString, QVariant::Type>> getFields() const {
+					return fields_;
+				}
 
-				virtual QWidget* createWidget(const QString& name, QWidget* parent) const = 0;
+				virtual DataCollection random(GameRandomProfile &profile) const = 0;
+				virtual FormItemDisplay* createDisplay(QWidget* parent) const = 0;
 
-				virtual void destroyWidget(const QString& name) const = 0;
+			protected:
+				const QString& basetag() {
+					return base_tag_;
+				}
 
-				virtual QVariant getValue(const QString& name) const = 0;
-
-				virtual void setValue(const QString& name, const QVariant& v) const = 0;
-
-				virtual QVariant random(GameRandomProfile &profile) const = 0;
+				void addField(const std::pair<QString, QVariant::Type>& field) {
+					fields_.push_back(field);
+				}
 
 			private:
-				QString tag_;
+				QString base_tag_;
 				QString display_;
+				std::vector<std::pair<QString, QVariant::Type>> fields_;
 			};
-
 		}
 	}
 }

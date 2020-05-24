@@ -14,7 +14,8 @@
 // limitations under the License.
 // 
 
-#include "BooleanWidget.h"
+#include "BooleanItemDisplay.h"
+#include "DataCollection.h"
 #include <QPainter>
 #include <QFontMetrics>
 #include <QEvent>
@@ -26,32 +27,49 @@ namespace xero
 		namespace datamodel
 		{
 
-			BooleanWidget::BooleanWidget(const QString& label, QWidget* parent) : QWidget(parent)
+			BooleanItemDisplay::BooleanItemDisplay(const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(desc, parent)
 			{
 				QFontMetrics fm(font());
-				int width = fm.horizontalAdvance(label);
+				int width = fm.horizontalAdvance(desc->display());
 				setMinimumSize(QSize(width + 8, 80));
-
-				label_ = label;
 
 				state_ = false;
 			}
 
-			BooleanWidget::~BooleanWidget()
+			BooleanItemDisplay::~BooleanItemDisplay()
 			{
 			}
 
-			void BooleanWidget::changeEvent(QEvent* ev)
+			void BooleanItemDisplay::setValues(const DataCollection& data)
+			{
+				assert(data.count() == 1);
+				assert(data.data(0).type() == QVariant::Type::Bool);
+
+				if (data.data(0).toBool())
+					state_ = true;
+				else
+					state_ = false;
+			}
+
+			DataCollection BooleanItemDisplay::getValues()
+			{
+				DataCollection d;
+				d.add(desc()->tag(), QVariant(state_));
+
+				return d;
+			}
+
+			void BooleanItemDisplay::changeEvent(QEvent* ev)
 			{
 				if (ev->type() == QEvent::FontChange)
 				{
 					QFontMetrics fm(font());
-					int width = fm.horizontalAdvance(label_) + 8;
+					int width = fm.horizontalAdvance(desc()->display()) + 8;
 					setMinimumSize(QSize(width, 80));
 				}
 			}
 
-			void BooleanWidget::paintEvent(QPaintEvent* ev)
+			void BooleanItemDisplay::paintEvent(QPaintEvent* ev)
 			{
 				QPainter p(this);
 
@@ -60,7 +78,7 @@ namespace xero
 
 				QTextOption o;
 				o.setAlignment(Qt::AlignCenter);
-				p.drawText(r, label_, o);
+				p.drawText(r, desc()->display(), o);
 
 				r = QRectF(0, fm.height() + 2, width(), height() - fm.height() - 2);
 
@@ -73,7 +91,7 @@ namespace xero
 				p.drawRect(r);
 			}
 
-			void BooleanWidget::mousePressEvent(QMouseEvent* ev)
+			void BooleanItemDisplay::mousePressEvent(QMouseEvent* ev)
 			{
 				state_ = !state_;
 				update();

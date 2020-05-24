@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "FormItem.h"
-#include "UpDownWidget.h"
+#include "FormItemDesc.h"
+#include "UpDownItemDisplay.h"
 #include <QSpinBox>
 #include <QDebug>
 
@@ -28,88 +28,44 @@ namespace xero
 		namespace datamodel
 		{
 
-			class UpDownFormItem : public FormItem
+			class UpDownFormItem : public FormItemDesc
 			{
 			public:
-				UpDownFormItem(const QString& display, const QString& tag, int minv, int maxv) : FormItem(display, tag)
+				UpDownFormItem(const QString& display, const QString& tag, int minv, int maxv) : FormItemDesc(display, tag)
 				{
 					minv_ = minv;
 					maxv_ = maxv;
+					addField(std::make_pair(tag, QVariant::Int));
 				}
 
 				virtual ~UpDownFormItem()
 				{
 				}
 
-				QVariant random(GameRandomProfile& profile) const override {
-					return profile.generateRandomNumeric(tag(), minv_, maxv_);
+				int minValue() const {
+					return minv_;
 				}
 
-				QVariant::Type dataType()  const override {
-					return QVariant::Type::Int;
+				int maxValue() const {
+					return maxv_;
 				}
 
-
-				QWidget* createWidget(const QString& name, QWidget* parent) const override {
-					auto it = boxes_.find(name);
-					assert(it == boxes_.end());
-
-					UpDownWidget* w = new UpDownWidget(display(), parent);
-					w->setMinimum(minv_);
-					w->setMaximum(maxv_);
-
-					//
-					// HACK: fix this with a model for form item storage
-					//
-					UpDownFormItem* here = const_cast<UpDownFormItem*>(this);
-					here->boxes_.insert(std::make_pair(name, w));
-					w->setValue(minv_);
-
-					return w;
+				virtual DataCollection random(GameRandomProfile& profile) const
+				{
+					DataCollection d;
+					QVariant v = profile.generateRandomNumeric(tag(), minv_, maxv_);
+					d.add(tag(), v);
+					return d;
 				}
 
-				void destroyWidget(const QString& name) const override {
-
-					auto it = boxes_.find(name);
-					assert(it != boxes_.end());
-
-					delete it->second;
-
-					//
-					// HACK: fix this with a model for form item storage
-					//
-					UpDownFormItem* here = const_cast<UpDownFormItem*>(this);
-					here->boxes_.erase(it);
-				}
-
-				QVariant getValue(const QString& name) const override {
-					auto it = boxes_.find(name);
-					assert(it != boxes_.end());
-
-					QVariant v;
-					v = QVariant(it->second->value());
-
-					return v;
-				}
-
-				void setValue(const QString& name, const QVariant& v) const override {
-					auto it = boxes_.find(name);
-					assert(it != boxes_.end());
-
-					if (v.type() == QVariant::Type::Int) {
-						it->second->setValue(v.toInt());
-					}
+				virtual FormItemDisplay* createDisplay(QWidget* parent) const
+				{
+					return new UpDownItemDisplay(this, parent);
 				}
 
 			private:
 				int minv_;
 				int maxv_;
-
-#ifdef XERO_QT_WIDGETS_ONLY
-				std::map<QString, QSpinBox*> boxes_;
-#else
-				std::map<QString, UpDownWidget*> boxes_;
-#endif
 			};
 
 		}

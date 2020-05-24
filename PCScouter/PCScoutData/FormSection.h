@@ -17,7 +17,7 @@
 #pragma once
 
 
-#include "FormItem.h"
+#include "FormItemDesc.h"
 #include <QString>
 #include <list>
 #include <memory>
@@ -40,11 +40,11 @@ namespace xero
 					return name_;
 				}
 
-				void addItem(std::shared_ptr<FormItem> item) {
+				void addItem(std::shared_ptr<FormItemDesc> item) {
 					items_.push_back(item);
 				}
 
-				std::shared_ptr<FormItem> itemByName(const QString &name) const {
+				std::shared_ptr<FormItemDesc> itemByName(const QString &name) const {
 					for (auto item : items_)
 					{
 						if (item->tag() == name)
@@ -54,8 +54,8 @@ namespace xero
 					return nullptr;
 				}
 
-				std::list<std::shared_ptr<const FormItem>> items() const {
-					std::list<std::shared_ptr<const FormItem>> ret;
+				std::list<std::shared_ptr<const FormItemDesc>> items() const {
+					std::list<std::shared_ptr<const FormItemDesc>> ret;
 
 					for (auto i : items_)
 						ret.push_back(i);
@@ -65,7 +65,7 @@ namespace xero
 
 			private:
 				QString name_;
-				std::list<std::shared_ptr<FormItem>> items_;
+				std::list<std::shared_ptr<FormItemDesc>> items_;
 			};
 
 		}

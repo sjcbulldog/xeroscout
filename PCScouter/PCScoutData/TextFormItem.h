@@ -17,7 +17,8 @@
 
 #pragma once
 
-#include "FormItem.h"
+#include "FormItemDesc.h"
+#include "TextItemDisplay.h"
 #include <QString>
 #include <QBoxLayout>
 #include <QLabel>
@@ -30,91 +31,39 @@ namespace xero
 		namespace datamodel
 		{
 
-			class TextFormItem : public FormItem
+			class TextFormItem : public FormItemDesc
 			{
 			public:
-				TextFormItem(const QString& display, const QString& tag, int maxlen) : FormItem(display, tag)
+				TextFormItem(const QString& display, const QString& tag, int maxlen) : FormItemDesc(display, tag)
 				{
 					maxlen_ = maxlen;
+					addField(std::make_pair(tag, QVariant::String));
 				}
 
 				virtual ~TextFormItem()
 				{
 				}
 
-				QVariant random(GameRandomProfile& profile) const override {
-					return profile.generateRandomText(tag());
-				}
-
-				QVariant::Type dataType()  const override {
-					return QVariant::Type::String;
+				int maxLen() const {
+					return maxlen_;
 				}
 
 
-				QWidget* createWidget(const QString& name, QWidget* parent) const override {
-					auto it = editors_.find(name);
-					assert(it == editors_.end());
-
-					QWidget* w = new QWidget();
-					QHBoxLayout* layout = new QHBoxLayout();
-					w->setLayout(layout);
-
-					QLabel* label = new QLabel(display(), w);
-					layout->addWidget(label);
-					QFont font = label->font();
-					font.setPointSizeF(16.0);
-					label->setFont(font);
-
-					QLineEdit* edit = new QLineEdit(parent);
-					layout->addWidget(edit);
-					font = edit->font();
-					font.setPointSizeF(16.0);
-					edit->setFont(font);
-					edit->setMaxLength(maxlen_);
-
-					//
-					// HACK: fix this with a data storage model for scouting form items
-					//
-					TextFormItem* here = const_cast<TextFormItem*>(this);
-					here->editors_.insert(std::make_pair(name, edit));
-
-					return w;
+				virtual DataCollection random(GameRandomProfile& profile) const
+				{
+					DataCollection d;
+					QVariant v = profile.generateRandomText(tag());
+					d.add(tag(), v);
+					return d;
 				}
 
-				void destroyWidget(const QString& name)  const override {
-
-					auto it = editors_.find(name);
-					assert(it != editors_.end());
-
-					delete it->second;
-
-					//
-					// HACK: fix this with a data storage model for scouting form items
-					//
-					TextFormItem* here = const_cast<TextFormItem*>(this);
-					here->editors_.erase(it);
-				}
-
-				QVariant getValue(const QString& name) const override {
-					QVariant v;
-
-					auto it = editors_.find(name);
-					assert(it != editors_.end());
-
-					return QVariant(it->second->text());
-				}
-
-				void setValue(const QString& name, const QVariant& v) const override {
-
-					auto it = editors_.find(name);
-					assert(it != editors_.end());
-
-					it->second->setText(v.toString());
+				virtual FormItemDisplay* createDisplay(QWidget* parent) const
+				{
+					return new TextItemDisplay(this, parent);
 				}
 
 			private:
 				int maxlen_;
-				std::map<QString, QLineEdit*> editors_;
 			};
 
 		}

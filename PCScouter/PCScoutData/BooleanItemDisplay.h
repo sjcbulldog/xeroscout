@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <QWidget>
+#include "FormItemDisplay.h"
 
 namespace xero
 {
@@ -24,21 +24,14 @@ namespace xero
 	{
 		namespace datamodel
 		{
-
-			class BooleanWidget : public QWidget
+			class BooleanItemDisplay : public FormItemDisplay
 			{
 			public:
-				BooleanWidget(const QString& label, QWidget* parent = nullptr);
-				virtual ~BooleanWidget();
+				BooleanItemDisplay(const FormItemDesc *desc, QWidget* parent = nullptr);
+				virtual ~BooleanItemDisplay();
 
-				void setChecked(bool b) {
-					state_ = b;
-					update();
-				}
-
-				bool isChecked() const {
-					return state_;
-				}
+				virtual void setValues(const DataCollection& data) ;
+				virtual DataCollection getValues() ;
 
 			protected:
 				void paintEvent(QPaintEvent* ev) override;
@@ -46,7 +39,6 @@ namespace xero
 				void changeEvent(QEvent* ev) override;
 
 			private:
-				QString label_;
 				bool state_;
 			};
 

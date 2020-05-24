@@ -84,16 +84,21 @@
   <ItemGroup>
     <QtMoc Include="AllTeamSummaryGenerator.h" />
     <ClInclude Include="BooleanFormItem.h" />
-    <ClInclude Include="BooleanWidget.h" />
+    <ClInclude Include="BooleanItemDisplay.h" />
     <ClInclude Include="ChoiceFormItem.h" />
+    <ClInclude Include="ChoiceItemDisplay.h" />
+    <ClInclude Include="DataCollection.h" />
     <ClInclude Include="DataModelMatch.h" />
     <ClInclude Include="DataModelTeam.h" />
-    <ClInclude Include="FormItem.h" />
+    <ClInclude Include="FormInstance.h" />
+    <ClInclude Include="FormItemDesc.h" />
+    <ClInclude Include="FormItemDisplay.h" />
     <ClInclude Include="FormSection.h" />
     <QtMoc Include="GameRandomProfile.h" />
     <ClInclude Include="GraphDescriptor.h" />
     <ClInclude Include="GraphDescriptorCollection.h" />
     <ClInclude Include="JSonDataModelConverter.h" />
+    <ClInclude Include="NumericItemDisplay.h" />
     <ClInclude Include="TeamDataSummary.h" />
     <ClInclude Include="NumericFormItem.h" />
     <ClInclude Include="pcscoutdata_global.h" />
@@ -107,23 +112,29 @@
     <ClInclude Include="TabletAssigner.h" />
     <ClInclude Include="TabletIdentity.h" />
     <ClInclude Include="TextFormItem.h" />
+    <ClInclude Include="TextItemDisplay.h" />
     <ClInclude Include="UpDownFormItem.h" />
-    <ClInclude Include="UpDownWidget.h" />
+    <ClInclude Include="UpDownItemDisplay.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AllTeamSummaryGenerator.cpp" />
-    <ClCompile Include="BooleanWidget.cpp" />
+    <ClCompile Include="BooleanItemDisplay.cpp" />
+    <ClCompile Include="ChoiceItemDisplay.cpp" />
+    <ClCompile Include="FormInstance.cpp" />
+    <ClCompile Include="FormItemDisplay.cpp" />
     <ClCompile Include="GameRandomProfile.cpp" />
     <ClCompile Include="GraphDescriptor.cpp" />
     <ClCompile Include="GraphDescriptorCollection.cpp" />
     <ClCompile Include="JSonDataModelConverter.cpp" />
+    <ClCompile Include="NumericItemDisplay.cpp" />
     <ClCompile Include="TeamSummaryData.cpp" />
     <ClCompile Include="ScoutingDatabase.cpp" />
     <ClCompile Include="ScoutingDataModel.cpp" />
     <ClCompile Include="ScoutingDataSet.cpp" />
     <ClCompile Include="ScoutingForm.cpp" />
     <ClCompile Include="TabletAssigner.cpp" />
-    <ClCompile Include="UpDownWidget.cpp" />
+    <ClCompile Include="TextItemDisplay.cpp" />
+    <ClCompile Include="UpDownItemDisplay.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

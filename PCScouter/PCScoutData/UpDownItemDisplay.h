@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "FormItemDisplay.h"
 #include <QPushButton>
 #include <QLineEdit>
 #include <QWidget>
@@ -28,44 +29,21 @@ namespace xero
 	{
 		namespace datamodel
 		{
-
-			class UpDownWidget : public QWidget
+			class UpDownItemDisplay : public FormItemDisplay
 			{
 			public:
-				UpDownWidget(const QString& label, QWidget* parent);
-				virtual ~UpDownWidget();
+				UpDownItemDisplay(const FormItemDesc *desc, QWidget* parent);
+				virtual ~UpDownItemDisplay();
 
-				int value();
-
-				void setValue(int v);
-
-				int minimum() {
-					return minv_;
-				}
-
-				void setMinimum(int v) {
-					minv_ = v;
-					if (value() < minv_)
-						setValue(minv_);
-					editor_->setValidator(new QIntValidator(minv_, maxv_, this));
-				}
-
-				int maximum() {
-					return maxv_;
-				}
-
-				void setMaximum(int v) {
-					maxv_ = v;
-					if (value() > maxv_)
-						setValue(maxv_);
-					editor_->setValidator(new QIntValidator(minv_, maxv_, this));
-				}
+				virtual void setValues(const DataCollection& data);
+				virtual DataCollection getValues();
 
 			protected:
 				void resizeEvent(QResizeEvent* ev) override;
 				void changeEvent(QEvent* ev) override;
 
 			private:
+				int value() const ;
 				void doLayout();
 				void upButtonPressed();
 				void downButtonPressed();
@@ -75,8 +53,6 @@ namespace xero
 				QPushButton* up_;
 				QPushButton* down_;
 				QLabel* label_;
-				int minv_;
-				int maxv_;
 			};
 
 		}

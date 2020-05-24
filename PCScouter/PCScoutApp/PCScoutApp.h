@@ -22,6 +22,7 @@
 #include "TabletIdentity.h"
 #include "BluetoothClientTransport.h"
 #include "BluetoothConnectDialog.h"
+#include "FormInstance.h"
 #include <QMainWindow>
 #include <QMainWindow>
 #include <QSplitter>
@@ -193,4 +194,6 @@ private:
 
 	bool host_addr_valid_;
 	QHostAddress host_addr_;
+
+	std::map<QString, std::shared_ptr<xero::scouting::datamodel::FormInstance>> form_instances_;
 };

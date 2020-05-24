@@ -27,9 +27,6 @@
     <ClInclude Include="BooleanFormItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BooleanWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ChoiceFormItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -37,9 +34,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataModelTeam.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FormItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FormSection.h">
@@ -66,9 +60,6 @@
     <ClInclude Include="UpDownFormItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UpDownWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TabletIdentity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,11 +84,35 @@
     <ClInclude Include="GraphDescriptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DataCollection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FormInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FormItemDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FormItemDesc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BooleanItemDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChoiceItemDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NumericItemDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextItemDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UpDownItemDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BooleanWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ScoutingDatabase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -111,9 +126,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TabletAssigner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UpDownWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JSonDataModelConverter.cpp">
@@ -132,6 +144,27 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GraphDescriptorCollection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FormInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FormItemDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BooleanItemDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChoiceItemDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NumericItemDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextItemDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UpDownItemDisplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
