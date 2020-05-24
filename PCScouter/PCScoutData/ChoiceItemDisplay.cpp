@@ -12,18 +12,17 @@ namespace xero
 		{
 			ChoiceItemDisplay::ChoiceItemDisplay(const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(desc, parent)
 			{
-				QWidget* w = new QWidget();
 				QHBoxLayout* layout = new QHBoxLayout();
-				w->setLayout(layout);
+				setLayout(layout);
 
-				QLabel* label = new QLabel(desc->display(), w);
+				QLabel* label = new QLabel(desc->display(), this);
 				layout->addWidget(label);
 				QFont font = label->font();
 				font.setPointSizeF(16.0);
 				label->setFont(font);
 
 				const ChoiceFormItem* cdesc = dynamic_cast<const ChoiceFormItem*>(desc);
-				box_ = new QComboBox(parent);
+				box_ = new QComboBox(this);
 				layout->addWidget(box_);
 				for (const QString& choice : cdesc->choices())
 					box_->addItem(choice);

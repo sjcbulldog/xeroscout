@@ -76,6 +76,10 @@ PCScouter::PCScouter(QWidget *parent) : QMainWindow(parent)
 	app_controller_ = nullptr;
 	app_disabled_ = false;
 
+	QDate now = QDate::currentDate();
+	year_ = now.year();
+	processArguments();
+
 	createWindows();
 	createMenus();
 
@@ -108,16 +112,11 @@ PCScouter::PCScouter(QWidget *parent) : QMainWindow(parent)
 		top_bottom_splitter_->setSizes(sizes);
 	}
 
-	QDate now = QDate::currentDate();
-	year_ = now.year();
-
 	QString exedir = QCoreApplication::applicationDirPath();
 	QString imagepath = exedir + "/customdata.png";
 	QPixmap image(imagepath);
 	QIcon icon(image);
 	setWindowIcon(icon);
-
-	processArguments();
 
 	shutdown_client_connection_ = false;
 }

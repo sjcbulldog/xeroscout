@@ -92,7 +92,9 @@ namespace xero
 
 			void FormView::clearView()
 			{
-				instance_->clear();
+				if (instance_ != nullptr)
+					instance_->clear();
+
 				for (int i = 0; i < tabs_->count(); i++) {
 					delete tabs_->widget(i);
 				}

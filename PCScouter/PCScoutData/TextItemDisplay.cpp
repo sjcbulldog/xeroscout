@@ -11,11 +11,10 @@ namespace xero
 		{
 			TextItemDisplay::TextItemDisplay(const FormItemDesc* desc, QWidget* parent) : FormItemDisplay(desc, parent)
 			{
-				QWidget* w = new QWidget();
 				QHBoxLayout* layout = new QHBoxLayout();
-				w->setLayout(layout);
+				setLayout(layout);
 
-				QLabel* label = new QLabel(desc->display(), w);
+				QLabel* label = new QLabel(desc->display(), this);
 				layout->addWidget(label);
 				QFont font = label->font();
 				font.setPointSizeF(16.0);
@@ -23,12 +22,12 @@ namespace xero
 
 				auto tdesc = dynamic_cast<const TextFormItem *>(desc);
 
-				QLineEdit* edit = new QLineEdit(parent);
-				layout->addWidget(edit);
-				font = edit->font();
+				edit_ = new QLineEdit(this);
+				layout->addWidget(edit_);
+				font = edit_->font();
 				font.setPointSizeF(16.0);
-				edit->setFont(font);
-				edit->setMaxLength(tdesc->maxLen());
+				edit_->setFont(font);
+				edit_->setMaxLength(tdesc->maxLen());
 			}
 
 			TextItemDisplay::~TextItemDisplay()
