@@ -94,6 +94,7 @@
     <ClCompile Include="DataMergeListWidget.cpp" />
     <ClCompile Include="DataSetViewWidget.cpp" />
     <ClCompile Include="DocumentView.cpp" />
+    <ClCompile Include="ExpressionsEntryDialog.cpp" />
     <ClCompile Include="FlowLayout.cpp" />
     <ClCompile Include="FormView.cpp" />
     <ClCompile Include="GameFieldManager.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="AllianceGraphView.h" />
     <ClInclude Include="ChangeHistoryView.h" />
     <ClInclude Include="ChartViewWrapper.h" />
+    <ClInclude Include="ExpressionsEntryDialog.h" />
     <ClInclude Include="GameField.h" />
     <ClInclude Include="GameFieldManager.h" />
     <ClInclude Include="GraphConfigurationDialog.h" />

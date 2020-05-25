@@ -12,26 +12,33 @@ namespace xero
 			class ScoutDataExprContext : public xero::expr::ExprContext
 			{
 			public:
-				ScoutDataExprContext(ScoutingDataMapPtr dm) {
+				ScoutDataExprContext(const QStringList &names) {
+					vars_ = names;
+				}
+
+				void addValues(ScoutingDataMapPtr dm) {
 					dm_ = dm;
 				}
 
 				virtual bool isValidVariable(const QString& name) {
-					auto it = dm_->find(name);
-					return it != dm_->end();
+					return vars_.contains(name);
 				}
 
 				virtual QVariant getVariable(const QString& name) {
 					QVariant ret;
 
-					auto it = dm_->find(name);
-					if (it != dm_->end())
-						ret = it->second;
+					if (dm_ != nullptr)
+					{
+						auto it = dm_->find(name);
+						if (it != dm_->end())
+							ret = it->second;
+					}
 
 					return ret;
 				}
 
 			private:
+				QStringList vars_;
 				ScoutingDataMapPtr dm_;
 			};
 		}

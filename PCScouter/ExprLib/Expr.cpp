@@ -4,6 +4,8 @@
 #include "ExprConst.h"
 #include "ExprVariable.h"
 #include <QRegExp>
+#include <QDebug>
+#include <stack>
 
 namespace xero
 {
@@ -22,10 +24,10 @@ namespace xero
 			return top_->toString();
 		}
 
-		bool Expr::parse(ExprContext &ctxt, const QString& text, QString& err)
+		bool Expr::parse(ExprContext& ctxt, const QString& txt, QString& err)
 		{
 			int index = 0;
-			top_ = parseSubExpr(ctxt, text, index, err);
+			top_ = parseSubExpr(ctxt, txt, index, err);
 			if (top_ == nullptr)
 				return false;
 
@@ -40,13 +42,14 @@ namespace xero
 
 		std::shared_ptr<ExprNode> Expr::parseSubExpr(ExprContext& context, const QString& txt, int& index, QString& err)
 		{
+			std::stack<std::shared_ptr<ExprNode>> operands;
+			std::stack<std::shared_ptr<ExprOperator>> operators;
 			std::shared_ptr<ExprNode> operand1, operand2;
-			std::shared_ptr<ExprOperator> oper1, oper2;
-			std::shared_ptr<ExprNode> top;
+			std::shared_ptr<ExprOperator> op1, op2;
 
 			if (index == txt.length())
 			{
-				err = "unexpected and of string";
+				err = "unexpected end of string";
 				return nullptr;
 			}
 
@@ -54,15 +57,15 @@ namespace xero
 			if (operand1 == nullptr)
 				return nullptr;
 
-			oper1 = parseOper(context, txt, index, err);
-			if (oper1 == nullptr)
+			operands.push(operand1);
+
+			op1 = parseOper(context, txt, index, err);
+			if (op1 == nullptr)
 			{
 				err.clear();
 				return operand1;
 			}
-
-			top = oper1;
-			oper1->addNode(operand1);
+			operators.push(op1);
 
 			while (true)
 			{
@@ -70,30 +73,44 @@ namespace xero
 				if (operand2 == nullptr)
 					return nullptr;
 
-				oper2 = parseOper(context, txt, index, err);
-				if (oper2 == nullptr)
+				operands.push(operand2);
+
+				op2 = parseOper(context, txt, index, err);
+				if (op2 == nullptr)
 				{
+					while (operators.size() > 0)
+						reduce(operands, operators);
+
+					operand1 = operands.top();
 					err.clear();
-					oper1->addNode(operand2);
-					return oper1;
+					return operand1;
 				}
 
-				if (oper1->prec() > oper2->prec())
+				while (operators.size() > 0)
 				{
-					oper1->addNode(operand2);
-					oper2->addNode(oper1);
-					oper1 = oper2;
+					op1 = operators.top();
+					if (op1->prec() < op2->prec())
+						break;
+
+					reduce(operands, operators);
 				}
-				else
-				{
-					oper1->addNode(operand2);
-					oper2->addNode(top);
-					oper1 = oper2;
-					top = oper1;
-				}
+
+				operators.push(op2);
 			}
 
 			return nullptr;
+		}
+
+		void Expr::reduce(std::stack<std::shared_ptr<ExprNode>> &operands, std::stack<std::shared_ptr<ExprOperator>>& operators)
+		{
+			auto op1 = operators.top();
+			operators.pop();
+
+			op1->addNode(operands.top());
+			operands.pop();
+			op1->addNode(operands.top());
+			operands.pop();
+			operands.push(op1);
 		}
 
 		std::shared_ptr<ExprNode> Expr::parseNode(ExprContext& context, const QString& txt, int& index, QString& err)

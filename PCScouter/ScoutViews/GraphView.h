@@ -4,6 +4,7 @@
 #include "ViewBase.h"
 #include "GraphDescriptor.h"
 #include "ChartViewWrapper.h"
+#include "ScoutDataExprContext.h"
 #include <QWidget>
 #include <QComboBox>
 #include <QChartView>
@@ -65,6 +66,7 @@ namespace xero
 				void removeVariable(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane, const QString& var);
 				void setRange(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
 				void deletePane(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
+				void addExpr(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
 
 			private:
 				QGroupBox* top_;

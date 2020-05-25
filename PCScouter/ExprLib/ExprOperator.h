@@ -27,7 +27,7 @@ namespace xero
 			virtual void allVariables(QStringList& list);
 
 			void addNode(std::shared_ptr<ExprNode> node) {
-				nodes_.push_back(node);
+				nodes_.insert(nodes_.begin(), node);
 			}
 
 			int prec();

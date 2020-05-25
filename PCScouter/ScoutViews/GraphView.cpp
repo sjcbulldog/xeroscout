@@ -3,6 +3,7 @@
 #include "ChartViewWrapper.h"
 #include "Expr.h"
 #include "ScoutDataExprContext.h"
+#include "ExpressionsEntryDialog.h"
 #include <QBoxLayout>
 #include <QBarSet>
 #include <QBarSeries>
@@ -14,6 +15,7 @@
 #include <QPushButton>
 #include <QMenu>
 #include <QInputDialog>
+#include <QMessageBox>
 
 using namespace QtCharts;
 using namespace xero::expr;
@@ -100,6 +102,31 @@ namespace xero
 				dataModel()->updateGraphDescriptor(desc_);
 			}
 
+			void GraphView::addExpr(std::shared_ptr<GraphDescriptor::GraphPane> pane)
+			{
+				bool ok;
+
+				ExpressionsEntryDialog dialog(dataModel()->getAllFieldNames(), this);
+				if (dialog.exec() == QDialog::Accepted)
+				{
+					ScoutDataExprContext ctxt(dataModel()->getAllFieldNames());
+					Expr e;
+					QString err;
+
+					if (!e.parse(ctxt, dialog.expr(), err))
+					{
+						err = "Expressions Error - " + err;
+						QMessageBox::critical(this, "Expressions Error", err);
+						return;
+					}
+
+					pane->addX(dialog.expr());
+
+					refreshCharts();
+					dataModel()->updateGraphDescriptor(desc_);
+				}
+			}
+
 			void GraphView::removeVariable(std::shared_ptr<GraphDescriptor::GraphPane> pane, const QString& var)
 			{
 				pane->removeX(var);
@@ -166,10 +193,14 @@ namespace xero
 
 					if (view != nullptr)
 					{
+						auto cb = std::bind(&GraphView::addExpr, this, pane);
+						act = menu->addAction("Add Expressions");
+						connect(act, &QAction::triggered, this, cb);
+
 						const QStringList& x = pane->x();
 						QMenu* sub = new QMenu("Add Variable");
 
-						QStringList list = dataModel()->getMatchFieldNames();
+						QStringList list = dataModel()->getAllFieldNames();
 						for (const QString& field : list)
 						{
 							if (!x.contains(field))
@@ -195,7 +226,7 @@ namespace xero
 							menu->addMenu(sub);
 						}
 
-						auto cb = std::bind(&GraphView::setRange, this, pane);
+						cb = std::bind(&GraphView::setRange, this, pane);
 						act = menu->addAction("Set Range");
 						connect(act, &QAction::triggered, this, cb);
 					}
@@ -344,32 +375,29 @@ namespace xero
 				}
 			}
 
-			bool GraphView::getData(std::map<QString, std::vector<QVariant>>& data, const QStringList& teams, const QStringList& vars)
+			bool GraphView::getData(std::map<QString, std::vector<QVariant>>& data, const QStringList& teams, const QStringList& exprlist)
 			{
-				assert(false); // Pass in this context
-				ScoutDataExprContext ctxt(nullptr);
 				ScoutingDataSet ds;
 				QString err;
+				ScoutDataExprContext ctxt(dataModel()->getAllFieldNames());
+				QStringList matchfields = dataModel()->getMatchFieldNames();
+				ScoutingDataMapPtr varvalues = std::make_shared<ScoutingDataMap>();
 
 				data.clear();
 				for (const QString& team : teams)
 				{
-					QStringList fields = dataModel()->getMatchFieldNames();
-
 					std::vector<std::shared_ptr<Expr>> exprs;
 					QStringList allused;
 
 					//
 					// Create the expressions and get the fields needed
 					//
-					for (const QString& exprtxt : vars)
+					for (const QString& exprtxt : exprlist)
 					{
 						//
 						// Parse expressions against all fields
 						//
 						auto expr = std::make_shared<Expr>();
-						QString err;
-
 						if (!expr->parse(ctxt, exprtxt, err))
 						{
 							// Return error message to the user
@@ -383,44 +411,98 @@ namespace xero
 								allused.push_back(var);
 						}
 
+						exprs.push_back(expr);
 					}
 
+
 					//
-					// Query for the field values across all matches
+					// For the match fields, find the averages we need
 					//
 					QString query;
 					ds.clear();
 					query = "SELECT ";
+					int count = 0;
 					for (int i = 0; i < allused.count(); i++)
 					{
+						const QString var = allused.at(i);
+						if (!matchfields.contains(var))
+							continue;
+
 						if (i != 0)
 							query += ",";
 
 						query += allused.at(i);
+						count++;
 					}
-					query += " from matches where TeamKey='" + team + "'";
-					if (!dataModel()->createCustomDataSet(ds, query, err))
+					if (count > 0)
 					{
-						// This should never happen
-						data.clear();
-						return false ;
+						query += " from matches where TeamKey='" + team + "'";
+						if (!dataModel()->createCustomDataSet(ds, query, err))
+						{
+							// This should never happen
+							data.clear();
+							return false;
+						}
+
+						//
+						// Now, compute averages for all of the fields we needed
+						//
+
+						for (int i = 0; i < ds.columnCount(); i++)
+						{
+							double total = 0.0;
+							for (int row = 0; row < ds.rowCount(); row++)
+								total += ds.get(row, i).toDouble();
+
+							varvalues->insert_or_assign(ds.headers().at(i), QVariant(total / ds.rowCount()));
+						}
 					}
 
 					//
-					// Now, compute averages for all of the fields we needed
+					// Now, append the pit data elements to the set
 					//
-					ScoutingDataMapPtr averages = std::make_shared<ScoutingDataMap>();
+					query.clear();
+					ds.clear();
+					query = "SELECT ";
+					count = 0;
 					for (int i = 0; i < allused.count(); i++)
 					{
-						double total = 0.0;
-						for (int row = 0; row < ds.rowCount(); row++)
-							total += ds.get(row, i).toDouble();
+						const QString var = allused.at(i);
+						if (matchfields.contains(var))
+							continue;
 
-						averages->insert_or_assign(allused.at(i), QVariant(total / ds.rowCount()));
+						if (i != 0)
+							query += ",";
+
+						query += allused.at(i);
+						count++;
 					}
 
+					if (count > 0)
+					{
+						query += " from pits where TeamKey='" + team + "'";
+						if (!dataModel()->createCustomDataSet(ds, query, err))
+						{
+							// This should never happen
+							data.clear();
+							return false;
+						}
+
+						//
+						// This data set contains the pit values, should be a single row
+						//
+						for (int i = 0; i < ds.columnCount(); i++)
+						{
+							double total = 0.0;
+							for (int row = 0; row < ds.rowCount(); row++)
+								total += ds.get(row, i).toDouble();
+
+							varvalues->insert_or_assign(ds.headers().at(i), QVariant(total / ds.rowCount()));
+						}
+					}
+
+					ctxt.addValues(varvalues);
 					std::vector<QVariant> values;
-					ScoutDataExprContext ctxt(averages);
 					for (auto e : exprs)
 					{
 						QVariant v = e->eval(ctxt);
