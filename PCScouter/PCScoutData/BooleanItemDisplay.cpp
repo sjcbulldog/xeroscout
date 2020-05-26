@@ -27,7 +27,7 @@ namespace xero
 		namespace datamodel
 		{
 
-			BooleanItemDisplay::BooleanItemDisplay(const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(desc, parent)
+			BooleanItemDisplay::BooleanItemDisplay(ImageSupplier& images, const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(images, desc, parent)
 			{
 				QFontMetrics fm(font());
 				int width = fm.horizontalAdvance(desc->display());

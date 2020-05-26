@@ -12,7 +12,7 @@ namespace xero
 			class ChoiceItemDisplay : public FormItemDisplay
 			{
 			public:
-				ChoiceItemDisplay(const FormItemDesc *desc, QWidget *parent);
+				ChoiceItemDisplay(ImageSupplier& images, const FormItemDesc *desc, QWidget *parent);
 				virtual ~ChoiceItemDisplay();
 
 				virtual void setValues(const DataCollection& data);

@@ -27,7 +27,7 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			UpDownItemDisplay::UpDownItemDisplay(const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(desc, parent)
+			UpDownItemDisplay::UpDownItemDisplay(ImageSupplier& images, const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(images, desc, parent)
 			{
 				label_ = new QLabel(desc->display(), this);
 

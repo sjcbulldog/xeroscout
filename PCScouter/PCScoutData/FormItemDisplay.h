@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ImageSupplier.h"
 #include "DataCollection.h"
 #include "FormItemDesc.h"
 #include <QWidget>
@@ -13,7 +14,7 @@ namespace xero
 			class FormItemDisplay : public QWidget
 			{
 			public:
-				FormItemDisplay(const FormItemDesc *desc, QWidget* parent);
+				FormItemDisplay(ImageSupplier &images, const FormItemDesc *desc, QWidget* parent);
 				virtual ~FormItemDisplay();
 
 				virtual void setValues(const DataCollection& data) = 0;
@@ -23,8 +24,14 @@ namespace xero
 					return desc_;
 				}
 
+			protected:
+				ImageSupplier& images() {
+					return images_;
+				}
+
 			private:
 				const FormItemDesc * desc_;
+				ImageSupplier& images_;
 			};
 		}
 	}

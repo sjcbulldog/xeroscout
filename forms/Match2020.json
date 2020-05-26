@@ -7,14 +7,8 @@
         {
           "type": "text",
           "name": "Scouter",
-          "tag": "scouter",
+          "tag": "match_scouter",
           "maxlen": 32
-        },
-        {
-          "type": "choice",
-          "choices": [ "Far Left", "Left", "Right", "Center" ],
-          "tag": "starting_position",
-          "name": "Starting Position"
         }
       ]
     },
@@ -22,29 +16,132 @@
       "name": "Autonomous",
       "items": [
         {
-          "type": "boolean",
-          "tag": "auto_line",
-          "name": "Auto Line"
-        },
-        {
-          "type": "updown",
-          "tag": "auto_balls_high",
-          "name": "Balls High",
-          "minimum": 0,
-          "maximum": 16
-        },
-        {
-          "type": "updown",
-          "tag": "auto_balls_low",
-          "name": "Balls Low",
-          "minimum": 0,
-          "maximum": 16
+          "alliance": "red",
+          "type": "image",
+          "image": "2020-field.jpg",
+          "tag": "auto",
+          "name": "AutoMode",
+          "scale" : 0.80,
+          "publishitems" : [
+            {
+              "tag": "gathered",
+              "type" : "sum",
+              "imageitems" : ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12"]
+            }
+          ],
+          "imageitems": [
+            {
+              "imageitemtype": "choice",
+              "tag": "starting_postion",
+              "value": "farleft",
+              "position": [ "bounds", 870, 0, 1050, 100 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "starting_postion",
+              "value": "left",
+              "position": [ "bounds", 870, 275, 1050, 375 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "starting_postion",
+              "value": "center",
+              "position": [ "bounds", 870, 380, 1050, 485 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "starting_postion",
+              "value": "right",
+              "position": [ "bounds", 870, 500, 1050, 600 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b1",
+              "position": [ "centersize", 719, 34, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b2",
+              "position": [ "centersize", 719, 69, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b3",
+              "position": [ "centersize", 736, 274, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b4",
+              "position": [ "centersize", 749, 302, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b5",
+              "position": [ "centersize", 761, 331, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b6",
+              "position": [ "centersize", 747, 377, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b7",
+              "position": [ "centersize", 719, 389, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b8",
+              "position": [ "centersize", 733, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b9",
+              "position": [ "centersize", 666, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b10",
+              "position": [ "centersize", 600, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b11",
+              "position": [ "centersize", 480, 534, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b12",
+              "position": [ "centersize", 480, 567, 30, 30 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "highgoal",
+              "minimum" : 0,
+              "maximum" : 20,
+              "position": [ "bounds", 1120, 378, 1199, 470 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "lowgoal",
+              "minimum" : 0,
+              "maximum" : 20,
+              "position": [ "bounds", 1120, 278, 1199, 376 ]
+            }
+          ]
         }
       ]
     },
     {
       "name": "Teleop",
       "items": [
+        {
+          "type": "timercnt",
+          "tag": "ball_cycle",
+          "name": "Ball Cycle",
+          "minimum": 0,
+          "maximum": 20
+        },
         {
           "type": "updown",
           "tag": "teleop_balls_high",

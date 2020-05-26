@@ -1,0 +1,187 @@
+[
+  {
+    "tag": "match_scouter",
+    "type": "choice",
+    "choices": [ "Isaac", "Daniel", "Kullen", "Aditi", "Anthony", "Cameron", "Helene", "Kateyln", "Carlos", "Jack" ],
+    "profile": [ 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 ]
+  },
+  {
+    "tag": "starting_position",
+    "type": "choice",
+    "choices": [ "Far Left", "Left", "Right", "Center" ],
+    "profile": [ 0.16666666, 0.16666666, 0.33333333, 0.33333333 ]
+  },
+  {
+    "tag": "auto_line",
+    "type": "boolean",
+    "true": 0.9
+  },
+  {
+    "tag": "auto_balls_high",
+    "type": "numeric",
+    "mean": 3.0,
+    "stddev": 5.0
+  },
+  {
+    "tag": "auto_balls_low",
+    "type": "numeric",
+    "mean": 1.0,
+    "stddev": 3.0
+  },
+  {
+    "tag": "teleop_balls_high",
+    "type": "numeric",
+    "mean": 10.0,
+    "stddev": 10.0
+  },
+  {
+    "tag": "teleop_balls_low",
+    "type": "numeric",
+    "mean": 3.0,
+    "stddev": 1.0
+  },
+  {
+    "tag": "teleop_balls_ejected",
+    "type": "numeric",
+    "mean": 1.0,
+    "stddev": 1.0
+  },
+  {
+    "tag": "teleop_rotate_wheel",
+    "type": "boolean",
+    "true": 0.05
+  },
+  {
+    "tag": "teleop_position_wheel",
+    "type": "boolean",
+    "true": 0.001
+  },
+  {
+    "tag": "endgame_parked",
+    "type": "boolean",
+    "true": 0.8
+  },
+  {
+    "tag": "endgame_climbed",
+    "type": "boolean",
+    "true": 0.5
+  },
+  {
+    "tag": "endgame_level",
+    "type": "boolean",
+    "true": 0.3
+  },
+  {
+    "tag": "endgame_assists",
+    "type": "numeric",
+    "mean": 0.5,
+    "stddev": 0.5
+  },
+  {
+    "tag": "general_brownout",
+    "type": "boolean",
+    "true": 0.01
+  },
+  {
+    "tag": "general_breakdown",
+    "type": "boolean",
+    "true": 0.10
+  },
+  {
+    "tag": "pit_scouter",
+    "type": "choice",
+    "choices": [ "Shelby", "Gavin" ],
+    "profile": [ 0.5, 0.5 ]
+  },
+  {
+    "tag": "pit_weight",
+    "type": "numeric",
+    "mean": 145.0,
+    "stddev": 15.0
+  },
+  {
+    "tag": "pit_language",
+    "type": "choice",
+    "choices": [ "C++", "Java", "LV", "Python", "Other" ],
+    "profile": [ 0.25, 0.50, 0.20, 0.05, 0.0 ]
+  },
+  {
+    "tag": "cpanel_under",
+    "type": "boolean",
+    "true": 0.8
+  },
+  {
+    "tag": "cpanel_rotate",
+    "type": "boolean",
+    "true": 0.2
+  },
+  {
+    "tag": "cpanel_position",
+    "type": "boolean",
+    "true": 0.05
+  },
+  {
+    "tag": "collect_ground",
+    "type": "boolean",
+    "true": 0.90
+  },
+  {
+    "tag": "score_lowgoal",
+    "type": "boolean",
+    "true": 0.70
+  },
+  {
+    "tag": "score_highgoal",
+    "type": "boolean",
+    "true": 0.80
+  },
+  {
+    "tag": "score_trench",
+    "type": "boolean",
+    "true": 0.30
+  },
+  {
+    "tag": "auto_perferred_start_pos",
+    "type": "choice",
+    "choices": [ "Far Left", "Left", "Right", "Center" ],
+    "profile": [ 0.16666666, 0.16666666, 0.33333333, 0.33333333 ]
+  },
+  {
+    "tag": "auto_max_low",
+    "type": "numeric",
+    "mean": 3.0,
+    "stddev": 1.0
+  },
+  {
+    "tag": "auto_max_high",
+    "type": "numeric",
+    "mean": 4.0,
+    "stddev": 4.0
+  },
+  {
+    "tag": "climb_center",
+    "type": "boolean",
+    "true": 0.30
+  },
+  {
+    "tag": "climb_sides",
+    "type": "boolean",
+    "true": 0.65
+  },
+  {
+    "tag": "climb_tilt",
+    "type": "boolean",
+    "true": 0.40
+  },
+  {
+    "tag": "climb_leveler",
+    "type": "boolean",
+    "true": 0.05
+  },
+  {
+    "tag": "climb_assists",
+    "type": "numeric",
+    "mean": 0.0,
+    "stddev": 0.1
+  }
+]

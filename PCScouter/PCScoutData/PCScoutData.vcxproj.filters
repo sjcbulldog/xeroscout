@@ -51,9 +51,6 @@
     <ClInclude Include="ScoutingDataSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScoutingForm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TabletAssigner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -120,6 +117,30 @@
     <ClInclude Include="ScoutDataExprContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImageFormItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFormCountSubItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFormOnOffSubitem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFormSubItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageItemPublishInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoutingForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageItemDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageSupplier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoutingDatabase.cpp">
@@ -180,6 +201,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StartStopWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageFormItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageItemDisplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

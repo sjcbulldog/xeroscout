@@ -11,7 +11,7 @@ namespace xero
 			class NumericItemDisplay :public FormItemDisplay
 			{
 			public:
-				NumericItemDisplay(const FormItemDesc *desc, QWidget* parent);
+				NumericItemDisplay(ImageSupplier& images, const FormItemDesc *desc, QWidget* parent);
 				virtual ~NumericItemDisplay();
 
 				virtual void setValues(const DataCollection& data);

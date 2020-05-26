@@ -32,7 +32,7 @@ namespace xero
 			class UpDownItemDisplay : public FormItemDisplay
 			{
 			public:
-				UpDownItemDisplay(const FormItemDesc *desc, QWidget* parent);
+				UpDownItemDisplay(ImageSupplier& images, const FormItemDesc *desc, QWidget* parent);
 				virtual ~UpDownItemDisplay();
 
 				virtual void setValues(const DataCollection& data);

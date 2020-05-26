@@ -21,6 +21,7 @@
 #include "ScoutingForm.h"
 #include "ScoutingDataMap.h"
 #include "FormInstance.h"
+#include "ImageManager.h"
 #include <QTabWidget>
 #include <QLabel>
 
@@ -35,10 +36,10 @@ namespace xero
 				Q_OBJECT
 
 			public:
-				FormView(QString name, QString title, QColor c, QWidget* parent = Q_NULLPTR);
+				FormView(ImageManager &images, QString name, QString title, QColor c, QWidget* parent = Q_NULLPTR);
 				virtual ~FormView();
 
-				void setScoutingForm(std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form);
+				void setScoutingForm(std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form, const QString& alliance);
 				void clearView();
 				void refreshView() {
 				}
@@ -60,9 +61,12 @@ namespace xero
 				QString title_txt_;
 				QString name_;
 				QLabel* titles_;
+				QString alliance_;
 
 				std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form_;
 				std::shared_ptr<xero::scouting::datamodel::FormInstance> instance_;
+
+				ImageManager& images_;
 			};
 		}
 	}

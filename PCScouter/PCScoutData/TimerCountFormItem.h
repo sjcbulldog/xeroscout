@@ -19,10 +19,10 @@ namespace xero
 			public:
 				TimerCountFormItem(const QString& display, const QString& tag, int minv, int maxv) : FormItemDesc(display, tag)
 				{
-					addField(std::make_pair(genComplexName(tag, CompletedTimeField), QVariant::Double));
-					addField(std::make_pair(genComplexName(tag, CompletedCountField), QVariant::Int));
-					addField(std::make_pair(genComplexName(tag, AbandonedTimeField), QVariant::Double));
-					addField(std::make_pair(genComplexName(tag, AbandonedCountField), QVariant::Int));
+					addField(std::make_pair(genComplexName(tag, CompletedTimeField), QVariant::Type::Double));
+					addField(std::make_pair(genComplexName(tag, CompletedCountField), QVariant::Type::Int));
+					addField(std::make_pair(genComplexName(tag, AbandonedTimeField), QVariant::Type::Double));
+					addField(std::make_pair(genComplexName(tag, AbandonedCountField), QVariant::Type::Int));
 					minv_ = minv;
 					maxv_ = maxv;
 				}
@@ -38,21 +38,21 @@ namespace xero
 					QVariant v = profile.generateRandomInteger(tag() + FormItemDesc::FieldSeperator + CompletedCountField, minv_, maxv_);
 					d.add(genComplexName(tag(), CompletedCountField), v);
 
-					v = profile.generateRandomReal(tag() + ":" + CompletedTimeField, 0.0, 180.0);
+					v = profile.generateRandomReal(genComplexName(tag(), CompletedTimeField), 0.0, 180.0);
 					d.add(genComplexName(tag(), CompletedTimeField), v);
 
-					v = profile.generateRandomInteger(tag() + ":" + AbandonedCountField, minv_, maxv_);
+					v = profile.generateRandomInteger(genComplexName(tag(), AbandonedCountField), minv_, maxv_);
 					d.add(genComplexName(tag(), AbandonedCountField), v);
 
-					v = profile.generateRandomReal(tag() + ":" + AbandonedTimeField, 0.0, 180.0);
+					v = profile.generateRandomReal(genComplexName(tag(), AbandonedTimeField), 0.0, 180.0);
 					d.add(genComplexName(tag(), AbandonedTimeField), v);
 
 					return d;
 				}
 
-				virtual FormItemDisplay* createDisplay(QWidget* parent) const
+				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const
 				{
-					return new TimerCountItemDisplay(this, parent);
+					return new TimerCountItemDisplay(images, this, parent);
 				}
 
 			private:

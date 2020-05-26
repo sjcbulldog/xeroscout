@@ -79,7 +79,7 @@ private:
 	bool viewExists(int index);
 
 	void viewItemDoubleClicked(xero::scouting::views::DocumentView::ViewType type, const QString& key);
-	int startScouting(const QString &key, const QString &type, const QString &title, QColor c, std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form);
+	int startScouting(const QString &key, const QString &type, const QString &title, xero::scouting::datamodel::DataModelMatch::Alliance c, std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form);
 
 	void extractDataFromForm(int formindex, const QString &label);
 

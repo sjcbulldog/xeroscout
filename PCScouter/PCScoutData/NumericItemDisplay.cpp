@@ -11,7 +11,7 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			NumericItemDisplay::NumericItemDisplay(const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(desc, parent)
+			NumericItemDisplay::NumericItemDisplay(ImageSupplier &images, const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(images, desc, parent)
 			{
 				QWidget* w = new QWidget();
 				QHBoxLayout* layout = new QHBoxLayout();

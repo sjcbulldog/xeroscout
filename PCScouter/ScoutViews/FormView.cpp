@@ -28,7 +28,7 @@ namespace xero
 	{
 		namespace views
 		{
-			FormView::FormView(QString name, QString title, QColor titlec, QWidget* parent) : QWidget(parent)
+			FormView::FormView(ImageManager& images, QString name, QString title, QColor titlec, QWidget* parent) : QWidget(parent), images_(images)
 			{
 				name_ = name;
 				title_txt_ = title;
@@ -70,16 +70,21 @@ namespace xero
 				tab->setLayout(layout);
 
 				for (auto item : section->items()) {
-					FormItemDisplay* w = item->createDisplay(this);
-					layout->addWidget(w);
-					instance_->addDisplayItem(item->tag(), w);
+					if (alliance_.length() == 0 || item->alliance() == alliance_ || item->alliance().length() == 0)
+					{
+						FormItemDisplay* w = item->createDisplay(images_, this);
+						layout->addWidget(w);
+						instance_->addDisplayItem(item->tag(), w);
+					}
 				}
 
 				tabs_->addTab(tab, section->name());
 			}
 
-			void FormView::setScoutingForm(std::shared_ptr<const ScoutingForm> form)
+			void FormView::setScoutingForm(std::shared_ptr<const ScoutingForm> form, const QString &alliance)
 			{
+				alliance_ = alliance;
+
 				clearView();
 
 				form_ = form;

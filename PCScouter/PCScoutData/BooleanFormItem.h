@@ -46,9 +46,9 @@ namespace xero
 					return d;
 				}
 
-				virtual FormItemDisplay* createDisplay(QWidget *parent) const
+				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget *parent) const
 				{
-					return new BooleanItemDisplay(this, parent);
+					return new BooleanItemDisplay(images, this, parent);
 				}
 			};
 		}

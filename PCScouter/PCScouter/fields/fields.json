@@ -8,8 +8,8 @@
 	"image" : "2019-field.jpg"
     },
     {
-	"descriptor" : "2020-infinte.json",
-	"image" : "2020-field.jpg"
+	"descriptor" : "2020-infinte-official.json",
+	"image" : "2020-field-official.jpg"
     },
     {
 	"descriptor" : "empty-field.json",

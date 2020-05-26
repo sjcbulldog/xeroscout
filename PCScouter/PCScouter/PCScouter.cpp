@@ -210,6 +210,16 @@ void PCScouter::closeEvent(QCloseEvent* ev)
 	settings_.setValue(TopBottomSplitterSettings, stored);
 }
 
+void PCScouter::logMessage(const QString& msg)
+{
+	logwin_->append(msg);
+}
+
+void PCScouter::errorMessage(const QString& msg)
+{
+	QMessageBox::critical(this, "Error", msg);
+}
+
 void PCScouter::createWindows()
 {
 	QListWidgetItem* item;
@@ -766,6 +776,8 @@ void PCScouter::newEventBA()
 
 	app_controller_ = new NewEventAppController(blue_alliance_, tablets, year_);
 	(void)connect(app_controller_, &NewEventAppController::complete, this, &PCScouter::newEventComplete);
+	(void)connect(app_controller_, &ApplicationController::logMessage, this, &PCScouter::logMessage);
+	(void)connect(app_controller_, &ApplicationController::errorMessage, this, &PCScouter::errorMessage);
 }
 
 void PCScouter::openEvent()
@@ -874,7 +886,7 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 			if (ds->needsRefresh())
 			{
 				qDebug() << "PitScoutingFormView - refresh";
-				ds->setScoutingForm(data_model_->pitScoutingForm());
+				ds->setScoutingForm(data_model_->pitScoutingForm(), "");
 				ds->clearNeedRefresh();
 			}
 		}
@@ -886,7 +898,7 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
 			{
-				ds->setScoutingForm(data_model_->matchScoutingForm());
+				ds->setScoutingForm(data_model_->matchScoutingForm(), "red");
 				ds->clearNeedRefresh();
 			}
 		}

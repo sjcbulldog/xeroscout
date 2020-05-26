@@ -6,7 +6,7 @@
       "items": [
         {
           "type": "text",
-          "tag": "scouter",
+          "tag": "pit_scouter",
           "name": "Scouter",
           "maxlen": 32
         },
@@ -77,7 +77,7 @@
         },
         {
           "type": "updown",
-          "tag": "db_falcoms",
+          "tag": "db_falcons",
           "name": "Falcons",
           "minimum": 0,
           "maximum": 8

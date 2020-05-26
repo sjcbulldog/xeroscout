@@ -525,7 +525,6 @@ namespace xero
 				QBarSeries* series = new QBarSeries();
 
 				int cnt = 0;
-				qDebug() << "New Graph";
 				for(int i = 0 ; i < pane->x().size() ; i++)
 				{
 					QString var = pane->x()[i];

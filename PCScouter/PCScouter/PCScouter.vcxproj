@@ -42,11 +42,11 @@
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QtInstall>msvc2017_64_5_14_2_</QtInstall>
+    <QtInstall>msvc2017_64_14_2_1_</QtInstall>
     <QtModules>bluetooth;charts;core;datavisualization;gui;network;printsupport;sql;webengine;webenginewidgets;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>msvc2017_64_5_14_2_</QtInstall>
+    <QtInstall>msvc2017_64_14_2_1_</QtInstall>
     <QtModules>bluetooth;charts;core;datavisualization;gui;network;printsupport;sql;webengine;webenginewidgets;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
@@ -70,8 +70,8 @@
     </Link>
     <PostBuildEvent>
       <Command>mkdir $(OutDir)\fields
-copy fields\*.* $(OutDir)\fields
-copy $(ProjectDir)*.png $(OutDir)
+copy $(ProjectDir)fields\*.* $(OutDir)\fields
+copy $(ProjectDir)images\*.* $(OutDir)
 $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe
 copy $(QTDIR)\bin\Qt5Sql.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Charts.dll $(OutDir)
@@ -103,8 +103,8 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
     </Link>
     <PostBuildEvent>
       <Command>mkdir $(OutDir)\fields
-copy fields\*.* $(OutDir)\fields
-copy $(ProjectDir)*.png $(OutDir)
+copy $(ProjectDir)fields\*.* $(OutDir)\fields
+copy $(ProjectDir)images\*.* $(OutDir)
 $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe
 copy $(QTDIR)\bin\Qt5Sql.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Charts.dll $(OutDir)

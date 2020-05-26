@@ -294,17 +294,19 @@ void PCScoutApp::setupViews()
 {
 	FormView* view;
 
+#ifdef NOTYET
 	view = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::PitScoutingFormView));
 	if (data_model_->pitScoutingForm() != nullptr)
-		view->setScoutingForm(data_model_->pitScoutingForm());
+		view->setScoutingForm(data_model_->pitScoutingForm(), "");
 	else
 		view->clearView();
 
 	view = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormView));
 	if (data_model_->matchScoutingForm() != nullptr)
-		view->setScoutingForm(data_model_->matchScoutingForm());
+		view->setScoutingForm(data_model_->matchScoutingForm(), "red");
 	else
 		view->clearView();
+#endif
 
 	PitScheduleViewWidget* tv = dynamic_cast<PitScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
 	std::list<std::shared_ptr<const DataModelTeam>> teams;
@@ -923,7 +925,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 		auto team = data_model_->findTeamByKey(key);
 		QString title = generatePitTitle(team);
 
-		index = startScouting(key, "pit", title, QColor(0, 128, 0, 255), data_model_->pitScoutingForm());
+		index = startScouting(key, "pit", title, DataModelMatch::Alliance::Red, data_model_->pitScoutingForm());
 		saveForm(index);
 
 		PitScheduleViewWidget* w = dynamic_cast<PitScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
@@ -939,14 +941,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 		auto team = data_model_->findTeamByKey(m->team(c, slot));
 
 		QString title = generateMatchTitle(m, team);
-		QColor color;
-
-		if (c == DataModelMatch::Alliance::Red)
-			color = QColor(255, 0, 0, 255);
-		else
-			color = QColor(0, 0, 255, 255);
-
-		index = startScouting(key, "match", title , color, data_model_->matchScoutingForm());
+		index = startScouting(key, "match", title , c, data_model_->matchScoutingForm());
 		saveForm(index);
 
 		MatchViewWidget* w = dynamic_cast<MatchViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchView));
@@ -991,15 +986,23 @@ bool PCScoutApp::viewExists(int viewindex)
 	return ret;
 }
 
-int PCScoutApp::startScouting(const QString& key, const QString &type, const QString &title, QColor c, std::shared_ptr<const ScoutingForm> form)
+int PCScoutApp::startScouting(const QString& key, const QString &type, const QString &title, DataModelMatch::Alliance c, std::shared_ptr<const ScoutingForm> form)
 {
 	QListWidgetItem* item;
 	int index;
+	QColor color;
+
+	if (type == "pit")
+		color = QColor(0, 128, 0);
+	else if (c == DataModelMatch::Alliance::Red)
+		color = QColor(255, 0, 0);
+	else
+		color = QColor(0, 0, 255);
 
 	//
 	// Create the view
 	//
-	if (view_frame_->createFetchFormView(key, title, c, index))
+	if (view_frame_->createFetchFormView(key, title, color, index))
 	{
 		QString title;
 
@@ -1031,7 +1034,7 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 	//
 	FormView* view = dynamic_cast<FormView*>(view_frame_->getWidget(index));
 	assert(view != nullptr);
-	view->setScoutingForm(form);
+	view->setScoutingForm(form, DataModelMatch::toString(c));
 
 	setScoutingView(index);
 	return index;
@@ -1053,7 +1056,7 @@ void PCScoutApp::createPitScoutingForms()
 			int slot;
 
 			QString title = generatePitTitle(t);
-			int index = startScouting(t->key(), "pit", title, QColor(0, 128, 0, 255), data_model_->pitScoutingForm());
+			int index = startScouting(t->key(), "pit", title, DataModelMatch::Alliance::Red, data_model_->pitScoutingForm());
 
 			FormView* form = dynamic_cast<FormView*>(view_frame_->getWidget(index));
 			assert(form != nullptr);
@@ -1076,13 +1079,7 @@ void PCScoutApp::createMatchScoutingForms()
 			{
 				auto t = data_model_->findTeamByKey(m->team(c, slot));
 				QString title = generateMatchTitle(m, t);
-
-				QColor color;
-				if (c == DataModelMatch::Alliance::Red)
-					color = QColor(255, 0, 0, 255);
-				else
-					color = QColor(0, 0, 255, 255);
-				int index = startScouting(m->key(), "match", title, color, data_model_->matchScoutingForm());
+				int index = startScouting(m->key(), "match", title, c, data_model_->matchScoutingForm());
 
 				FormView* form = dynamic_cast<FormView*>(view_frame_->getWidget(index));
 				assert(form != nullptr);

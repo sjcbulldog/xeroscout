@@ -79,6 +79,24 @@ namespace xero
 				void findLine(int charoff, int& lineno, int& charno);
 				void parseObject();
 
+				bool parseSubitemBounds(const QString& secname, int i, const QJsonObject& obj, QRect& r);
+				bool parseObjectBase(const QString& secname, int i, const QJsonObject& obj, QString& name, QString& tag);
+				std::shared_ptr<FormItemDesc> parseBoolean(const QString& sectname, int i, const QJsonObject& obj);
+				std::shared_ptr<FormItemDesc> parseTimerCounter(const QString& sectname, int i, const QJsonObject& obj);
+				std::shared_ptr<FormItemDesc> parseUpDown(const QString& sectname, int i, const QJsonObject& obj);
+				std::shared_ptr<FormItemDesc> parseChoice(const QString& sectname, int i, const QJsonObject& obj);
+				std::shared_ptr<FormItemDesc> parseNumeric(const QString& sectname, int i, const QJsonObject& obj);
+				std::shared_ptr<FormItemDesc> parseText(const QString& sectname, int i, const QJsonObject& obj);
+				std::shared_ptr<FormItemDesc> parseImage(const QString& sectname, int i, const QJsonObject& obj);
+
+				bool isStringArray(const QJsonArray& array) {
+					for (int i = 0; i < array.size(); i++) {
+						if (!array[i].isString())
+							return false;
+					}
+					return true;
+				}
+
 			private:
 				QStringList errors_;
 				bool parsed_ok_;

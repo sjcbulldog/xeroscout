@@ -29,7 +29,6 @@ namespace xero
 	{
 		namespace datamodel
 		{
-
 			class ChoiceFormItem : public FormItemDesc
 			{
 			public:
@@ -54,9 +53,9 @@ namespace xero
 					return d;
 				}
 
-				virtual FormItemDisplay* createDisplay(QWidget* parent) const
+				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const
 				{
-					return new ChoiceItemDisplay(this, parent);
+					return new ChoiceItemDisplay(images, this, parent);
 				}
 
 			private:

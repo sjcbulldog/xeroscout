@@ -6,7 +6,7 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			FormItemDisplay::FormItemDisplay(const FormItemDesc *desc, QWidget* parent) : QWidget(parent)
+			FormItemDisplay::FormItemDisplay(ImageSupplier& images, const FormItemDesc *desc, QWidget* parent) : QWidget(parent), images_(images)
 			{
 				desc_ = desc;
 			}

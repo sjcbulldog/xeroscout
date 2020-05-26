@@ -42,11 +42,11 @@
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QtInstall>msvc2017_64_5_14_2_</QtInstall>
+    <QtInstall>msvc2017_64_14_2_1_</QtInstall>
     <QtModules>bluetooth;core;gui;network;sql;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>msvc2017_64_5_14_2_</QtInstall>
+    <QtInstall>msvc2017_64_14_2_1_</QtInstall>
     <QtModules>bluetooth;core;gui;network;sql;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">

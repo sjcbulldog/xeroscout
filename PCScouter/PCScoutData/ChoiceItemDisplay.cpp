@@ -10,7 +10,7 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			ChoiceItemDisplay::ChoiceItemDisplay(const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(desc, parent)
+			ChoiceItemDisplay::ChoiceItemDisplay(ImageSupplier& images, const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(images, desc, parent)
 			{
 				QHBoxLayout* layout = new QHBoxLayout();
 				setLayout(layout);

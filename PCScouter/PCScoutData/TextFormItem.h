@@ -57,9 +57,9 @@ namespace xero
 					return d;
 				}
 
-				virtual FormItemDisplay* createDisplay(QWidget* parent) const
+				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const
 				{
-					return new TextItemDisplay(this, parent);
+					return new TextItemDisplay(images, this, parent);
 				}
 
 			private:

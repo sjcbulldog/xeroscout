@@ -29,6 +29,7 @@ namespace xero
 	{
 		namespace datamodel
 		{
+			class ImageSupplier;
 			class FormItemDisplay;
 
 			class FormItemDesc
@@ -53,12 +54,30 @@ namespace xero
 					return base_tag_;
 				}
 
+				void setAlliance(const QString& a) {
+					alliance_ = a;
+				}
+
+				const QString& alliance() const {
+					return alliance_;
+				}
+
 				virtual std::vector<std::pair<QString, QVariant::Type>> getFields() const {
 					return fields_;
 				}
 
+				bool hasField(const QString& name) {
+					for (auto pair : fields_)
+					{
+						if (pair.first == name)
+							return true;
+					}
+
+					return false;
+				}
+
 				virtual DataCollection random(GameRandomProfile &profile) const = 0;
-				virtual FormItemDisplay* createDisplay(QWidget* parent) const = 0;
+				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const = 0;
 
 				static QString genComplexName(const QString& tag, const QString& field) {
 					return tag + FormItemDesc::FieldSeperator + field;
@@ -76,6 +95,7 @@ namespace xero
 			private:
 				QString base_tag_;
 				QString display_;
+				QString alliance_;
 				std::vector<std::pair<QString, QVariant::Type>> fields_;
 			};
 		}

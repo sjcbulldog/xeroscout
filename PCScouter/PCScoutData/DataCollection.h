@@ -34,6 +34,31 @@ namespace xero
 					data_.push_back(std::make_pair(name, v));
 				}
 
+				bool has(const QString& name) const {
+					for (int i = 0; i < count() ; i++)
+					{
+						if (tag(i) == name)
+							return true;
+					}
+
+					return false;
+				}
+
+				QVariant dataByName(const QString& name) const {
+					QVariant v;
+
+					for (int i = 0; i < count(); i++)
+					{
+						if (tag(i) == name)
+						{
+							v = data(i);
+							break;
+						}
+					}
+
+					return v;
+				}
+
 			private:
 				std::vector<std::pair<QString, QVariant>> data_;
 			};

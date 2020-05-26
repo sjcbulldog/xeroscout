@@ -33,9 +33,11 @@ void AdvListWidget::keyPressEvent(QKeyEvent* ev)
 	if (ev->key() == Qt::Key::Key_Delete)
 	{
 		int row = currentRow();
-		QListWidgetItem* item = takeItem(row);
-		QString name = item->text();
-		delete item;
+		if (row >= 0) {
+			QListWidgetItem* item = takeItem(row);
+			QString name = item->text();
+			delete item;
+		}
 	}
 }
 

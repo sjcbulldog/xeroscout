@@ -124,6 +124,9 @@ private:
 
 	void processAppController();
 
+	void logMessage(const QString& msg);
+	void errorMessage(const QString& msg);
+
 private:
 	// 
 	// Timer for background activities that must be done

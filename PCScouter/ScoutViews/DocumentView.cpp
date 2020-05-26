@@ -56,8 +56,8 @@ namespace xero
 				label->setFont(font);
 
 				addWidget(label);																				// 0
-				addWidget(new FormView("PitTemplate", "Preview", QColor(0, 0, 0, 255), this));					// 1
-				addWidget(new FormView("MatchTemplate", "Preview", QColor(0, 0, 0, 255), this));				// 2
+				addWidget(new FormView(images_, "PitTemplate", "Preview", QColor(0, 0, 0, 255), this));					// 1
+				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(0, 0, 0, 255), this));				// 2
 				addWidget(new PitScheduleViewWidget(tablet, this));												// 3
 				addWidget(new MatchViewWidget(tablet, this));													// 4
 				addWidget(new DataSetViewWidget(this));															// 5
@@ -154,7 +154,7 @@ namespace xero
 				auto it = scouting_forms_.find(key);
 				if (it == scouting_forms_.end())
 				{
-					QWidget* w = new FormView(key, title, c, this);
+					QWidget* w = new FormView(images_, key, title, c, this);
 					scouting_forms_.insert(std::make_pair(key, w));
 
 					index = count();

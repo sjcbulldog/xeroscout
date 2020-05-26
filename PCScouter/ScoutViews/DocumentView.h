@@ -21,6 +21,7 @@
 #include "ScoutingDataModel.h"
 #include "ViewBase.h"
 #include "GameFieldManager.h"
+#include "ImageManager.h"
 #include <QStackedWidget>
 #include <QTreeWidget>
 #include <map>
@@ -119,6 +120,7 @@ namespace xero
 				ViewType view_;
 				std::map<QString, QWidget*> scouting_forms_;
 				GameFieldManager field_mgr_;
+				ImageManager images_;
 			};
 		}
 	}

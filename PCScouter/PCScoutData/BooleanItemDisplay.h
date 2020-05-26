@@ -27,7 +27,7 @@ namespace xero
 			class BooleanItemDisplay : public FormItemDisplay
 			{
 			public:
-				BooleanItemDisplay(const FormItemDesc *desc, QWidget* parent = nullptr);
+				BooleanItemDisplay(ImageSupplier& images, const FormItemDesc *desc, QWidget* parent = nullptr);
 				virtual ~BooleanItemDisplay();
 
 				virtual void setValues(const DataCollection& data) ;

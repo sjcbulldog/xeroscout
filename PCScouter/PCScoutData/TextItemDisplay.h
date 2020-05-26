@@ -11,7 +11,7 @@ namespace xero
 			class TextItemDisplay : public FormItemDisplay
 			{
 			public:
-				TextItemDisplay(const FormItemDesc *desc, QWidget* parent);
+				TextItemDisplay(ImageSupplier& images, const FormItemDesc *desc, QWidget* parent);
 				virtual ~TextItemDisplay();
 
 				virtual void setValues(const DataCollection& data);

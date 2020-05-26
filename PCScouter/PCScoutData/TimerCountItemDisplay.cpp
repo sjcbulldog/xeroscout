@@ -9,7 +9,7 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			TimerCountItemDisplay::TimerCountItemDisplay(const FormItemDesc* desc, QWidget* parent) : FormItemDisplay(desc, parent)
+			TimerCountItemDisplay::TimerCountItemDisplay(ImageSupplier& images, const FormItemDesc* desc, QWidget* parent) : FormItemDisplay(images, desc, parent)
 			{
 				timer_ = nullptr;
 

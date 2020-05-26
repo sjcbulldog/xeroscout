@@ -12,7 +12,7 @@ namespace xero
 			class TimerCountItemDisplay : public FormItemDisplay
 			{
 			public:
-				TimerCountItemDisplay(const FormItemDesc* desc, QWidget* parent);
+				TimerCountItemDisplay(ImageSupplier& images, const FormItemDesc* desc, QWidget* parent);
 				virtual ~TimerCountItemDisplay();
 
 				virtual void setValues(const DataCollection& data);

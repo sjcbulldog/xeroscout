@@ -167,7 +167,6 @@ namespace xero
 						}
 					}
 					qstr += ")";
-					qDebug() << "SQL: " << qstr;
 
 					if (!query.exec(qstr))
 					{
@@ -186,7 +185,6 @@ namespace xero
 				bool headers = false;
 
 				set.clear();
-				qDebug() << "SQL: " << qstr;
 				if (!query.exec(qstr))
 				{
 					QSqlError err = query.lastError();

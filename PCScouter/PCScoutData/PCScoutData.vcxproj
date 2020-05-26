@@ -42,11 +42,11 @@
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QtInstall>msvc2017_64_5_14_2_</QtInstall>
+    <QtInstall>msvc2017_64_14_2_1_</QtInstall>
     <QtModules>core;gui;sql;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>msvc2017_64_5_14_2_</QtInstall>
+    <QtInstall>msvc2017_64_14_2_1_</QtInstall>
     <QtModules>core;gui;sql;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
@@ -103,6 +103,13 @@
     <QtMoc Include="GameRandomProfile.h" />
     <ClInclude Include="GraphDescriptor.h" />
     <ClInclude Include="GraphDescriptorCollection.h" />
+    <ClInclude Include="ImageFormCountSubItem.h" />
+    <ClInclude Include="ImageFormItem.h" />
+    <ClInclude Include="ImageFormOnOffSubitem.h" />
+    <ClInclude Include="ImageFormSubItem.h" />
+    <ClInclude Include="ImageItemDisplay.h" />
+    <ClInclude Include="ImageItemPublishInfo.h" />
+    <ClInclude Include="ImageSupplier.h" />
     <ClInclude Include="JSonDataModelConverter.h" />
     <ClInclude Include="NumericItemDisplay.h" />
     <QtMoc Include="StartStopWidget.h" />
@@ -135,6 +142,8 @@
     <ClCompile Include="GameRandomProfile.cpp" />
     <ClCompile Include="GraphDescriptor.cpp" />
     <ClCompile Include="GraphDescriptorCollection.cpp" />
+    <ClCompile Include="ImageFormItem.cpp" />
+    <ClCompile Include="ImageItemDisplay.cpp" />
     <ClCompile Include="JSonDataModelConverter.cpp" />
     <ClCompile Include="NumericItemDisplay.cpp" />
     <ClCompile Include="StartStopWidget.cpp" />
