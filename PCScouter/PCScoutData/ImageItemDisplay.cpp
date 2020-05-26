@@ -99,12 +99,30 @@ namespace xero
 
 			void ImageItemDisplay::mousePressCount(std::shared_ptr<ImageFormCountSubItem> item, const QString& longname, QMouseEvent* ev)
 			{
+				QRect r = realBounds(item);
+				int sign = 0;
+
+				QRect upper = QRect(r.topLeft(), QSize(r.width(), r.height()));
+				if (upper.contains(ev->pos()))
+					sign = 1;
+
+				QRect lower = QRect(QPoint(r.left(), r.top() + r.height() / 2), QSize(r.width(), r.height() / 2));
+				if (lower.contains(ev->pos()))
+					sign = -1;
+
 				int v = 0;
 				auto it = count_state_.find(longname);
 				if (it != count_state_.end())
 					v = it->second;
 
-				count_state_.insert_or_assign(longname, v + 1);
+				v += sign;
+				if (v < item->minimum())
+					v = item->minimum();
+
+				if (v > item->maximum())
+					v = item->maximum();
+
+				count_state_.insert_or_assign(longname, v);
 			}
 
 			void ImageItemDisplay::paintEvent(QPaintEvent* ev)
@@ -216,8 +234,15 @@ namespace xero
 
 				QFontMetrics fm(f);
 
-				QPoint pt(r.center().x() - fm.horizontalAdvance(num) / 2, r.center().y());
+				QPen pentxt(QColor(255, 255, 0));
+				p.setPen(pentxt);
+				QPoint pt(r.x() - fm.horizontalAdvance(num + "AA") / 2, r.center().y() - fm.height()  / 2);
 				p.drawText(pt, num);
+
+				QPen pen(QColor(0, 0, 0));
+				pen.setWidth(8);
+				p.setPen(pen);
+				p.drawLine(r.left(), r.center().y(), r.right(), r.center().y());
 
 				p.restore();
 			}
