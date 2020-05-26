@@ -21,36 +21,36 @@
           "image": "2020-field.jpg",
           "tag": "auto",
           "name": "AutoMode",
-          "scale" : 0.80,
-          "publishitems" : [
+          "scale": 0.80,
+          "publishitems": [
             {
               "tag": "gathered",
-              "type" : "sum",
-              "imageitems" : ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12"]
+              "type": "sum",
+              "imageitems": [ "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12" ]
             }
           ],
           "imageitems": [
             {
               "imageitemtype": "choice",
-              "tag": "starting_postion",
+              "tag": "starting_position",
               "value": "farleft",
               "position": [ "bounds", 870, 0, 1050, 100 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "starting_postion",
+              "tag": "starting_position",
               "value": "left",
               "position": [ "bounds", 870, 275, 1050, 375 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "starting_postion",
+              "tag": "starting_position",
               "value": "center",
               "position": [ "bounds", 870, 380, 1050, 485 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "starting_postion",
+              "tag": "starting_position",
               "value": "right",
               "position": [ "bounds", 870, 500, 1050, 600 ]
             },
@@ -117,16 +117,131 @@
             {
               "imageitemtype": "count",
               "tag": "highgoal",
-              "minimum" : 0,
-              "maximum" : 20,
+              "minimum": 0,
+              "maximum": 20,
               "position": [ "bounds", 1120, 378, 1199, 470 ]
             },
             {
               "imageitemtype": "count",
               "tag": "lowgoal",
-              "minimum" : 0,
-              "maximum" : 20,
+              "minimum": 0,
+              "maximum": 20,
               "position": [ "bounds", 1120, 278, 1199, 376 ]
+            }
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2020-field.jpg",
+          "tag": "auto",
+          "name": "AutoMode",
+          "scale": 0.80,
+          "publishitems": [
+            {
+              "tag": "gathered",
+              "type": "sum",
+              "imageitems": [ "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12" ]
+            }
+          ],
+          "imageitems": [
+            {
+              "imageitemtype": "choice",
+              "tag": "starting_position",
+              "value": "farleft",
+              "position": [ "bounds", 130, 500, 310, 600 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "starting_position",
+              "value": "left",
+              "position": [ "bounds", 130, 250, 310, 350 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "starting_position",
+              "value": "center",
+              "position": [ "bounds", 130, 130, 310, 230 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "starting_position",
+              "value": "right",
+              "position": [ "bounds", 130, 0, 310, 100 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b1",
+              "position": [ "centersize", 480, 570, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b2",
+              "position": [ "centersize", 480, 534, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b3",
+              "position": [ "centersize", 460, 328, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b4",
+              "position": [ "centersize", 450, 300, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b5",
+              "position": [ "centersize", 438, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b6",
+              "position": [ "centersize", 450, 225, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b7",
+              "position": [ "centersize", 480, 212, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b8",
+              "position": [ "centersize", 465, 50, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b9",
+              "position": [ "centersize", 532, 50, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b10",
+              "position": [ "centersize", 600, 50, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b11",
+              "position": [ "centersize", 719, 69, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "b12",
+              "position": [ "centersize", 719, 33, 30, 30 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "highgoal",
+              "minimum": 0,
+              "maximum": 20,
+              "position": [ "bounds", 0, 378, 80, 470 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "lowgoal",
+              "minimum": 0,
+              "maximum": 20,
+              "position": [ "bounds", 0, 278, 80, 376 ]
             }
           ]
         }

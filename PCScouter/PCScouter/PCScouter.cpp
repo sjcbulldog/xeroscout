@@ -898,7 +898,7 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
 			{
-				ds->setScoutingForm(data_model_->matchScoutingForm(), "red");
+				ds->setScoutingForm(data_model_->matchScoutingForm(), "blue");
 				ds->clearNeedRefresh();
 			}
 		}

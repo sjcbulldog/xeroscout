@@ -6,9 +6,9 @@
     "profile": [ 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 ]
   },
   {
-    "tag": "starting_position",
+    "tag": "auto__starting_position",
     "type": "choice",
-    "choices": [ "Far Left", "Left", "Right", "Center" ],
+    "choices": [ "farleft", "left", "right", "center" ],
     "profile": [ 0.16666666, 0.16666666, 0.33333333, 0.33333333 ]
   },
   {
@@ -17,16 +17,106 @@
     "true": 0.9
   },
   {
-    "tag": "auto_balls_high",
+    "tag": "auto__b1",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b2",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b3",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b4",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b5",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b6",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b7",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b8",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b9",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b10",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b11",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__b12",
+    "type": "boolean",
+    "true": 0.1
+  },
+  {
+    "tag": "auto__highgoal",
     "type": "numeric",
     "mean": 3.0,
     "stddev": 5.0
   },
   {
-    "tag": "auto_balls_low",
+    "tag": "auto__lowgoal",
     "type": "numeric",
     "mean": 1.0,
     "stddev": 3.0
+  },
+  {
+    "tag": "ball_cycle__completedcount",
+    "type": "numeric",
+    "mean": 5.0,
+    "stddev": 5.0
+  },
+  {
+    "tag": "ball_cycle__completedtime",
+    "type": "numeric",
+    "mean": 30.0,
+    "stddev": 30.0
+  },
+  {
+    "tag": "ball_cycle__abandonedcount",
+    "type": "numeric",
+    "mean": 1.0,
+    "stddev": 2.0
+  },
+  {
+    "tag": "ball_cycle__abandonedtime",
+    "type": "numeric",
+    "mean": 10.0,
+    "stddev": 20.0
+  },
+  {
+    "tag": "teleop_balls_high",
+    "type": "numeric",
+    "mean": 10.0,
+    "stddev": 10.0
   },
   {
     "tag": "teleop_balls_high",

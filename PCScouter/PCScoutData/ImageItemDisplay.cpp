@@ -151,11 +151,6 @@ namespace xero
 					QRect r = realBounds(item);
 					p.drawRect(r);
 
-					int x = r.x() - fm.horizontalAdvance(item->subname() + "A");
-					int y = r.y() + r.height() / 2;
-					QPoint pt(x, y);
-					p.drawText(pt, item->subname());
-
 					p.save();
 					auto on_off = std::dynamic_pointer_cast<ImageFormOnOffSubitem>(item);
 					if (on_off != nullptr)
@@ -182,17 +177,25 @@ namespace xero
 
 			void ImageItemDisplay::drawOnOff(QPainter& p, std::shared_ptr<ImageFormOnOffSubitem> item, const QString& longname)
 			{
+				QRect r = realBounds(item);
 				bool v = false;
 				auto it = on_off_state_.find(longname);
 				if (it != on_off_state_.end() && it->second)
 					v = true;
 
+				QPen pen(QColor(0, 0, 0));
+				p.setPen(pen);
+				QFontMetrics fm(p.font());
+				QPoint pt(r.center().x() - fm.horizontalAdvance(item->subname()) / 2, r.center().y());
+				p.drawText(pt, item->subname());
+
 				if (v)
 				{
-					QRect r = realBounds(item);
-					QPen pen(QColor(0, 255, 0));
 
+					QPen pen(QColor(0, 255, 0));
+					pen.setWidth(4);
 					p.setPen(pen);
+
 					p.drawLine(r.x(), r.y(), r.x() + r.width(), r.y() + r.height());
 					p.drawLine(r.x() + r.width(), r.y(), r.x(), r.y() + r.height());
 				}
@@ -200,16 +203,24 @@ namespace xero
 
 			void ImageItemDisplay::drawChoice(QPainter& p, std::shared_ptr<ImageFormOnOffSubitem> item, const QString& longname)
 			{
+				QRect r = realBounds(item);
 				bool v = false;
 				auto it = choice_state_.find(longname);
 				if (it != choice_state_.end() && it->second == item->value())
 					v = true;
+
+				QPen pen(QColor(0, 0, 0));
+				p.setPen(pen);
+				QFontMetrics fm(p.font());
+				QPoint pt(r.center().x() - fm.horizontalAdvance(item->subname()) / 2, r.center().y());
+				p.drawText(pt, item->value());
 
 				if (v)
 				{
 					QRect r = realBounds(item);
 					QPen pen(QColor(0, 255, 0));
 
+					pen.setWidth(4);
 					p.setPen(pen);
 					p.drawLine(r.x(), r.y(), r.x() + r.width(), r.y() + r.height());
 					p.drawLine(r.x() + r.width(), r.y(), r.x(), r.y() + r.height());
@@ -218,6 +229,8 @@ namespace xero
 
 			void ImageItemDisplay::drawCount(QPainter& p, std::shared_ptr<ImageFormCountSubItem> item, const QString& longname)
 			{
+				QPoint pt;
+
 				int v = 0;
 				auto it = count_state_.find(longname);
 				if (it != count_state_.end())
@@ -228,21 +241,43 @@ namespace xero
 
 				p.save();
 
-				QFont f = p.font();
-				f.setPointSizeF(16);
-				p.setFont(f);
-
-				QFontMetrics fm(f);
-
-				QPen pentxt(QColor(255, 255, 0));
-				p.setPen(pentxt);
-				QPoint pt(r.x() - fm.horizontalAdvance(num + "AA") / 2, r.center().y() - fm.height()  / 2);
-				p.drawText(pt, num);
-
 				QPen pen(QColor(0, 0, 0));
 				pen.setWidth(8);
 				p.setPen(pen);
-				p.drawLine(r.left(), r.center().y(), r.right(), r.center().y());
+				p.drawLine(r.left() + 4, r.center().y(), r.right(), r.center().y());
+
+				QFont f = p.font();
+				f.setPointSizeF(6.0);
+				p.setFont(f);
+				QFontMetrics fm(f);
+
+				pen = QPen(QColor(255, 255, 255));
+				p.setPen(pen);
+				pt = QPoint(r.center().x() - fm.horizontalAdvance(item->subname()) / 2, r.center().y() + fm.descent());
+				p.drawText(pt, item->subname());
+
+				f.setPointSizeF(16);
+				p.setFont(f);
+				fm = QFontMetrics(f);
+
+				QPen pentxt(QColor(255, 255, 0));
+				p.setPen(pentxt);
+				pt = QPoint(r.x() - fm.horizontalAdvance(num + "AA") / 2, r.center().y() + fm.height() / 2);
+				if (pt.x() < 0)
+					pt = QPoint(r.right(), r.center().y() + fm.height() / 2);
+				p.drawText(pt, num);
+
+				int size = 10;
+				QRect upper = QRect(r.topLeft(), QSize(r.width(), r.height() / 2));
+				pt = upper.center();
+				pen.setWidth(4);
+				p.setPen(pen);
+				p.drawLine(pt.x() - size, pt.y(), pt.x() + size, pt.y());
+				p.drawLine(pt.x(), pt.y() - size, pt.x(), pt.y() + size);
+
+				QRect lower = QRect(QPoint(r.left(), r.top() + r.height() / 2), QSize(r.width(), r.height() / 2));
+				pt = lower.center();
+				p.drawLine(pt.x() - size, pt.y(), pt.x() + size, pt.y());
 
 				p.restore();
 			}
