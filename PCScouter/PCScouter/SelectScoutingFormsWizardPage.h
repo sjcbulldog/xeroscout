@@ -18,6 +18,7 @@
 #include "NewEventBlueAllianceWizard.h"
 #include <QWizard>
 #include <QLabel>
+#include <QSettings>
 
 class SelectScoutingFormsWizardPage : public QWizardPage
 {
@@ -45,6 +46,8 @@ private:
 	QLabel* match_scouting_form_;
 	QString pit_filename_;
 	QString match_filename_;
+
+	QSettings settings_;
 
 	NewEventBlueAllianceWizard::PropertyMap& props_;
 };

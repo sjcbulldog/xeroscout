@@ -3,11 +3,12 @@
 
 #define MyAppName "XeroCentral"
 #define MySecondName "XeroScout"
-#define MyAppVersion "0.1.17"
+#define MyAppVersion "0.1.18"
 #define MyAppPublisher "ErrorCodeXero"
 #define MyAppURL "http://www.wilsonvillerobotics.com/"
 #define MyAppExeName "PCScouter.exe"
-#define MySecondExeName "PCScoutApp.exe"
+#define MyScoutAppExeName "PCScoutApp.exe"
+#define MyFormViewerExeName "PCFormViewer.exe"
 #define MyUserName "ButchGriffin"
 
 [Setup]
@@ -46,8 +47,10 @@ Source: "C:\cygwin64\home\ButchGriffin\projects\scouting\PCScouter\x64\Release\*
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-Name: "{autoprograms}\{#MySecondName}"; Filename: "{app}\{#MySecondExeName}"
-Name: "{autodesktop}\{#MySecondName}"; Filename: "{app}\{#MySecondExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyScoutAppExeName}"; Filename: "{app}\{#MyScoutAppExeName}"
+Name: "{autodesktop}\{#MyScoutAppExeName}"; Filename: "{app}\{#MyScoutAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyFormViewerExeName}"; Filename: "{app}\{#MyFormViewerExeName}"
+Name: "{autodesktop}\{#MyFormViewerExeName}"; Filename: "{app}\{#MyFormViewerExeName}"; Tasks: desktopicon
 
 [Run]
 Filename: {app}\VC_redist.x64.exe; \

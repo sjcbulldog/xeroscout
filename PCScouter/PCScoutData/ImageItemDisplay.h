@@ -34,6 +34,11 @@ namespace xero
 				
 				QRect realBounds(std::shared_ptr<ImageFormSubItem> item);
 
+				void drawBoundsCenterLine(QPainter& p, const QRect &r, const QString &txt);
+
+				static constexpr const int CenterLineWidth = 10;
+				static constexpr const int CenterFontSize = 8;
+
 			private:
 				double scale_;
 				std::shared_ptr<QImage> image_;

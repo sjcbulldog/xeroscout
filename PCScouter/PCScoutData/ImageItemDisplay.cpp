@@ -7,6 +7,7 @@
 #include <QSize>
 #include <QFontMetrics>
 #include <QMouseEvent>
+#include <QDebug>
 
 namespace xero
 {
@@ -26,6 +27,8 @@ namespace xero
 				size_ = QSize(s.width() * scale_, s.height() * scale_);
 				setMinimumSize(size_);
 				setMaximumSize(size_);
+
+				qDebug() << "ImageItemSize: " << size_;
 
 				DataCollection d;
 				setValues(d);
@@ -175,6 +178,28 @@ namespace xero
 				}
 			}
 
+			void ImageItemDisplay::drawBoundsCenterLine(QPainter& p, const QRect &r, const QString &txt)
+			{
+				p.save();
+
+				QPen pen(QColor(0, 0, 0));
+				pen.setWidth(CenterLineWidth);
+				p.setPen(pen);
+				p.drawLine(r.left() + CenterLineWidth / 2, r.center().y(), r.right() - CenterLineWidth / 2 + 1, r.center().y());
+
+				QFont f = p.font();
+				f.setPointSizeF(CenterFontSize);
+				p.setFont(f);
+				QFontMetrics fm(f);
+
+				pen = QPen(QColor(255, 255, 255));
+				p.setPen(pen);
+				QPoint pt = QPoint(r.center().x() - fm.horizontalAdvance(txt) / 2, r.center().y() + CenterLineWidth / 2 - fm.descent());
+				p.drawText(pt, txt);
+
+				p.restore();
+			}
+
 			void ImageItemDisplay::drawOnOff(QPainter& p, std::shared_ptr<ImageFormOnOffSubitem> item, const QString& longname)
 			{
 				QRect r = realBounds(item);
@@ -183,11 +208,7 @@ namespace xero
 				if (it != on_off_state_.end() && it->second)
 					v = true;
 
-				QPen pen(QColor(0, 0, 0));
-				p.setPen(pen);
-				QFontMetrics fm(p.font());
-				QPoint pt(r.center().x() - fm.horizontalAdvance(item->subname()) / 2, r.center().y());
-				p.drawText(pt, item->subname());
+				drawBoundsCenterLine(p, r, item->subname());
 
 				if (v)
 				{
@@ -209,11 +230,7 @@ namespace xero
 				if (it != choice_state_.end() && it->second == item->value())
 					v = true;
 
-				QPen pen(QColor(0, 0, 0));
-				p.setPen(pen);
-				QFontMetrics fm(p.font());
-				QPoint pt(r.center().x() - fm.horizontalAdvance(item->subname()) / 2, r.center().y());
-				p.drawText(pt, item->value());
+				drawBoundsCenterLine(p, r, item->value());
 
 				if (v)
 				{
@@ -227,9 +244,13 @@ namespace xero
 				}
 			}
 
+
+
 			void ImageItemDisplay::drawCount(QPainter& p, std::shared_ptr<ImageFormCountSubItem> item, const QString& longname)
 			{
 				QPoint pt;
+				int linewidth = 10;
+				QRect r = realBounds(item);
 
 				int v = 0;
 				auto it = count_state_.find(longname);
@@ -237,28 +258,15 @@ namespace xero
 					v = it->second;
 
 				QString num = QString::number(v);
-				QRect r = realBounds(item);
+
+				drawBoundsCenterLine(p, r, item->subname());
 
 				p.save();
 
-				QPen pen(QColor(0, 0, 0));
-				pen.setWidth(8);
-				p.setPen(pen);
-				p.drawLine(r.left() + 4, r.center().y(), r.right(), r.center().y());
-
-				QFont f = p.font();
-				f.setPointSizeF(6.0);
-				p.setFont(f);
-				QFontMetrics fm(f);
-
-				pen = QPen(QColor(255, 255, 255));
-				p.setPen(pen);
-				pt = QPoint(r.center().x() - fm.horizontalAdvance(item->subname()) / 2, r.center().y() + fm.descent());
-				p.drawText(pt, item->subname());
-
+				QFont f(p.font());
 				f.setPointSizeF(16);
 				p.setFont(f);
-				fm = QFontMetrics(f);
+				QFontMetrics fm(f);
 
 				QPen pentxt(QColor(255, 255, 0));
 				p.setPen(pentxt);
@@ -270,6 +278,7 @@ namespace xero
 				int size = 10;
 				QRect upper = QRect(r.topLeft(), QSize(r.width(), r.height() / 2));
 				pt = upper.center();
+				QPen pen;
 				pen.setWidth(4);
 				p.setPen(pen);
 				p.drawLine(pt.x() - size, pt.y(), pt.x() + size, pt.y());

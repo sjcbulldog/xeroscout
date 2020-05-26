@@ -40,6 +40,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExprLib", "ExprLib\ExprLib.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExprLibTest", "ExprLibTest\ExprLibTest.vcxproj", "{546EA281-A566-46B9-9AF2-82E838313D74}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PCFormViewer", "PCFormViewer\PCFormViewer.vcxproj", "{919B5119-0BBF-4583-BD14-B9815BD9A302}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9CAD5E2D-4DA7-482B-BFB1-DA0672BCDA3A} = {9CAD5E2D-4DA7-482B-BFB1-DA0672BCDA3A}
+		{B70DF2C8-843D-4373-BD18-E6B91E73EAE4} = {B70DF2C8-843D-4373-BD18-E6B91E73EAE4}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -104,6 +110,12 @@ Global
 		{546EA281-A566-46B9-9AF2-82E838313D74}.Release|x64.ActiveCfg = Release|x64
 		{546EA281-A566-46B9-9AF2-82E838313D74}.Release|x64.Build.0 = Release|x64
 		{546EA281-A566-46B9-9AF2-82E838313D74}.Release|x86.ActiveCfg = Release|x64
+		{919B5119-0BBF-4583-BD14-B9815BD9A302}.Debug|x64.ActiveCfg = Debug|x64
+		{919B5119-0BBF-4583-BD14-B9815BD9A302}.Debug|x64.Build.0 = Debug|x64
+		{919B5119-0BBF-4583-BD14-B9815BD9A302}.Debug|x86.ActiveCfg = Debug|x64
+		{919B5119-0BBF-4583-BD14-B9815BD9A302}.Release|x64.ActiveCfg = Release|x64
+		{919B5119-0BBF-4583-BD14-B9815BD9A302}.Release|x64.Build.0 = Release|x64
+		{919B5119-0BBF-4583-BD14-B9815BD9A302}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -80,7 +80,9 @@ copy $(QTDIR)\bin\Qt5Bluetoothd.dll $(OutDir)
 mkdir $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlite.dll $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
-copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
+copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
+mkdir $(OutDir)\forms
+copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>c:\cygwin64\bin\bash incver.sh</Command>
@@ -113,7 +115,9 @@ copy $(QTDIR)\bin\Qt5Bluetoothd.dll $(OutDir)
 mkdir $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlite.dll $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
-copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
+copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
+mkdir $(OutDir)\forms
+copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>c:\cygwin64\bin\bash incver.sh</Command>

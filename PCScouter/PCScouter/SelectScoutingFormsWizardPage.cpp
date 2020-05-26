@@ -93,23 +93,40 @@ void SelectScoutingFormsWizardPage::setLabelText(QLabel* label, const QString& s
 
 void SelectScoutingFormsWizardPage::selectPitScoutForm()
 {
-	QString filename = QFileDialog::getOpenFileName(this, "Select Pit Scouting Form", nullptr, "JSON Files (*.json);;All Files (*.*)");
+	QString dir;
+
+	if (settings_.contains("FormsDir"))
+		dir = settings_.value("FormsDir").toString();
+
+	QString filename = QFileDialog::getOpenFileName(this, "Select Pit Scouting Form", dir, "JSON Files (*.json);;All Files (*.*)");
 	props_[PitScoutFieldName] = QVariant(filename);
 
 	pit_filename_ = filename;
 	setLabelText(pit_scouting_form_, pit_filename_);
 
-	emit completeChanged();
+	QFileInfo file(filename);
+	dir = file.absoluteDir().absolutePath();
+	settings_.setValue("FormsDir", dir);
 
+	emit completeChanged();
 }
 
 void SelectScoutingFormsWizardPage::selectMatchScoutForm()
 {
-	QString filename = QFileDialog::getOpenFileName(this, "Select Match Scouting Form", nullptr, "JSON Files (*.json);;All Files (*.*)");
+	QString dir;
+
+	if (settings_.contains("FormsDir"))
+		dir = settings_.value("FormsDir").toString();
+
+	QString filename = QFileDialog::getOpenFileName(this, "Select Match Scouting Form", dir, "JSON Files (*.json);;All Files (*.*)");
 	props_[MatchScoutFieldName] = QVariant(filename);
 
 	match_filename_ = filename;
 	setLabelText(match_scouting_form_, match_filename_);
+
+	QFileInfo file(filename);
+	dir = file.absoluteDir().absolutePath();
+	settings_.setValue("FormsDir", dir);
 
 	emit completeChanged();
 }
