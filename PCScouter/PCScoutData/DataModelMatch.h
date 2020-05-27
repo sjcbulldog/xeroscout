@@ -17,6 +17,7 @@
 #pragma once
 
 #include "ScoutingDataMap.h"
+#include "Alliance.h"
 #include <QJsonObject>
 #include <QString>
 #include <QVariant>
@@ -34,12 +35,6 @@ namespace xero
 			{
 				friend class ScoutingDataModel;
 				friend class JSonDataModelConverter;
-
-			public:
-				enum class Alliance {
-					Red,
-					Blue
-				};
 
 			public:
 				DataModelMatch(const QString& key, const QString& comp, int set, int match, int etime) {
@@ -149,7 +144,7 @@ namespace xero
 
 				bool hasScoutingData(Alliance a, int slot) const {
 					assert(slot >= 1 && slot <= 3);
-					assert(a == DataModelMatch::Alliance::Red || a == DataModelMatch::Alliance::Blue);
+					assert(a == Alliance::Red || a == Alliance::Blue);
 
 					bool ret = false;
 
@@ -165,29 +160,92 @@ namespace xero
 					return ret;
 				}
 
-				ConstScoutingDataMapPtr scoutingData(Alliance a, int slot) const {
-					ConstScoutingDataMapPtr ret = nullptr;
+				QVariant value(Alliance a, int slot, const QString& name) const {
+					QVariant ret;
+					ConstScoutingDataMapPtr scout, ba;
 
 					assert(slot >= 1 && slot <= 3);
-					assert(a == DataModelMatch::Alliance::Red || a == DataModelMatch::Alliance::Blue);
+					assert(a == Alliance::Red || a == Alliance::Blue);
 
 					if (a == Alliance::Red)
 					{
 						if (red_scouting_data_[slot - 1].size() > 0)
-							ret = red_scouting_data_[slot - 1].back();
+							scout = red_scouting_data_[slot - 1].back();
+
+						if (red_ba_data_.size() > 0)
+							ba = red_ba_data_[slot - 1];
 					}
 					else
 					{
 						if (blue_scouting_data_[slot - 1].size() > 0)
-							ret = blue_scouting_data_[slot - 1].back();
+							scout = blue_scouting_data_[slot - 1].back();
+
+						if (blue_ba_data_.size() > 0)
+							ba = blue_ba_data_[slot - 1];
+
+					}
+
+					if (scout != nullptr)
+					{
+						auto it = scout->find(name);
+						if (it != scout->end())
+							return it->second;
+					}
+
+					if (ba != nullptr)
+					{
+						auto it = ba->find(name);
+						if (it != ba->end())
+							return it->second;
 					}
 
 					return ret;
 				}
 
+				ScoutingDataMapPtr data(Alliance a, int slot) const {
+					auto data = std::make_shared<ScoutingDataMap>();
+
+					ConstScoutingDataMapPtr scout, ba ;
+
+					assert(slot >= 1 && slot <= 3);
+					assert(a == Alliance::Red || a == Alliance::Blue);
+
+					if (a == Alliance::Red)
+					{
+						if (red_scouting_data_[slot - 1].size() > 0)
+							scout = red_scouting_data_[slot - 1].back();
+
+						if (red_ba_data_.size() > 0)
+							ba = red_ba_data_[slot - 1];
+					}
+					else
+					{
+						if (blue_scouting_data_[slot - 1].size() > 0)
+							scout = blue_scouting_data_[slot - 1].back();
+
+						if (blue_ba_data_.size() > 0)
+							ba = blue_ba_data_[slot - 1];
+
+					}
+
+					if (scout != nullptr)
+					{
+						for (auto pair : *scout)
+							data->insert_or_assign(pair.first, pair.second);
+					}
+
+					if (ba != nullptr)
+					{
+						for (auto pair : *ba)
+							data->insert_or_assign(pair.first, pair.second);
+					}
+
+					return data;
+				}
+
 				std::list<ConstScoutingDataMapPtr> scoutingDataList(Alliance a, int slot) const {
 					assert(slot >= 1 && slot <= 3);
-					assert(a == DataModelMatch::Alliance::Red || a == DataModelMatch::Alliance::Blue);
+					assert(a == Alliance::Red || a == Alliance::Blue);
 
 					std::list<ConstScoutingDataMapPtr> ret;
 
@@ -256,7 +314,7 @@ namespace xero
 
 				const QString& team(Alliance a, int slot) const {
 					assert(slot >= 1 && slot <= 3);
-					assert(a == DataModelMatch::Alliance::Red || a == DataModelMatch::Alliance::Blue);
+					assert(a == Alliance::Red || a == Alliance::Blue);
 
 					if (a == Alliance::Red)
 						return red_[slot - 1];
@@ -266,7 +324,7 @@ namespace xero
 
 				const QString& tablet(Alliance a, int slot) const {
 					assert(slot >= 1 && slot <= 3);
-					assert(a == DataModelMatch::Alliance::Red || a == DataModelMatch::Alliance::Blue);
+					assert(a == Alliance::Red || a == Alliance::Blue);
 
 					if (a == Alliance::Red)
 						return red_tablets_[slot - 1];
@@ -274,15 +332,6 @@ namespace xero
 					return blue_tablets_[slot - 1];
 				}
 
-				ConstScoutingDataMapPtr blueAllianceData(Alliance a, int slot) const {
-					assert(slot >= 1 && slot <= 3);
-					assert(a == DataModelMatch::Alliance::Red || a == DataModelMatch::Alliance::Blue);
-
-					if (a == Alliance::Red)
-						return red_ba_data_[slot - 1];
-
-					return blue_ba_data_[slot - 1];
-				}
 
 				void removeOldScoutingData() {
 					for (int i = 0; i < 3; i++) {
@@ -301,6 +350,36 @@ namespace xero
 				}
 
 			protected:
+				ConstScoutingDataMapPtr scoutingData(Alliance a, int slot) const {
+					ConstScoutingDataMapPtr ret = nullptr;
+
+					assert(slot >= 1 && slot <= 3);
+					assert(a == Alliance::Red || a == Alliance::Blue);
+
+					if (a == Alliance::Red)
+					{
+						if (red_scouting_data_[slot - 1].size() > 0)
+							ret = red_scouting_data_[slot - 1].back();
+					}
+					else
+					{
+						if (blue_scouting_data_[slot - 1].size() > 0)
+							ret = blue_scouting_data_[slot - 1].back();
+					}
+
+					return ret;
+				}
+
+				ConstScoutingDataMapPtr blueAllianceData(Alliance a, int slot) const {
+					assert(slot >= 1 && slot <= 3);
+					assert(a == Alliance::Red || a == Alliance::Blue);
+
+					if (a == Alliance::Red)
+						return red_ba_data_[slot - 1];
+
+					return blue_ba_data_[slot - 1];
+				}
+
 				void setZebra(const QJsonObject& data) {
 					zebra_ = data;
 				}
@@ -364,7 +443,7 @@ namespace xero
 				void clearScoutingData(Alliance a, int slot)
 				{
 					assert(slot >= 1 && slot <= 3);
-					assert(a == DataModelMatch::Alliance::Red || a == DataModelMatch::Alliance::Blue);
+					assert(a == Alliance::Red || a == Alliance::Blue);
 
 					if (a == Alliance::Red)
 						red_scouting_data_[slot - 1].clear();
@@ -374,7 +453,7 @@ namespace xero
 
 				bool setScoutingData(Alliance a, int slot, ScoutingDataMapPtr data, bool replace = false) {
 					assert(slot >= 1 && slot <= 3);
-					assert(a == DataModelMatch::Alliance::Red || a == DataModelMatch::Alliance::Blue);
+					assert(a == Alliance::Red || a == Alliance::Blue);
 					assert(data != nullptr);
 
 					if (a == Alliance::Red)
@@ -414,22 +493,87 @@ namespace xero
 				}
 
 			private:
+				class OneRobot
+				{
+				public:
+				private:
+					QString team_key_;
+					QString tablet_;
+				};
+
+			private:
+				//
+				// The blue alliance key for this match
+				//
 				QString key_;
+
+				//
+				// The type of competition, qual match (qm), quarter final (qf), semi final (qf), final (f), or einstein final (ef)
+				//
 				QString comp_type_;
+
+				//
+				// The set number, -1 for qual matches
+				//
 				int set_number_;
+
+				//
+				// The match number
+				//
 				int match_number_;
+
+				//
+				// The event time for the match
+				//
 				int etime_;
 
+				//
+				// The team keys for the three teams on the red alliance
+				//
 				std::vector<QString> red_;
+
+				//
+				// The three red tablets
+				//
 				std::vector<QString> red_tablets_;
+
+				//
+				// The list of scouting data for each team in the red alliance.  Note, there is a list
+				// for the case where there are multiple sources of data, but the last set of data is used in all
+				// queries.  The merge operation can be used to consolidate the data into a single set.
+				//
 				std::vector<std::list<ScoutingDataMapPtr>> red_scouting_data_;
+
+				//
+				// The blue alliance data for this match for the red alliance, broken out by robot
+				//
 				std::vector<ScoutingDataMapPtr> red_ba_data_;
 
+				//
+				// The team keys for the three teams on the blue alliance
+				//
 				std::vector<QString> blue_;
+
+				//
+				// The three blue tablets
+				//
 				std::vector<QString> blue_tablets_;
+
+				//
+				// The list of scouting data for each team in the blue alliance.  Note, there is a list
+				// for the case where there are multiple sources of data, but the last set of data is used in all
+				// queries.  The merge operation can be used to consolidate the data into a single set.
+				//
 				std::vector<std::list<ScoutingDataMapPtr>> blue_scouting_data_;
+
+				//
+				// The blue alliance data for this match for the red alliance, broken out by robot
+				//
 				std::vector<ScoutingDataMapPtr> blue_ba_data_;
 
+				//
+				// The zebra data for the match (stored as the JSON from the blue alliance)
+				//
 				QJsonObject zebra_;
 			};
 		}

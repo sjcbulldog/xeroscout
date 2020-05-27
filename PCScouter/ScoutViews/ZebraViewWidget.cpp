@@ -120,11 +120,11 @@ namespace xero
 			}
 
 
-			QColor ZebraViewWidget::matchRobotColor(xero::scouting::datamodel::DataModelMatch::Alliance c, int slot)
+			QColor ZebraViewWidget::matchRobotColor(xero::scouting::datamodel::Alliance c, int slot)
 			{
 				QColor ret(0, 0, 0, 255);
 
-				if (c == DataModelMatch::Alliance::Red)
+				if (c == Alliance::Red)
 				{
 					switch (slot)
 					{
@@ -179,13 +179,13 @@ namespace xero
 					return;
 
 				std::vector<std::shared_ptr<RobotTrack>> tracks;
-				DataModelMatch::Alliance c = DataModelMatch::Alliance::Red;
+				Alliance c = Alliance::Red;
 				for (int i = 1; i <= 3; i++)
 				{
 					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i));
 					tracks.push_back(t);
 				}
-				c = DataModelMatch::Alliance::Blue;
+				c = Alliance::Blue;
 				for (int i = 1; i <= 3; i++)
 				{
 					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i));
@@ -209,8 +209,8 @@ namespace xero
 				if (!aobj.contains("red") || !aobj.value("red").isArray())
 					return;
 
-				processAlliance(aobj.value("red").toArray(), DataModelMatch::Alliance::Red, tracks);
-				processAlliance(aobj.value("blue").toArray(), DataModelMatch::Alliance::Blue, tracks);
+				processAlliance(aobj.value("red").toArray(), Alliance::Red, tracks);
+				processAlliance(aobj.value("blue").toArray(), Alliance::Blue, tracks);
 
 				for (auto t : tracks)
 				{
@@ -219,7 +219,7 @@ namespace xero
 				}
 			}
 
-			bool ZebraViewWidget::extractOneAlliance(const QJsonArray& arr, DataModelMatch::Alliance c, int slot, std::shared_ptr<RobotTrack> track)
+			bool ZebraViewWidget::extractOneAlliance(const QJsonArray& arr, Alliance c, int slot, std::shared_ptr<RobotTrack> track)
 			{
 				int which = slot - 1;
 				if (!arr[which].isObject())
@@ -258,12 +258,12 @@ namespace xero
 				return true;
 			}
 
-			void ZebraViewWidget::processAlliance(const QJsonArray& arr, DataModelMatch::Alliance c, std::vector<std::shared_ptr<RobotTrack>>& tracks)
+			void ZebraViewWidget::processAlliance(const QJsonArray& arr, Alliance c, std::vector<std::shared_ptr<RobotTrack>>& tracks)
 			{
 				for (int slot = 1; slot <= 3; slot++)
 				{
 					int which = slot - 1;
-					if (c == DataModelMatch::Alliance::Blue)
+					if (c == Alliance::Blue)
 						which += 3;
 
 					extractOneAlliance(arr, c, slot, tracks[which]);
@@ -279,7 +279,7 @@ namespace xero
 
 				for (auto m : dataModel()->matches())
 				{
-					DataModelMatch::Alliance c;
+					Alliance c;
 					int slot;
 
 					if (!m->teamToAllianceSlot(key, c, slot))

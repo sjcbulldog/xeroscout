@@ -57,7 +57,7 @@ namespace xero
 
 				for (auto m : dm->matches())
 				{
-					DataModelMatch::Alliance c = DataModelMatch::Alliance::Red;
+					Alliance c = Alliance::Red;
 					for (int i = 1; i <= 3; i++)
 					{
 						if (m->scoutingDataList(c, i).size() > 1)
@@ -79,7 +79,7 @@ namespace xero
 						}
 					}
 
-					c = DataModelMatch::Alliance::Blue;
+					c = Alliance::Blue;
 					for (int i = 1; i <= 3; i++)
 					{
 						if (m->scoutingDataList(c, i).size() > 1)
@@ -118,7 +118,7 @@ namespace xero
 				}
 				else if (dm->findMatchByKey(key) != nullptr)
 				{
-					DataModelMatch::Alliance c = static_cast<DataModelMatch::Alliance>(item->data(0, Qt::UserRole).toInt());
+					Alliance c = static_cast<Alliance>(item->data(0, Qt::UserRole).toInt());
 					int slot = item->data(1, Qt::UserRole).toInt();
 					emit mergeMatch(key, c, slot);
 				}

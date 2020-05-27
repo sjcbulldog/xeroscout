@@ -3,7 +3,7 @@
 
 #define MyAppName "XeroCentral"
 #define MySecondName "XeroScout"
-#define MyAppVersion "0.1.18"
+#define MyAppVersion "0.1.19"
 #define MyAppPublisher "ErrorCodeXero"
 #define MyAppURL "http://www.wilsonvillerobotics.com/"
 #define MyAppExeName "PCScouter.exe"

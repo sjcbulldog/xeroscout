@@ -89,6 +89,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <QtMoc Include="AllTeamSummaryGenerator.h" />
+    <ClInclude Include="Alliance.h" />
     <ClInclude Include="BooleanFormItem.h" />
     <ClInclude Include="BooleanItemDisplay.h" />
     <ClInclude Include="ChoiceFormItem.h" />

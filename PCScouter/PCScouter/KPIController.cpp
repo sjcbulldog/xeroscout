@@ -10,13 +10,13 @@ using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
 KPIController::KPIController(std::shared_ptr<BlueAlliance> ba, int year, const QStringList& teams, 
-	const QString& evkey, std::shared_ptr<const ScoutingForm> pit, std::shared_ptr<const ScoutingForm> match) : ApplicationController(ba)
+	const QString& evkey, std::shared_ptr<const ScoutingForm> team, std::shared_ptr<const ScoutingForm> match) : ApplicationController(ba)
 {
 	state_ = State::Start;
 	teams_ = teams;
 	year_ = year;
 	evkey_ = evkey;
-	pit_ = pit;
+	team_ = team;
 	match_ = match;
 }
 
@@ -39,7 +39,7 @@ void KPIController::computeKPI()
 		if (eit == baevents.end())
 			continue;
 
-		auto model = DataModelBuilder::buildModel(blueAlliance()->getEngine(), pit_, match_, eit->second->key(), error);
+		auto model = DataModelBuilder::buildModel(blueAlliance()->getEngine(), team_, match_, eit->second->key(), error);
 		assert(model != nullptr);
 
 		//

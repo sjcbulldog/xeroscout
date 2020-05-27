@@ -5,6 +5,8 @@
 #include "GraphDescriptor.h"
 #include "ChartViewWrapper.h"
 #include "ScoutDataExprContext.h"
+#include "ScoutingDataMap.h"
+#include "Expr.h"
 #include <QWidget>
 #include <QComboBox>
 #include <QChartView>
@@ -56,6 +58,9 @@ namespace xero
 
 			private:
 				static const int constexpr MaxPanes = 9;
+
+				bool addDataElements(const QString& query, xero::scouting::datamodel::ScoutingDataMapPtr varvalues, xero::scouting::datamodel::ScoutingDataSet& ds);
+				QStringList findAllFieldsUsed(xero::scouting::datamodel::ScoutDataExprContext& ctxt, const QStringList& exprlist, std::vector<std::shared_ptr<xero::expr::Expr>>& exprs);
 
 				void generateCharts();
 				bool generateOneChart(std::shared_ptr<const xero::scouting::datamodel::GraphDescriptor::GraphPane> pane, std::shared_ptr<ChartViewWrapper> chart, const QStringList& teams);

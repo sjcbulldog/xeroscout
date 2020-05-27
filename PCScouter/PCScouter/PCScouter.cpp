@@ -700,7 +700,7 @@ void PCScouter::importKPIData()
 		teams.push_back(team->key());
 
 	setEnabled(false);
-	app_controller_ = new KPIController(blue_alliance_, year_, teams, data_model_->evkey(), data_model_->pitScoutingForm(), data_model_->matchScoutingForm());
+	app_controller_ = new KPIController(blue_alliance_, year_, teams, data_model_->evkey(), data_model_->teamScoutingForm(), data_model_->matchScoutingForm());
 }
 
 void PCScouter::importMatchDataComplete(bool err)
@@ -900,7 +900,7 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 			if (ds->needsRefresh())
 			{
 				qDebug() << "PitScoutingFormView - refresh";
-				ds->setScoutingForm(data_model_->pitScoutingForm(), "");
+				ds->setScoutingForm(data_model_->teamScoutingForm(), "");
 				ds->clearNeedRefresh();
 			}
 		}
@@ -963,7 +963,7 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 			if (ds->needsRefresh())
 			{
 				qDebug() << "PitDataSet - refreshed";
-				data_model_->createPitDataSet(ds->dataset());
+				data_model_->createTeamDataSet(ds->dataset());
 				ds->refreshView();
 				ds->clearNeedRefresh();
 			}
@@ -1219,7 +1219,7 @@ void PCScouter::printProfileError(const QString& err)
 void PCScouter::mergePitRequest(const QString& key)
 {
 	auto t = data_model_->findTeamByKey(key);
-	ScoutDataMergeDialog dialog(data_model_->pitScoutingForm(), t->pitScoutingDataList());
+	ScoutDataMergeDialog dialog(data_model_->teamScoutingForm(), t->pitScoutingDataList());
 	if (dialog.exec() == QDialog::Accepted)
 	{
 		data_model_->setTeamScoutingData(key, dialog.result(), true);
@@ -1229,7 +1229,7 @@ void PCScouter::mergePitRequest(const QString& key)
 	}
 }
 
-void PCScouter::mergeMatchRequest(const QString& key, xero::scouting::datamodel::DataModelMatch::Alliance c, int slot)
+void PCScouter::mergeMatchRequest(const QString& key, xero::scouting::datamodel::Alliance c, int slot)
 {
 	auto m = data_model_->findMatchByKey(key);
 	ScoutDataMergeDialog dialog(data_model_->matchScoutingForm(), m->scoutingDataList(c, slot));

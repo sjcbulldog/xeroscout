@@ -201,7 +201,7 @@ namespace xero
 				payload[JsonEvKeyName] = dm_->evkey();
 				payload[JsonEvNameName] = dm_->evname();
 				payload[JsonMatchScoutingFormName] = dm_->matchScoutingForm()->obj();
-				payload[JsonPitScoutingFormName] = dm_->pitScoutingForm()->obj();
+				payload[JsonPitScoutingFormName] = dm_->teamScoutingForm()->obj();
 
 				QJsonArray regtabs;
 				for (const TabletIdentity& id : dm_->registeredTablets()) {
@@ -239,8 +239,8 @@ namespace xero
 					QJsonArray red;
 					for (int i = 1; i <= 3; i++)
 					{
-						QString t = m->team(DataModelMatch::Alliance::Red, i);
-						QString assign = m->tablet(DataModelMatch::Alliance::Red, i);
+						QString t = m->team(Alliance::Red, i);
+						QString assign = m->tablet(Alliance::Red, i);
 
 						red.push_back(t);
 						red.push_back(assign);
@@ -250,8 +250,8 @@ namespace xero
 					QJsonArray blue;
 					for (int i = 1; i <= 3 ; i++)
 					{
-						QString t = m->team(DataModelMatch::Alliance::Blue, i);
-						QString assign = m->tablet(DataModelMatch::Alliance::Blue, i);
+						QString t = m->team(Alliance::Blue, i);
+						QString assign = m->tablet(Alliance::Blue, i);
 
 						blue.push_back(t);
 						blue.push_back(assign);
@@ -264,8 +264,8 @@ namespace xero
 					if (extra)
 					{
 						for (int i = 1; i <= 3; i++) {
-							badatared.push_back(encode(m->blueAllianceData(DataModelMatch::Alliance::Red, i)));
-							badatablue.push_back(encode(m->blueAllianceData(DataModelMatch::Alliance::Blue, i)));
+							badatared.push_back(encode(m->blueAllianceData(Alliance::Red, i)));
+							badatablue.push_back(encode(m->blueAllianceData(Alliance::Blue, i)));
 						}
 					}
 
@@ -327,14 +327,14 @@ namespace xero
 
 					mt[JsonKeyName] = m->key();
 
-					DataModelMatch::Alliance c = DataModelMatch::Alliance::Red;
+					Alliance c = Alliance::Red;
 					for (int i = 1; i <= 3; i++)
 					{
 						QString key = DataModelMatch::toString(c) + QString::number(i);
 						mt[key] = encodeScoutingData(m->scoutingDataList(c, i));
 					}
 
-					c = DataModelMatch::Alliance::Blue;
+					c = Alliance::Blue;
 					for (int i = 1; i <= 3; i++)
 					{
 						QString key = DataModelMatch::toString(c) + QString::number(i);
@@ -374,18 +374,18 @@ namespace xero
 				for (auto t : dm_->teams()) {
 					if (t->tablet() == tablet && t->pitScoutingData() != nullptr)
 					{
-						QJsonObject pit;
-						pit[JsonTeamName] = t->key();
-						pit[JsonResultName] = encode(t->pitScoutingData());
+						QJsonObject team;
+						team[JsonTeamName] = t->key();
+						team[JsonResultName] = encode(t->pitScoutingData());
 
-						pits.push_back(pit);
+						pits.push_back(team);
 					}
 				}
 				obj[JsonPitsName] = pits;
 
 				QJsonArray matches;
 				for (auto m : dm_->matches()) {
-					DataModelMatch::Alliance c;
+					Alliance c;
 					int slot;
 
 					if (m->tabletToAllianceSlot(tablet, c, slot))
@@ -590,8 +590,8 @@ namespace xero
 					return false;
 				}
 
-				dm_->pit_scouting_form_ = std::make_shared<ScoutingForm>(obj[JsonPitScoutingFormName].toObject());
-				if (!dm_->pit_scouting_form_->isOK()) {
+				dm_->team_scouting_form_ = std::make_shared<ScoutingForm>(obj[JsonPitScoutingFormName].toObject());
+				if (!dm_->team_scouting_form_->isOK()) {
 					for (const QString& err : dm_->match_scouting_form_->errors())
 						errors_.push_back(err);
 					return false;
@@ -726,8 +726,8 @@ namespace xero
 							return false;
 						}
 
-						dm->addTeam(DataModelMatch::Alliance::Red, red[i].toString());
-						dm->setTablet(DataModelMatch::Alliance::Red, slot, red[i + 1].toString());
+						dm->addTeam(Alliance::Red, red[i].toString());
+						dm->setTablet(Alliance::Red, slot, red[i + 1].toString());
 					}
 
 					QJsonArray blue = mobj.value(JsonBlueName).toArray();
@@ -739,8 +739,8 @@ namespace xero
 							return false;
 						}
 
-						dm->addTeam(DataModelMatch::Alliance::Blue, blue[i].toString());
-						dm->setTablet(DataModelMatch::Alliance::Blue, slot, blue[i + 1].toString());
+						dm->addTeam(Alliance::Blue, blue[i].toString());
+						dm->setTablet(Alliance::Blue, slot, blue[i + 1].toString());
 					}
 
 					QJsonArray badatared = mobj.value(JsonBaDataRedName).toArray();
@@ -748,8 +748,8 @@ namespace xero
 
 					if (badatablue.size() == 3 && badatared.size() == 3) {
 						for (int i = 1; i <= 3; i++) {
-							dm->setBlueAllianceData(DataModelMatch::Alliance::Red, i, decode(badatared[i - 1].toArray()));
-							dm->setBlueAllianceData(DataModelMatch::Alliance::Blue, i, decode(badatablue[i - 1].toArray()));
+							dm->setBlueAllianceData(Alliance::Red, i, decode(badatared[i - 1].toArray()));
+							dm->setBlueAllianceData(Alliance::Blue, i, decode(badatablue[i - 1].toArray()));
 						}
 					}
 
@@ -807,7 +807,7 @@ namespace xero
 					QString matchkey = obj.value(JsonKeyName).toString();
 					QStringList keys = obj.keys();
 
-					DataModelMatch::Alliance c = DataModelMatch::Alliance::Red;
+					Alliance c = Alliance::Red;
 					for (int i = 1; i <= 3; i++)
 					{
 						QString key = DataModelMatch::toString(c) + QString::number(i);
@@ -831,7 +831,7 @@ namespace xero
 						}
 					}
 
-					c = DataModelMatch::Alliance::Blue;
+					c = Alliance::Blue;
 					for (int i = 1; i <= 3; i++)
 					{
 						QString key = DataModelMatch::toString(c) + QString::number(i);
@@ -880,7 +880,7 @@ namespace xero
 
 					if (!obj.contains(JsonPitsName) || !obj.value(JsonPitsName).isArray())
 					{
-						errors_.push_back("expected pit scouting data in scouting array");
+						errors_.push_back("expected team scouting data in scouting array");
 						return false;
 					}
 
@@ -1052,13 +1052,13 @@ namespace xero
 
 					if (!pitres.contains(JsonTeamName) || !pitres.value(JsonTeamName).isString())
 					{
-						errors_.push_back("scouting data for pits was corrupt, expected string field 'team' in pit scouting result");
+						errors_.push_back("scouting data for pits was corrupt, expected string field 'team' in team scouting result");
 						return false;
 					}
 
 					if (!pitres.contains(JsonResultName) || !pitres.value(JsonResultName).isArray())
 					{
-						errors_.push_back("scouting data for pits was corrupt, expected array field 'result' in pit scouting result");
+						errors_.push_back("scouting data for pits was corrupt, expected array field 'result' in team scouting result");
 						return false;
 					}
 
@@ -1090,30 +1090,30 @@ namespace xero
 
 					if (!matchres.contains(JsonKeyName) || !matchres.value(JsonKeyName).isString())
 					{
-						errors_.push_back("scouting data for pits was corrupt, expected string field 'key' in pit scouting result");
+						errors_.push_back("scouting data for pits was corrupt, expected string field 'key' in team scouting result");
 						return false;
 					}
 
 					if (!matchres.contains("alliance") || !matchres.value("alliance").isString())
 					{
-						errors_.push_back("scouting data for pits was corrupt, expected string field 'alliance' in pit scouting result");
+						errors_.push_back("scouting data for pits was corrupt, expected string field 'alliance' in team scouting result");
 						return false;
 					}
 
 					if (!matchres.contains("slot") || !matchres.value("slot").isDouble())
 					{
-						errors_.push_back("scouting data for pits was corrupt, expected integer field 'slot' in pit scouting result");
+						errors_.push_back("scouting data for pits was corrupt, expected integer field 'slot' in team scouting result");
 						return false;
 					}
 
 					if (!matchres.contains(JsonResultName) || !matchres.value(JsonResultName).isArray())
 					{
-						errors_.push_back("scouting data for pits was corrupt, expected JSON array field 'result' in pit scouting result");
+						errors_.push_back("scouting data for pits was corrupt, expected JSON array field 'result' in team scouting result");
 						return false;
 					}
 
 					auto m = dm_->findMatchByKey(matchres.value(JsonKeyName).toString());
-					DataModelMatch::Alliance c = DataModelMatch::allianceFromString(matchres.value(JsonAllianceName).toString());
+					Alliance c = DataModelMatch::allianceFromString(matchres.value(JsonAllianceName).toString());
 
 					if (dm_->setMatchScoutingData(m->key(), c, matchres.value(JsonSlotName).toInt(), decode(matchres.value(JsonResultName).toArray())))
 						added.push_back(matchres.value(JsonKeyName).toString());

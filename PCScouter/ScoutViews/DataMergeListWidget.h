@@ -24,7 +24,7 @@ namespace xero
 				virtual void refreshView() ;
 
 			signals:
-				void mergeMatch(const QString& key, xero::scouting::datamodel::DataModelMatch::Alliance c, int slot);
+				void mergeMatch(const QString& key, xero::scouting::datamodel::Alliance c, int slot);
 				void mergePit(const QString& key);
 
 			private:

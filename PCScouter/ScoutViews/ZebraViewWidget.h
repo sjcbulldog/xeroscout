@@ -41,9 +41,9 @@ namespace xero
 				void createPlotMatch(const QString& key);
 				void createPlotTeam(const QString& key);
 
-				QColor matchRobotColor(xero::scouting::datamodel::DataModelMatch::Alliance c, int slot);
-				void processAlliance(const QJsonArray& arr, xero::scouting::datamodel::DataModelMatch::Alliance c, std::vector<std::shared_ptr<RobotTrack>>& tracks);
-				bool extractOneAlliance(const QJsonArray& arr, xero::scouting::datamodel::DataModelMatch::Alliance c, int slot, std::shared_ptr<RobotTrack> track);
+				QColor matchRobotColor(xero::scouting::datamodel::Alliance c, int slot);
+				void processAlliance(const QJsonArray& arr, xero::scouting::datamodel::Alliance c, std::vector<std::shared_ptr<RobotTrack>>& tracks);
+				bool extractOneAlliance(const QJsonArray& arr, xero::scouting::datamodel::Alliance c, int slot, std::shared_ptr<RobotTrack> track);
 
 			private:
 				QComboBox* box_;

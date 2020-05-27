@@ -88,9 +88,9 @@ namespace xero
 			{
 			}
 
-			void MatchViewWidget::setScoutingField(const QString& key, DataModelMatch::Alliance c, int slot, bool value)
+			void MatchViewWidget::setScoutingField(const QString& key, Alliance c, int slot, bool value)
 			{
-				int alloff = (c == DataModelMatch::Alliance::Red ? 5 : 14);
+				int alloff = (c == Alliance::Red ? 5 : 14);
 				int col;
 				
 				if (tablet_.length() == 0)
@@ -124,7 +124,7 @@ namespace xero
 				}
 			}
 
-			int MatchViewWidget::putAllianceData(std::shared_ptr<const DataModelMatch> m, QTreeWidgetItem* i, DataModelMatch::Alliance a, int index)
+			int MatchViewWidget::putAllianceData(std::shared_ptr<const DataModelMatch> m, QTreeWidgetItem* i, Alliance a, int index)
 			{
 				for (int slot = 1; slot <= 3; slot++) {
 					QString key = m->team(a, slot);
@@ -159,7 +159,7 @@ namespace xero
 
 			void MatchViewWidget::putOneOne(std::shared_ptr<const DataModelMatch> m)
 			{
-				DataModelMatch::Alliance color;
+				Alliance color;
 				int slot;
 
 				if (!m->tabletToAllianceSlot(tablet_, color, slot))
@@ -217,8 +217,8 @@ namespace xero
 
 				i->setText(index++, QString::number(m->match()));
 
-				index = putAllianceData(m, i, DataModelMatch::Alliance::Red, index);
-				index = putAllianceData(m, i, DataModelMatch::Alliance::Blue, index);
+				index = putAllianceData(m, i, Alliance::Red, index);
+				index = putAllianceData(m, i, Alliance::Blue, index);
 
 				addTopLevelItem(i);
 			}

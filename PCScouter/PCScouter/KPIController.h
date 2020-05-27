@@ -14,7 +14,7 @@ class KPIController : public ApplicationController
 {
 public:
 	KPIController(std::shared_ptr<xero::ba::BlueAlliance> ba, int year, const QStringList& teams,
-		const QString& evkey, std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> pit, 
+		const QString& evkey, std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> team,
 		std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> match);
 	virtual ~KPIController();
 
@@ -52,7 +52,7 @@ private:
 	QStringList evlist_;
 	QString evkey_;
 	int index_ ;
-	std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> pit_;
+	std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> team_;
 	std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> match_;
 };
 

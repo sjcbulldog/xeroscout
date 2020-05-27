@@ -35,14 +35,14 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			ScoutingDataModel::ScoutingDataModel(const QString& evkey, const QString& evname, std::shared_ptr<ScoutingForm> pit, std::shared_ptr<ScoutingForm> match)
+			ScoutingDataModel::ScoutingDataModel(const QString& evkey, const QString& evname, std::shared_ptr<ScoutingForm> team, std::shared_ptr<ScoutingForm> match)
 			{
 				ev_key_ = evkey;
 				event_name_ = evname;
 
 				filename_ = QStandardPaths::locate(QStandardPaths::DocumentsLocation, ev_key_);
 
-				pit_scouting_form_ = pit;
+				team_scouting_form_ = team;
 
 				match_scouting_form_ = match;
 
@@ -244,10 +244,10 @@ namespace xero
 					const QStringList& matchassign = a.match(matchno++);
 
 					for (int i = 1; i <= 3; i++) {
-						dm->setTablet(DataModelMatch::Alliance::Red, i, matchassign[index++]);
+						dm->setTablet(Alliance::Red, i, matchassign[index++]);
 					}
 					for (int i = 1; i <= 3; i++) {
-						dm->setTablet(DataModelMatch::Alliance::Blue, i, matchassign[index++]);
+						dm->setTablet(Alliance::Blue, i, matchassign[index++]);
 					}
 				}
 
@@ -276,7 +276,7 @@ namespace xero
 				return nullptr;
 			}
 
-			void ScoutingDataModel::processDataSetAlliance(ScoutingDataSet& set, std::shared_ptr<DataModelMatch> m, DataModelMatch::Alliance c) const
+			void ScoutingDataModel::processDataSetAlliance(ScoutingDataSet& set, std::shared_ptr<DataModelMatch> m, Alliance c) const
 			{
 				auto scouting_form_fields = match_scouting_form_->fields();
 				QVariant vinvalid;
@@ -353,7 +353,7 @@ namespace xero
 				}
 
 				// Color does not matter here, we just want the headers
-				auto badata = matches_.front()->blueAllianceData(DataModelMatch::Alliance::Red, 1);
+				auto badata = matches_.front()->blueAllianceData(Alliance::Red, 1);
 				if (badata != nullptr)
 				{
 					for (auto entry : *badata)
@@ -364,15 +364,15 @@ namespace xero
 				// Generate the data
 				//
 				for (auto m : matches_) {
-					processDataSetAlliance(set, m, DataModelMatch::Alliance::Red);
-					processDataSetAlliance(set, m, DataModelMatch::Alliance::Blue);
+					processDataSetAlliance(set, m, Alliance::Red);
+					processDataSetAlliance(set, m, Alliance::Blue);
 				}
 			}
 
-			void ScoutingDataModel::createPitDataSet(ScoutingDataSet& set) const
+			void ScoutingDataModel::createTeamDataSet(ScoutingDataSet& set) const
 			{
 				QVariant invalid;
-				auto fields = pit_scouting_form_->fields();
+				auto fields = team_scouting_form_->fields();
 				QStringList extra;
 
 				set.clear();
@@ -459,7 +459,7 @@ namespace xero
 				if (!db->hasTable("teams"))
 				{
 					ScoutingDataSet pitset;
-					createPitDataSet(pitset);
+					createTeamDataSet(pitset);
 					if (!db->addTable("teams", pitset))
 						return false;
 				}
@@ -496,7 +496,7 @@ namespace xero
 				for (auto team : teams_)
 				{
 					if ((cnt % mod) == 0)
-						team->setPitScoutingData(generateRandomData(profile, pit_scouting_form_), true);
+						team->setPitScoutingData(generateRandomData(profile, team_scouting_form_), true);
 
 					cnt++;
 				}
@@ -507,11 +507,11 @@ namespace xero
 					for (int i = 1; i <= 3; i++)
 					{
 						if ((cnt % mod) == 0)
-							match->setScoutingData(DataModelMatch::Alliance::Red, i, generateRandomData(profile, match_scouting_form_), true);
+							match->setScoutingData(Alliance::Red, i, generateRandomData(profile, match_scouting_form_), true);
 						cnt++;
 
 						if ((cnt % mod) == 0)
-							match->setScoutingData(DataModelMatch::Alliance::Blue, i, generateRandomData(profile, match_scouting_form_), true);
+							match->setScoutingData(Alliance::Blue, i, generateRandomData(profile, match_scouting_form_), true);
 						cnt++;
 					}
 				}
@@ -520,7 +520,7 @@ namespace xero
 				emitChangedSignal(ChangeType::MatchScoutingDataAdded);
 			}
 
-			void ScoutingDataModel::breakOutBAData(std::shared_ptr<DataModelMatch> m, DataModelMatch::Alliance c, ScoutingDataMapPtr data)
+			void ScoutingDataModel::breakOutBAData(std::shared_ptr<DataModelMatch> m, Alliance c, ScoutingDataMapPtr data)
 			{
 				ScoutingDataMapPtr newdata1 = std::make_shared<ScoutingDataMap>();
 				ScoutingDataMapPtr newdata2 = std::make_shared<ScoutingDataMap>();
@@ -558,8 +558,8 @@ namespace xero
 			void ScoutingDataModel::breakoutBlueAlliancePerRobotData(std::map<QString, std::pair<ScoutingDataMapPtr, ScoutingDataMapPtr>>& data)
 			{
 				for (auto m : matches_) {
-					breakOutBAData(m, DataModelMatch::Alliance::Red, data[m->key()].first);
-					breakOutBAData(m, DataModelMatch::Alliance::Blue, data[m->key()].second);
+					breakOutBAData(m, Alliance::Red, data[m->key()].first);
+					breakOutBAData(m, Alliance::Blue, data[m->key()].second);
 				}
 			}
 
@@ -567,7 +567,7 @@ namespace xero
 			{
 				for (auto m : matches_)
 				{
-					DataModelMatch::Alliance color;
+					Alliance color;
 					int slot;
 
 					if (m->tabletToAllianceSlot(tablet, color, slot))
@@ -600,24 +600,24 @@ namespace xero
 
 				list = getMatchFieldNames();
 
-				list.append(getPitFieldNames());
+				list.append(getTeamFieldNames());
 
 				return list;
 			}
 
-			QStringList ScoutingDataModel::getPitFieldNames() const
+			QStringList ScoutingDataModel::getTeamFieldNames() const
 			{
 				QStringList list;
 
 				//
-				// Get any fields from the pit scouting form
+				// Get any fields from the team scouting form
 				//
-				auto flist = pit_scouting_form_->fields();
+				auto flist = team_scouting_form_->fields();
 				for (auto f : flist)
 					list.push_back(f.first);
 
 				//
-				// Get any extra data attached the the teams
+				// Make sure the extra data is consistent
 				//
 				int cnt = -1;
 				for (auto team : teams())
@@ -655,7 +655,7 @@ namespace xero
 					list.push_back(f.first);
 
 				auto m = matches().front();
-				auto ba = m->blueAllianceData(DataModelMatch::Alliance::Red, 1);
+				auto ba = m->blueAllianceData(Alliance::Red, 1);
 				if (ba != nullptr)
 				{
 					for (auto pair : *ba)

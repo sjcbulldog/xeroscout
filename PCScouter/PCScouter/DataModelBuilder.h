@@ -14,11 +14,11 @@ public:
 	~DataModelBuilder() = delete;
 
 	static std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> 
-		buildModel(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<xero::scouting::datamodel::ScoutingForm> pit, 
+		buildModel(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<xero::scouting::datamodel::ScoutingForm> team,
 		std::shared_ptr<xero::scouting::datamodel::ScoutingForm> match, const QString& evkey, QString& error);
 
 	static std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
-		buildModel(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> pit,
+		buildModel(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> team,
 			std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> match, const QString& evkey, QString& error);
 
 	static std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>

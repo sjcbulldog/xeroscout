@@ -103,13 +103,13 @@ void NewEventAppController::gotTeams()
 		QStringList& red = m->red()->getTeams();
 		for (int i = 0; i < red.size(); i++) {
 			QString team = m->red()->getTeams().at(i);
-			dm_->addTeamToMatch(dm->key(), DataModelMatch::Alliance::Red, team);
+			dm_->addTeamToMatch(dm->key(), Alliance::Red, team);
 		}
 
 		QStringList& blue = m->blue()->getTeams();
 		for (int i = 0; i < blue.size(); i++) {
 			QString team = m->blue()->getTeams().at(i);
-			dm_->addTeamToMatch(dm->key(), DataModelMatch::Alliance::Blue, team);
+			dm_->addTeamToMatch(dm->key(), Alliance::Blue, team);
 		}
 	}
 
@@ -201,21 +201,21 @@ void NewEventAppController::promptUser()
 			good = false;
 		}
 
-		if (!dm_->pitScoutingForm()->isOK()) {
+		if (!dm_->teamScoutingForm()->isOK()) {
 			QString line(wizard.getPitScoutingForm());
-			line += ": cannot parse pit scouting form, ";
+			line += ": cannot parse team scouting form, ";
 			emit logMessage(line);
 
-			for (const QString& err : dm_->pitScoutingForm()->errors())
+			for (const QString& err : dm_->teamScoutingForm()->errors())
 				emit logMessage(err);
 
 			good = false;
 		}
 
-		if (dm_->pitScoutingForm()->formType() != "pit")
+		if (dm_->teamScoutingForm()->formType() != "team")
 		{
 			QString line(wizard.getMatchScoutingForm());
-			line += ": wrong type of form, expected 'pit', got '";
+			line += ": wrong type of form, expected 'team', got '";
 			line += dm_->matchScoutingForm()->formType() + "'";
 			emit logMessage(line);
 			good = false;

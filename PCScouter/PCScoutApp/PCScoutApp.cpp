@@ -566,7 +566,7 @@ void PCScoutApp::extractDataFromForm(int view, const QString &label)
 			p->insert_or_assign("TabletUUID", identity_.uid().toString());
 			p->insert_or_assign("TimeStamp", QDateTime::currentDateTime().toString());
 
-			DataModelMatch::Alliance color;
+			Alliance color;
 			int slot;
 			m->tabletToAllianceSlot(identity_.name(), color, slot);
 			data_model_->setMatchScoutingData(m->key(), color, slot, p, true);
@@ -925,7 +925,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 		auto team = data_model_->findTeamByKey(key);
 		QString title = generatePitTitle(team);
 
-		index = startScouting(key, "pit", title, DataModelMatch::Alliance::Red, data_model_->pitScoutingForm());
+		index = startScouting(key, "team", title, Alliance::Red, data_model_->teamScoutingForm());
 		saveForm(index);
 
 		PitScheduleViewWidget* w = dynamic_cast<PitScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
@@ -934,7 +934,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 	else if (t == DocumentView::ViewType::MatchView)
 	{
 		auto m = data_model_->findMatchByKey(key);
-		DataModelMatch::Alliance c;
+		Alliance c;
 		int slot;
 
 		m->tabletToAllianceSlot(identity_.name(), c, slot);
@@ -986,15 +986,15 @@ bool PCScoutApp::viewExists(int viewindex)
 	return ret;
 }
 
-int PCScoutApp::startScouting(const QString& key, const QString &type, const QString &title, DataModelMatch::Alliance c, std::shared_ptr<const ScoutingForm> form)
+int PCScoutApp::startScouting(const QString& key, const QString &type, const QString &title, Alliance c, std::shared_ptr<const ScoutingForm> form)
 {
 	QListWidgetItem* item;
 	int index;
 	QColor color;
 
-	if (type == "pit")
+	if (type == "team")
 		color = QColor(0, 128, 0);
-	else if (c == DataModelMatch::Alliance::Red)
+	else if (c == Alliance::Red)
 		color = QColor(255, 0, 0);
 	else
 		color = QColor(0, 0, 255);
@@ -1052,11 +1052,11 @@ void PCScoutApp::createPitScoutingForms()
 	{
 		if (t->pitScoutingData() != nullptr)
 		{
-			DataModelMatch::Alliance c;
+			Alliance c;
 			int slot;
 
 			QString title = generatePitTitle(t);
-			int index = startScouting(t->key(), "pit", title, DataModelMatch::Alliance::Red, data_model_->pitScoutingForm());
+			int index = startScouting(t->key(), "pit", title, Alliance::Red, data_model_->teamScoutingForm());
 
 			FormView* form = dynamic_cast<FormView*>(view_frame_->getWidget(index));
 			assert(form != nullptr);
@@ -1071,7 +1071,7 @@ void PCScoutApp::createMatchScoutingForms()
 {
 	for (auto m : data_model_->matches())
 	{
-		DataModelMatch::Alliance c;
+		Alliance c;
 		int slot;
 
 		if (m->tabletToAllianceSlot(identity_.name(), c, slot)) {
@@ -1084,7 +1084,7 @@ void PCScoutApp::createMatchScoutingForms()
 				FormView* form = dynamic_cast<FormView*>(view_frame_->getWidget(index));
 				assert(form != nullptr);
 
-				auto sd = m->scoutingData(c, slot);
+				auto sd = m->data(c, slot);
 				form->assignData(sd);
 			}
 		}

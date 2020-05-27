@@ -143,8 +143,8 @@ namespace xero
 				}
 
 				form_type_ = obj_.value("form").toString();
-				if (form_type_ != "pit" && form_type_ != "match") {
-					errors_.push_back("form type ('form' field) is not 'pit' nor 'match'");
+				if (form_type_ != "team" && form_type_ != "match") {
+					errors_.push_back("form type ('form' field) is not 'team' nor 'match'");
 					return;
 				}
 

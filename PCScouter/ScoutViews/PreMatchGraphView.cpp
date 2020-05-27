@@ -64,7 +64,7 @@ namespace xero
 					QString key = box_->currentData().toString();
 					auto m = dataModel()->findMatchByKey(key);
 
-					DataModelMatch::Alliance c = DataModelMatch::Alliance::Red;
+					Alliance c = Alliance::Red;
 					for (int slot = 1; slot <= 3; slot++)
 					{
 						QString team = m->team(c, slot);
@@ -72,7 +72,7 @@ namespace xero
 						aug.push_back("red");
 					}
 
-					c = DataModelMatch::Alliance::Blue;
+					c = Alliance::Blue;
 					for (int slot = 1; slot <= 3; slot++)
 					{
 						QString team = m->team(c, slot);

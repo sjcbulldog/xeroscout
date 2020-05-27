@@ -375,6 +375,64 @@ namespace xero
 				}
 			}
 
+			bool GraphView::addDataElements(const QString &query, ScoutingDataMapPtr varvalues, ScoutingDataSet& ds)
+			{
+				QString err;
+				if (!dataModel()->createCustomDataSet(ds, query, err))
+				{
+					// This should never happen
+
+					return false;
+				}
+
+				//
+				// Now, compute averages for all of the fields we needed
+				//
+				for (int i = 0; i < ds.columnCount(); i++)
+				{
+					double total = 0.0;
+					for (int row = 0; row < ds.rowCount(); row++)
+						total += ds.get(row, i).toDouble();
+
+					varvalues->insert_or_assign(ds.headers().at(i), QVariant(total / ds.rowCount()));
+				}
+
+				return true;
+			}
+
+			QStringList GraphView::findAllFieldsUsed(ScoutDataExprContext& ctxt, const QStringList& exprlist, std::vector<std::shared_ptr<Expr>>& exprs)
+			{
+				QStringList allused;
+				QString err;
+
+				//
+				// Create the expressions and get the fields needed
+				//
+				for (const QString& exprtxt : exprlist)
+				{
+					//
+					// Parse expressions against all fields
+					//
+					auto expr = std::make_shared<Expr>();
+					if (!expr->parse(ctxt, exprtxt, err))
+					{
+						exprs.clear();
+						return allused ;
+					}
+
+					QStringList used = expr->allVariables();
+					for (const QString& var : used)
+					{
+						if (!allused.contains(var))
+							allused.push_back(var);
+					}
+
+					exprs.push_back(expr);
+				}
+
+				return allused;
+			}
+
 			bool GraphView::getData(std::map<QString, std::vector<QVariant>>& data, const QStringList& teams, const QStringList& exprlist)
 			{
 				ScoutingDataSet ds;
@@ -389,31 +447,9 @@ namespace xero
 					std::vector<std::shared_ptr<Expr>> exprs;
 					QStringList allused;
 
-					//
-					// Create the expressions and get the fields needed
-					//
-					for (const QString& exprtxt : exprlist)
-					{
-						//
-						// Parse expressions against all fields
-						//
-						auto expr = std::make_shared<Expr>();
-						if (!expr->parse(ctxt, exprtxt, err))
-						{
-							// Return error message to the user
-							continue;
-						}
-
-						QStringList used = expr->allVariables();
-						for (const QString& var : used)
-						{
-							if (!allused.contains(var))
-								allused.push_back(var);
-						}
-
-						exprs.push_back(expr);
-					}
-
+					allused = findAllFieldsUsed(ctxt, exprlist, exprs);
+					if (exprs.size() == 0)
+						return false;
 
 					//
 					// For the match fields, find the averages we need
@@ -434,32 +470,19 @@ namespace xero
 						query += allused.at(i);
 						count++;
 					}
+
 					if (count > 0)
 					{
 						query += " from matches where TeamKey='" + team + "'";
-						if (!dataModel()->createCustomDataSet(ds, query, err))
+						if (!addDataElements(query, varvalues, ds))
 						{
-							// This should never happen
 							data.clear();
 							return false;
-						}
-
-						//
-						// Now, compute averages for all of the fields we needed
-						//
-
-						for (int i = 0; i < ds.columnCount(); i++)
-						{
-							double total = 0.0;
-							for (int row = 0; row < ds.rowCount(); row++)
-								total += ds.get(row, i).toDouble();
-
-							varvalues->insert_or_assign(ds.headers().at(i), QVariant(total / ds.rowCount()));
 						}
 					}
 
 					//
-					// Now, append the pit data elements to the set
+					// Now, append the team data elements to the set
 					//
 					query.clear();
 					ds.clear();
@@ -480,24 +503,11 @@ namespace xero
 
 					if (count > 0)
 					{
-						query += " from pits where TeamKey='" + team + "'";
-						if (!dataModel()->createCustomDataSet(ds, query, err))
+						query += " from teams where TeamKey='" + team + "'";
+						if (!addDataElements(query, varvalues, ds))
 						{
-							// This should never happen
 							data.clear();
 							return false;
-						}
-
-						//
-						// This data set contains the pit values, should be a single row
-						//
-						for (int i = 0; i < ds.columnCount(); i++)
-						{
-							double total = 0.0;
-							for (int row = 0; row < ds.rowCount(); row++)
-								total += ds.get(row, i).toDouble();
-
-							varvalues->insert_or_assign(ds.headers().at(i), QVariant(total / ds.rowCount()));
 						}
 					}
 

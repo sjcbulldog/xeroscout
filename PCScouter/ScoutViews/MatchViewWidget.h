@@ -39,7 +39,7 @@ namespace xero
 				void setData(std::list<std::shared_ptr<const xero::scouting::datamodel::DataModelMatch>> matches);
 				void clearView();
 				void refreshView();
-				void setScoutingField(const QString& key, xero::scouting::datamodel::DataModelMatch::Alliance c, int slot, bool value);
+				void setScoutingField(const QString& key, xero::scouting::datamodel::Alliance c, int slot, bool value);
 
 				void setTablet(const QString& tablet) override {
 					tablet_ = tablet;
@@ -51,7 +51,7 @@ namespace xero
 				static int matchClass(const QString& comp);
 				void putOneAll(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> match);
 				void putOneOne(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> match);
-				int putAllianceData(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> m, QTreeWidgetItem* i, xero::scouting::datamodel::DataModelMatch::Alliance a, int index);
+				int putAllianceData(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> m, QTreeWidgetItem* i, xero::scouting::datamodel::Alliance a, int index);
 
 			private:
 				QString tablet_;

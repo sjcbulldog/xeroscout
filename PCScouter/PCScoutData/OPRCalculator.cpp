@@ -61,7 +61,7 @@ namespace xero
 					if (!m->hasBlueAllianceData())
 						continue;
 
-					DataModelMatch::Alliance c = DataModelMatch::Alliance::Red;
+					Alliance c = Alliance::Red;
 					for (int slot = 1; slot <= 3; slot++)
 					{
 						QString key = m->team(c, slot);
@@ -70,15 +70,13 @@ namespace xero
 						mat(row, index) = 1;
 					}
 
-					auto badata = m->blueAllianceData(c, 1);
-					auto it = badata->find("ba_totalPoints");
-					if (it == badata->end())
+					QVariant v = m->value(c, 1, "ba_totalPoints");
+					if (!v.isValid())
 						return false;
-					score(row) = it->second.toInt();
-
+					score(row) = v.toInt();
 					row++;
 
-					c = DataModelMatch::Alliance::Blue;
+					c = Alliance::Blue;
 					for (int slot = 1; slot <= 3; slot++)
 					{
 						QString key = m->team(c, slot);
@@ -87,11 +85,10 @@ namespace xero
 						mat(row, index) = 1;
 					}
 
-					badata = m->blueAllianceData(c, 1);
-					it = badata->find("ba_totalPoints");
-					if (it == badata->end())
-						return false;
-					score(row) = it->second.toInt();
+					v = m->value(c, 1, "ba_totalPoints");
+					if (!v.isValid())
+						return false; 
+					score(row) = v.toInt();
 
 					row++;
 				}

@@ -58,11 +58,11 @@ namespace xero
 				///\brief the argument to the modelChanged signal.  Indicates the type of change
 				enum class ChangeType {
 					HistoryChanged,					///< the history of changes changed
-					TabletListChanged,				///< the list of pit or match scouting tablets was changed
+					TabletListChanged,				///< the list of team or match scouting tablets was changed
 					TeamAdded,						///< a new team was added to the data model
 					TeamDataChanged,				///< the data associated with a team was changed
-					PitScoutingDataAdded,			///< pit scouting data was added or replaced for a team
-					PitScoutingTabletChanged,		///< the tablet used for pit scouting a team was changed
+					PitScoutingDataAdded,			///< team scouting data was added or replaced for a team
+					PitScoutingTabletChanged,		///< the tablet used for team scouting a team was changed
 					MatchScoutingDataAdded,			///< match scouting data was added or replaced for a match
 					MatchScoutingTabletChanged,		///< the tablet used for match scouting a match was changed
 					TeamAddedToMatch,				///< added a team to a match
@@ -77,9 +77,9 @@ namespace xero
 				/// \brief create a new data model
 				/// \param evkey the event Blue Alliance key
 				/// \param evname the event name
-				/// \param pitform the name of the file containing the pit scouting form
+				/// \param teamform the name of the file containing the team scouting form
 				/// \param matchform the name of the file contining the match scouting form
-				ScoutingDataModel(const QString& evkey, const QString& evname, std::shared_ptr<ScoutingForm> pit, std::shared_ptr<ScoutingForm> match);
+				ScoutingDataModel(const QString& evkey, const QString& evname, std::shared_ptr<ScoutingForm> teamform, std::shared_ptr<ScoutingForm> matchform);
 
 				/// \brief create a new data model
 				ScoutingDataModel();
@@ -201,8 +201,8 @@ namespace xero
 					return match_tablets_;
 				}
 
-				/// \brief returns the set of tablets for pit scouting
-				/// \returns the set of tablets for pit scouting
+				/// \brief returns the set of tablets for teamform scouting
+				/// \returns the set of tablets for teamform scouting
 				const QStringList& pitTablets() {
 					return pit_tablets_;
 				}
@@ -219,17 +219,19 @@ namespace xero
 					return match_scouting_form_;
 				}
 
-				/// \brief returns a pointer to the pit scouting form
-				/// \returns a pointer to the pit scouting form
-				std::shared_ptr<const ScoutingForm> pitScoutingForm() const {
-					return pit_scouting_form_;
+				/// \brief returns a pointer to the teamform scouting form
+				/// \returns a pointer to the teamscouting form
+				std::shared_ptr<const ScoutingForm> teamScoutingForm() const {
+					return team_scouting_form_;
 				}
 
-				/// \brief returns all field names across the pit scouting form, the match scouting form, and the blue alliance data
+				/// \brief returns all field names across the team scouting form, the match scouting form, and the blue alliance data
 				/// \returns all field names ;
 				QStringList getAllFieldNames() const;
 
-				QStringList getPitFieldNames() const;
+				/// \brief return feilds associated with a team
+				/// \returns field names assocatied with a team
+				QStringList getTeamFieldNames() const;
 
 				/// \brief returns fields that contain per match data 
 				/// \returns fields that are valid per match data
@@ -254,10 +256,10 @@ namespace xero
 				void createMatchDataSet(ScoutingDataSet& set) const;
 
 				/// \brief create a dataset for the pits in the datamodel.
-				/// Iterate over all of the teams anad create a dataset for pit scouting data.  The rows are the teams and
-				/// the columns are the scouting data fields from the pit scouting form
+				/// Iterate over all of the teams anad create a dataset for team scouting data.  The rows are the teams and
+				/// the columns are the scouting data fields from the team scouting form
 				/// \param set the dataset to contain the data.  Any existing data will be cleared.
-				void createPitDataSet(ScoutingDataSet& set) const;
+				void createTeamDataSet(ScoutingDataSet& set) const;
 
 				/// \brief create a dataset for a custom SQL query
 				/// The rows and columns are defined by the results of the query
@@ -306,7 +308,7 @@ namespace xero
 				/// \param c the color of the alliance (red or blue)
 				/// \param teamkey the Blue Alliance key for the team
 				/// \returns false if the match does not exist, or if it has teams already otherwise true
-				bool addTeamToMatch(const QString& matchkey, DataModelMatch::Alliance c, const QString& teamkey) {
+				bool addTeamToMatch(const QString& matchkey, Alliance c, const QString& teamkey) {
 					auto dm = findMatchByKeyInt(matchkey);
 					if (dm == nullptr)
 						return false;
@@ -322,7 +324,7 @@ namespace xero
 					return true;
 				}
 
-				/// \brief assign a tablet to a team for pit scouting
+				/// \brief assign a tablet to a team for team scouting
 				/// \param key the Blue Alliance key for the team
 				/// \param the tablet name for the tablet to assign
 				/// \returns true if the team key indicates a valid team, false otherwise
@@ -367,7 +369,7 @@ namespace xero
 				/// \param slot the position (1, 2, 3) for the tablet
 				/// \param tablet the tablet name to assign
 				/// \returns false if the match key is invalid, or the slot is not between 1 - 3
-				bool assignMatchTablet(const QString& key, DataModelMatch::Alliance color, int slot, const QString& tablet)
+				bool assignMatchTablet(const QString& key, Alliance color, int slot, const QString& tablet)
 				{
 					auto match = findMatchByKeyInt(key);
 					if (match == nullptr)
@@ -392,7 +394,7 @@ namespace xero
 				/// \param data the scouting data to assign
 				/// \param false if true, replace all scouting data with this one entry
 				/// \returns false if the match key is invalid, or the slot is not between 1 - 3
-				bool setMatchScoutingData(const QString& key, DataModelMatch::Alliance color, int slot, ScoutingDataMapPtr data, bool replace = false)
+				bool setMatchScoutingData(const QString& key, Alliance color, int slot, ScoutingDataMapPtr data, bool replace = false)
 				{
 					bool ret;
 
@@ -415,9 +417,9 @@ namespace xero
 
 				/// \brief set the lists of tablets to use for scouting
 				/// This method should only be called on a data model that does not have
-				/// pit tablets or match tablets assigned.  This method is used for
+				/// team tablets or match tablets assigned.  This method is used for
 				/// constructing a data model.
-				/// \returns true if sucessful and false if the pit or match tablet scouting list where not empty
+				/// \returns true if sucessful and false if the team or match tablet scouting list where not empty
 				bool setTabletLists(const QStringList& pits, const QStringList& matches) {
 					if (pit_tablets_.size() > 0 || match_tablets_.size() > 0)
 						return false;
@@ -598,7 +600,7 @@ namespace xero
 				/// \brief assign tablets to matches for match scouting
 				void assignMatches();
 
-				/// \brief assign tablets to pits for pit scouting
+				/// \brief assign tablets to team for pit scouting
 				void assignPits();
 
 				/// \brief given a team key, return the team number
@@ -656,7 +658,7 @@ namespace xero
 					event_name_.clear();
 
 					match_scouting_form_ = nullptr;
-					pit_scouting_form_ = nullptr;
+					team_scouting_form_ = nullptr;
 					teams_.clear();
 					matches_.clear();
 
@@ -764,9 +766,9 @@ namespace xero
 				std::shared_ptr<DataModelMatch> findMatch(const QString& comp, int set, int match);
 
 				std::shared_ptr<ScoutingDataMap> generateRandomData(GameRandomProfile& gen, std::shared_ptr<ScoutingForm> form);
-				void breakOutBAData(std::shared_ptr<DataModelMatch> m, DataModelMatch::Alliance c, ScoutingDataMapPtr data);
+				void breakOutBAData(std::shared_ptr<DataModelMatch> m, Alliance c, ScoutingDataMapPtr data);
 
-				void processDataSetAlliance(ScoutingDataSet& set, std::shared_ptr<DataModelMatch> m, DataModelMatch::Alliance c) const;
+				void processDataSetAlliance(ScoutingDataSet& set, std::shared_ptr<DataModelMatch> m, Alliance c) const;
 
 			private:
 				QString filename_;
@@ -777,7 +779,7 @@ namespace xero
 				QString event_name_;
 
 				std::shared_ptr<ScoutingForm> match_scouting_form_;
-				std::shared_ptr<ScoutingForm> pit_scouting_form_;
+				std::shared_ptr<ScoutingForm> team_scouting_form_;
 
 				std::list<std::shared_ptr<DataModelTeam>> teams_;
 				std::list<std::shared_ptr<DataModelMatch>> matches_;

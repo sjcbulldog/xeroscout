@@ -144,6 +144,9 @@
     <ClInclude Include="OPRCalculator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Alliance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoutingDatabase.cpp">

@@ -114,7 +114,7 @@ private:
 	void magicWordTyped(SpecialListWidget::Word w);
 
 	void mergePitRequest(const QString& key);
-	void mergeMatchRequest(const QString& key, xero::scouting::datamodel::DataModelMatch::Alliance c, int slot);
+	void mergeMatchRequest(const QString& key, xero::scouting::datamodel::Alliance c, int slot);
 
 	void showIPAddresses();
 	void setDebug();

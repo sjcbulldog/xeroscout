@@ -37,7 +37,7 @@ void DataModelBuilder::jsonToPropMap(const QJsonObject& obj, const QString& alli
 //
 std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> 
 	DataModelBuilder::buildModel(xero::ba::BlueAllianceEngine& engine, 
-	std::shared_ptr<xero::scouting::datamodel::ScoutingForm> pit,
+	std::shared_ptr<xero::scouting::datamodel::ScoutingForm> team,
 	std::shared_ptr<xero::scouting::datamodel::ScoutingForm> match,
 		const QString& evkey, QString& error)
 {
@@ -52,7 +52,7 @@ std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
 	}
 	auto ev = evit->second;
 
-	auto dm = std::make_shared<ScoutingDataModel>(ev->key(), ev->name(), pit, match);
+	auto dm = std::make_shared<ScoutingDataModel>(ev->key(), ev->name(), team, match);
 	QStringList teams;
 
 	for (auto m : ev->matches())
@@ -89,13 +89,13 @@ std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
 		QStringList& red = m->red()->getTeams();
 		for (int i = 0; i < red.size(); i++) {
 			QString team = m->red()->getTeams().at(i);
-			dm->addTeamToMatch(match->key(), DataModelMatch::Alliance::Red, team);
+			dm->addTeamToMatch(match->key(), Alliance::Red, team);
 		}
 
 		QStringList& blue = m->blue()->getTeams();
 		for (int i = 0; i < blue.size(); i++) {
 			QString team = m->blue()->getTeams().at(i);
-			dm->addTeamToMatch(match->key(), DataModelMatch::Alliance::Blue, team);
+			dm->addTeamToMatch(match->key(), Alliance::Blue, team);
 		}
 	}
 
@@ -133,10 +133,10 @@ DataModelBuilder::buildModel(xero::ba::BlueAllianceEngine& engine,
 	const QString& pitform, const QString& matchform,
 	const QString& evkey, QString& error)
 {
-	std::shared_ptr<ScoutingForm> pit = std::make_shared<ScoutingForm>(pitform);
+	std::shared_ptr<ScoutingForm> team = std::make_shared<ScoutingForm>(pitform);
 	std::shared_ptr<ScoutingForm> match = std::make_shared<ScoutingForm>(matchform);
 
-	return DataModelBuilder::buildModel(engine, pit, match, evkey, error);
+	return DataModelBuilder::buildModel(engine, team, match, evkey, error);
 }
 
 //
@@ -149,8 +149,8 @@ DataModelBuilder::buildModel(xero::ba::BlueAllianceEngine& engine,
 	std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> cmatch,
 	const QString& evkey, QString& error)
 {
-	std::shared_ptr<ScoutingForm> pit = std::make_shared<ScoutingForm>(cpit->obj());
+	std::shared_ptr<ScoutingForm> team = std::make_shared<ScoutingForm>(cpit->obj());
 	std::shared_ptr<ScoutingForm> match = std::make_shared<ScoutingForm>(cmatch->obj());
 
-	return DataModelBuilder::buildModel(engine, pit, match, evkey, error);
+	return DataModelBuilder::buildModel(engine, team, match, evkey, error);
 }
