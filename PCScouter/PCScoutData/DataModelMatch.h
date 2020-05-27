@@ -53,6 +53,19 @@ namespace xero
 				virtual ~DataModelMatch() {
 				}
 
+				bool hasBlueAllianceData() const {
+					if (blue_ba_data_.size() != 3 || red_ba_data_.size() != 3)
+						return false;
+
+					for (int i = 0; i < 3; i++)
+					{
+						if (blue_ba_data_[i]->size() == 0 || red_ba_data_[i]->size() == 0)
+							return false;
+					}
+
+					return true;
+				}
+
 				QString title() const {
 					QString ret;
 

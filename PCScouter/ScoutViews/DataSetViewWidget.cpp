@@ -59,11 +59,13 @@ namespace xero
 
 				left_ = new QTableWidget(this);
 				left_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Fixed);
+				left_->setContextMenuPolicy(Qt::CustomContextMenu);
 				addWidget(left_);
 
 				right_ = new QTableWidget(this);
 				right_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Fixed);
 				right_->verticalHeader()->hide();
+				right_->setContextMenuPolicy(Qt::CustomContextMenu);
 				addWidget(right_);
 
 				connect(left_->horizontalHeader(), &QHeaderView::sectionClicked, this, &DataSetViewWidget::sortLeftData);
@@ -72,10 +74,82 @@ namespace xero
 				connect(left_->verticalScrollBar(), &QAbstractSlider::valueChanged, right_->verticalScrollBar(), &QAbstractSlider::setValue);
 
 				connect(right_->verticalScrollBar(), &QAbstractSlider::valueChanged, left_->verticalScrollBar(), &QAbstractSlider::setValue);
+
+				connect(left_, &QTableWidget::customContextMenuRequested, this, &DataSetViewWidget::contextMenuRequestedLeft);
+				connect(right_, &QTableWidget::customContextMenuRequested, this, &DataSetViewWidget::contextMenuRequestedRight);
 			}
 
 			DataSetViewWidget::~DataSetViewWidget()
 			{
+			}
+
+			void DataSetViewWidget::hideColumn()
+			{
+				QTableWidget* w;
+
+				if (left_side_)
+				{
+					w = left_;
+				}
+				else
+				{
+					w = right_;
+				}
+
+				QItemSelectionModel* select = w->selectionModel();
+				QModelIndexList columns = select->selectedColumns();
+
+				if (columns.size() > 0)
+				{
+					for (int i = 0; i < columns.size(); i++)
+					{
+						auto index = columns.at(i);
+						left_->setColumnHidden(index.column(), true);
+						right_->setColumnHidden(index.column(), true);
+					}
+				}
+				else
+				{
+					QTableWidgetItem* item = w->itemAt(pt_);
+					left_->setColumnHidden(item->column(), true);
+					right_->setColumnHidden(item->column(), true);
+				}
+			}
+
+			void DataSetViewWidget::unhideColumns()
+			{
+				for (int i = 0; i < left_->columnCount(); i++) {
+					left_->setColumnHidden(i, false);
+					right_->setColumnHidden(i, false);
+				}
+			}
+
+			void DataSetViewWidget::contextMenuRequestedLeft(const QPoint& pt)
+			{
+				contextMenuRequested(pt, true);
+			}
+
+			void DataSetViewWidget::contextMenuRequestedRight(const QPoint& pt)
+			{
+				contextMenuRequested(pt, false);
+			}
+
+			void DataSetViewWidget::contextMenuRequested(const QPoint& pt, bool leftside)
+			{
+				QWidget* w = (leftside ? left_ : right_);
+				QMenu* menu = new QMenu();
+				QAction* act;
+
+				pt_ = pt;
+				left_side_ = leftside;
+				act = menu->addAction(tr("Hide Column(s)"));
+				connect(act, &QAction::triggered, this, &DataSetViewWidget::hideColumn);
+
+				act = menu->addAction(tr("Unhide All Columns"));
+				connect(act, &QAction::triggered, this, &DataSetViewWidget::unhideColumns);
+
+				QPoint p = w->mapToGlobal(pt);
+				menu->exec(p);
 			}
 
 			void DataSetViewWidget::sortRightData(int col)

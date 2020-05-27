@@ -1,4 +1,5 @@
 //
+//
 // Copyright 2020 by Jack W. (Butch) Griffin
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -228,9 +229,15 @@ namespace xero
 				/// \returns all field names ;
 				QStringList getAllFieldNames() const;
 
+				QStringList getPitFieldNames() const;
+
 				/// \brief returns fields that contain per match data 
 				/// \returns fields that are valid per match data
 				QStringList getMatchFieldNames() const;
+
+				/// \brief returns true if the blue alliance data is loaded
+				/// \returns true if blue alliance data is loaded
+				bool isBlueAllianceDataLoaded() const;
 
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
@@ -271,6 +278,15 @@ namespace xero
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+				void setTeamOPR(const QString& teamkey, double opr) {
+					auto team = findTeamByKeyInt(teamkey);
+					team->setOPR(opr);
+				}
+
+				/// \brief set the various graph views
+				/// \param grarray an array of group view descriptors as JSON
+				/// \param err any returned error message
+				/// \returns true if the info is updated
 				bool setGraphViews(const QJsonArray& grarray, QString &err) {
 					return graph_descriptor_.load(grarray, err);
 				}

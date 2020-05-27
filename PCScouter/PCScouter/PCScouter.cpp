@@ -40,6 +40,7 @@
 #include "ImportMatchDataController.h"
 #include "ImportZebraDataController.h"
 #include "TeamSummaryController.h"
+#include "OPRCalculator.h"
 
 #include <QSqlDatabase>
 #include <QMessageBox>
@@ -338,18 +339,25 @@ void PCScouter::createMenus()
 	act = file_menu_->addAction(tr("Close Event"));
 	(void)connect(act, &QAction::triggered, this, &PCScouter::closeEventHandler);
 
-	import_menu_ = new QMenu(tr("&Import"));
+	import_menu_ = new QMenu(tr("&Data"));
 	menuBar()->addMenu(import_menu_);
 	(void)connect(import_menu_, &QMenu::aboutToShow, this, &PCScouter::showingImportMenu);
 
-	import_match_data_ = import_menu_->addAction(tr("Match Data"));
+	import_match_data_ = import_menu_->addAction(tr("Import BlueAlliance Match Data"));
 	(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchData);
 
-	import_zebra_data_ = import_menu_->addAction(tr("Zebra Data"));
+	import_zebra_data_ = import_menu_->addAction(tr("Import BlueAlliance Zebra Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importZebraData);
 
+#ifdef NOTYET
 	import_zebra_data_ = import_menu_->addAction(tr("KPI Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importKPIData);
+#endif
+
+	import_menu_->addSeparator();
+
+	act = import_menu_->addAction(tr("Calculate OPR"));
+	(void)connect(act, &QAction::triggered, this, &PCScouter::calcOPR);
 
 	export_menu_ = new QMenu(tr("&Export"));
 	menuBar()->addMenu(export_menu_);
@@ -641,6 +649,12 @@ void PCScouter::setDataModelStatus()
 ////////////////////////////////////////////////////////////
 // Menu Related
 ////////////////////////////////////////////////////////////
+
+void PCScouter::calcOPR()
+{
+	OPRCalculator calc(data_model_);
+	calc.calc();
+}
 
 void PCScouter::setDebug()
 {

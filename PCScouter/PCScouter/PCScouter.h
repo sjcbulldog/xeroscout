@@ -89,6 +89,8 @@ private:
 	void importZebraData();
 	void importZebraDataComplete(bool err);
 
+	void calcOPR();
+
 	void importKPIData();
 	void exportScoutingData();
 	void showingImportMenu();

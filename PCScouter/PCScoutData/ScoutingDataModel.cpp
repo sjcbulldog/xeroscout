@@ -61,6 +61,17 @@ namespace xero
 			{
 			}
 
+			bool ScoutingDataModel::isBlueAllianceDataLoaded() const
+			{
+				for (auto m : matches_)
+				{
+					if (m->hasBlueAllianceData())
+						return true;
+				}
+
+				return false;
+			}
+
 			bool ScoutingDataModel::createTeamSummaryData(const QString& key, TeamDataSummary& result)
 			{
 				ScoutingDataSet ds;
@@ -362,6 +373,7 @@ namespace xero
 			{
 				QVariant invalid;
 				auto fields = pit_scouting_form_->fields();
+				QStringList extra;
 
 				set.clear();
 				set.addHeader("Team", QVariant::String);
@@ -370,6 +382,16 @@ namespace xero
 
 				for (int f = 0; f < fields.size(); f++) {
 					set.addHeader(fields[f].first, fields[f].second);
+				}
+
+				auto ex = teams_.front()->extraData();
+				if (ex != nullptr)
+				{
+					for (auto pair : *ex)
+					{
+						set.addHeader(pair.first, QVariant::Type::Double);
+						extra.push_back(pair.first);
+					}
 				}
 
 				auto teams = teams_;
@@ -407,6 +429,16 @@ namespace xero
 							}
 						}
 					}
+
+					ex = t->extraData();
+					if (ex != nullptr)
+					{
+						for (auto exname : extra)
+						{
+							auto it = ex->find(exname);
+							set.addData(it->second);
+						}
+					}
 				}
 			}
 
@@ -424,11 +456,11 @@ namespace xero
 						return false;
 				}
 
-				if (!db->hasTable("pits"))
+				if (!db->hasTable("teams"))
 				{
 					ScoutingDataSet pitset;
 					createPitDataSet(pitset);
-					if (!db->addTable("pits", pitset))
+					if (!db->addTable("teams", pitset))
 						return false;
 				}
 
@@ -566,20 +598,48 @@ namespace xero
 			{
 				QStringList list;
 
-				auto flist = match_scouting_form_->fields();
+				list = getMatchFieldNames();
+
+				list.append(getPitFieldNames());
+
+				return list;
+			}
+
+			QStringList ScoutingDataModel::getPitFieldNames() const
+			{
+				QStringList list;
+
+				//
+				// Get any fields from the pit scouting form
+				//
+				auto flist = pit_scouting_form_->fields();
 				for (auto f : flist)
 					list.push_back(f.first);
 
-				flist = pit_scouting_form_->fields();
-				for (auto f : flist)
-					list.push_back(f.first);
-
-				auto m = matches().front();
-				auto ba = m->blueAllianceData(DataModelMatch::Alliance::Red, 1);
-				if (ba != nullptr)
+				//
+				// Get any extra data attached the the teams
+				//
+				int cnt = -1;
+				for (auto team : teams())
 				{
-					for (auto pair : *ba)
-						list.push_back(pair.first);
+					auto ex = team->extraData();
+					if (ex != nullptr)
+					{
+						if (cnt == -1)
+							cnt = ex->size();
+
+						assert(cnt == ex->size());
+					}
+				}
+
+				if (cnt != -1)
+				{
+					auto ex = teams().front()->extraData();
+					if (ex != nullptr)
+					{
+						for (auto pair : *ex)
+							list.push_back(pair.first);
+					}
 				}
 
 				return list;

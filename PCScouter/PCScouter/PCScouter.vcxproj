@@ -59,7 +59,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)XeroUSBTransport;$(SolutionDir)ScoutViews;$(SolutionDir)PCScoutData;$(SolutionDir)BlueAllianceAPI;$(SolutionDir)ScoutTransport;$(Qt_INCLUDEPATH_);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)eigen;$(SolutionDir)ExprLib;$(SolutionDir)XeroUSBTransport;$(SolutionDir)ScoutViews;$(SolutionDir)PCScoutData;$(SolutionDir)BlueAllianceAPI;$(SolutionDir)ScoutTransport;$(Qt_INCLUDEPATH_);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -94,7 +94,7 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)XeroUSBTransport;$(SolutionDir)ScoutViews;$(SolutionDir)PCScoutData;$(SolutionDir)BlueAllianceAPI;$(SolutionDir)ScoutTransport;$(Qt_INCLUDEPATH_);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)eigen;$(SolutionDir)ExprLib;$(SolutionDir)XeroUSBTransport;$(SolutionDir)ScoutViews;$(SolutionDir)PCScoutData;$(SolutionDir)BlueAllianceAPI;$(SolutionDir)ScoutTransport;$(Qt_INCLUDEPATH_);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

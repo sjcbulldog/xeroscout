@@ -74,8 +74,11 @@ namespace xero
 				for (auto s : sections_) {
 					for (auto i : s->items())
 					{
-						auto fields = i->getFields();
-						result.insert(result.end(), fields.begin(), fields.end());
+						if (i->alliance().length() == 0 || i->alliance() == "red")
+						{
+							auto fields = i->getFields();
+							result.insert(result.end(), fields.begin(), fields.end());
+						}
 					}
 				}
 				return result;

@@ -67,16 +67,20 @@ namespace xero
 					return number_;
 				}
 
-
 				const QString& name() const {
 					return name_;
 				}
+
 
 				ConstScoutingDataMapPtr pitScoutingData() const {
 					if (pit_data_.size() == 0)
 						return nullptr;
 
 					return pit_data_.back();
+				}
+
+				ConstScoutingDataMapPtr extraData() const {
+					return extra_data_;
 				}
 
 				std::list<ConstScoutingDataMapPtr> pitScoutingDataList() const {
@@ -98,8 +102,18 @@ namespace xero
 				}
 
 			protected:
+				void setOPR(double opr) {
+					if (extra_data_ == nullptr)
+						extra_data_ = std::make_shared<ScoutingDataMap>();
+					extra_data_->insert_or_assign("OPR", opr);
+				}
+
 				void setRanking(const QJsonObject& obj) {
 					ranking_ = obj;
+
+					if (extra_data_ == nullptr)
+						extra_data_ = std::make_shared<ScoutingDataMap>();
+					extra_data_->insert_or_assign("RANK", rank());
 				}
 
 				void setNumber(int n) {
@@ -145,6 +159,7 @@ namespace xero
 				QString tablet_;
 				std::list<ScoutingDataMapPtr> pit_data_;
 				QJsonObject ranking_;
+				ScoutingDataMapPtr extra_data_;
 			};
 		}
 	}

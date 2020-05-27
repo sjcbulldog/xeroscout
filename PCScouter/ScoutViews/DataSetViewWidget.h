@@ -61,14 +61,23 @@ namespace xero
 				void updateData(QTableWidget* w);
 				void sortLeftData(int column);
 				void sortRightData(int column);
+				void contextMenuRequestedLeft(const QPoint& pt);
+				void contextMenuRequestedRight(const QPoint& pt);
+				void contextMenuRequested(const QPoint& pt, bool leftside);
+				void hideColumn();
+				void unhideColumns();
 
 			private:
+				QPoint pt_;
+				bool left_side_;
+
 				xero::scouting::datamodel::ScoutingDataSet data_;
 				QTableWidget* right_;
 				QTableWidget* left_;
 
 				int column_;
 				bool direction_;
+
 			};
 
 		}

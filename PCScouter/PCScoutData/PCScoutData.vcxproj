@@ -60,7 +60,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PreprocessorDefinitions>PCSCOUTDATA_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -77,7 +77,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PreprocessorDefinitions>PCSCOUTDATA_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -113,6 +113,7 @@
     <ClInclude Include="JSonDataModelConverter.h" />
     <ClInclude Include="NumericItemDisplay.h" />
     <QtMoc Include="StartStopWidget.h" />
+    <ClInclude Include="OPRCalculator.h" />
     <ClInclude Include="ScoutDataExprContext.h" />
     <ClInclude Include="TeamDataSummary.h" />
     <ClInclude Include="NumericFormItem.h" />
@@ -146,6 +147,7 @@
     <ClCompile Include="ImageItemDisplay.cpp" />
     <ClCompile Include="JSonDataModelConverter.cpp" />
     <ClCompile Include="NumericItemDisplay.cpp" />
+    <ClCompile Include="OPRCalculator.cpp" />
     <ClCompile Include="StartStopWidget.cpp" />
     <ClCompile Include="TeamSummaryData.cpp" />
     <ClCompile Include="ScoutingDatabase.cpp" />
