@@ -181,6 +181,16 @@ void ClientProtocolHandler::handleTabletIDSync(const QJsonObject&obj)
 	QJsonObject replyobj;
 	QJsonDocument reply;
 
+	if (data_model_ == nullptr) {
+
+		replyobj[JsonMessageName] = "the Central Scouting Machine does not have data loaded";
+		reply.setObject(replyobj);
+		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+
+		emit errorMessage("Tablet tried to sync with no data loaded on the central machine");
+		return;
+	}
+
 	if (!obj.contains(JsonNameName))
 	{
 		emit errorMessage("protocol error - Tablet Name missing '" + QString(JsonNameName) + "' field");
@@ -344,8 +354,8 @@ void ClientProtocolHandler::handleScoutingData(const QJsonDocument& doc)
 	else
 	{
 		obj[JsonStatusName] = "good";
-		obj[JsonPitsChangedList] = QJsonArray::fromStringList(pits);
-		obj[JsonMatchesChangedList] = QJsonArray::fromStringList(matches);
+		obj[JsonPitsChangedListName] = QJsonArray::fromStringList(pits);
+		obj[JsonMatchesChangedListName] = QJsonArray::fromStringList(matches);
 	}
 
 	senddoc.setObject(obj);

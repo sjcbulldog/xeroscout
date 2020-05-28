@@ -287,13 +287,12 @@ namespace xero
 				}
 
 				void addTeam(Alliance a, int slot, const QString& key) {
-					auto robot = findRobotByColorSlot(a, slot);
-					assert(robot == nullptr);
-
-					robot = std::make_shared<OneRobot>(a, slot, key);
-					robots_.push_back(robot);
+					if (findRobotByColorSlot(a, slot) == nullptr)
+					{
+						auto robot = std::make_shared<OneRobot>(a, slot, key);
+						robots_.push_back(robot);
+					}
 				}
-
 
 				void setTablet(Alliance a, int slot, const QString& tablet) {
 					auto robot = findRobotByColorSlot(a, slot);
@@ -460,6 +459,8 @@ namespace xero
 				}
 
 				std::shared_ptr<const OneRobot> findRobotByColorSlot(Alliance c, int slot) const {
+					assert(robots_.size() == 6);
+
 					for (auto robot : robots_)
 					{
 						if (robot->color() == c && robot->slot() == slot)

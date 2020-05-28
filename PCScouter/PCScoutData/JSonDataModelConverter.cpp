@@ -203,6 +203,9 @@ namespace xero
 				payload[JsonMatchScoutingFormName] = dm_->matchScoutingForm()->obj();
 				payload[JsonPitScoutingFormName] = dm_->teamScoutingForm()->obj();
 
+				payload[JsonTeamExtraFieldsName] = encodeFields(dm_->teamExtraFields());
+				payload[JsonMatchExtraFieldsName] = encodeFields(dm_->matchExtraFields());
+
 				QJsonArray regtabs;
 				for (const TabletIdentity& id : dm_->registeredTablets()) {
 					QJsonObject obj;
@@ -218,9 +221,10 @@ namespace xero
 					obj[JsonNumberName] = team->number();
 					obj[JsonNameName] = team->name();
 					obj[JsonAssignName] = team->tablet();
+					obj[JsonExtraTeamData] = encode(team->extraData());
 
 					if (team->hasRankingInfo())
-						obj[JsonRankingBlob] = team->rankingInfo();
+						obj[JsonRankingBlobName] = team->rankingInfo();
 
 					teams.push_back(obj);
 				}
@@ -258,19 +262,19 @@ namespace xero
 					}
 					obj[JsonBlueName] = blue;
 
-					QJsonArray badatared;
-					QJsonArray badatablue;
+					QJsonArray extrared;
+					QJsonArray extrablue;
 
 					if (extra)
 					{
 						for (int i = 1; i <= 3; i++) {
-							badatared.push_back(encode(m->extraData(Alliance::Red, i)));
-							badatablue.push_back(encode(m->extraData(Alliance::Blue, i)));
+							extrared.push_back(encode(m->extraData(Alliance::Red, i)));
+							extrablue.push_back(encode(m->extraData(Alliance::Blue, i)));
 						}
 					}
 
-					obj[JsonBaDataRedName] = badatared;
-					obj[JsonBaDataBlueName] = badatablue;
+					obj[JsonExtraDataRedName] = extrared;
+					obj[JsonExtraDataBlueName] = extrablue;
 
 					if (extra)
 						obj[JsonZebraDataName] = m->zebra();
@@ -453,7 +457,7 @@ namespace xero
 				obj[JsonCoreName] = coreToJson(true);
 				obj[JsonScoutingName] = scoutingToJsonFull();
 				obj[JsonHistoryName] = historyToJson();
-				obj[JsonGraphViews] = dm_->graphDescriptors().generateJSON();
+				obj[JsonGraphViewsName] = dm_->graphDescriptors().generateJSON();
 				doc.setObject(obj);
 				return doc;
 			}
@@ -597,6 +601,12 @@ namespace xero
 					return false;
 				}
 
+				auto fields = decodeFields(obj.value(JsonTeamExtraFieldsName).toArray());
+				dm_->addTeamExtraFields(fields);
+
+				fields = decodeFields(obj.value(JsonMatchExtraFieldsName).toArray());
+				dm_->addMatchExtraFields(fields);
+
 				return true;
 			}
 
@@ -636,17 +646,25 @@ namespace xero
 						return false;
 					}
 
+					if (!tobj.contains(JsonExtraTeamData) || !tobj.value(JsonExtraTeamData).isArray()) {
+						errors_.push_back("expected array field 'extra'");
+						return false;
+					}
+
 					QString key = tobj[JsonKeyName].toString();
 					int number = tobj[JsonNumberName].toInt();
 					QString name = tobj[JsonNameName].toString();
 
 					auto t = dm_->addTeam(key, number, name);
 					dm_->assignTeamTablet(key, tobj[JsonAssignName].toString());
+					t->addExtraData(decode(tobj[JsonExtraTeamData].toArray()));
 
-					if (tobj.contains(JsonRankingBlob) && tobj.value(JsonRankingBlob).isObject())
+					if (tobj.contains(JsonRankingBlobName) && tobj.value(JsonRankingBlobName).isObject())
 					{
-						dm_->setTeamRanking(key, tobj.value(JsonRankingBlob).toObject());
+						dm_->setTeamRanking(key, tobj.value(JsonRankingBlobName).toObject());
 					}
+
+					
 				}
 
 				return true;
@@ -704,18 +722,17 @@ namespace xero
 						return false;
 					}
 
-					if (!mobj.contains(JsonBaDataRedName) || !mobj.value(JsonBaDataRedName).isArray()) {
+					if (!mobj.contains(JsonExtraDataRedName) || !mobj.value(JsonExtraDataRedName).isArray()) {
 						errors_.push_back("expected JSON array field 'badata'");
 						return false;
 					}
 
-					if (!mobj.contains(JsonBaDataBlueName) || !mobj.value(JsonBaDataBlueName).isArray()) {
+					if (!mobj.contains(JsonExtraDataBlueName) || !mobj.value(JsonExtraDataBlueName).isArray()) {
 						errors_.push_back("expected JSON array field 'badata'");
 						return false;
 					}
 
 					auto dm = dm_->addMatch(mobj.value(JsonKeyName).toString(), mobj.value(JsonCompTypeName).toString(), mobj.value(JsonSetName).toInt(), mobj.value(JsonMatchName).toInt(), mobj.value(JsonEtimeName).toInt());
-					dm->clearTeams();
 
 					QJsonArray red = mobj.value(JsonRedName).toArray();
 					for (int i = 0; i < red.size(); i += 2) {
@@ -743,8 +760,8 @@ namespace xero
 						dm->setTablet(Alliance::Blue, slot, blue[i + 1].toString());
 					}
 
-					QJsonArray badatared = mobj.value(JsonBaDataRedName).toArray();
-					QJsonArray badatablue = mobj.value(JsonBaDataBlueName).toArray();
+					QJsonArray badatared = mobj.value(JsonExtraDataRedName).toArray();
+					QJsonArray badatablue = mobj.value(JsonExtraDataBlueName).toArray();
 
 					if (badatablue.size() == 3 && badatared.size() == 3) {
 						for (int i = 1; i <= 3; i++) {
@@ -859,7 +876,7 @@ namespace xero
 				return true;
 			}
 
-			bool JSonDataModelConverter::scoutingFromJsonFullV1Pits(const QJsonArray& arr)
+			bool JSonDataModelConverter::scoutingFromJsonFullV1Teams(const QJsonArray& arr)
 			{
 				for (int i = 0; i < arr.size(); i++)
 				{
@@ -917,7 +934,7 @@ namespace xero
 				if (!scoutingFromJsonFullV1Matches(obj.value(JsonMatchesName).toArray()))
 					return false ;
 
-				if (!scoutingFromJsonFullV1Pits(obj.value(JsonPitsName).toArray()))
+				if (!scoutingFromJsonFullV1Teams(obj.value(JsonPitsName).toArray()))
 					return false;
 
 				return true;
@@ -1257,10 +1274,10 @@ namespace xero
 				if (!scoutingFromJsonFull(obj.value(JsonScoutingName).toObject()))
 					return false;
 
-				if (obj.contains(JsonGraphViews) && obj.value(JsonGraphViews).isArray())
+				if (obj.contains(JsonGraphViewsName) && obj.value(JsonGraphViewsName).isArray())
 				{
 					QString err;
-					if (!dm_->setGraphViews(obj.value(JsonGraphViews).toArray(), err))
+					if (!dm_->setGraphViews(obj.value(JsonGraphViewsName).toArray(), err))
 					{
 						errors_.push_back(err);
 						return false;
@@ -1309,8 +1326,9 @@ namespace xero
 							obj[JsonValueName] = v.toDouble();
 						}
 						else {
+
+							qDebug() << "name: " << entry.first << ": variant not handled: " << v;
 							assert(false);
-							qDebug() << "variant not handled: " << v;
 						}
 
 						array.push_back(obj);
@@ -1389,6 +1407,62 @@ namespace xero
 				}
 
 				return result;
+			}
+
+			QJsonArray JSonDataModelConverter::encodeFields(std::list<std::shared_ptr<FieldDesc>> fields)
+			{
+				QJsonArray array;
+
+				for (auto field : fields)
+				{
+					QJsonObject obj;
+					QJsonArray strarr;
+
+					obj[JsonNameName] = field->name();
+					obj[JsonTypeName] = static_cast<int>(field->type());
+
+					for (const QString& choice : field->choices())
+						strarr.push_back(choice);
+					obj[JsonChoicesName] = strarr;
+
+					array.push_back(obj);
+ 				}
+
+				return array;
+			}
+
+			std::list<std::shared_ptr<FieldDesc>> JSonDataModelConverter::decodeFields(const QJsonArray &array)
+			{
+				std::list<std::shared_ptr<FieldDesc>> ret;
+
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (!array[i].isObject())
+						continue;
+
+					QJsonObject obj = array[i].toObject();
+
+					if (!obj.contains(JsonNameName) || !obj.contains(JsonTypeName) || !obj.contains(JsonChoicesName))
+						continue;
+
+					if (!obj.value(JsonNameName).isString() || !obj.value(JsonTypeName).isDouble() || !obj.value(JsonChoicesName).isArray())
+						continue;
+
+					QString name = obj.value(JsonNameName).toString();
+					FieldDesc::Type t = static_cast<FieldDesc::Type>(obj.value(JsonTypeName).toInt());
+
+					QJsonArray choices = obj.value(JsonChoicesName).toArray();
+					auto field = std::make_shared<FieldDesc>(name, t);
+					for (auto v : choices)
+					{
+						if (v.isString())
+							field->addChoice(v.toString());
+					}
+
+					ret.push_back(field);
+				}
+
+				return ret;
 			}
 		}
 	}

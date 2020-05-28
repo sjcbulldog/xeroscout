@@ -55,27 +55,28 @@ namespace xero
 				label->setFont(font);
 
 				addWidget(label);																				// 0
-				addWidget(new FormView(images_, "PitTemplate", "Preview", QColor(0, 0, 0, 255), this));					// 1
-				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(0, 0, 0, 255), this));				// 2
-				addWidget(new TeamScheduleViewWidget(tablet, this));												// 3
+				addWidget(new FormView(images_, "PitTemplate", "Preview", QColor(0, 0, 0, 255), this));			// 1
+				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(0, 0, 0, 255), this));		// 2
+				addWidget(new TeamScheduleViewWidget(tablet, this));											// 3
 				addWidget(new MatchViewWidget(tablet, this));													// 4
 				addWidget(new DataSetViewWidget(this));															// 5
 				addWidget(new DataSetViewWidget(this));															// 6
 				addWidget(new QueryViewWidget(this));															// 7
-				addWidget(new DataSetViewWidget(this));															// 8
-				addWidget(new ChangeHistoryView(this));															// 9
-				addWidget(new DataMergeListWidget(this));														// 10
+				addWidget(new DataSetViewWidget(this));															// 8 team report - todo
+				addWidget(new DataSetViewWidget(this));															// 9
+				addWidget(new ChangeHistoryView(this));															// 10
+				addWidget(new DataMergeListWidget(this));														// 11
 
 				ZebraViewWidget* zview = new ZebraViewWidget(this);
-				addWidget(zview);																				// 11
+				addWidget(zview);																				// 12
 
 				GraphView* gview = new PreMatchGraphView(this);
 				gview->create();
-				addWidget(gview);																				// 12
+				addWidget(gview);																				// 13
 
 				gview = new AllianceGraphView(this);
 				gview->create();
-				addWidget(gview);																				// 13
+				addWidget(gview);																				// 14
 
 				if (gamemgr)
 				{

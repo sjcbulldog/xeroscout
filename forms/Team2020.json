@@ -6,7 +6,7 @@
       "items": [
         {
           "type": "text",
-          "tag": "pit_scouter",
+          "tag": "team_scouter",
           "name": "Scouter",
           "maxlen": 32
         },

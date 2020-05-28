@@ -34,16 +34,12 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			ScoutingDataModel::ScoutingDataModel(const QString& evkey, const QString& evname, std::shared_ptr<ScoutingForm> team, std::shared_ptr<ScoutingForm> match)
+			ScoutingDataModel::ScoutingDataModel(const QString& evkey, const QString& evname)
 			{
 				ev_key_ = evkey;
 				event_name_ = evname;
 
 				filename_ = QStandardPaths::locate(QStandardPaths::DocumentsLocation, ev_key_);
-
-				team_scouting_form_ = team;
-
-				match_scouting_form_ = match;
 
 				dirty_ = false;
 
@@ -59,6 +55,33 @@ namespace xero
 			ScoutingDataModel::~ScoutingDataModel()
 			{
 			}
+
+			bool ScoutingDataModel::setScoutingForms(std::shared_ptr<ScoutingForm> teamform, std::shared_ptr<ScoutingForm> matchform, QStringList &dups)
+			{
+				bool ret = true;
+
+				dups.clear();
+				//
+				// This method should only be used once during initialization
+				//
+				if (team_scouting_form_ != nullptr || match_scouting_form_ != nullptr)
+					return false;
+
+				team_scouting_form_ = teamform;
+				match_scouting_form_ = matchform;
+
+				for (auto field : team_scouting_form_->fields())
+				{
+					if (match_scouting_form_->itemByName(field->name()) != nullptr)
+					{
+						dups.push_back(field->name());
+						ret = false;
+					}
+				}
+
+				return ret;
+			}
+
 
 			bool ScoutingDataModel::load(const QString& filename)
 			{
@@ -278,6 +301,7 @@ namespace xero
 
 			void ScoutingDataModel::processDataSetAlliance(ScoutingDataSet& set, std::shared_ptr<DataModelMatch> m, Alliance c) const
 			{
+				int numGeneratedColumns = 8;
 				auto scouting_form_fields = match_scouting_form_->fields();
 				QVariant vinvalid;
 
@@ -301,9 +325,9 @@ namespace xero
 					set.addData(toString(c));
 					set.addData(slot);
 
-					for (auto entry : set.headers())
+					for (int i = numGeneratedColumns; i < set.columnCount(); i++)
 					{
-						QVariant v = m->value(c, slot, entry->name());
+						QVariant v = m->value(c, slot, set.colHeader(i)->name());
 						set.addData(v);
 					}
 				}
@@ -350,6 +374,7 @@ namespace xero
 
 			void ScoutingDataModel::createTeamDataSet(ScoutingDataSet& set) const
 			{
+				int numGenerateCols = 3;
 				QVariant invalid;
 				auto fields = team_scouting_form_->fields();
 
@@ -379,9 +404,9 @@ namespace xero
 					set.addData(t->number());
 					set.addData(t->key());
 
-					for (auto field : set.headers())
+					for(int col = numGenerateCols ; col < set.columnCount() ; col++)
 					{
-						QVariant v = t->value(field->name());
+						QVariant v = t->value(set.colHeader(col)->name());
 						set.addData(v);
 					}
 				}
@@ -465,48 +490,6 @@ namespace xero
 				emitChangedSignal(ChangeType::MatchScoutingDataAdded);
 			}
 
-			void ScoutingDataModel::breakOutBAData(std::shared_ptr<DataModelMatch> m, Alliance c, ScoutingDataMapPtr data)
-			{
-				ScoutingDataMapPtr newdata1 = std::make_shared<ScoutingDataMap>();
-				ScoutingDataMapPtr newdata2 = std::make_shared<ScoutingDataMap>();
-				ScoutingDataMapPtr newdata3 = std::make_shared<ScoutingDataMap>();
-
-				for (auto pair : *data)
-				{
-					if (pair.first.endsWith("Robot1")) {
-						QString name = pair.first.mid(0, pair.first.length() - 6);
-						newdata1->insert_or_assign(name, pair.second);
-					}
-					else if (pair.first.endsWith("Robot2"))
-					{
-						QString name = pair.first.mid(0, pair.first.length() - 6);
-						newdata2->insert_or_assign(name, pair.second);
-					}
-					else if (pair.first.endsWith("Robot3"))
-					{
-						QString name = pair.first.mid(0, pair.first.length() - 6);
-						newdata3->insert_or_assign(name, pair.second);
-					}
-					else
-					{
-						newdata1->insert_or_assign(pair.first, pair.second);
-						newdata2->insert_or_assign(pair.first, pair.second);
-						newdata3->insert_or_assign(pair.first, pair.second);
-					}
-				}
-
-				m->addExtraData(c, 1, newdata1);
-				m->addExtraData(c, 2, newdata2);
-				m->addExtraData(c, 3, newdata3);
-			}
-
-			void ScoutingDataModel::breakoutBlueAlliancePerRobotData(std::map<QString, std::pair<ScoutingDataMapPtr, ScoutingDataMapPtr>>& data)
-			{
-				for (auto m : matches_) {
-					breakOutBAData(m, Alliance::Red, data[m->key()].first);
-					breakOutBAData(m, Alliance::Blue, data[m->key()].second);
-				}
-			}
 
 			void ScoutingDataModel::removeScoutingData(const QString& tablet)
 			{

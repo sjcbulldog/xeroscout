@@ -159,7 +159,71 @@ namespace xero
 						return;
 				}
 
+				if (!checkDuplicates())
+					return;
+
 				parsed_ok_ = true;
+			}
+
+			bool ScoutingForm::checkDuplicates()
+			{
+				bool ret = true;
+				QStringList red, blue;
+
+				for (auto s : sections_)
+				{
+					for (auto i : s->items())
+					{
+						if (i->alliance().length() == 0)
+						{
+							if (red.contains(i->tag()))
+							{
+								errors_.push_back("item with tag '" + i->tag() + "' is duplicated for red alliance");
+								ret = false;
+							}
+							else
+							{
+								red.push_back(i->tag());
+							}
+
+							if (blue.contains(i->tag()))
+							{
+								errors_.push_back("item with tag '" + i->tag() + "' is duplicated for blue alliance");
+								ret = false;
+							}
+							else
+							{
+								blue.push_back(i->tag());
+							}
+						}
+						else if (i->alliance() == "red")
+						{
+							if (red.contains(i->tag()))
+							{
+								errors_.push_back("item with tag '" + i->tag() + "' is duplicated for red alliance");
+								ret = false;
+							}
+							else
+							{
+								red.push_back(i->tag());
+							}
+						}
+						else if (i->alliance() == "blue")
+						{
+							if (blue.contains(i->tag()))
+							{
+								errors_.push_back("item with tag '" + i->tag() + "' is duplicated for blue alliance");
+								ret = false;
+							}
+							else
+							{
+								blue.push_back(i->tag());
+							}
+
+						}
+					}
+				}
+				return ret;
 			}
 
 			bool ScoutingForm::parseSection(const QJsonObject& obj, int index)
@@ -651,10 +715,22 @@ namespace xero
 
 			bool ScoutingForm::parseObjectBase(const QString &sectname, int entry, const QJsonObject& obj, QString& name, QString& tag)
 			{
-
 				if (!obj.contains("tag") || !obj.value("tag").isString()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 						+ " there is no string field 'tag' which is required");
+					return false;
+				}
+				tag = obj.value("tag").toString();
+
+				if (tag.startsWith("ba_")) {
+					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
+						+ " item with tag '" + tag + "' starts with 'ba_' which is reserved for blue alliance data");
+					return false;
+				}
+
+				if (tag.startsWith("calc_")) {
+					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
+						+ " item with tag '" + tag + "' starts with 'calc_' which is reserved for blue alliance data");
 					return false;
 				}
 
@@ -665,7 +741,6 @@ namespace xero
 				}
 
 
-				tag = obj.value("tag").toString();
 				name = obj.value("name").toString();
 
 				if (tag.length() == 0) {

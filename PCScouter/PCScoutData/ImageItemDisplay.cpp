@@ -244,8 +244,6 @@ namespace xero
 				}
 			}
 
-
-
 			void ImageItemDisplay::drawCount(QPainter& p, std::shared_ptr<ImageFormCountSubItem> item, const QString& longname)
 			{
 				QPoint pt;
@@ -308,18 +306,15 @@ namespace xero
 						//
 						if (on_off->isChoice())
 						{
-							if (choice_state_.find(longname) == choice_state_.end())
-							{
-								QString val = on_off->value();
+							QString val = on_off->value();
 
-								if (data.has(longname))
-								{
-									QVariant v = data.dataByName(longname);
-									if (v.type() == QVariant::Type::String)
-										val = v.toString();
-								}
-								choice_state_.insert_or_assign(longname, val);
+							if (data.has(longname))
+							{
+								QVariant v = data.dataByName(longname);
+								if (v.type() == QVariant::Type::String)
+									val = v.toString();
 							}
+							choice_state_.insert_or_assign(longname, val);
 						}
 						else
 						{

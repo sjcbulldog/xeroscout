@@ -354,9 +354,9 @@ void ServerProtocolHandler::handleScoutingDataReply(const QJsonDocument& doc)
 
 	if (obj.value(JsonStatusName).toString() == "good")
 	{
-		if (obj.contains(JsonPitsChangedList) && obj.value(JsonPitsChangedList).isArray())
+		if (obj.contains(JsonPitsChangedListName) && obj.value(JsonPitsChangedListName).isArray())
 		{
-			QJsonArray a = obj.value(JsonPitsChangedList).toArray();
+			QJsonArray a = obj.value(JsonPitsChangedListName).toArray();
 			if (a.size() > 0) {
 				QString msg = "Updated Pits:";
 				for (int i = 0; i < a.size(); i++)
@@ -372,9 +372,9 @@ void ServerProtocolHandler::handleScoutingDataReply(const QJsonDocument& doc)
 			}
 		}
 
-		if (obj.contains(JsonMatchesChangedList) && obj.value(JsonMatchesChangedList).isArray())
+		if (obj.contains(JsonMatchesChangedListName) && obj.value(JsonMatchesChangedListName).isArray())
 		{
-			QJsonArray a = obj.value(JsonMatchesChangedList).toArray();
+			QJsonArray a = obj.value(JsonMatchesChangedListName).toArray();
 			if (a.size() > 0) {
 				QString msg = "Updated Matches:";
 				for (int i = 0; i < a.size(); i++)

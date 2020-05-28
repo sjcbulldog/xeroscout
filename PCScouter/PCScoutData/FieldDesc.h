@@ -45,6 +45,10 @@ namespace xero
 					choices_.push_back(choice);
 				}
 
+				const QStringList& choices() const {
+					return choices_;
+				}
+
 			private:
 				QString name_;
 				Type type_;

@@ -368,8 +368,8 @@
         {
           "type": "image",
           "image": "bar.png",
-          "tag": "auto",
-          "name": "AutoMode",
+          "tag": "endgame",
+          "name": "End Game",
           "scale": 1,
           "imageitems": [
             {

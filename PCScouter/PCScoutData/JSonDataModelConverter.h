@@ -17,6 +17,7 @@
 #pragma once
 
 #include "ScoutingDataMap.h"
+#include "FieldDesc.h"
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QStringList>
@@ -62,6 +63,9 @@ namespace xero
 				static ScoutingDataMapPtr decode(const QJsonArray& data);
 				static QJsonArray encode(const ConstScoutingDataMapPtr data);
 
+				static QJsonArray encodeFields(std::list<std::shared_ptr<FieldDesc>> list);
+				std::list<std::shared_ptr<FieldDesc>> decodeFields(const QJsonArray& array);
+
 			private:
 				bool coreFromJsonV1(const QJsonObject& obj);
 				bool extractNameAndKey(const QJsonObject& obj, int version);
@@ -78,7 +82,7 @@ namespace xero
 
 				bool scoutingFromJsonFullV1(const QJsonObject& obj);
 				bool scoutingFromJsonFullV1Matches(const QJsonArray& obj);
-				bool scoutingFromJsonFullV1Pits(const QJsonArray& obj);
+				bool scoutingFromJsonFullV1Teams(const QJsonArray& obj);
 
 				bool extractHistory(const QJsonObject& obj);
 				bool extractHistoryV1(const QJsonObject& obj);

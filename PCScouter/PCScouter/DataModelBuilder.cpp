@@ -52,7 +52,21 @@ std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
 	}
 	auto ev = evit->second;
 
-	auto dm = std::make_shared<ScoutingDataModel>(ev->key(), ev->name(), team, match);
+	auto dm = std::make_shared<ScoutingDataModel>(ev->key(), ev->name());
+	QStringList tags;
+	if (!dm->setScoutingForms(team, match, tags)) {
+		error = "duplicate tags '";
+		for (int i = 0; i < tags.size(); i++)
+		{
+			if (i != 0)
+				error += ", ";
+
+			error += tags.at(i);
+		}
+		error += "' exist across the team scouting form and the match scouting form";
+		return nullptr;
+	}
+
 	QStringList teams;
 
 	for (auto m : ev->matches())
@@ -98,28 +112,6 @@ std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
 			dm->addTeamToMatch(match->key(), Alliance::Blue, i + 1, team);
 		}
 	}
-
-	std::map<QString, std::pair<ScoutingDataMapPtr, ScoutingDataMapPtr>> badata;
-
-	auto matches = engine.matches();
-	for (auto pair : matches) {
-		if (!pair.second->scoreBreakdown().isEmpty())
-		{
-			auto m = dm->findMatchByKey(pair.first);
-			if (m != nullptr)
-			{
-				auto redmap = std::make_shared<ScoutingDataMap>();
-				DataModelBuilder::jsonToPropMap(pair.second->scoreBreakdown(), "red", redmap);
-
-				auto bluemap = std::make_shared<ScoutingDataMap>();
-				DataModelBuilder::jsonToPropMap(pair.second->scoreBreakdown(), "blue", bluemap);
-
-				badata.insert_or_assign(m->key(), std::make_pair(redmap, bluemap));
-			}
-		}
-	}
-
-	dm->breakoutBlueAlliancePerRobotData(badata);
 
 	return dm;
 }

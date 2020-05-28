@@ -79,7 +79,7 @@ namespace xero
 				/// \param evname the event name
 				/// \param teamform the name of the file containing the team scouting form
 				/// \param matchform the name of the file contining the match scouting form
-				ScoutingDataModel(const QString& evkey, const QString& evname, std::shared_ptr<ScoutingForm> teamform, std::shared_ptr<ScoutingForm> matchform);
+				ScoutingDataModel(const QString& evkey, const QString& evname);
 
 				/// \brief create a new data model
 				ScoutingDataModel();
@@ -241,6 +241,16 @@ namespace xero
 				/// \returns a field descriptor given a field name
 				std::shared_ptr<FieldDesc> getFieldByName(const QString& name) const;
 
+				/// \brief return the extra team fields in the data model
+				std::list<std::shared_ptr<FieldDesc>> teamExtraFields() const {
+					return team_extra_fields_;
+				}
+
+				/// \brief return the extra match fields in the data model
+				std::list<std::shared_ptr<FieldDesc>> matchExtraFields() const {
+					return match_extra_fields_;
+				}
+
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
 				// These methods generate data sets.  The are a special case of the query methods in that they synthesis sets of data
@@ -274,9 +284,65 @@ namespace xero
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+				/// \brief set the scouting forms for the data model
+				/// This can only be done once right after the data model is created.  Any subsequent call to this API will return false.
+				/// \param teamform the scouting form for team (pit) scouting
+				/// \param matchform the scouting form for match scouting
+				/// \param dups a list of duplicate fields found between the two forms
+				bool setScoutingForms(std::shared_ptr<ScoutingForm> teamform, std::shared_ptr<ScoutingForm> matchform, QStringList& dups);
+
+				/// \brief sets the extra field descriptors that are team specific
+				void addTeamExtraFields(std::list<std::shared_ptr<FieldDesc>> fields) {
+					for (auto f : fields)
+					{
+						auto oldf = getFieldByName(f->name());
+						if (oldf == nullptr)
+						{
+							team_extra_fields_.push_back(f);
+						}
+						else
+						{
+							assert(oldf->type() == f->type());
+						}
+					}
+				}
+
+				/// \brief sets the extra field descriptors that are match specific
+				void addMatchExtraFields(std::list<std::shared_ptr<FieldDesc>> fields) {
+					for (auto f : fields)
+					{
+						auto oldf = getFieldByName(f->name());
+						if (oldf == nullptr)
+						{
+							match_extra_fields_.push_back(f);
+						}
+						else
+						{
+							assert(oldf->type() == f->type());
+						}
+					}
+				}
+
+				void addMatchExtraData(const QString& key, Alliance c, int slot, ScoutingDataMapPtr data) {
+					auto m = findMatchByKeyInt(key);
+					m->addExtraData(c, slot, data);
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::TeamDataChanged);
+				}
+
+				/// \brief set the OPR value for a team
+				/// \param teamkey the key for the team to set OPR for
+				/// \param opr the OPR value for the team
 				void setTeamOPR(const QString& teamkey, double opr) {
 					auto team = findTeamByKeyInt(teamkey);
 					team->setOPR(opr);
+
+					if (getFieldByName(DataModelTeam::OPRName) == nullptr)
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::OPRName, FieldDesc::Type::Double));
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::TeamDataChanged);
 				}
 
 				/// \brief set the various graph views
@@ -287,9 +353,16 @@ namespace xero
 					return graph_descriptor_.load(grarray, err);
 				}
 
+				/// \brief set the ranking data from the blue alliance.  
+				/// This data is stored as the JSON object received from the blue alliance
+				/// \param key the team key identifying the team of interest
+				/// \param obj the ranking object data as a JSON object
 				void setTeamRanking(const QString& key, const QJsonObject &obj) {
 					auto team = findTeamByKeyInt(key);
 					team->setRanking(obj);
+
+					if (getFieldByName(DataModelTeam::RankName) == nullptr)
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::RankName, FieldDesc::Type::Integer));
 					
 					dirty_ = true;
 					emitChangedSignal(ChangeType::TeamDataChanged);
@@ -672,14 +745,6 @@ namespace xero
 				/// \mod the modulo used to tell which items get random data
 				void generateRandomScoutingData(GameRandomProfile& profile, int mod);
 
-				/// \brief break out per robot blue alliance data and add to each robots scouting data for a match.
-				/// The key for the map given is the Blue Alliance match key.  The value for the map is a pair, where the first
-				/// entry is the Blue Alliance scoring breakdown data for the red alliance and the second entry is the Blue Alliance
-				/// scoring breakdown data for the blue alliance.  Any data in this map that applies to matches in the data model is
-				/// pulled out and assigned to the match scouting data for the appropriate robot.
-				/// \param data a map of data from the blue alliance.
-				void breakoutBlueAlliancePerRobotData(std::map<QString, std::pair<ScoutingDataMapPtr, ScoutingDataMapPtr>>& data);
-
 				/// \brief remove any scouting data associated with the given tablet
 				/// \param tablet the tablet we want to remove data for
 				void removeScoutingData(const QString& tablet);
@@ -757,7 +822,6 @@ namespace xero
 				std::shared_ptr<DataModelMatch> findMatch(const QString& comp, int set, int match);
 
 				std::shared_ptr<ScoutingDataMap> generateRandomData(GameRandomProfile& gen, std::shared_ptr<ScoutingForm> form);
-				void breakOutBAData(std::shared_ptr<DataModelMatch> m, Alliance c, ScoutingDataMapPtr data);
 
 				void processDataSetAlliance(ScoutingDataSet& set, std::shared_ptr<DataModelMatch> m, Alliance c) const;
 
@@ -772,7 +836,6 @@ namespace xero
 				QStringList match_tablets_;
 				std::list<std::shared_ptr<DataModelMatch>> matches_;
 				std::shared_ptr<ScoutingForm> match_scouting_form_;
-				std::list<std::shared_ptr<FieldDesc>> match_ba_fields_;
 				std::list<std::shared_ptr<FieldDesc>> match_extra_fields_;
 
 				QStringList team_tablets_;

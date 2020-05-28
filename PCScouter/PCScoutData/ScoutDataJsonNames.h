@@ -41,9 +41,12 @@ namespace xero
 			constexpr const char* JsonEvNameName = "evname";
 			constexpr const char* JsonMatchScoutingFormName = "scoutingform";
 			constexpr const char* JsonPitScoutingFormName = "pitform";
+			constexpr const char* JsonTeamExtraFieldsName = "teamextra";
+			constexpr const char* JsonMatchExtraFieldsName = "matchextra";
 			constexpr const char* JsonKeyName = "key";
 			constexpr const char* JsonNumberName = "number";
 			constexpr const char* JsonAssignName = "assign";
+			constexpr const char* JsonExtraTeamData = "extra";
 			constexpr const char* JsonTeamsName = "teams";
 			constexpr const char* JsonCompTypeName = "comptype";
 			constexpr const char* JsonSetName = "set";
@@ -51,8 +54,8 @@ namespace xero
 			constexpr const char* JsonEtimeName = "etime";
 			constexpr const char* JsonRedName = "red";
 			constexpr const char* JsonBlueName = "blue";
-			constexpr const char* JsonBaDataRedName = "badata_red";
-			constexpr const char* JsonBaDataBlueName = "badata_blue";
+			constexpr const char* JsonExtraDataRedName = "badata_red";
+			constexpr const char* JsonExtraDataBlueName = "badata_blue";
 			constexpr const char* JsonZebraDataName = "zebra";
 			constexpr const char* JsonMatchesName = "matches";
 			constexpr const char* JsonMatchTabletListName = "matchtablets";
@@ -75,10 +78,11 @@ namespace xero
 			constexpr const char* JsonHistoryPitListName = "pits";
 			constexpr const char* JsonHistoryMatchListName = "matches";
 			constexpr const char* JsonHistoryDataName = "historydata";
-			constexpr const char* JsonPitsChangedList = "pitschanged";
-			constexpr const char* JsonMatchesChangedList = "matcheschanged";
-			constexpr const char* JsonRankingBlob = "ranking";
-			constexpr const char* JsonGraphViews = "graphs";
+			constexpr const char* JsonPitsChangedListName = "pitschanged";
+			constexpr const char* JsonMatchesChangedListName = "matcheschanged";
+			constexpr const char* JsonRankingBlobName = "ranking";
+			constexpr const char* JsonGraphViewsName = "graphs";
+			constexpr const char* JsonChoicesName = "graphs";
 		}
 	}
 }

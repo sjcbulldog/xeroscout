@@ -78,6 +78,7 @@ namespace xero
 				bool parseSection(const QJsonObject& obj, int index);
 				void findLine(int charoff, int& lineno, int& charno);
 				void parseObject();
+				bool checkDuplicates();
 
 				bool parseSubitemBounds(const QString& secname, int i, const QJsonObject& obj, QRect& r);
 				bool parseObjectBase(const QString& secname, int i, const QJsonObject& obj, QString& name, QString& tag);
