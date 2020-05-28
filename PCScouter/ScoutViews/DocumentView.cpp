@@ -16,11 +16,10 @@
 
 #include "DocumentView.h"
 #include "FormView.h"
-#include "PitScheduleViewWidget.h"
+#include "TeamScheduleViewWidget.h"
 #include "MatchViewWidget.h"
 #include "DataSetViewWidget.h"
 #include "QueryViewWidget.h"
-#include "TeamSummaryWidget.h"
 #include "ChangeHistoryView.h"
 #include "DataMergeListWidget.h"
 #include "ZebraViewWidget.h"
@@ -58,26 +57,25 @@ namespace xero
 				addWidget(label);																				// 0
 				addWidget(new FormView(images_, "PitTemplate", "Preview", QColor(0, 0, 0, 255), this));					// 1
 				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(0, 0, 0, 255), this));				// 2
-				addWidget(new PitScheduleViewWidget(tablet, this));												// 3
+				addWidget(new TeamScheduleViewWidget(tablet, this));												// 3
 				addWidget(new MatchViewWidget(tablet, this));													// 4
 				addWidget(new DataSetViewWidget(this));															// 5
 				addWidget(new DataSetViewWidget(this));															// 6
 				addWidget(new QueryViewWidget(this));															// 7
-				addWidget(new TeamSummaryWidget(this));															// 8
-				addWidget(new DataSetViewWidget(this));															// 9
-				addWidget(new ChangeHistoryView(this));															// 10
-				addWidget(new DataMergeListWidget(this));														// 11
+				addWidget(new DataSetViewWidget(this));															// 8
+				addWidget(new ChangeHistoryView(this));															// 9
+				addWidget(new DataMergeListWidget(this));														// 10
 
 				ZebraViewWidget* zview = new ZebraViewWidget(this);
-				addWidget(zview);																				// 12
+				addWidget(zview);																				// 11
 
 				GraphView* gview = new PreMatchGraphView(this);
 				gview->create();
-				addWidget(gview);																				// 13
+				addWidget(gview);																				// 12
 
 				gview = new AllianceGraphView(this);
 				gview->create();
-				addWidget(gview);																				// 14
+				addWidget(gview);																				// 13
 
 				if (gamemgr)
 				{

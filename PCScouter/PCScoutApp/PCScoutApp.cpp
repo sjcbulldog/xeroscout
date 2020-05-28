@@ -16,7 +16,7 @@
 
 #include "PCScoutApp.h"
 #include "FormView.h"
-#include "PitScheduleViewWidget.h"
+#include "TeamScheduleViewWidget.h"
 #include "MatchViewWidget.h"
 #include "TcpTransport.h"
 #include "USBTransport.h"
@@ -147,7 +147,7 @@ PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent)
 
 	setupViews();
 
-	createPitScoutingForms();
+	createTeamScoutingForms();
 	createMatchScoutingForms();
 
 	QString exedir = QCoreApplication::applicationDirPath();
@@ -294,21 +294,7 @@ void PCScoutApp::setupViews()
 {
 	FormView* view;
 
-#ifdef NOTYET
-	view = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::PitScoutingFormView));
-	if (data_model_->pitScoutingForm() != nullptr)
-		view->setScoutingForm(data_model_->pitScoutingForm(), "");
-	else
-		view->clearView();
-
-	view = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormView));
-	if (data_model_->matchScoutingForm() != nullptr)
-		view->setScoutingForm(data_model_->matchScoutingForm(), "red");
-	else
-		view->clearView();
-#endif
-
-	PitScheduleViewWidget* tv = dynamic_cast<PitScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
+	TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
 	std::list<std::shared_ptr<const DataModelTeam>> teams;
 	for (auto t : data_model_->teams()) {
 		if (t->tablet() == identity_.name())
@@ -362,7 +348,7 @@ void PCScoutApp::complete(bool reset)
 	if (mv != nullptr)
 		mv->setTablet(identity_.name());
 
-	PitScheduleViewWidget* pv = dynamic_cast<PitScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
+	TeamScheduleViewWidget* pv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
 	if (pv != nullptr)
 		pv->setTablet(identity_.name());
 
@@ -371,7 +357,7 @@ void PCScoutApp::complete(bool reset)
 	if (reset)
 	{
 		removeAllScoutingFormsFromViews();
-		createPitScoutingForms();
+		createTeamScoutingForms();
 		createMatchScoutingForms();
 		settings_.setValue(CurrentEventKey, data_model_->evkey());
 	}
@@ -470,7 +456,7 @@ void PCScoutApp::createMenus()
 	act = sync_menu_->addAction(tr("USB Sync"));
 	(void)connect(act, &QAction::triggered, this, &PCScoutApp::syncWithCentralUSB);
 
-#ifdef NOTYET
+#ifdef BLUETOOTH_SYNC_NOT_READY
 	act = sync_menu_->addAction(tr("Bluetooth Sync"));
 	(void)connect(act, &QAction::triggered, this, &PCScoutApp::syncWithCentralBluetooth);
 #endif
@@ -711,7 +697,7 @@ void PCScoutApp::startSync(ScoutTransport* trans)
 	state_ = State::Synchronizing;
 }
 
-#ifdef NOTYET
+#ifdef BLUETOOTH_SYNC_NOT_READY
 void PCScoutApp::syncWithCentralBluetooth()
 {
 	saveAllForms();
@@ -928,7 +914,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 		index = startScouting(key, "team", title, Alliance::Red, data_model_->teamScoutingForm());
 		saveForm(index);
 
-		PitScheduleViewWidget* w = dynamic_cast<PitScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
+		TeamScheduleViewWidget* w = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
 		w->setScoutingField(key, true);
 	}
 	else if (t == DocumentView::ViewType::MatchView)
@@ -1009,9 +995,9 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 		//
 		// Put the view into the view selector
 		//
-		if (type == "pit") {
+		if (type == "team") {
 			auto team = data_model_->findTeamByKey(key);
-			title = "Pit:" + QString::number(team->number());
+			title = "Team:" + QString::number(team->number());
 		}
 		else if (type == "match") {
 			auto match = data_model_->findMatchByKey(key);
@@ -1040,7 +1026,7 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 	return index;
 }
 
-void PCScoutApp::createPitScoutingForms()
+void PCScoutApp::createTeamScoutingForms()
 {
 	std::list<std::shared_ptr<const DataModelTeam>> teams = data_model_->teams();
 	teams.sort([](std::shared_ptr<const DataModelTeam> a, std::shared_ptr<const DataModelTeam> b) -> bool
@@ -1050,18 +1036,18 @@ void PCScoutApp::createPitScoutingForms()
 
 	for (auto t : teams)
 	{
-		if (t->pitScoutingData() != nullptr)
+		if (t->teamScoutingData() != nullptr)
 		{
 			Alliance c;
 			int slot;
 
 			QString title = generatePitTitle(t);
-			int index = startScouting(t->key(), "pit", title, Alliance::Red, data_model_->teamScoutingForm());
+			int index = startScouting(t->key(), "team", title, Alliance::Red, data_model_->teamScoutingForm());
 
 			FormView* form = dynamic_cast<FormView*>(view_frame_->getWidget(index));
 			assert(form != nullptr);
 
-			auto sd = t->pitScoutingData();
+			auto sd = t->teamScoutingData();
 			form->assignData(sd);
 		}
 	}

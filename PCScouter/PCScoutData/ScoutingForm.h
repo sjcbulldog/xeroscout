@@ -69,7 +69,7 @@ namespace xero
 					return obj_;
 				}
 
-				std::vector<std::pair<QString, QVariant::Type>> fields() const;
+				std::vector<std::shared_ptr<FieldDesc>> fields() const;
 
 				std::shared_ptr<FormItemDesc> itemByName(const QString& name) const;
 

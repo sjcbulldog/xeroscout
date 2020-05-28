@@ -40,7 +40,7 @@ namespace xero
 				enum class ViewType : int
 				{
 					NoModelView = 0,
-					PitScoutingFormView = 1,
+					TeamScoutingFormView = 1,
 					MatchScoutingFormView = 2,
 					PitView = 3,
 					MatchView = 4,

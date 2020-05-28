@@ -38,9 +38,9 @@ namespace xero
 					auto fieldlist = item.second->desc()->getFields();
 					DataCollection d;
 
-					for (auto pair : fieldlist)
+					for (auto f : fieldlist)
 					{
-						auto it = data->find(pair.first);
+						auto it = data->find(f->name());
 						if (it != data->end())
 						{
 							d.add(it->first, it->second);

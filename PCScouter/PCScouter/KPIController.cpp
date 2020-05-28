@@ -61,7 +61,7 @@ void KPIController::computeKPI()
 				//
 				for (int i = 0; i < ds.columnCount(); i++)
 				{
-					if (!ds.headers().at(i).startsWith("ba_"))
+					if (!ds.headers().at(i)->name().startsWith("ba_"))
 						continue;
 				}
 			}

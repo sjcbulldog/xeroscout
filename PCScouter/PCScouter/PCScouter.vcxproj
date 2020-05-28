@@ -129,7 +129,6 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
     <ClCompile Include="ApplicationController.cpp" />
     <ClCompile Include="ClientProtocolHandler.cpp" />
     <ClCompile Include="DataModelBuilder.cpp" />
-    <ClCompile Include="FormSelectionWidget.cpp" />
     <ClCompile Include="ImportMatchDataController.cpp" />
     <ClCompile Include="ImportZebraDataController.cpp" />
     <ClCompile Include="KPIController.cpp" />
@@ -168,12 +167,10 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
     <QtMoc Include="TabletPoolListWidget.h" />
     <QtMoc Include="SpecialListWidget.h" />
     <ClInclude Include="TabletPoolWizardPage.h" />
-    <QtMoc Include="FormSelectionWidget.h" />
     <QtMoc Include="NewEventBlueAllianceWizard.h" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="AboutDialog.ui" />
-    <QtUic Include="FormSelectionWidget.ui" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MatchScouting.json" />

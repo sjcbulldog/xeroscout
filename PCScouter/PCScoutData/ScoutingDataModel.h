@@ -203,8 +203,8 @@ namespace xero
 
 				/// \brief returns the set of tablets for teamform scouting
 				/// \returns the set of tablets for teamform scouting
-				const QStringList& pitTablets() {
-					return pit_tablets_;
+				const QStringList& teamTablets() {
+					return team_tablets_;
 				}
 
 				/// \brief returns true if the data model has changed since it was last saved
@@ -227,19 +227,19 @@ namespace xero
 
 				/// \brief returns all field names across the team scouting form, the match scouting form, and the blue alliance data
 				/// \returns all field names ;
-				QStringList getAllFieldNames() const;
+				std::vector<std::shared_ptr<FieldDesc>> getAllFields() const;
 
 				/// \brief return feilds associated with a team
 				/// \returns field names assocatied with a team
-				QStringList getTeamFieldNames() const;
+				std::vector<std::shared_ptr<FieldDesc>> getTeamFields() const;
 
 				/// \brief returns fields that contain per match data 
 				/// \returns fields that are valid per match data
-				QStringList getMatchFieldNames() const;
+				std::vector<std::shared_ptr<FieldDesc>> getMatchFields() const;
 
-				/// \brief returns true if the blue alliance data is loaded
-				/// \returns true if blue alliance data is loaded
-				bool isBlueAllianceDataLoaded() const;
+				/// \brief returns a field descriptor given a field name
+				/// \returns a field descriptor given a field name
+				std::shared_ptr<FieldDesc> getFieldByName(const QString& name) const;
 
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
@@ -267,12 +267,6 @@ namespace xero
 				/// \param query the SQL query to execute
 				/// \param error the error message if the SQL query was invalid
 				bool createCustomDataSet(ScoutingDataSet& set, const QString& query, QString& error) const;
-
-				/// \brief create summary data for a single team.
-				/// \param key the Blue Alliance key for the team of interest
-				/// \param result the team summary data result.
-				/// \returns true if the summary was generated, false if an error occurs
-				bool createTeamSummaryData(const QString& key, TeamDataSummary& result);
 
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
@@ -350,7 +344,7 @@ namespace xero
 					if (team == nullptr)
 						return false;
 
-					bool ret = team->setPitScoutingData(data, replace);
+					bool ret = team->setTeamScoutingData(data, replace);
 					if (ret)
 					{
 						dirty_ = true;
@@ -417,11 +411,11 @@ namespace xero
 				/// team tablets or match tablets assigned.  This method is used for
 				/// constructing a data model.
 				/// \returns true if sucessful and false if the team or match tablet scouting list where not empty
-				bool setTabletLists(const QStringList& pits, const QStringList& matches) {
-					if (pit_tablets_.size() > 0 || match_tablets_.size() > 0)
+				bool setTabletLists(const QStringList& teams, const QStringList& matches) {
+					if (team_tablets_.size() > 0 || match_tablets_.size() > 0)
 						return false;
 
-					pit_tablets_ = pits;
+					team_tablets_ = teams;
 					match_tablets_ = matches;
 
 					dirty_ = true;
@@ -597,8 +591,8 @@ namespace xero
 				/// \brief assign tablets to matches for match scouting
 				void assignMatches();
 
-				/// \brief assign tablets to team for pit scouting
-				void assignPits();
+				/// \brief assign tablets to team for team scouting
+				void assignTeams();
 
 				/// \brief given a team key, return the team number
 				/// \param key the Blue Alliance key for the team
@@ -661,7 +655,7 @@ namespace xero
 
 					registered_tablets_.clear();
 
-					pit_tablets_.clear();
+					team_tablets_.clear();
 					match_tablets_.clear();
 
 					history_.clear();
@@ -754,9 +748,9 @@ namespace xero
 						index = 0;
 				}
 
-				void incrPitTabletIndex(int& index) {
+				void incrTeamTabletIndex(int& index) {
 					index++;
-					if (index == pit_tablets_.size())
+					if (index == team_tablets_.size())
 						index = 0;
 				}
 
@@ -775,16 +769,19 @@ namespace xero
 				QString ev_key_;
 				QString event_name_;
 
-				std::shared_ptr<ScoutingForm> match_scouting_form_;
-				std::shared_ptr<ScoutingForm> team_scouting_form_;
-
-				std::list<std::shared_ptr<DataModelTeam>> teams_;
+				QStringList match_tablets_;
 				std::list<std::shared_ptr<DataModelMatch>> matches_;
+				std::shared_ptr<ScoutingForm> match_scouting_form_;
+				std::list<std::shared_ptr<FieldDesc>> match_ba_fields_;
+				std::list<std::shared_ptr<FieldDesc>> match_extra_fields_;
+
+				QStringList team_tablets_;
+				std::list<std::shared_ptr<DataModelTeam>> teams_;
+				std::shared_ptr<ScoutingForm> team_scouting_form_;
+				std::list<std::shared_ptr<FieldDesc>> team_extra_fields_;
 
 				std::list<TabletIdentity> registered_tablets_;
 
-				QStringList pit_tablets_;
-				QStringList match_tablets_;
 
 				std::list<SyncHistoryRecord> history_;
 

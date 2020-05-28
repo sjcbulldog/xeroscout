@@ -34,6 +34,10 @@ namespace xero
 				friend class JSonDataModelConverter;
 
 			public:
+				static constexpr const char* RankName = "RANK";
+				static constexpr const char* OPRName = "OPR";
+
+			public:
 				DataModelTeam(const QString& key, int number, const QString& name) {
 					key_ = key;
 					number_ = number;
@@ -43,12 +47,36 @@ namespace xero
 				virtual ~DataModelTeam() {
 				}
 
+				QVariant value(const QString& name) const {
+					QVariant ret;
+
+					if (hasScoutingData())
+					{
+						auto it = team_data_.back()->find(name);
+						if (it != team_data_.back()->end())
+							ret = it->second;
+					}
+
+					if (!ret.isValid() && hasExtraData())
+					{
+						auto it = extra_data_->find(name);
+						if (it != extra_data_->end())
+							ret = it->second;
+					}
+
+					return ret;
+				}
+
 				bool hasRank() const {
-					return ranking_.contains("rank") && ranking_.value("rank").isDouble();
+					auto it = extra_data_->find(RankName);
+					return it != extra_data_->end();
 				}
 
 				int rank() const {
-					return ranking_.value("rank").toInt();
+					auto it = extra_data_->find(RankName);
+					assert(it != extra_data_->end());
+					assert(it->second.type() == QVariant::Int);
+					return it->second.toInt();
 				}
 
 				bool hasRankingInfo() const {
@@ -71,12 +99,19 @@ namespace xero
 					return name_;
 				}
 
+				bool hasScoutingData() const {
+					return team_data_.size() > 0;
+				}
 
-				ConstScoutingDataMapPtr pitScoutingData() const {
-					if (pit_data_.size() == 0)
+				ConstScoutingDataMapPtr teamScoutingData() const {
+					if (team_data_.size() == 0)
 						return nullptr;
 
-					return pit_data_.back();
+					return team_data_.back();
+				}
+
+				bool hasExtraData() const {
+					return extra_data_ != nullptr;
 				}
 
 				ConstScoutingDataMapPtr extraData() const {
@@ -86,7 +121,7 @@ namespace xero
 				std::list<ConstScoutingDataMapPtr> pitScoutingDataList() const {
 					std::list<ConstScoutingDataMapPtr> ret;
 
-					for (auto p : pit_data_)
+					for (auto p : team_data_)
 						ret.push_back(p);
 
 					return ret;
@@ -97,8 +132,8 @@ namespace xero
 				}
 
 				void removeOldScoutingData() {
-					while (pit_data_.size() > 1)
-						pit_data_.erase(pit_data_.begin());
+					while (team_data_.size() > 1)
+						team_data_.erase(team_data_.begin());
 				}
 
 			protected:
@@ -125,26 +160,26 @@ namespace xero
 				}
 
 				void clearPitScoutingData() {
-					pit_data_.clear();
+					team_data_.clear();
 				}
 
-				bool setPitScoutingData(ScoutingDataMapPtr d, bool replace) {
+				bool setTeamScoutingData(ScoutingDataMapPtr d, bool replace) {
 					assert(d != nullptr);
 
 					if (replace)
 					{
-						pit_data_.clear();
+						team_data_.clear();
 					}
 					else
 					{
-						for (auto pd : pit_data_)
+						for (auto pd : team_data_)
 						{
 							if (compareTwoMaps(pd, d))
 								return false;
 						}
 					}
 
-					pit_data_.push_back(d);
+					team_data_.push_back(d);
 					return true;
 				}
 
@@ -157,7 +192,7 @@ namespace xero
 				int number_;
 				QString name_;
 				QString tablet_;
-				std::list<ScoutingDataMapPtr> pit_data_;
+				std::list<ScoutingDataMapPtr> team_data_;
 				QJsonObject ranking_;
 				ScoutingDataMapPtr extra_data_;
 			};

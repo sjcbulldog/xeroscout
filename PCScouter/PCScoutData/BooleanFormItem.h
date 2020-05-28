@@ -31,7 +31,7 @@ namespace xero
 			public:
 				BooleanFormItem(const QString& display, const QString& tag) : FormItemDesc(display, tag)
 				{
-					addField(std::make_pair(tag, QVariant::Bool));
+					addField(std::make_shared<FieldDesc>(tag, FieldDesc::Type::Boolean));
 				}
 
 				virtual ~BooleanFormItem()

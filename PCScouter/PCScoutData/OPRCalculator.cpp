@@ -41,7 +41,7 @@ namespace xero
 				int rows = 0;
 				for (auto m : dm_->matches())
 				{
-					if (m->hasBlueAllianceData())
+					if (m->hasExtraField(Alliance::Red, BATotalPoints) && m->hasExtraField(Alliance::Blue, BATotalPoints))
 						rows += 2;
 				}
 
@@ -58,7 +58,7 @@ namespace xero
 
 				for (auto m : dm_->matches())
 				{
-					if (!m->hasBlueAllianceData())
+					if (!m->hasExtraField(Alliance::Red, BATotalPoints) || !m->hasExtraField(Alliance::Blue, BATotalPoints))
 						continue;
 
 					Alliance c = Alliance::Red;
@@ -70,9 +70,10 @@ namespace xero
 						mat(row, index) = 1;
 					}
 
-					QVariant v = m->value(c, 1, "ba_totalPoints");
+					QVariant v = m->value(c, 1, BATotalPoints);
 					if (!v.isValid())
-						return false;
+						v = QVariant(0);
+
 					score(row) = v.toInt();
 					row++;
 
@@ -87,7 +88,7 @@ namespace xero
 
 					v = m->value(c, 1, "ba_totalPoints");
 					if (!v.isValid())
-						return false; 
+						v = QVariant(0);
 					score(row) = v.toInt();
 
 					row++;

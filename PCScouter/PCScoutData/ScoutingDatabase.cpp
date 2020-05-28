@@ -15,6 +15,7 @@
 // 
 
 #include "ScoutingDatabase.h"
+#include "ScoutingDataModel.h"
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QSqlRecord>
@@ -92,30 +93,31 @@ namespace xero
 				qstr = "CREATE TABLE " + name + " ( ";
 
 				auto headers = set.headers();
-				auto types = set.types();
-
-				assert(headers.size() == types.size());
 
 				for (int i = 0; i < headers.size(); i++) {
 					if (i != 0)
 						qstr += ",  ";
 
-					qstr += headers[i];
+					qstr += headers[i]->name();
 					qstr += " ";
 
-					if (types[i] == QVariant::Type::Bool) {
+					switch (headers[i]->type())
+					{
+					case FieldDesc::Type::Boolean:
 						qstr += "INTEGER";
-					}
-					else if (types[i] == QVariant::Type::Int) {
-						qstr += "INTEGER";
-					}
-					else if (types[i] == QVariant::Type::Double) {
+						break;
+					case FieldDesc::Type::Double:
 						qstr += "REAL";
-					}
-					else if (types[i] == QVariant::Type::String) {
+						break;
+					case FieldDesc::Type::Integer:
+						qstr += "INTEGER";
+						break;
+					case FieldDesc::Type::String:
 						qstr += "TEXT";
-					}
-					else {
+						break;
+					case FieldDesc::Type::StringChoice:
+						qstr += "TEXT";
+						break;
 					}
 				}
 				qstr += " )";
@@ -137,33 +139,31 @@ namespace xero
 						if (col != 0)
 							qstr += ", ";
 						QVariant v = rowdata[col];
-						if (types[col] == QVariant::Type::Bool) {
-							if (v.isValid())
-								qstr += QString::number(v.toInt());
-							else
-								qstr += "NULL";
-						}
-						else if (types[col] == QVariant::Type::Int) {
-							if (v.isValid())
-								qstr += QString::number(v.toInt());
-							else
-								qstr += "NULL";
-						}
-						else if (types[col] == QVariant::Type::Double)
+						if (v.isValid())
 						{
-							if (v.isValid())
+							switch (headers[col]->type())
+							{
+							case FieldDesc::Type::Boolean:
+								qstr += QString::number(v.toInt());
+								break;
+							case FieldDesc::Type::Double:
 								qstr += QString::number(v.toDouble());
-							else
-								qstr += "NULL";
+								qstr += "REAL";
+								break;
+							case FieldDesc::Type::Integer:
+								qstr += QString::number(v.toInt());
+								break;
+							case FieldDesc::Type::String:
+								qstr += v.toString();
+								break;
+							case FieldDesc::Type::StringChoice:
+								qstr += v.toString();
+								break;
+							}
 						}
-						else if (types[col] == QVariant::Type::String) {
-							if (v.isValid())
-								qstr += "'" + v.toString() + "'";
-							else
-								qstr += "NULL";
-						}
-						else {
-							assert(false);
+						else
+						{
+							qstr += "NULL";
 						}
 					}
 					qstr += ")";
@@ -179,7 +179,7 @@ namespace xero
 				return true;
 			}
 
-			bool ScoutingDatabase::executeQuery(const QString& qstr, ScoutingDataSet& set, QString& error)
+			bool ScoutingDatabase::executeQuery(const ScoutingDataModel &dm, const QString& qstr, ScoutingDataSet& set, QString& error)
 			{
 				QSqlQuery query(db_);
 				bool headers = false;
@@ -200,14 +200,31 @@ namespace xero
 					if (!headers) {
 						for (int col = 0; col < rec.count(); col++) {
 							QSqlField f = rec.field(col);
-							set.addHeader(f.name(), f.type());
+							auto hdr = dm.getFieldByName(f.name());
+							assert(hdr != nullptr);
+							set.addHeader(hdr);
 						}
 						headers = true;
 					}
 
 					set.newRow();
 					for (int col = 0; col < rec.count(); col++)
-						set.addData(rec.value(col));
+					{
+						if (set.colHeader(col)->type() == FieldDesc::Type::Boolean && rec.value(col).type() == QVariant::Int)
+						{
+							//
+							// SQLLite does not support booleans, so they are in the SQL table as ints, here we translate back to booleans
+							//
+							if (rec.value(col).toInt() == 0)
+								set.addData(QVariant(false));
+							else
+								set.addData(QVariant(true));
+						}
+						else
+						{
+							set.addData(rec.value(col));
+						}
+					}
 				}
 
 				query.finish();

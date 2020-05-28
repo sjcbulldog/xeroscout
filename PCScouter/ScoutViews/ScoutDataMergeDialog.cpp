@@ -43,7 +43,7 @@ namespace xero
 
 			void ScoutDataMergeDialog::accept()
 			{
-#ifdef NOTYET
+#ifdef MERGE_DATA_NOT_READY
 				//
 				// Extract the data from the last column of the
 				//
@@ -166,7 +166,7 @@ namespace xero
 					}
 					else
 					{
-#ifdef NOTYET
+#ifdef MERGE_DATA_NOT_READY
 						if (fitem->dataType() == QVariant::Type::Int)
 						{
 							QTableWidgetItem* item = new QTableWidgetItem(it->second.toString());

@@ -61,7 +61,7 @@ private:
 	void syncWithCentralNetwork();
 	void syncWithCentralUSB();
 	void syncWithCentralNetworkDirect();
-#ifdef NOTYET
+#ifdef BLUETOOTH_SYNC_NOT_READY
 	void syncWithCentralBluetooth();
 #endif
 	void about();
@@ -83,7 +83,7 @@ private:
 
 	void extractDataFromForm(int formindex, const QString &label);
 
-	void createPitScoutingForms();
+	void createTeamScoutingForms();
 	void createMatchScoutingForms();
 	void saveCurrentForm();
 	void saveForm(int formindex);
@@ -109,7 +109,7 @@ private:
 
 	void debugToggled();
 
-#ifdef NOTYET
+#ifdef BLUETOOTH_SYNC_NOT_READY
 	void foundService(const QBluetoothDeviceInfo& info);
 	void discoveryFinished();
 	void serverSelected(const QString& name);

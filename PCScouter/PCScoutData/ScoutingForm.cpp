@@ -67,9 +67,9 @@ namespace xero
 				return nullptr;
 			}
 
-			std::vector<std::pair<QString, QVariant::Type>> ScoutingForm::fields() const
+			std::vector<std::shared_ptr<FieldDesc>> ScoutingForm::fields() const
 			{
-				std::vector<std::pair<QString, QVariant::Type>> result;
+				std::vector<std::shared_ptr<FieldDesc>> result;
 
 				for (auto s : sections_) {
 					for (auto i : s->items())

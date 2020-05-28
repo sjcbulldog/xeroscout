@@ -19,10 +19,10 @@ namespace xero
 			public:
 				TimerCountFormItem(const QString& display, const QString& tag, int minv, int maxv) : FormItemDesc(display, tag)
 				{
-					addField(std::make_pair(genComplexName(tag, CompletedTimeField), QVariant::Type::Double));
-					addField(std::make_pair(genComplexName(tag, CompletedCountField), QVariant::Type::Int));
-					addField(std::make_pair(genComplexName(tag, AbandonedTimeField), QVariant::Type::Double));
-					addField(std::make_pair(genComplexName(tag, AbandonedCountField), QVariant::Type::Int));
+					addField(std::make_shared<FieldDesc>(genComplexName(tag, CompletedTimeField), FieldDesc::Type::Double));
+					addField(std::make_shared<FieldDesc>(genComplexName(tag, CompletedCountField), FieldDesc::Type::Integer));
+					addField(std::make_shared<FieldDesc>(genComplexName(tag, AbandonedTimeField), FieldDesc::Type::Double));
+					addField(std::make_shared<FieldDesc>(genComplexName(tag, AbandonedCountField), FieldDesc::Type::Integer));
 					minv_ = minv;
 					maxv_ = maxv;
 				}

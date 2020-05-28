@@ -20,6 +20,9 @@ namespace xero
 				bool calc();
 
 			private:
+				static constexpr const char* BATotalPoints = "ba_totalPoints";
+
+			private:
 				int calcRowCount();
 				int findTeamIndex(const QString &key);
 				bool buildTeamMatchMatrix(Eigen::MatrixXd& m, Eigen::VectorXd& score);

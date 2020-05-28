@@ -18,6 +18,7 @@
 
 #include "pcscoutdata_global.h"
 #include "ScoutingDataMap.h"
+#include "FieldDesc.h"
 #include <QStringList>
 #include <QString>
 #include <QVariant>
@@ -50,32 +51,22 @@ namespace xero
 				void clear() {
 					headers_.clear();
 					data_.clear();
-					types_.clear();
 				}
 
-				const QStringList& headers() const {
+				const std::vector<std::shared_ptr<FieldDesc>> headers() const {
 					return headers_;
 				}
 
-				const QString& colHeader(int col) const {
+				const std::shared_ptr<FieldDesc> colHeader(int col) const {
 					return headers_[col];
-				}
-
-				const std::vector<QVariant::Type>& types() const {
-					return types_;
-				}
-
-				QVariant::Type colType(int col) const {
-					return types_[col];
 				}
 
 				const std::vector<QVariant>& row(int index) const {
 					return data_[index];
 				}
 
-				void addHeader(const QString& name, QVariant::Type t) {
-					headers_.push_back(name);
-					types_.push_back(t);
+				void addHeader(std::shared_ptr<FieldDesc> desc) {
+					headers_.push_back(desc);
 				}
 
 				void newRow() {
@@ -104,8 +95,7 @@ namespace xero
 				bool isColumnBool(int col) const;
 
 			private:
-				QStringList headers_;
-				std::vector<QVariant::Type> types_;
+				std::vector<std::shared_ptr<FieldDesc>> headers_;
 				std::vector<std::vector<QVariant>> data_;
 			};
 

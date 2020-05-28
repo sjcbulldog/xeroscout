@@ -10,10 +10,10 @@ TeamSummaryController::TeamSummaryController(std::shared_ptr<BlueAlliance> ba,
 {
 	done_ = false;
 	dm_ = dm;
-	gen_ = new AllTeamSummaryGenerator(dm, ds);
+	//gen_ = new AllTeamSummaryGenerator(dm, ds);
 
-	connect(gen_, &AllTeamSummaryGenerator::reportProgress, this, &TeamSummaryController::progress);
-	gen_->start();
+	// connect(gen_, &AllTeamSummaryGenerator::reportProgress, this, &TeamSummaryController::progress);
+	// gen_->start();
 }
 
 TeamSummaryController::~TeamSummaryController()
@@ -32,6 +32,7 @@ bool TeamSummaryController::isDone()
 
 void TeamSummaryController::run()
 {
+#ifdef TEAM_SUMMARY_NOT_READY
 	gen_->run();
 
 	if (gen_->done())
@@ -48,4 +49,8 @@ void TeamSummaryController::run()
 		emit complete(false);
 		done_ = true;
 	}
+#endif
+
+	emit complete(false);
+	done_ = true;
 }

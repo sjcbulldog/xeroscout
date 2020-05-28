@@ -22,7 +22,6 @@
 #include "ScoutServer.h"
 #include "ClientProtocolHandler.h"
 #include "SpecialListWidget.h"
-#include "AllTeamSummaryGenerator.h"
 #include "GameRandomProfile.h"
 #include "ApplicationController.h"
 #include "KPIController.h"

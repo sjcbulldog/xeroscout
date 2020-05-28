@@ -48,19 +48,6 @@ namespace xero
 				virtual ~DataModelMatch() {
 				}
 
-				bool hasBlueAllianceData() const {
-					if (robots_.size() == 0)
-						return false;
-
-					for (auto robot : robots_)
-					{
-						if (!robot->hasBlueAllianceData())
-							return false;
-					}
-
-					return true;
-				}
-
 				QString title() const {
 					QString ret;
 
@@ -136,18 +123,33 @@ namespace xero
 					return robot->scoutingData();
 				}
 
-				bool hasBlueAllianceData(Alliance a, int slot) const {
+				bool hasExtraData(Alliance a, int slot) const {
 					auto robot = findRobotByColorSlot(a, slot);
 					assert(robot != nullptr);
 
-					return robot->hasBlueAllianceData();
+					return robot->hasExtraData();
 				}
 
-				ConstScoutingDataMapPtr blueAllianceData(Alliance a, int slot) const {
+				ConstScoutingDataMapPtr extraData(Alliance a, int slot) const {
 					auto robot = findRobotByColorSlot(a, slot);
 					assert(robot != nullptr);
 
-					return robot->baData();
+					return robot->extraData();
+				}
+
+				bool hasExtraField(Alliance a, const QString &name) const {
+					bool ret = false;
+
+					auto robot = findRobotByColorSlot(a, 1);
+					assert(robot != nullptr);
+
+					if (robot->hasExtraData())
+					{
+						auto it = robot->extraData()->find(name);
+						ret = (it != robot->extraData()->end());
+					}
+
+					return ret;
 				}
 
 				QVariant value(Alliance a, int slot, const QString& name) const {
@@ -164,10 +166,10 @@ namespace xero
 							ret = it->second;
 					}
 
-					if (!ret.isValid() && robot->hasBlueAllianceData())
+					if (!ret.isValid() && robot->hasExtraData())
 					{
-						auto it = robot->baData()->find(name);
-						if (it != robot->baData()->end())
+						auto it = robot->extraData()->find(name);
+						if (it != robot->extraData()->end())
 							ret = it->second;
 					}
 
@@ -186,9 +188,9 @@ namespace xero
 							data->insert_or_assign(pair.first, pair.second);
 					}
 
-					if (robot->hasBlueAllianceData())
+					if (robot->hasExtraData())
 					{
-						for (auto pair : *robot->baData())
+						for (auto pair : *robot->extraData())
 							data->insert_or_assign(pair.first, pair.second);
 					}
 					return data;
@@ -277,11 +279,11 @@ namespace xero
 					robots_.clear();
 				}
 
-				void setBlueAllianceData(Alliance a, int slot, ScoutingDataMapPtr map) {
+				void addExtraData(Alliance a, int slot, ScoutingDataMapPtr map) {
 					auto robot = findRobotByColorSlot(a, slot);
 					assert(robot != nullptr);
 
-					robot->setBlueAllianceData(map);
+					robot->addExtraData(map);
 				}
 
 				void addTeam(Alliance a, int slot, const QString& key) {
@@ -345,8 +347,8 @@ namespace xero
 						tablet_ = tablet;
 					}
 
-					ConstScoutingDataMapPtr baData() const {
-						return ba_data_;
+					ConstScoutingDataMapPtr extraData() const {
+						return extra_data_;
 					}
 
 					bool hasScoutingData() const {
@@ -374,12 +376,18 @@ namespace xero
 						return ret;
 					}
 
-					bool hasBlueAllianceData() const {
-						return ba_data_ != nullptr;
+					bool hasExtraData() const {
+						return extra_data_ != nullptr;
 					}
 
-					void setBlueAllianceData(ScoutingDataMapPtr data) {
-						ba_data_ = data;
+					void addExtraData(ScoutingDataMapPtr data) {
+						if (extra_data_ == nullptr)
+							extra_data_ = std::make_shared<ScoutingDataMap>();
+
+						for (auto pair : *data)
+						{
+							extra_data_->insert_or_assign(pair.first, pair.second);
+						}
 					}
 
 					ConstScoutingDataMapPtr scoutingData() const {
@@ -438,7 +446,7 @@ namespace xero
 					//
 					// The blue alliance data
 					//
-					ScoutingDataMapPtr ba_data_;
+					ScoutingDataMapPtr extra_data_;
 				};
 
 				std::shared_ptr<OneRobot> findRobotByColorSlot(Alliance c, int slot) {

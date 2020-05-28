@@ -106,10 +106,16 @@ namespace xero
 			{
 				bool ok;
 
-				ExpressionsEntryDialog dialog(dataModel()->getAllFieldNames(), this);
+				QStringList list;
+				for (auto f : dataModel()->getAllFields())
+				{
+					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer)
+						list.push_back(f->name());
+				}
+				ExpressionsEntryDialog dialog(list, this);
 				if (dialog.exec() == QDialog::Accepted)
 				{
-					ScoutDataExprContext ctxt(dataModel()->getAllFieldNames());
+					ScoutDataExprContext ctxt(list);
 					Expr e;
 					QString err;
 
@@ -200,13 +206,12 @@ namespace xero
 						const QStringList& x = pane->x();
 						QMenu* sub = new QMenu("Add Variable");
 
-						QStringList list = dataModel()->getAllFieldNames();
-						for (const QString& field : list)
+						for (auto f : dataModel()->getAllFields())
 						{
-							if (!x.contains(field))
+							if (!x.contains(f->name()))
 							{
-								act = sub->addAction(field);
-								auto cb = std::bind(&GraphView::addVariable, this, pane, field);
+								act = sub->addAction(f->name());
+								auto cb = std::bind(&GraphView::addVariable, this, pane, f->name());
 								connect(act, &QAction::triggered, this, cb);
 							}
 						}
@@ -394,7 +399,7 @@ namespace xero
 					for (int row = 0; row < ds.rowCount(); row++)
 						total += ds.get(row, i).toDouble();
 
-					varvalues->insert_or_assign(ds.headers().at(i), QVariant(total / ds.rowCount()));
+					varvalues->insert_or_assign(ds.headers().at(i)->name(), QVariant(total / ds.rowCount()));
 				}
 
 				return true;
@@ -437,9 +442,22 @@ namespace xero
 			{
 				ScoutingDataSet ds;
 				QString err;
-				ScoutDataExprContext ctxt(dataModel()->getAllFieldNames());
-				QStringList matchfields = dataModel()->getMatchFieldNames();
+
+				QStringList matchfields, alllist;
 				ScoutingDataMapPtr varvalues = std::make_shared<ScoutingDataMap>();
+
+				for (auto f : dataModel()->getAllFields())
+				{
+					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer)
+						alllist.push_back(f->name());
+				}
+				ScoutDataExprContext ctxt(alllist);
+
+				for (auto f : dataModel()->getMatchFields())
+				{
+					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer)
+						matchfields.push_back(f->name());
+				}
 
 				data.clear();
 				for (const QString& team : teams)

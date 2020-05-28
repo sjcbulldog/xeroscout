@@ -29,13 +29,13 @@ namespace xero
 	{
 		namespace views
 		{
-			class SCOUTVIEWS_EXPORT PitScheduleViewWidgetItem : public QTreeWidgetItem
+			class SCOUTVIEWS_EXPORT TeamScheduleViewWidgetItem : public QTreeWidgetItem
 			{
 			public:
-				PitScheduleViewWidgetItem(QTreeWidget* w) : QTreeWidgetItem(w) {
+				TeamScheduleViewWidgetItem(QTreeWidget* w) : QTreeWidgetItem(w) {
 				}
 
-				virtual ~PitScheduleViewWidgetItem() {
+				virtual ~TeamScheduleViewWidgetItem() {
 				}
 
 				bool operator<(const QTreeWidgetItem& other) const {
@@ -46,11 +46,11 @@ namespace xero
 				}
 			};
 
-			class SCOUTVIEWS_EXPORT PitScheduleViewWidget : public QTreeWidget, public ViewBase
+			class SCOUTVIEWS_EXPORT TeamScheduleViewWidget : public QTreeWidget, public ViewBase
 			{
 			public:
-				PitScheduleViewWidget(const QString &tablet, QWidget* parent);
-				virtual ~PitScheduleViewWidget();
+				TeamScheduleViewWidget(const QString &tablet, QWidget* parent);
+				virtual ~TeamScheduleViewWidget();
 
 				void setData(std::list<std::shared_ptr<const xero::scouting::datamodel::DataModelTeam>> teams);
 				void clearView();

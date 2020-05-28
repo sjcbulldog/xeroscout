@@ -25,6 +25,8 @@ namespace xero
 	{
 		namespace datamodel
 		{
+			class ScoutingDataModel;
+
 			class ScoutingDatabase
 			{
 			public:
@@ -41,7 +43,7 @@ namespace xero
 				bool init();
 				bool deleteTable(const QString& name);
 				bool addTable(const QString& name, const ScoutingDataSet& set);
-				bool executeQuery(const QString& query, ScoutingDataSet& set, QString& error);
+				bool executeQuery(const ScoutingDataModel& dm, const QString& query, ScoutingDataSet& set, QString& error);
 				void clearAllTables();
 
 				bool hasTable(const QString& table) {

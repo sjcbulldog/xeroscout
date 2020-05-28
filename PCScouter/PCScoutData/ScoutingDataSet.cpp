@@ -37,7 +37,7 @@ namespace xero
 					if (i != 0)
 						strm << ',';
 
-					strm << '"' << headers_[i] << '"';
+					strm << '"' << headers_[i]->name() << '"';
 				}
 				strm << '\n';
 
@@ -68,22 +68,6 @@ namespace xero
 						}
 					}
 					strm << '\n';
-				}
-
-				return true;
-			}
-
-			bool ScoutingDataSet::isColumnBool(int col) const
-			{
-				for (int row = 0; row < rowCount(); row++)
-				{
-					const QVariant& v = get(row, col);
-					auto t = v.type();
-					if (t != QVariant::Type::Int && t != QVariant::Type::LongLong && t != QVariant::UInt && t != QVariant::ULongLong)
-						return false;
-
-					if (v.toInt() != 0 && v.toInt() != 1)
-						return false;
 				}
 
 				return true;

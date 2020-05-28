@@ -95,7 +95,7 @@ void PCFormViewer::loadForm()
 	}
 	else
 	{
-		FormView* ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::PitScoutingFormView));
+		FormView* ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::TeamScoutingFormView));
 		ds->setScoutingForm(form, "red");
 
 		ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormView));
@@ -120,11 +120,11 @@ void PCFormViewer::createWindows()
 
 	view_selector_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 
-	item = new QListWidgetItem(loadIcon("pit"), "Red Scouting Form", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PitScoutingFormView)));
+	item = new QListWidgetItem(loadIcon("teamscout"), "Red Scouting Form", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamScoutingFormView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("pit"), "Blue Scouting Form", view_selector_);
+	item = new QListWidgetItem(loadIcon("teamscout"), "Blue Scouting Form", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormView)));
 	view_selector_->addItem(item);
 

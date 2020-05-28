@@ -117,7 +117,7 @@ void NewEventAppController::gotTeams()
 	dm_->assignMatches();
 
 	// Assign tablets to team pits
-	dm_->assignPits();
+	dm_->assignTeams();
 
 	emit complete(false);
 	state_ = State::Done;

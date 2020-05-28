@@ -35,7 +35,8 @@ namespace xero
 				{
 					minv_ = minv;
 					maxv_ = maxv;
-					addField(std::make_pair(tag, QVariant::Int));
+					addField(std::make_shared<FieldDesc>(tag, FieldDesc::Type::Integer));
+
 				}
 
 				virtual ~UpDownFormItem()

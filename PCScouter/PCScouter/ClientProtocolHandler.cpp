@@ -160,7 +160,7 @@ void ClientProtocolHandler::handleTabletIDReset(const QJsonObject& obj)
 	//
 	QStringList list;
 	list.append(data_model_->matchTablets());
-	list.append(data_model_->pitTablets());
+	list.append(data_model_->teamTablets());
 
 	replyobj[JsonTabletListName] = QJsonArray::fromStringList(list);
 
@@ -262,7 +262,7 @@ void ClientProtocolHandler::handleTabletIDSync(const QJsonObject&obj)
 	identity_ = TabletIdentity(name, uid);
 	
 	// See if this tablet is valid for the data model
-	if (!data_model_->matchTablets().contains(name) && !data_model_->pitTablets().contains(name))
+	if (!data_model_->matchTablets().contains(name) && !data_model_->teamTablets().contains(name))
 	{
 		replyobj[JsonMessageName] = "Tablet '" + name + "' is not a valid tablet";
 

@@ -16,7 +16,7 @@
 
 #include "PCScouter.h"
 #include "FormView.h"
-#include "PitScheduleViewWidget.h"
+#include "TeamScheduleViewWidget.h"
 #include "MatchViewWidget.h"
 #include "DataSetViewWidget.h"
 #include "TcpTransport.h"
@@ -24,7 +24,6 @@
 #include "AboutDialog.h"
 #include "TabletIdentity.h"
 #include "ChangeHistoryView.h"
-#include "TeamSummaryWidget.h"
 #include "DataMergeListWidget.h"
 #include "ZebraViewWidget.h"
 #include "ScoutDataMergeDialog.h"
@@ -234,15 +233,15 @@ void PCScouter::createWindows()
 	(void)connect(view_selector_, &SpecialListWidget::magicWord, this, &PCScouter::magicWordTyped);
 	left_right_splitter_->addWidget(view_selector_);
 
-	item = new QListWidgetItem(loadIcon("pit"), "Pit Scouting Form", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PitScoutingFormView)));
+	item = new QListWidgetItem(loadIcon("teams"), "Team Scouting Form", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamScoutingFormView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("teams"), "Pit Scouting Status", view_selector_);
+	item = new QListWidgetItem(loadIcon("teams"), "Team Scouting Status", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PitView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("teamdata"), "Pit Scouting Data", view_selector_);
+	item = new QListWidgetItem(loadIcon("teamdata"), "Team Scouting Data", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PitDataSet)));
 	view_selector_->addItem(item);
 
@@ -349,9 +348,9 @@ void PCScouter::createMenus()
 	import_zebra_data_ = import_menu_->addAction(tr("Import BlueAlliance Zebra Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importZebraData);
 
-#ifdef NOTYET
-	import_zebra_data_ = import_menu_->addAction(tr("KPI Data"));
-	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importKPIData);
+#ifdef IMPORT_KPI_NOT_READY
+	import_kpi_data_ = import_menu_->addAction(tr("KPI Data"));
+	(void)connect(import_kpi_data_, &QAction::triggered, this, &PCScouter::importKPIData);
 #endif
 
 	import_menu_->addSeparator();
@@ -892,14 +891,14 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 
 		switch (view)
 		{
-		case DocumentView::ViewType::PitScoutingFormView:
+		case DocumentView::ViewType::TeamScoutingFormView:
 		{
-			qDebug() << "PitScoutingFormView";
+			qDebug() << "TeamScoutingFormView";
 			FormView* ds = dynamic_cast<FormView*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
 			{
-				qDebug() << "PitScoutingFormView - refresh";
+				qDebug() << "TeamScoutingFormView - refresh";
 				ds->setScoutingForm(data_model_->teamScoutingForm(), "");
 				ds->clearNeedRefresh();
 			}
@@ -920,7 +919,7 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 
 		case DocumentView::ViewType::PitView:
 		{
-			PitScheduleViewWidget* ds = dynamic_cast<PitScheduleViewWidget*>(view_frame_->getWidget(view));
+			TeamScheduleViewWidget* ds = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
 			{
@@ -984,6 +983,7 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 
 		case DocumentView::ViewType::TeamReport:
 		{
+#ifdef TEAM_SUMMARY_NOT_READY
 			TeamSummaryWidget* ds = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
@@ -991,6 +991,7 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 				ds->refreshView();
 				ds->clearNeedRefresh();
 			}
+#endif
 		}
 		break;
 
@@ -1121,8 +1122,10 @@ void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 		QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
 		qv->setNeedRefresh();
 
+#ifdef TEAM_SUMMARY
 		TeamSummaryWidget* sw = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamReport));
 		sw->setNeedRefresh();
+#endif
 	}
 	break;
 
@@ -1131,7 +1134,7 @@ void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 	case ScoutingDataModel::ChangeType::TeamAdded:
 	case ScoutingDataModel::ChangeType::TeamDataChanged:
 	{
-		PitScheduleViewWidget* tv = dynamic_cast<PitScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
+		TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
 		tv->setNeedRefresh();
 
 		DataSetViewWidget* w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitDataSet));
@@ -1140,8 +1143,10 @@ void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 		QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
 		qv->setNeedRefresh();
 
+#ifdef TEAM_SUMMARY_NOT_READY
 		TeamSummaryWidget* sw = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamReport));
 		sw->setNeedRefresh();
+#endif
 	}
 	break;
 	}

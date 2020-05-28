@@ -35,7 +35,7 @@ namespace xero
 				ChoiceFormItem(const QString& display, const QString& tag, const QStringList& choices) : FormItemDesc(display, tag) 
 				{
 					choices_ = choices;
-					addField(std::make_pair(tag, QVariant::String));
+					addField(std::make_shared<FieldDesc>(tag, choices));
 				}
 
 				virtual ~ChoiceFormItem() {

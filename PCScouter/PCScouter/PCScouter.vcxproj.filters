@@ -40,9 +40,6 @@
     <ClCompile Include="PCScouter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FormSelectionWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SelectEventWizardPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -94,9 +91,6 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="PCScouter.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="FormSelectionWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="NewEventBlueAllianceWizard.h">
@@ -162,9 +156,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="FormSelectionWidget.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtUic Include="AboutDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>

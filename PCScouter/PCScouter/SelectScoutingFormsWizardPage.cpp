@@ -40,7 +40,7 @@ SelectScoutingFormsWizardPage::SelectScoutingFormsWizardPage(NewEventBlueAllianc
 	layout->addWidget(row);
 
 	l = new QLabel(row);
-	l->setText("Pit Scouting Form: ");
+	l->setText("Team Scouting Form: ");
 	rowlayout->addWidget(l);
 
 	pit_scouting_form_ = new QLabel(row);

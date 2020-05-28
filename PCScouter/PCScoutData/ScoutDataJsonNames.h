@@ -56,7 +56,7 @@ namespace xero
 			constexpr const char* JsonZebraDataName = "zebra";
 			constexpr const char* JsonMatchesName = "matches";
 			constexpr const char* JsonMatchTabletListName = "matchtablets";
-			constexpr const char* JsonPitTabletListName = "pittablets";
+			constexpr const char* JsonTeamTabletListName = "pittablets";
 			constexpr const char* JsonScoutingName = "scouting";
 			constexpr const char* JsonTabletName = "tablet";
 			constexpr const char* JsonTeamName = "team";

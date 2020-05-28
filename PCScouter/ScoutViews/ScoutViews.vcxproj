@@ -113,8 +113,7 @@
     <ClCompile Include="ScoutDataMergeDialog.cpp" />
     <ClCompile Include="SelectTeamsDialog.cpp" />
     <ClCompile Include="SingleInstanceGuard.cpp" />
-    <ClCompile Include="TeamSummaryWidget.cpp" />
-    <ClCompile Include="PitScheduleViewWidget.cpp" />
+    <ClCompile Include="TeamScheduleViewWidget.cpp" />
     <ClCompile Include="Translation2d.cpp" />
     <ClCompile Include="Twist2d.cpp" />
     <ClCompile Include="UnitConverter.cpp" />
@@ -149,8 +148,7 @@
     <ClInclude Include="FlowLayout.h" />
     <QtMoc Include="FormView.h" />
     <ClInclude Include="QueryViewWidget.h" />
-    <QtMoc Include="TeamSummaryWidget.h" />
-    <ClInclude Include="PitScheduleViewWidget.h" />
+    <ClInclude Include="TeamScheduleViewWidget.h" />
     <QtMoc Include="DocumentView.h" />
     <QtMoc Include="DataMergeListWidget.h" />
     <ClInclude Include="MatchViewWidget.h" />

@@ -88,7 +88,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <QtMoc Include="AllTeamSummaryGenerator.h" />
     <ClInclude Include="Alliance.h" />
     <ClInclude Include="BooleanFormItem.h" />
     <ClInclude Include="BooleanItemDisplay.h" />
@@ -97,6 +96,7 @@
     <ClInclude Include="DataCollection.h" />
     <ClInclude Include="DataModelMatch.h" />
     <ClInclude Include="DataModelTeam.h" />
+    <ClInclude Include="FieldDesc.h" />
     <ClInclude Include="FormInstance.h" />
     <ClInclude Include="FormItemDesc.h" />
     <ClInclude Include="FormItemDisplay.h" />
@@ -116,7 +116,6 @@
     <QtMoc Include="StartStopWidget.h" />
     <ClInclude Include="OPRCalculator.h" />
     <ClInclude Include="ScoutDataExprContext.h" />
-    <ClInclude Include="TeamDataSummary.h" />
     <ClInclude Include="NumericFormItem.h" />
     <ClInclude Include="pcscoutdata_global.h" />
     <ClInclude Include="ScoutDataJsonNames.h" />
@@ -136,7 +135,6 @@
     <ClInclude Include="UpDownItemDisplay.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AllTeamSummaryGenerator.cpp" />
     <ClCompile Include="BooleanItemDisplay.cpp" />
     <ClCompile Include="ChoiceItemDisplay.cpp" />
     <ClCompile Include="FormInstance.cpp" />
@@ -150,7 +148,6 @@
     <ClCompile Include="NumericItemDisplay.cpp" />
     <ClCompile Include="OPRCalculator.cpp" />
     <ClCompile Include="StartStopWidget.cpp" />
-    <ClCompile Include="TeamSummaryData.cpp" />
     <ClCompile Include="ScoutingDatabase.cpp" />
     <ClCompile Include="ScoutingDataModel.cpp" />
     <ClCompile Include="ScoutingDataSet.cpp" />

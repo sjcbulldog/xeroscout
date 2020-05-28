@@ -196,10 +196,9 @@ namespace xero
 				table->setRowCount(data_.rowCount());
 
 				QStringList headers;
-				for (const QString& hdr : data_.headers())
+				for (auto hdr : data_.headers())
 				{
-					QString newhdr = hdr;
-					headers.push_back(newhdr);
+					headers.push_back(hdr->name());
 				}
 
 				table->setHorizontalHeaderLabels(headers);

@@ -39,12 +39,6 @@
     <ClCompile Include="QueryViewWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TeamSummaryWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PitScheduleViewWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ChangeHistoryView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -114,6 +108,9 @@
     <ClCompile Include="ImageManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TeamScheduleViewWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MatchViewWidget.h">
@@ -129,9 +126,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ViewBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PitScheduleViewWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ChangeHistoryView.h">
@@ -200,6 +194,9 @@
     <ClInclude Include="ImageManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TeamScheduleViewWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scoutviews_global.h">
@@ -211,9 +208,6 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="FormView.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="TeamSummaryWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="DataMergeListWidget.h">

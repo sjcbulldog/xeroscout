@@ -264,8 +264,8 @@ namespace xero
 					if (extra)
 					{
 						for (int i = 1; i <= 3; i++) {
-							badatared.push_back(encode(m->blueAllianceData(Alliance::Red, i)));
-							badatablue.push_back(encode(m->blueAllianceData(Alliance::Blue, i)));
+							badatared.push_back(encode(m->extraData(Alliance::Red, i)));
+							badatablue.push_back(encode(m->extraData(Alliance::Blue, i)));
 						}
 					}
 
@@ -284,10 +284,10 @@ namespace xero
 					match_tablets.push_back(mt);
 				payload[JsonMatchTabletListName] = match_tablets;
 
-				QJsonArray pit_tablets;
-				for (auto pt : dm_->pitTablets())
-					pit_tablets.push_back(pt);
-				payload[JsonPitTabletListName] = pit_tablets;
+				QJsonArray team_tablets;
+				for (auto t : dm_->teamTablets())
+					team_tablets.push_back(t);
+				payload[JsonTeamTabletListName] = team_tablets;
 
 				return payload;
 			}
@@ -372,11 +372,11 @@ namespace xero
 
 				QJsonArray pits;
 				for (auto t : dm_->teams()) {
-					if (t->tablet() == tablet && t->pitScoutingData() != nullptr)
+					if (t->tablet() == tablet && t->teamScoutingData() != nullptr)
 					{
 						QJsonObject team;
 						team[JsonTeamName] = t->key();
-						team[JsonResultName] = encode(t->pitScoutingData());
+						team[JsonResultName] = encode(t->teamScoutingData());
 
 						pits.push_back(team);
 					}
@@ -748,8 +748,8 @@ namespace xero
 
 					if (badatablue.size() == 3 && badatared.size() == 3) {
 						for (int i = 1; i <= 3; i++) {
-							dm->setBlueAllianceData(Alliance::Red, i, decode(badatared[i - 1].toArray()));
-							dm->setBlueAllianceData(Alliance::Blue, i, decode(badatablue[i - 1].toArray()));
+							dm->addExtraData(Alliance::Red, i, decode(badatared[i - 1].toArray()));
+							dm->addExtraData(Alliance::Blue, i, decode(badatablue[i - 1].toArray()));
 						}
 					}
 
@@ -773,15 +773,15 @@ namespace xero
 						dm_->match_tablets_.push_back(a[i].toString());
 				}
 
-				if (!obj.contains(JsonPitTabletListName) || !obj.value(JsonPitTabletListName).isArray()) {
+				if (!obj.contains(JsonTeamTabletListName) || !obj.value(JsonTeamTabletListName).isArray()) {
 					errors_.push_back("expected array field 'pittablets'");
 					return false;
 				}
 
-				a = obj[JsonPitTabletListName].toArray();
+				a = obj[JsonTeamTabletListName].toArray();
 				for (int i = 0; i < a.size(); i++) {
 					if (a[i].isString())
-						dm_->pit_tablets_.push_back(a[i].toString());
+						dm_->team_tablets_.push_back(a[i].toString());
 				}
 
 				return true;

@@ -60,14 +60,6 @@ namespace xero
 
 			void QueryViewWidget::madeActive()
 			{
-				QStringList list = dataModel()->getAllFieldNames();
-				list.append("SELECT");
-				list.append("WHERE");
-				list.append("FROM");
-				list.append("AND");
-				list.append("OR");
-				list.append("matches");
-				list.append("teams");
 			}
 
 			void QueryViewWidget::refreshView()

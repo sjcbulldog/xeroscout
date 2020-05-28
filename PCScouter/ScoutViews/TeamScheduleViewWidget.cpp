@@ -14,7 +14,7 @@
 // limitations under the License.
 // 
 
-#include "PitScheduleViewWidget.h"
+#include "TeamScheduleViewWidget.h"
 
 using namespace xero::scouting::datamodel;
 
@@ -25,7 +25,7 @@ namespace xero
 		namespace views
 		{
 
-			PitScheduleViewWidget::PitScheduleViewWidget(const QString &tablet, QWidget* parent) : QTreeWidget(parent)
+			TeamScheduleViewWidget::TeamScheduleViewWidget(const QString &tablet, QWidget* parent) : QTreeWidget(parent)
 			{
 				QStringList headers = { "Number", "Scouted", "Tablet", "Name" };
 
@@ -35,11 +35,11 @@ namespace xero
 				setTablet(tablet);
 			}
 
-			PitScheduleViewWidget::~PitScheduleViewWidget()
+			TeamScheduleViewWidget::~TeamScheduleViewWidget()
 			{
 			}
 
-			void PitScheduleViewWidget::setScoutingField(const QString& key, bool value)
+			void TeamScheduleViewWidget::setScoutingField(const QString& key, bool value)
 			{
 				int col = 1;
 
@@ -65,26 +65,26 @@ namespace xero
 				}
 			}
 
-			void PitScheduleViewWidget::setData(std::list<std::shared_ptr<const DataModelTeam>> teams)
+			void TeamScheduleViewWidget::setData(std::list<std::shared_ptr<const DataModelTeam>> teams)
 			{
 				teams_ = teams;
 				refreshView();
 			}
 
-			void PitScheduleViewWidget::refreshView()
+			void TeamScheduleViewWidget::refreshView()
 			{
 				clearView();
 
 				for (auto team : teams_) {
 					int index = 0;
 
-					QTreeWidgetItem* item = new PitScheduleViewWidgetItem(this);
+					QTreeWidgetItem* item = new TeamScheduleViewWidgetItem(this);
 					item->setText(index++, QString::number(team->number()));
 
 					if (tablet_.length() == 0 || tablet_ == team->tablet())
 					{
 						item->setTextAlignment(index, Qt::AlignHCenter);
-						if (team->pitScoutingData() != nullptr)
+						if (team->teamScoutingData() != nullptr)
 						{
 							item->setText(index, "Y");
 							item->setBackgroundColor(index, QColor(0, 255, 0, 255));
@@ -117,7 +117,7 @@ namespace xero
 			}
 
 
-			void PitScheduleViewWidget::clearView()
+			void TeamScheduleViewWidget::clearView()
 			{
 				while (topLevelItemCount() > 0) {
 					auto item = takeTopLevelItem(0);

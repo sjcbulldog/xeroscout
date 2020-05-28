@@ -2,7 +2,6 @@
 #include "ApplicationController.h"
 #include "ScoutingDataModel.h"
 #include "ScoutingDataSet.h"
-#include "AllTeamSummaryGenerator.h"
 
 class TeamSummaryController : public ApplicationController
 {
@@ -23,7 +22,7 @@ private:
 
 private:
 	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
-	xero::scouting::datamodel::AllTeamSummaryGenerator* gen_;
+	// xero::scouting::datamodel::AllTeamSummaryGenerator* gen_;
 	int pcnt_;
 	bool done_;
 };

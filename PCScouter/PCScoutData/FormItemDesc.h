@@ -18,6 +18,7 @@
 
 #include "GameRandomProfile.h"
 #include "DataCollection.h"
+#include "FieldDesc.h"
 #include <QString>
 #include <QWidget>
 #include <QVariant>
@@ -62,14 +63,24 @@ namespace xero
 					return alliance_;
 				}
 
-				virtual std::vector<std::pair<QString, QVariant::Type>> getFields() const {
+				virtual std::vector<std::shared_ptr<FieldDesc>> getFields() const {
 					return fields_;
 				}
 
-				bool hasField(const QString& name) {
-					for (auto pair : fields_)
+				std::shared_ptr<const FieldDesc> getField(const QString &name) const {
+					for (auto field : fields_)
 					{
-						if (pair.first == name)
+						if (field->name() == name)
+							return field;
+					}
+
+					return nullptr;
+				}
+
+				bool hasField(const QString& name) const {
+					for (auto field : fields_)
+					{
+						if (field->name() == name)
 							return true;
 					}
 
@@ -88,15 +99,25 @@ namespace xero
 					return base_tag_;
 				}
 
-				void addField(const std::pair<QString, QVariant::Type>& field) {
-					fields_.push_back(field);
+				void addField(std::shared_ptr<FieldDesc> desc) {
+					fields_.push_back(desc);
+				}
+
+				std::shared_ptr<FieldDesc> findField(const QString& name) {
+					for (auto f : fields_)
+					{
+						if (f->name() == name)
+							return f;
+					}
+
+					return nullptr;
 				}
 
 			private:
 				QString base_tag_;
 				QString display_;
 				QString alliance_;
-				std::vector<std::pair<QString, QVariant::Type>> fields_;
+				std::vector<std::shared_ptr<FieldDesc>> fields_;
 			};
 		}
 	}

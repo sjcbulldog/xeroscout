@@ -37,7 +37,7 @@ namespace xero
 				TextFormItem(const QString& display, const QString& tag, int maxlen) : FormItemDesc(display, tag)
 				{
 					maxlen_ = maxlen;
-					addField(std::make_pair(tag, QVariant::String));
+					addField(std::make_shared<FieldDesc>(tag, FieldDesc::Type::String));
 				}
 
 				virtual ~TextFormItem()
