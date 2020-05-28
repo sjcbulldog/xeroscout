@@ -298,7 +298,7 @@ namespace xero
 
 					set.addData(team->number());
 					set.addData(tkey);
-					set.addData(DataModelMatch::toString(c));
+					set.addData(toString(c));
 					set.addData(i);
 
 					auto data = m->scoutingData(c, i);

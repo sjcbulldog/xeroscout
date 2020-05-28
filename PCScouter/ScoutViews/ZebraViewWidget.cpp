@@ -304,7 +304,7 @@ namespace xero
 					if (!aobj.contains("red") || !aobj.value("red").isArray())
 						return;
 
-					const QJsonArray& arr = aobj.value(DataModelMatch::toString(c)).toArray();
+					const QJsonArray& arr = aobj.value(toString(c)).toArray();
 					extractOneAlliance(arr, c, slot, track);
 				}
 

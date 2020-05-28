@@ -178,7 +178,7 @@ namespace xero
 				index++;
 
 				i->setText(index++, QString::number(m->match()));
-				i->setText(index++, DataModelMatch::toString(color));
+				i->setText(index++, toString(color));
 
 				i->setTextAlignment(index, Qt::AlignHCenter);
 				if (m->hasScoutingData(color, slot)) 

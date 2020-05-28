@@ -89,13 +89,13 @@ std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
 		QStringList& red = m->red()->getTeams();
 		for (int i = 0; i < red.size(); i++) {
 			QString team = m->red()->getTeams().at(i);
-			dm->addTeamToMatch(match->key(), Alliance::Red, team);
+			dm->addTeamToMatch(match->key(), Alliance::Red, i + 1, team);
 		}
 
 		QStringList& blue = m->blue()->getTeams();
 		for (int i = 0; i < blue.size(); i++) {
 			QString team = m->blue()->getTeams().at(i);
-			dm->addTeamToMatch(match->key(), Alliance::Blue, team);
+			dm->addTeamToMatch(match->key(), Alliance::Blue, i + 1, team);
 		}
 	}
 

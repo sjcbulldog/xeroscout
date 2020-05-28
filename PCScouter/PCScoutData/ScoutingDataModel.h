@@ -308,15 +308,12 @@ namespace xero
 				/// \param c the color of the alliance (red or blue)
 				/// \param teamkey the Blue Alliance key for the team
 				/// \returns false if the match does not exist, or if it has teams already otherwise true
-				bool addTeamToMatch(const QString& matchkey, Alliance c, const QString& teamkey) {
+				bool addTeamToMatch(const QString& matchkey, Alliance c, int slot, const QString& teamkey) {
 					auto dm = findMatchByKeyInt(matchkey);
 					if (dm == nullptr)
 						return false;
 
-					//if (dm->teams(c).size() >= 3)
-						//return false;
-
-					dm->addTeam(c, teamkey);
+					dm->addTeam(c, slot, teamkey);
 
 					dirty_ = true;
 					emitChangedSignal(ChangeType::TeamAddedToMatch);

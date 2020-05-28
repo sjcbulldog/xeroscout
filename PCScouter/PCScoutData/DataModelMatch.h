@@ -49,12 +49,12 @@ namespace xero
 				}
 
 				bool hasBlueAllianceData() const {
-					if (blue_ba_data_.size() != 3 || red_ba_data_.size() != 3)
+					if (robots_.size() == 0)
 						return false;
 
-					for (int i = 0; i < 3; i++)
+					for (auto robot : robots_)
 					{
-						if (blue_ba_data_[i]->size() == 0 || red_ba_data_[i]->size() == 0)
+						if (!robot->hasBlueAllianceData())
 							return false;
 					}
 
@@ -88,44 +88,24 @@ namespace xero
 				}
 
 				bool needsTablet(const QString& tab) const {
-					auto bit = std::find(blue_tablets_.begin(), blue_tablets_.end(), tab);
-					auto rit = std::find(red_tablets_.begin(), red_tablets_.end(), tab);
+					for (auto robot : robots_)
+					{
+						if (robot->tablet() == tab)
+							return true;
+					}
 
-					return bit != blue_tablets_.end() || rit != red_tablets_.end();
+					return false;
 				}
 
 				const QString& key() const {
 					return key_;
 				}
 
-				static QString toString(Alliance c) {
-					QString ret;
-
-					if (c == Alliance::Red)
-						ret = "red";
-					else
-						ret = "blue";
-
-					return ret;
-				}
-
-				static Alliance allianceFromString(const QString& str) {
-					assert(str == "red" || str == "blue");
-
-					if (str == "red")
-						return Alliance::Red;
-
-					return Alliance::Blue;
-				}
-
 				QStringList allTeams() const {
 					QStringList ret;
 
-					for (const QString& s : red_)
-						ret << s;
-
-					for (const QString& s : blue_)
-						ret << s;
+					for (auto robot : robots_)
+						ret.push_back(robot->key());
 
 					return ret;
 				}
@@ -143,147 +123,97 @@ namespace xero
 				}
 
 				bool hasScoutingData(Alliance a, int slot) const {
-					assert(slot >= 1 && slot <= 3);
-					assert(a == Alliance::Red || a == Alliance::Blue);
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
 
-					bool ret = false;
+					return robot->hasScoutingData();
+				}
 
-					if (slot >= 1 && slot <= 3) {
-						if (a == Alliance::Red) {
-							ret = (red_scouting_data_[slot - 1].size() > 0);
-						}
-						else {
-							ret = (blue_scouting_data_[slot - 1].size() > 0);
-						}
-					}
+				ConstScoutingDataMapPtr scoutingData(Alliance a, int slot) const {
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
 
-					return ret;
+					return robot->scoutingData();
+				}
+
+				bool hasBlueAllianceData(Alliance a, int slot) const {
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
+
+					return robot->hasBlueAllianceData();
+				}
+
+				ConstScoutingDataMapPtr blueAllianceData(Alliance a, int slot) const {
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
+
+					return robot->baData();
 				}
 
 				QVariant value(Alliance a, int slot, const QString& name) const {
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
+
 					QVariant ret;
 					ConstScoutingDataMapPtr scout, ba;
 
-					assert(slot >= 1 && slot <= 3);
-					assert(a == Alliance::Red || a == Alliance::Blue);
-
-					if (a == Alliance::Red)
+					if (robot->hasScoutingData())
 					{
-						if (red_scouting_data_[slot - 1].size() > 0)
-							scout = red_scouting_data_[slot - 1].back();
-
-						if (red_ba_data_.size() > 0)
-							ba = red_ba_data_[slot - 1];
-					}
-					else
-					{
-						if (blue_scouting_data_[slot - 1].size() > 0)
-							scout = blue_scouting_data_[slot - 1].back();
-
-						if (blue_ba_data_.size() > 0)
-							ba = blue_ba_data_[slot - 1];
-
+						auto it = robot->scoutingData()->find(name);
+						if (it != robot->scoutingData()->end())
+							ret = it->second;
 					}
 
-					if (scout != nullptr)
+					if (!ret.isValid() && robot->hasBlueAllianceData())
 					{
-						auto it = scout->find(name);
-						if (it != scout->end())
-							return it->second;
-					}
-
-					if (ba != nullptr)
-					{
-						auto it = ba->find(name);
-						if (it != ba->end())
-							return it->second;
+						auto it = robot->baData()->find(name);
+						if (it != robot->baData()->end())
+							ret = it->second;
 					}
 
 					return ret;
 				}
 
 				ScoutingDataMapPtr data(Alliance a, int slot) const {
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
+
 					auto data = std::make_shared<ScoutingDataMap>();
 
-					ConstScoutingDataMapPtr scout, ba ;
-
-					assert(slot >= 1 && slot <= 3);
-					assert(a == Alliance::Red || a == Alliance::Blue);
-
-					if (a == Alliance::Red)
+					if (robot->hasScoutingData())
 					{
-						if (red_scouting_data_[slot - 1].size() > 0)
-							scout = red_scouting_data_[slot - 1].back();
-
-						if (red_ba_data_.size() > 0)
-							ba = red_ba_data_[slot - 1];
-					}
-					else
-					{
-						if (blue_scouting_data_[slot - 1].size() > 0)
-							scout = blue_scouting_data_[slot - 1].back();
-
-						if (blue_ba_data_.size() > 0)
-							ba = blue_ba_data_[slot - 1];
-
-					}
-
-					if (scout != nullptr)
-					{
-						for (auto pair : *scout)
+						for (auto pair : *robot->scoutingData())
 							data->insert_or_assign(pair.first, pair.second);
 					}
 
-					if (ba != nullptr)
+					if (robot->hasBlueAllianceData())
 					{
-						for (auto pair : *ba)
+						for (auto pair : *robot->baData())
 							data->insert_or_assign(pair.first, pair.second);
 					}
-
 					return data;
 				}
 
 				std::list<ConstScoutingDataMapPtr> scoutingDataList(Alliance a, int slot) const {
-					assert(slot >= 1 && slot <= 3);
-					assert(a == Alliance::Red || a == Alliance::Blue);
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
 
-					std::list<ConstScoutingDataMapPtr> ret;
-
-					if (a == Alliance::Red)
-					{
-						for (auto d : red_scouting_data_[slot - 1])
-							ret.push_back(d);
-					}
-					else
-					{
-						for (auto d : blue_scouting_data_[slot - 1])
-							ret.push_back(d);
-					}
-					return ret;
+					return robot->scoutingDataList();
 				}
 
 				bool tabletToAllianceSlot(const QString& tabname, Alliance& color, int& slot) const {
 					color = Alliance::Red;
 					slot = -1;
 
-					for (int i = 0; i < red_tablets_.size(); i++) {
-						if (red_tablets_[i] == tabname)
+					for (auto robot : robots_)
+					{
+						if (robot->tablet() == tabname)
 						{
-							color = Alliance::Red;
-							slot = i + 1;
+							color = robot->color();
+							slot = robot->slot();
 							return true;
 						}
 					}
-
-					for (int i = 0; i < blue_tablets_.size(); i++) {
-						if (blue_tablets_[i] == tabname)
-						{
-							color = Alliance::Blue;
-							slot = i + 1;
-							return true;
-						}
-					}
-
 					return false;
 				}
 
@@ -291,58 +221,35 @@ namespace xero
 					color = Alliance::Red;
 					slot = -1;
 
-					for (int i = 0; i < red_tablets_.size(); i++) {
-						if (red_[i] == teamkey)
+					for (auto robot : robots_)
+					{
+						if (robot->key() == teamkey)
 						{
-							color = Alliance::Red;
-							slot = i + 1;
+							color = robot->color();
+							slot = robot->slot();
 							return true;
 						}
 					}
-
-					for (int i = 0; i < blue_tablets_.size(); i++) {
-						if (blue_[i] == teamkey)
-						{
-							color = Alliance::Blue;
-							slot = i + 1;
-							return true;
-						}
-					}
-
 					return false;
 				}
 
 				const QString& team(Alliance a, int slot) const {
-					assert(slot >= 1 && slot <= 3);
-					assert(a == Alliance::Red || a == Alliance::Blue);
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
 
-					if (a == Alliance::Red)
-						return red_[slot - 1];
-
-					return blue_[slot - 1];
+					return robot->key();
 				}
 
 				const QString& tablet(Alliance a, int slot) const {
-					assert(slot >= 1 && slot <= 3);
-					assert(a == Alliance::Red || a == Alliance::Blue);
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
 
-					if (a == Alliance::Red)
-						return red_tablets_[slot - 1];
-
-					return blue_tablets_[slot - 1];
+					return robot->tablet();
 				}
 
-
 				void removeOldScoutingData() {
-					for (int i = 0; i < 3; i++) {
-						while (red_scouting_data_[i].size() > 1)
-							red_scouting_data_[i].erase(red_scouting_data_[i].begin());
-					}
-
-					for (int i = 0; i < 3; i++) {
-						while (blue_scouting_data_[i].size() > 1)
-							blue_scouting_data_[i].erase(blue_scouting_data_[i].begin());
-					}
+					for (auto robot : robots_)
+						robot->removeOldScoutingData();
 				}
 
 				const QJsonObject& zebra() const {
@@ -350,36 +257,6 @@ namespace xero
 				}
 
 			protected:
-				ConstScoutingDataMapPtr scoutingData(Alliance a, int slot) const {
-					ConstScoutingDataMapPtr ret = nullptr;
-
-					assert(slot >= 1 && slot <= 3);
-					assert(a == Alliance::Red || a == Alliance::Blue);
-
-					if (a == Alliance::Red)
-					{
-						if (red_scouting_data_[slot - 1].size() > 0)
-							ret = red_scouting_data_[slot - 1].back();
-					}
-					else
-					{
-						if (blue_scouting_data_[slot - 1].size() > 0)
-							ret = blue_scouting_data_[slot - 1].back();
-					}
-
-					return ret;
-				}
-
-				ConstScoutingDataMapPtr blueAllianceData(Alliance a, int slot) const {
-					assert(slot >= 1 && slot <= 3);
-					assert(a == Alliance::Red || a == Alliance::Blue);
-
-					if (a == Alliance::Red)
-						return red_ba_data_[slot - 1];
-
-					return blue_ba_data_[slot - 1];
-				}
-
 				void setZebra(const QJsonObject& data) {
 					zebra_ = data;
 				}
@@ -397,109 +274,192 @@ namespace xero
 				}
 
 				void clearTeams() {
-					red_.clear();
-					red_tablets_.clear();
-					blue_.clear();
-					blue_tablets_.clear();
+					robots_.clear();
 				}
 
 				void setBlueAllianceData(Alliance a, int slot, ScoutingDataMapPtr map) {
-					if (a == Alliance::Red)
-						red_ba_data_[slot - 1] = map;
-					else
-						blue_ba_data_[slot - 1] = map;
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
+
+					robot->setBlueAllianceData(map);
 				}
 
-				void addTeam(Alliance a, const QString& t) {
-					if (a == Alliance::Red) {
-						red_.push_back(t);
-						red_tablets_.push_back("");
-						if (red_scouting_data_.size() < red_.size())
-							red_scouting_data_.resize(red_.size());
-						red_ba_data_.push_back(nullptr);
-						assert(red_.size() <= 3);
-					}
-					else {
-						blue_.push_back(t);
-						blue_tablets_.push_back("");
-						if (blue_scouting_data_.size() < blue_.size())
-							blue_scouting_data_.resize(blue_.size());
-						blue_ba_data_.push_back(nullptr);
-						assert(blue_.size() <= 3);
-					}
+				void addTeam(Alliance a, int slot, const QString& key) {
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot == nullptr);
+
+					robot = std::make_shared<OneRobot>(a, slot, key);
+					robots_.push_back(robot);
 				}
 
 
-				void setTablet(Alliance c, int slot, const QString& tablet) {
-					assert(slot >= 1 && slot <= 3);
-					if (c == Alliance::Red) {
-						red_tablets_[slot - 1] = tablet;
-					}
-					else {
-						blue_tablets_[slot - 1] = tablet;
-					}
+				void setTablet(Alliance a, int slot, const QString& tablet) {
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
+
+					robot->setTablet(tablet);
 				}
 
 				void clearScoutingData(Alliance a, int slot)
 				{
-					assert(slot >= 1 && slot <= 3);
-					assert(a == Alliance::Red || a == Alliance::Blue);
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
 
-					if (a == Alliance::Red)
-						red_scouting_data_[slot - 1].clear();
-					else
-						blue_scouting_data_[slot - 1].clear();
+					robot->clearScoutingData();
 				}
 
 				bool setScoutingData(Alliance a, int slot, ScoutingDataMapPtr data, bool replace = false) {
-					assert(slot >= 1 && slot <= 3);
-					assert(a == Alliance::Red || a == Alliance::Blue);
-					assert(data != nullptr);
+					auto robot = findRobotByColorSlot(a, slot);
+					assert(robot != nullptr);
 
-					if (a == Alliance::Red)
-					{
-						if (replace) 
-						{
-							red_scouting_data_[slot - 1].clear();
-							red_scouting_data_[slot - 1].push_back(data);
-						}
-						else {
-							for (auto sd : red_scouting_data_[slot - 1])
-							{
-								if (compareTwoMaps(sd, data))
-									return false;
-							}
-							red_scouting_data_[slot - 1].push_back(data);
-						}
-					}
-					else
-					{
-						if (replace)
-						{
-							blue_scouting_data_[slot - 1].clear();
-							blue_scouting_data_[slot - 1].push_back(data);
-						}
-						else
-						{
-							for (auto sd : blue_scouting_data_[slot - 1])
-							{
-								if (compareTwoMaps(sd, data))
-									return false;
-							}
-							blue_scouting_data_[slot - 1].push_back(data);
-						}
-					}
-					return true;
+					return robot->addScoutingData(data, replace);
 				}
 
 			private:
 				class OneRobot
 				{
 				public:
+					OneRobot(Alliance a, int slot, const QString &key) {
+						color_ = a;
+						slot_ = slot;
+						team_key_ = key;
+					}
+
+					Alliance color() const {
+						return color_;
+					}
+
+					int slot() const {
+						return slot_;
+					}
+
+					const QString& key() const {
+						return team_key_;
+					}
+
+					const QString& tablet() const {
+						return tablet_;
+					}
+
+					void setTablet(const QString& tablet) {
+						tablet_ = tablet;
+					}
+
+					ConstScoutingDataMapPtr baData() const {
+						return ba_data_;
+					}
+
+					bool hasScoutingData() const {
+						return scouting_data_.size() > 0;
+					}
+
+					bool addScoutingData(ScoutingDataMapPtr data, bool replace) {
+						bool ret = false;
+
+						if (replace || scouting_data_.size() == 0)
+						{
+							scouting_data_.clear();
+							scouting_data_.push_back(data);
+							ret = true;
+						}
+						else
+						{
+							if (*scouting_data_.back() != *data)
+							{
+								scouting_data_.push_back(data);
+								ret = false;
+							}
+						}
+
+						return ret;
+					}
+
+					bool hasBlueAllianceData() const {
+						return ba_data_ != nullptr;
+					}
+
+					void setBlueAllianceData(ScoutingDataMapPtr data) {
+						ba_data_ = data;
+					}
+
+					ConstScoutingDataMapPtr scoutingData() const {
+						if (scouting_data_.size() == 0)
+							return nullptr;
+
+						return scouting_data_.back();
+					}
+
+					std::list<ConstScoutingDataMapPtr> scoutingDataList() const {
+						std::list<ConstScoutingDataMapPtr> ret;
+
+						for (auto ptr : scouting_data_)
+							ret.push_back(ptr);
+
+						return ret;
+					}
+
+					void removeOldScoutingData() {
+						while (scouting_data_.size() > 1)
+							scouting_data_.erase(scouting_data_.begin());
+					}
+
+					void clearScoutingData() {
+						scouting_data_.clear();
+					}
+
 				private:
+					//
+					// The alliance
+					//
+					Alliance color_;
+
+					//
+					// The slot
+					//
+					int slot_;
+
+					//
+					// The team key
+					//
 					QString team_key_;
+
+					//
+					// The tablet used to scout this team in this match
+					//
 					QString tablet_;
+
+					//
+					// The list of scouting data for each team in the red alliance.  Note, there is a list
+					// for the case where there are multiple sources of data, but the last set of data is used in all
+					// queries.  The merge operation can be used to consolidate the data into a single set.
+					//
+					std::list<ScoutingDataMapPtr> scouting_data_;
+
+					//
+					// The blue alliance data
+					//
+					ScoutingDataMapPtr ba_data_;
 				};
+
+				std::shared_ptr<OneRobot> findRobotByColorSlot(Alliance c, int slot) {
+					for (auto robot : robots_)
+					{
+						if (robot->color() == c && robot->slot() == slot)
+							return robot;
+					}
+
+					return nullptr;
+				}
+
+				std::shared_ptr<const OneRobot> findRobotByColorSlot(Alliance c, int slot) const {
+					for (auto robot : robots_)
+					{
+						if (robot->color() == c && robot->slot() == slot)
+							return robot;
+					}
+
+					return nullptr;
+				}
 
 			private:
 				//
@@ -528,48 +488,9 @@ namespace xero
 				int etime_;
 
 				//
-				// The team keys for the three teams on the red alliance
+				// The robots in the alliance
 				//
-				std::vector<QString> red_;
-
-				//
-				// The three red tablets
-				//
-				std::vector<QString> red_tablets_;
-
-				//
-				// The list of scouting data for each team in the red alliance.  Note, there is a list
-				// for the case where there are multiple sources of data, but the last set of data is used in all
-				// queries.  The merge operation can be used to consolidate the data into a single set.
-				//
-				std::vector<std::list<ScoutingDataMapPtr>> red_scouting_data_;
-
-				//
-				// The blue alliance data for this match for the red alliance, broken out by robot
-				//
-				std::vector<ScoutingDataMapPtr> red_ba_data_;
-
-				//
-				// The team keys for the three teams on the blue alliance
-				//
-				std::vector<QString> blue_;
-
-				//
-				// The three blue tablets
-				//
-				std::vector<QString> blue_tablets_;
-
-				//
-				// The list of scouting data for each team in the blue alliance.  Note, there is a list
-				// for the case where there are multiple sources of data, but the last set of data is used in all
-				// queries.  The merge operation can be used to consolidate the data into a single set.
-				//
-				std::vector<std::list<ScoutingDataMapPtr>> blue_scouting_data_;
-
-				//
-				// The blue alliance data for this match for the red alliance, broken out by robot
-				//
-				std::vector<ScoutingDataMapPtr> blue_ba_data_;
+				std::vector<std::shared_ptr<OneRobot>> robots_;
 
 				//
 				// The zebra data for the match (stored as the JSON from the blue alliance)

@@ -330,14 +330,14 @@ namespace xero
 					Alliance c = Alliance::Red;
 					for (int i = 1; i <= 3; i++)
 					{
-						QString key = DataModelMatch::toString(c) + QString::number(i);
+						QString key = toString(c) + QString::number(i);
 						mt[key] = encodeScoutingData(m->scoutingDataList(c, i));
 					}
 
 					c = Alliance::Blue;
 					for (int i = 1; i <= 3; i++)
 					{
-						QString key = DataModelMatch::toString(c) + QString::number(i);
+						QString key = toString(c) + QString::number(i);
 						mt[key] = encodeScoutingData(m->scoutingDataList(c, i));
 					}
 
@@ -393,7 +393,7 @@ namespace xero
 						if (m->hasScoutingData(c, slot)) {
 							QJsonObject match;
 							match[JsonKeyName] = m->key();
-							match[JsonAllianceName] = DataModelMatch::toString(c);
+							match[JsonAllianceName] = toString(c);
 							match[JsonSlotName] = slot;
 							match[JsonResultName] = encode(m->scoutingData(c, slot));
 
@@ -726,7 +726,7 @@ namespace xero
 							return false;
 						}
 
-						dm->addTeam(Alliance::Red, red[i].toString());
+						dm->addTeam(Alliance::Red, slot, red[i].toString());
 						dm->setTablet(Alliance::Red, slot, red[i + 1].toString());
 					}
 
@@ -739,7 +739,7 @@ namespace xero
 							return false;
 						}
 
-						dm->addTeam(Alliance::Blue, blue[i].toString());
+						dm->addTeam(Alliance::Blue, slot, blue[i].toString());
 						dm->setTablet(Alliance::Blue, slot, blue[i + 1].toString());
 					}
 
@@ -810,7 +810,7 @@ namespace xero
 					Alliance c = Alliance::Red;
 					for (int i = 1; i <= 3; i++)
 					{
-						QString key = DataModelMatch::toString(c) + QString::number(i);
+						QString key = toString(c) + QString::number(i);
 						if (!obj.contains(key) || !obj.value(key).isArray())
 						{
 							errors_.push_back("illegal match scouting data");
@@ -834,7 +834,7 @@ namespace xero
 					c = Alliance::Blue;
 					for (int i = 1; i <= 3; i++)
 					{
-						QString key = DataModelMatch::toString(c) + QString::number(i);
+						QString key = toString(c) + QString::number(i);
 						if (!obj.contains(key) || !obj.value(key).isArray())
 						{
 							errors_.push_back("illegal match scouting data");
@@ -1113,7 +1113,7 @@ namespace xero
 					}
 
 					auto m = dm_->findMatchByKey(matchres.value(JsonKeyName).toString());
-					Alliance c = DataModelMatch::allianceFromString(matchres.value(JsonAllianceName).toString());
+					Alliance c = allianceFromString(matchres.value(JsonAllianceName).toString());
 
 					if (dm_->setMatchScoutingData(m->key(), c, matchres.value(JsonSlotName).toInt(), decode(matchres.value(JsonResultName).toArray())))
 						added.push_back(matchres.value(JsonKeyName).toString());

@@ -16,14 +16,14 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>20</y>
-     <width>101</width>
-     <height>16</height>
+     <width>111</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>Pit Scouting Form: </string>
+    <string>Team Scouting Form: </string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
