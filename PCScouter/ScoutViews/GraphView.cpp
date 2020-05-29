@@ -491,7 +491,7 @@ namespace xero
 
 					if (count > 0)
 					{
-						query += " from matches where TeamKey='" + team + "'";
+						query += " from matches where " + QString(DataModelMatch::MatchTeamKeyName) + "='" + team + "'";
 						if (!addDataElements(query, varvalues, ds))
 						{
 							data.clear();
@@ -521,7 +521,7 @@ namespace xero
 
 					if (count > 0)
 					{
-						query += " from teams where TeamKey='" + team + "'";
+						query += " from teams where " + QString(DataModelMatch::MatchTeamKeyName) + "='" + team + "'";
 						if (!addDataElements(query, varvalues, ds))
 						{
 							data.clear();

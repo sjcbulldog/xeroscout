@@ -148,16 +148,19 @@ namespace xero
 								break;
 							case FieldDesc::Type::Double:
 								qstr += QString::number(v.toDouble());
-								qstr += "REAL";
 								break;
 							case FieldDesc::Type::Integer:
 								qstr += QString::number(v.toInt());
 								break;
 							case FieldDesc::Type::String:
+								qstr += "'";
 								qstr += v.toString();
+								qstr += "'";
 								break;
 							case FieldDesc::Type::StringChoice:
+								qstr += "'";
 								qstr += v.toString();
+								qstr += "'";
 								break;
 							}
 						}

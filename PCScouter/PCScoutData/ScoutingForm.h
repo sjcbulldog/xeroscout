@@ -79,6 +79,7 @@ namespace xero
 				void findLine(int charoff, int& lineno, int& charno);
 				void parseObject();
 				bool checkDuplicates();
+				bool checkFieldNames();
 
 				bool parseSubitemBounds(const QString& secname, int i, const QJsonObject& obj, QRect& r);
 				bool parseObjectBase(const QString& secname, int i, const QJsonObject& obj, QString& name, QString& tag);
@@ -105,6 +106,8 @@ namespace xero
 				std::list<std::shared_ptr<FormSection>> sections_;
 				QString form_type_;
 				QJsonObject obj_;
+
+				static QStringList reserved_words_;
 			};
 
 		}

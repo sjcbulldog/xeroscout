@@ -95,10 +95,12 @@ void PCFormViewer::loadForm()
 	}
 	else
 	{
-		FormView* ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::TeamScoutingFormView));
+		FormView* ds;
+
+		ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormViewRed));
 		ds->setScoutingForm(form, "red");
 
-		ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormView));
+		ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormViewBlue));
 		ds->setScoutingForm(form, "blue");
 	}
 }
@@ -121,11 +123,11 @@ void PCFormViewer::createWindows()
 	view_selector_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 
 	item = new QListWidgetItem(loadIcon("teamscout"), "Red Scouting Form", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamScoutingFormView)));
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewRed)));
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("teamscout"), "Blue Scouting Form", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormView)));
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewBlue)));
 	view_selector_->addItem(item);
 
 	top_bottom_splitter_ = new QSplitter();

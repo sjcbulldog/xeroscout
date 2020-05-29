@@ -41,20 +41,21 @@ namespace xero
 				{
 					NoModelView = 0,
 					TeamScoutingFormView = 1,
-					MatchScoutingFormView = 2,
-					PitView = 3,
-					MatchView = 4,
-					MatchDataSet = 5,
-					PitDataSet = 6,
-					CustomDataSet = 7,
-					TeamReport = 8,
-					AllTeamReport = 9,
-					HistoryView = 10,
-					MergeListView = 11,
-					ZebraDataView = 12,
-					MatchGraphView = 13,
-					AllianceGraphView = 14,
-					FirstFormView = 15
+					MatchScoutingFormViewRed = 2,
+					MatchScoutingFormViewBlue = 3,
+					PitView = 4,
+					MatchView = 5,
+					MatchDataSet = 6,
+					PitDataSet = 7,
+					CustomDataSet = 8,
+					TeamReport = 9,
+					AllTeamReport = 10,
+					HistoryView = 11,
+					MergeListView = 12,
+					ZebraDataView = 13,
+					MatchGraphView = 14,
+					AllianceGraphView = 15,
+					FirstFormView = 16
 				};
 
 			public:

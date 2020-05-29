@@ -36,12 +36,19 @@ namespace xero
 			public:
 				static constexpr const char* RankName = "ba_rank";
 				static constexpr const char* OPRName = "calc_opr";
+				static constexpr const char* TeamName = "Team";
+				static constexpr const char* TeamKeyName = "TeamKey";
+				static constexpr const char* TeamNumberName = "TeamNumber";
 
 			public:
 				DataModelTeam(const QString& key, int number, const QString& name) {
 					key_ = key;
 					number_ = number;
 					name_ = name;
+
+					addExtraData(TeamName, name);
+					addExtraData(TeamNumberName, number);
+					addExtraData(TeamKeyName, key);
 				}
 
 				virtual ~DataModelTeam() {
@@ -143,6 +150,13 @@ namespace xero
 
 					for (auto pair : *data)
 						extra_data_->insert_or_assign(pair.first, pair.second);
+				}
+
+				void addExtraData(const QString& name, const QVariant& v) {
+					if (extra_data_ == nullptr)
+						extra_data_ = std::make_shared<ScoutingDataMap>();
+
+					extra_data_->insert_or_assign(name, v);
 				}
 
 				void setOPR(double opr) {

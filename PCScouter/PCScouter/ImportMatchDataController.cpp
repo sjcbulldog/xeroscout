@@ -266,6 +266,8 @@ void ImportMatchDataController::gotDetail()
 
 void ImportMatchDataController::gotRankings()
 {
+	dm_->blockSignals(true);
+
 	auto teams = blueAlliance()->getEngine().teams();
 	for (auto team : teams)
 	{
@@ -275,6 +277,11 @@ void ImportMatchDataController::gotRankings()
 			dm_->setTeamRanking(key, team.second->ranking());
 	}
 
+	dm_->blockSignals(false);
+
 	state_ = State::Done;
 	emit complete(false);
+
+	dm_->emitChangedSignal(ScoutingDataModel::ChangeType::MatchDataChanged);
+	dm_->emitChangedSignal(ScoutingDataModel::ChangeType::TeamDataChanged);
 }

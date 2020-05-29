@@ -30,7 +30,6 @@ namespace xero
 	{
 		namespace views
 		{
-
 			bool DataSetViewWidgetItem::operator<(const QTableWidgetItem& other) const
 			{
 				bool ret;
@@ -57,26 +56,14 @@ namespace xero
 
 				setOrientation(Qt::Horizontal);
 
-				left_ = new QTableWidget(this);
-				left_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Fixed);
-				left_->setContextMenuPolicy(Qt::CustomContextMenu);
-				addWidget(left_);
+				table_ = new QTableWidget(this);
+				table_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Fixed);
+				addWidget(table_);
 
-				right_ = new QTableWidget(this);
-				right_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Fixed);
-				right_->verticalHeader()->hide();
-				right_->setContextMenuPolicy(Qt::CustomContextMenu);
-				addWidget(right_);
-
-				connect(left_->horizontalHeader(), &QHeaderView::sectionClicked, this, &DataSetViewWidget::sortLeftData);
-				connect(right_->horizontalHeader(), &QHeaderView::sectionClicked, this, &DataSetViewWidget::sortRightData);
-
-				connect(left_->verticalScrollBar(), &QAbstractSlider::valueChanged, right_->verticalScrollBar(), &QAbstractSlider::setValue);
-
-				connect(right_->verticalScrollBar(), &QAbstractSlider::valueChanged, left_->verticalScrollBar(), &QAbstractSlider::setValue);
-
-				connect(left_, &QTableWidget::customContextMenuRequested, this, &DataSetViewWidget::contextMenuRequestedLeft);
-				connect(right_, &QTableWidget::customContextMenuRequested, this, &DataSetViewWidget::contextMenuRequestedRight);
+				connect(table_->horizontalHeader(), &QHeaderView::sectionClicked, this, &DataSetViewWidget::sortLeftData);
+				table_->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
+				connect(table_->horizontalHeader(), &QHeaderView::customContextMenuRequested, this, &DataSetViewWidget::contextMenuRequested);
+				table_->horizontalHeader()->setSectionsMovable(true);
 			}
 
 			DataSetViewWidget::~DataSetViewWidget()
@@ -85,18 +72,7 @@ namespace xero
 
 			void DataSetViewWidget::hideColumn()
 			{
-				QTableWidget* w;
-
-				if (left_side_)
-				{
-					w = left_;
-				}
-				else
-				{
-					w = right_;
-				}
-
-				QItemSelectionModel* select = w->selectionModel();
+				QItemSelectionModel* select = table_->selectionModel();
 				QModelIndexList columns = select->selectedColumns();
 
 				if (columns.size() > 0)
@@ -104,51 +80,31 @@ namespace xero
 					for (int i = 0; i < columns.size(); i++)
 					{
 						auto index = columns.at(i);
-						left_->setColumnHidden(index.column(), true);
-						right_->setColumnHidden(index.column(), true);
+						table_->setColumnHidden(index.column(), true);
 					}
-				}
-				else
-				{
-					QTableWidgetItem* item = w->itemAt(pt_);
-					left_->setColumnHidden(item->column(), true);
-					right_->setColumnHidden(item->column(), true);
 				}
 			}
 
 			void DataSetViewWidget::unhideColumns()
 			{
-				for (int i = 0; i < left_->columnCount(); i++) {
-					left_->setColumnHidden(i, false);
-					right_->setColumnHidden(i, false);
+				for (int i = 0; i < table_->columnCount(); i++) {
+					table_->setColumnHidden(i, false);
 				}
 			}
 
-			void DataSetViewWidget::contextMenuRequestedLeft(const QPoint& pt)
+			void DataSetViewWidget::contextMenuRequested(const QPoint& pt)
 			{
-				contextMenuRequested(pt, true);
-			}
-
-			void DataSetViewWidget::contextMenuRequestedRight(const QPoint& pt)
-			{
-				contextMenuRequested(pt, false);
-			}
-
-			void DataSetViewWidget::contextMenuRequested(const QPoint& pt, bool leftside)
-			{
-				QWidget* w = (leftside ? left_ : right_);
 				QMenu* menu = new QMenu();
 				QAction* act;
 
 				pt_ = pt;
-				left_side_ = leftside;
 				act = menu->addAction(tr("Hide Column(s)"));
 				connect(act, &QAction::triggered, this, &DataSetViewWidget::hideColumn);
 
 				act = menu->addAction(tr("Unhide All Columns"));
 				connect(act, &QAction::triggered, this, &DataSetViewWidget::unhideColumns);
 
-				QPoint p = w->mapToGlobal(pt);
+				QPoint p = table_->mapToGlobal(pt);
 				menu->exec(p);
 			}
 
@@ -164,8 +120,7 @@ namespace xero
 					column_ = col;
 				}
 
-				right_->sortItems(column_, direction_ ? Qt::AscendingOrder : Qt::DescendingOrder);
-				left_->sortItems(column_, direction_ ? Qt::AscendingOrder : Qt::DescendingOrder);
+				table_->sortItems(column_, direction_ ? Qt::AscendingOrder : Qt::DescendingOrder);
 			}
 
 			void DataSetViewWidget::sortLeftData(int col)
@@ -180,14 +135,12 @@ namespace xero
 					column_ = col;
 				}
 
-				right_->sortItems(column_, direction_ ? Qt::AscendingOrder : Qt::DescendingOrder);
-				left_->sortItems(column_, direction_ ? Qt::AscendingOrder : Qt::DescendingOrder);
+				table_->sortItems(column_, direction_ ? Qt::AscendingOrder : Qt::DescendingOrder);
 			}
 
 			void DataSetViewWidget::refreshView()
 			{
-				updateData(left_);
-				updateData(right_);
+				updateData(table_);
 			}
 
 			void DataSetViewWidget::updateData(QTableWidget* table)

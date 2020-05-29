@@ -52,7 +52,7 @@ void KPIController::computeKPI()
 				//
 				// We have a hit, a team we were interseted in was at another event
 				//
-				query = "select * from matches where TeamKey='" + team->key() + "'";
+				query = "select * from matches where " + QString(DataModelMatch::MatchTeamKeyName) + "='" + team->key() + "'";
 				model->createCustomDataSet(ds, query, error);
 
 				//

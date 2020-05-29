@@ -39,6 +39,19 @@ namespace xero
 	{
 		namespace datamodel
 		{
+			QStringList ScoutingForm::reserved_words_ =
+			{
+				"ABORT", "ACTION", "ABORT", "ACTION", "ADD","AFTER","ALL", "ALTER", "ALWAYS", "ANALYZE", "AND", "AS", "ASC", "ATTACH", "AUTOINCREMENT", "BEFORE", "BEGIN", "BETWEEN",
+				"BY", "CASCADE", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN", "COMMIT", "CONFLICT", "CONSTRAINT", "CREATE", "CROSS", "CURRENT", "CURRENT_DATE", "CURRENT_TIME",
+				"CURRENT_TIMESTAMP", "DATABASE", "DEFAULT", "DEFERRABLE", "DEFERRED", "DELETE", "DESC", "DETACH", "DISTINCT", "DO", "DROP", "EACH", "ELSE", "END", "ESCAPE", "EXCEPT",
+				"EXCLUDE", "EXCLUSIVE", "EXISTS", "EXPLAIN", "FAIL", "FILTER", "FIRST", "FOLLOWING", "FOR", "FOREIGN", "FROM", "FULL", "GENERATED", "GLOB", "GROUP", "GROUPS", "HAVING",
+				"IF","IGNORE", "IMMEDIATE", "IN", "INDEX", "INDEXED", "INITIALLY", "INNER", "INSERT", "INSTEAD", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "KEY", "LAST", "LEFT",
+				"LIKE", "LIMIT", "MATCH", "NATURAL", "NO", "NOT", "NOTHING", "NOTNULL", "NULL", "NULLS", "OF", "OFFSET", "ON", "OR", "ORDER", "OTHERS", "OUTER", "OVER", "PARTITION",
+				"PLAN","PRAGMA", "PRECEDING", "PRIMARY", "QUERY", "RAISE", "RANGE", "RECURSIVE", "REFERENCES", "REGEXP", "REINDEX", "RELEASE", "RENAME", "REPLACE", "RESTRICT", "RIGHT",
+				"ROLLBACK", "ROW", "ROWS", "SAVEPOINT", "SELECT", "SET", "TABLE", "TEMP", "TEMPORARY", "THEN", "TIES", "TO", "TRANSACTION", "TRIGGER", "UNBOUNDED", "UNION", "UNIQUE",
+				"UPDATE", "USING", "VACUUM", "VALUES", "VIEW", "VIRTUAL", "WHEN", "WHERE", "WINDOW", "WITH", "WITHOUT"
+			};
+
 			ScoutingForm::ScoutingForm(const QString& filename)
 			{
 				parsed_ok_ = false;
@@ -164,6 +177,64 @@ namespace xero
 
 				parsed_ok_ = true;
 			}
+
+			bool ScoutingForm::checkFieldNames()
+			{
+				bool ret = true;
+
+				for (auto s : sections_)
+				{
+					int entry = 0;
+					for (auto i : s->items())
+					{
+						entry++;
+
+						const QString& tag = i->tag();
+						if (tag.length() == 0) {
+							errors_.push_back("in section '" + s->name() + "', entry " + QString::number(entry)
+								+ " the tag field is an empty string");
+							ret = false;
+						}
+
+						if (!tag.at(0).isLetter()) {
+							errors_.push_back("in section '" + s->name() + "', entry " + QString::number(entry)
+								+ " the tag field must start with a letter");
+							ret = false;
+						}
+
+						for (int i = 1; i < tag.length(); i++)
+						{
+							if (!tag.at(i).isLetterOrNumber() && tag.at(i) != '_') {
+								errors_.push_back("in section '" + s->name() + "', entry " + QString::number(entry)
+									+ " the tag field must start with a letter and consists of letters, numbers, and '_'");
+								ret =  false;
+							}
+						}
+
+						if (tag.startsWith("ba_")) {
+							errors_.push_back("in section '" + s->name() + "', entry " + QString::number(entry)
+								+ " item with tag '" + tag + "' starts with 'ba_' which is reserved for blue alliance data");
+							return false;
+						}
+
+						if (tag.startsWith("calc_")) {
+							errors_.push_back("in section '" + s->name() + "', entry " + QString::number(entry)
+								+ " item with tag '" + tag + "' starts with 'calc_' which is reserved for computed data");
+							return false;
+						}
+
+						if (reserved_words_.contains(tag.toUpper()))
+						{
+							errors_.push_back("in section '" + s->name() + "', entry " + QString::number(entry)
+								+ " the tag field '" + tag + "' is a reserved keyword");
+							ret = false;
+						}
+					}
+				}
+
+				return true;
+			}
+
 
 			bool ScoutingForm::checkDuplicates()
 			{
@@ -722,17 +793,6 @@ namespace xero
 				}
 				tag = obj.value("tag").toString();
 
-				if (tag.startsWith("ba_")) {
-					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
-						+ " item with tag '" + tag + "' starts with 'ba_' which is reserved for blue alliance data");
-					return false;
-				}
-
-				if (tag.startsWith("calc_")) {
-					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
-						+ " item with tag '" + tag + "' starts with 'calc_' which is reserved for blue alliance data");
-					return false;
-				}
 
 				if (!obj.contains("name") || !obj.value("name").isString()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
@@ -742,28 +802,6 @@ namespace xero
 
 
 				name = obj.value("name").toString();
-
-				if (tag.length() == 0) {
-					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
-						+ " the tag field is an empty string");
-					return false;
-				}
-
-				if (!tag.at(0).isLetter()) {
-					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
-						+ " the tag field must start with a letter");
-					return false;
-				}
-
-				for (int i = 1; i < tag.length(); i++)
-				{
-					if (!tag.at(i).isLetterOrNumber() && tag.at(i) != '_') {
-						errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
-							+ " the tag field must start with a letter and consists of letters, numbers, and '_'");
-						return false;
-					}
-				}
-
 				return true;
 			}
 		}

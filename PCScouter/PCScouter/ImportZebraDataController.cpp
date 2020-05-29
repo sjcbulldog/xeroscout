@@ -75,6 +75,8 @@ void ImportZebraDataController::run()
 
 void ImportZebraDataController::gotZebra()
 {
+	dm_->blockSignals(true);
+
 	//
 	// Move the zebra data from the blue alliance engine to the data model
 	//
@@ -90,6 +92,10 @@ void ImportZebraDataController::gotZebra()
 		}
 	}
 
+	dm_->blockSignals(false);
+
 	emit complete(false);
 	state_ = State::Done;
+
+	dm_->emitChangedSignal(ScoutingDataModel::ChangeType::ZebraDataAdded);
 }

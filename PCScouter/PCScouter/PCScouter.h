@@ -99,6 +99,8 @@ private:
 	void saveAndBackup();
 	void setDataModelStatus();
 
+	void updateCurrentView();
+
 	void clientError(const QString &errmsg);
 	void displayMessage(const QString &msg);
 	void clientComplete();

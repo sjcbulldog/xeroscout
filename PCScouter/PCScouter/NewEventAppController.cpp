@@ -103,13 +103,15 @@ void NewEventAppController::gotTeams()
 		QStringList& red = m->red()->getTeams();
 		for (int i = 0; i < red.size(); i++) {
 			QString team = m->red()->getTeams().at(i);
-			dm_->addTeamToMatch(dm->key(), Alliance::Red, i + 1, team);
+			auto t = dm_->findTeamByKey(team);
+			dm_->addTeamToMatch(dm->key(), Alliance::Red, i + 1, team, t->number());
 		}
 
 		QStringList& blue = m->blue()->getTeams();
 		for (int i = 0; i < blue.size(); i++) {
 			QString team = m->blue()->getTeams().at(i);
-			dm_->addTeamToMatch(dm->key(), Alliance::Blue, i + 1, team);
+			auto t = dm_->findTeamByKey(team);
+			dm_->addTeamToMatch(dm->key(), Alliance::Blue, i + 1, team, t->number());
 		}
 	}
 

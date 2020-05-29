@@ -263,20 +263,20 @@ namespace xero
 				/// the scouting data for each match.  The scouting data is the data defined in the match scouting form
 				/// as well as the data loaded for each match from the Blue Alliance if the match data has been imported.
 				/// \param set the dataset to contain the data.  Any existing data will be cleared.
-				void createMatchDataSet(ScoutingDataSet& set) const;
+				void createMatchDataSet(ScoutingDataSet& set) ;
 
 				/// \brief create a dataset for the pits in the datamodel.
 				/// Iterate over all of the teams anad create a dataset for team scouting data.  The rows are the teams and
 				/// the columns are the scouting data fields from the team scouting form
 				/// \param set the dataset to contain the data.  Any existing data will be cleared.
-				void createTeamDataSet(ScoutingDataSet& set) const;
+				void createTeamDataSet(ScoutingDataSet& set) ;
 
 				/// \brief create a dataset for a custom SQL query
 				/// The rows and columns are defined by the results of the query
 				/// \param set the dataset to contain the data.  Any existing data will be cleared.
 				/// \param query the SQL query to execute
 				/// \param error the error message if the SQL query was invalid
-				bool createCustomDataSet(ScoutingDataSet& set, const QString& query, QString& error) const;
+				bool createCustomDataSet(ScoutingDataSet& set, const QString& query, QString& error) ;
 
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
@@ -339,7 +339,7 @@ namespace xero
 					team->setOPR(opr);
 
 					if (getFieldByName(DataModelTeam::OPRName) == nullptr)
-						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::OPRName, FieldDesc::Type::Double));
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::OPRName, FieldDesc::Type::Double, true));
 
 					dirty_ = true;
 					emitChangedSignal(ChangeType::TeamDataChanged);
@@ -374,13 +374,14 @@ namespace xero
 				/// \param matchkey the Blue Alliance key for the match to add the team to
 				/// \param c the color of the alliance (red or blue)
 				/// \param teamkey the Blue Alliance key for the team
+				/// \parar number the team number
 				/// \returns false if the match does not exist, or if it has teams already otherwise true
-				bool addTeamToMatch(const QString& matchkey, Alliance c, int slot, const QString& teamkey) {
+				bool addTeamToMatch(const QString& matchkey, Alliance c, int slot, const QString& teamkey, int number) {
 					auto dm = findMatchByKeyInt(matchkey);
 					if (dm == nullptr)
 						return false;
 
-					dm->addTeam(c, slot, teamkey);
+					dm->addTeam(c, slot, teamkey, number);
 
 					dirty_ = true;
 					emitChangedSignal(ChangeType::TeamAddedToMatch);
@@ -807,6 +808,8 @@ namespace xero
 				}
 
 			private:
+				void addTemporaryFieldDesc();
+
 				void incrMatchTabletIndex(int& index) {
 					index++;
 					if (index == match_tablets_.size())

@@ -22,15 +22,17 @@ namespace xero
 				};
 
 			public:
-				FieldDesc(const QString &name, FieldDesc::Type type) {
+				FieldDesc(const QString &name, FieldDesc::Type type, bool temp = false) {
 					name_ = name;
 					type_ = type;
+					temporary_ = temp;
 				}
 
-				FieldDesc(const QString &name, const QStringList& list) {
+				FieldDesc(const QString &name, const QStringList& list, bool temp = false) {
 					name_ = name;
 					choices_ = list;
 					type_ = Type::StringChoice;
+					temporary_ = temp;
 				}
 
 				FieldDesc::Type type() const {
@@ -49,10 +51,15 @@ namespace xero
 					return choices_;
 				}
 
+				bool isTemporary() const {
+					return temporary_;
+				}
+
 			private:
 				QString name_;
 				Type type_;
 				QStringList choices_;
+				bool temporary_;
 			};
 		}
 	}

@@ -245,8 +245,12 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PitDataSet)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("match"), "Match Scouting Form", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormView)));
+	item = new QListWidgetItem(loadIcon("match"), "Match Scouting Form - Red", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewRed)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem(loadIcon("match"), "Match Scouting Form - Blue", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewBlue)));
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("schedule"), "Match Scouting Status", view_selector_);
@@ -576,14 +580,22 @@ void PCScouter::showIPAddresses()
 void PCScouter::setMainView(DocumentView::ViewType type)
 {
 	view_selector_->setCurrentRow(-1);
-	for (int i = 0; i < view_selector_->count(); i++)
+	if (type == DocumentView::ViewType::NoModelView)
 	{
-		QListWidgetItem* item = view_selector_->item(i);
-		const QVariant& v = item->data(Qt::UserRole);
-		if (v.isValid() && v.type() == QVariant::Type::Int && v.toInt() == static_cast<int>(type))
+		assert(data_model_ == nullptr);
+		view_frame_->setViewType(type);
+	}
+	else
+	{
+		for (int i = 0; i < view_selector_->count(); i++)
 		{
-			view_selector_->setCurrentRow(i);
-			break;
+			QListWidgetItem* item = view_selector_->item(i);
+			const QVariant& v = item->data(Qt::UserRole);
+			if (v.isValid() && v.type() == QVariant::Type::Int && v.toInt() == static_cast<int>(type))
+			{
+				view_selector_->setCurrentRow(i);
+				break;
+			}
 		}
 	}
 }
@@ -860,6 +872,8 @@ void PCScouter::closeEventHandler()
 
 		data_model_ = nullptr;
 		view_frame_->setDataModel(nullptr);
+		setMainView(DocumentView::ViewType::NoModelView);
+		updateCurrentView();
 	}
 }
 
@@ -888,9 +902,16 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 	else if (newitem != nullptr) {
 		int index = newitem->data(Qt::UserRole).toInt();
 		DocumentView::ViewType view = static_cast<DocumentView::ViewType>(index);
+		view_frame_->setViewType(view);
+		updateCurrentView();
+	}
+}
 
-		switch (view)
-		{
+void PCScouter::updateCurrentView()
+{
+	auto view = view_frame_->viewType();
+	switch (view)
+	{
 		case DocumentView::ViewType::TeamScoutingFormView:
 		{
 			qDebug() << "TeamScoutingFormView";
@@ -905,7 +926,19 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 		}
 		break;
 
-		case DocumentView::ViewType::MatchScoutingFormView:
+		case DocumentView::ViewType::MatchScoutingFormViewRed:
+		{
+			FormView* ds = dynamic_cast<FormView*>(view_frame_->getWidget(view));
+			assert(ds != nullptr);
+			if (ds->needsRefresh())
+			{
+				ds->setScoutingForm(data_model_->matchScoutingForm(), "red");
+				ds->clearNeedRefresh();
+			}
+		}
+		break;
+
+		case DocumentView::ViewType::MatchScoutingFormViewBlue:
 		{
 			FormView* ds = dynamic_cast<FormView*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
@@ -983,7 +1016,7 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 
 		case DocumentView::ViewType::TeamReport:
 		{
-#ifdef TEAM_SUMMARY_NOT_READY
+	#ifdef TEAM_SUMMARY_NOT_READY
 			TeamSummaryWidget* ds = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
@@ -991,7 +1024,7 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 				ds->refreshView();
 				ds->clearNeedRefresh();
 			}
-#endif
+	#endif
 		}
 		break;
 
@@ -1083,10 +1116,9 @@ void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldit
 			}
 		}
 		break;
-		}
-		view_frame_->setViewType(view);
 	}
 }
+
 
 ////////////////////////////////////////////////////////////
 // Data Model Related
@@ -1098,58 +1130,60 @@ void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 
 	switch (type)
 	{
-	case ScoutingDataModel::ChangeType::HistoryChanged:
-	{
-		ChangeHistoryView* v = dynamic_cast<ChangeHistoryView*>(view_frame_->getWidget(DocumentView::ViewType::HistoryView));
-		v->setNeedRefresh();
+		case ScoutingDataModel::ChangeType::HistoryChanged:
+		{
+			ChangeHistoryView* v = dynamic_cast<ChangeHistoryView*>(view_frame_->getWidget(DocumentView::ViewType::HistoryView));
+			v->setNeedRefresh();
+		}
+		break;
+
+		case ScoutingDataModel::ChangeType::MatchAdded:
+		case ScoutingDataModel::ChangeType::MatchDataChanged:
+		case ScoutingDataModel::ChangeType::MatchScoutingDataAdded:
+		case ScoutingDataModel::ChangeType::MatchScoutingTabletChanged:
+		{
+			MatchViewWidget* mv = dynamic_cast<MatchViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchView));
+			mv->setNeedRefresh();
+
+			DataSetViewWidget* w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
+			w->setNeedRefresh();
+
+			w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::AllTeamReport));
+			w->setNeedRefresh();
+
+			QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
+			qv->setNeedRefresh();
+
+	#ifdef TEAM_SUMMARY
+			TeamSummaryWidget* sw = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamReport));
+			sw->setNeedRefresh();
+	#endif
+		}
+		break;
+
+		case ScoutingDataModel::ChangeType::PitScoutingDataAdded:
+		case ScoutingDataModel::ChangeType::PitScoutingTabletChanged:
+		case ScoutingDataModel::ChangeType::TeamAdded:
+		case ScoutingDataModel::ChangeType::TeamDataChanged:
+		{
+			TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
+			tv->setNeedRefresh();
+
+			DataSetViewWidget* w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitDataSet));
+			w->setNeedRefresh();
+
+			QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
+			qv->setNeedRefresh();
+
+	#ifdef TEAM_SUMMARY_NOT_READY
+			TeamSummaryWidget* sw = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamReport));
+			sw->setNeedRefresh();
+	#endif
+		}
+		break;
 	}
-	break;
 
-	case ScoutingDataModel::ChangeType::MatchAdded:
-	case ScoutingDataModel::ChangeType::MatchDataChanged:
-	case ScoutingDataModel::ChangeType::MatchScoutingDataAdded:
-	case ScoutingDataModel::ChangeType::MatchScoutingTabletChanged:
-	{
-		MatchViewWidget* mv = dynamic_cast<MatchViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchView));
-		mv->setNeedRefresh();
-
-		DataSetViewWidget* w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
-		w->setNeedRefresh();
-
-		w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::AllTeamReport));
-		w->setNeedRefresh();
-
-		QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
-		qv->setNeedRefresh();
-
-#ifdef TEAM_SUMMARY
-		TeamSummaryWidget* sw = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamReport));
-		sw->setNeedRefresh();
-#endif
-	}
-	break;
-
-	case ScoutingDataModel::ChangeType::PitScoutingDataAdded:
-	case ScoutingDataModel::ChangeType::PitScoutingTabletChanged:
-	case ScoutingDataModel::ChangeType::TeamAdded:
-	case ScoutingDataModel::ChangeType::TeamDataChanged:
-	{
-		TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
-		tv->setNeedRefresh();
-
-		DataSetViewWidget* w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitDataSet));
-		w->setNeedRefresh();
-
-		QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
-		qv->setNeedRefresh();
-
-#ifdef TEAM_SUMMARY_NOT_READY
-		TeamSummaryWidget* sw = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamReport));
-		sw->setNeedRefresh();
-#endif
-	}
-	break;
-	}
+	updateCurrentView();
 }
 
 void PCScouter::saveAndBackup()

@@ -37,6 +37,16 @@ namespace xero
 				friend class JSonDataModelConverter;
 
 			public:
+				static constexpr const char* TypeName = "Type";
+				static constexpr const char* SetName = "SetNum";
+				static constexpr const char* MatchName = "MatchNum";
+				static constexpr const char* MatchKeyName = "MatchKey";
+				static constexpr const char* TeamNumberName = "TeamNumber";
+				static constexpr const char* MatchTeamKeyName = "MatchTeamKey";
+				static constexpr const char* AllianceName = "Alliance";
+				static constexpr const char* PositionName = "Position";
+
+			public:
 				DataModelMatch(const QString& key, const QString& comp, int set, int match, int etime) {
 					key_ = key;
 					comp_type_ = comp;
@@ -211,7 +221,7 @@ namespace xero
 					{
 						if (robot->tablet() == tabname)
 						{
-							color = robot->color();
+							color = robot->alliance();
 							slot = robot->slot();
 							return true;
 						}
@@ -227,7 +237,7 @@ namespace xero
 					{
 						if (robot->key() == teamkey)
 						{
-							color = robot->color();
+							color = robot->alliance();
 							slot = robot->slot();
 							return true;
 						}
@@ -286,11 +296,26 @@ namespace xero
 					robot->addExtraData(map);
 				}
 
-				void addTeam(Alliance a, int slot, const QString& key) {
+				void addTeam(Alliance a, int slot, const QString& key, int number) {
 					if (findRobotByColorSlot(a, slot) == nullptr)
 					{
-						auto robot = std::make_shared<OneRobot>(a, slot, key);
+						auto robot = std::make_shared<OneRobot>(a, slot, key, number);
 						robots_.push_back(robot);
+					}
+
+					if (robots_.size() == 6)
+					{
+						for (auto robot : robots_)
+						{
+							robot->addExtraData(MatchKeyName, key_);
+							robot->addExtraData(TypeName, comp_type_);
+							robot->addExtraData(SetName, set_number_);
+							robot->addExtraData(MatchName, match_number_);
+							robot->addExtraData(MatchTeamKeyName, robot->key());
+							robot->addExtraData(TeamNumberName, robot->number());
+							robot->addExtraData(AllianceName, toString(robot->alliance()));
+							robot->addExtraData(PositionName, robot->slot());
+						}
 					}
 				}
 
@@ -320,13 +345,14 @@ namespace xero
 				class OneRobot
 				{
 				public:
-					OneRobot(Alliance a, int slot, const QString &key) {
+					OneRobot(Alliance a, int slot, const QString &key, int number) {
 						color_ = a;
 						slot_ = slot;
 						team_key_ = key;
+						number_ = number;
 					}
 
-					Alliance color() const {
+					Alliance alliance() const {
 						return color_;
 					}
 
@@ -336,6 +362,10 @@ namespace xero
 
 					const QString& key() const {
 						return team_key_;
+					}
+
+					int number() const {
+						return number_;
 					}
 
 					const QString& tablet() const {
@@ -389,6 +419,13 @@ namespace xero
 						}
 					}
 
+					void addExtraData(const QString& name, const QVariant& v) {
+						if (extra_data_ == nullptr)
+							extra_data_ = std::make_shared<ScoutingDataMap>();
+
+						extra_data_->insert_or_assign(name, v);
+					}
+
 					ConstScoutingDataMapPtr scoutingData() const {
 						if (scouting_data_.size() == 0)
 							return nullptr;
@@ -431,6 +468,11 @@ namespace xero
 					QString team_key_;
 
 					//
+					// The team number
+					//
+					int number_;
+
+					//
 					// The tablet used to scout this team in this match
 					//
 					QString tablet_;
@@ -451,7 +493,7 @@ namespace xero
 				std::shared_ptr<OneRobot> findRobotByColorSlot(Alliance c, int slot) {
 					for (auto robot : robots_)
 					{
-						if (robot->color() == c && robot->slot() == slot)
+						if (robot->alliance() == c && robot->slot() == slot)
 							return robot;
 					}
 
@@ -463,7 +505,7 @@ namespace xero
 
 					for (auto robot : robots_)
 					{
-						if (robot->color() == c && robot->slot() == slot)
+						if (robot->alliance() == c && robot->slot() == slot)
 							return robot;
 					}
 

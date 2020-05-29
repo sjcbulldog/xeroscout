@@ -44,12 +44,16 @@ namespace xero
 				dirty_ = false;
 
 				emit_changes_ = true;
+
+				addTemporaryFieldDesc();
 			}
 
 			ScoutingDataModel::ScoutingDataModel()
 			{
 				dirty_ = false;
 				emit_changes_ = true;
+
+				addTemporaryFieldDesc();
 			}
 
 			ScoutingDataModel::~ScoutingDataModel()
@@ -82,6 +86,21 @@ namespace xero
 				return ret;
 			}
 
+			void ScoutingDataModel::addTemporaryFieldDesc()
+			{
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::MatchKeyName, FieldDesc::Type::String, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::TypeName, FieldDesc::Type::String, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::SetName, FieldDesc::Type::Integer, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::MatchName, FieldDesc::Type::Integer, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::MatchTeamKeyName, FieldDesc::Type::String, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::TeamNumberName, FieldDesc::Type::Integer, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::AllianceName, FieldDesc::Type::String, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::PositionName, FieldDesc::Type::Integer, true));
+
+				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamName, FieldDesc::Type::String, true));
+				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamNumberName, FieldDesc::Type::Integer, true));
+				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamKeyName, FieldDesc::Type::String, true));
+			}
 
 			bool ScoutingDataModel::load(const QString& filename)
 			{
@@ -301,31 +320,10 @@ namespace xero
 
 			void ScoutingDataModel::processDataSetAlliance(ScoutingDataSet& set, std::shared_ptr<DataModelMatch> m, Alliance c) const
 			{
-				int numGeneratedColumns = 8;
-				auto scouting_form_fields = match_scouting_form_->fields();
-				QVariant vinvalid;
-
 				for (int slot = 1; slot <= 3; slot++)
 				{
-					QString tkey = m->team(c, slot);
-					auto team = findTeamByKey(tkey);
-
-					if (team == nullptr)
-						continue;
-
 					set.newRow();
-
-					set.addData(m->compType());
-					set.addData(m->set());
-					set.addData(m->match());
-					set.addData(m->key());
-
-					set.addData(team->number());
-					set.addData(tkey);
-					set.addData(toString(c));
-					set.addData(slot);
-
-					for (int i = numGeneratedColumns; i < set.columnCount(); i++)
+					for (int i = 0; i < set.columnCount(); i++)
 					{
 						QVariant v = m->value(c, slot, set.colHeader(i)->name());
 						set.addData(v);
@@ -333,34 +331,21 @@ namespace xero
 				}
 			}
 
-			void ScoutingDataModel::createMatchDataSet(ScoutingDataSet& set) const
+			void ScoutingDataModel::createMatchDataSet(ScoutingDataSet& set)
 			{
 				auto scouting_form_fields = match_scouting_form_->fields();
-				QVariant vinvalid;
 
 				set.clear();
 
-				//
-				// Generate the headers
-				//
-				set.addHeader(std::make_shared<FieldDesc>("Type", FieldDesc::Type::String));
-				set.addHeader(std::make_shared<FieldDesc>("SetNumber", FieldDesc::Type::Integer));
-				set.addHeader(std::make_shared<FieldDesc>("MatchNumber", FieldDesc::Type::Integer));
-				set.addHeader(std::make_shared<FieldDesc>("MatchKey", FieldDesc::Type::String));
-				set.addHeader(std::make_shared<FieldDesc>("TeamNumber", FieldDesc::Type::Integer));
-				set.addHeader(std::make_shared<FieldDesc>("TeamKey", FieldDesc::Type::String));
-				set.addHeader(std::make_shared<FieldDesc>("Alliance", FieldDesc::Type::String));
-				set.addHeader(std::make_shared<FieldDesc>("Position", FieldDesc::Type::Integer));
-
-				for (int f = 0; f < scouting_form_fields.size(); f++) 
-				{
-					set.addHeader(scouting_form_fields[f]);
-				}
-
-				// Color does not matter here, we just want the headers
-				for (auto entry : match_extra_fields_) 
+				for (auto entry : match_extra_fields_)
 				{
 					set.addHeader(entry);
+				}
+
+
+				for (int f = 0; f < scouting_form_fields.size(); f++)
+				{
+					set.addHeader(scouting_form_fields[f]);
 				}
 
 				//
@@ -372,23 +357,19 @@ namespace xero
 				}
 			}
 
-			void ScoutingDataModel::createTeamDataSet(ScoutingDataSet& set) const
+			void ScoutingDataModel::createTeamDataSet(ScoutingDataSet& set)
 			{
-				int numGenerateCols = 3;
-				QVariant invalid;
+				std::list<std::shared_ptr<FieldDesc>> newhdrs;
 				auto fields = team_scouting_form_->fields();
 
 				set.clear();
-				set.addHeader(std::make_shared<FieldDesc>("Team", FieldDesc::Type::String));
-				set.addHeader(std::make_shared<FieldDesc>("TeamNumber", FieldDesc::Type::Integer));
-				set.addHeader(std::make_shared<FieldDesc>("TeamKey", FieldDesc::Type::String));
+
+				for (auto field : team_extra_fields_)
+					set.addHeader(field);
 
 				for (int f = 0; f < fields.size(); f++) {
 					set.addHeader(fields[f]);
 				}
-
-				for (auto field : team_extra_fields_)
-					set.addHeader(field);
 
 				auto teams = teams_;
 				teams.sort([](std::shared_ptr<DataModelTeam> a, std::shared_ptr<DataModelTeam> b) -> bool
@@ -400,11 +381,7 @@ namespace xero
 				{
 					set.newRow();
 
-					set.addData(t->name());
-					set.addData(t->number());
-					set.addData(t->key());
-
-					for(int col = numGenerateCols ; col < set.columnCount() ; col++)
+					for(int col = 0 ; col < set.columnCount() ; col++)
 					{
 						QVariant v = t->value(set.colHeader(col)->name());
 						set.addData(v);
@@ -412,7 +389,7 @@ namespace xero
 				}
 			}
 
-			bool ScoutingDataModel::createCustomDataSet(ScoutingDataSet& set, const QString& query, QString& error) const
+			bool ScoutingDataModel::createCustomDataSet(ScoutingDataSet& set, const QString& query, QString& error)
 			{
 				ScoutingDatabase* db = ScoutingDatabase::getInstance();
 				if (db == nullptr)
@@ -439,7 +416,6 @@ namespace xero
 
 				return true;
 			}
-
 
 			ScoutingDataMapPtr ScoutingDataModel::generateRandomData(GameRandomProfile& gen, std::shared_ptr<ScoutingForm> form)
 			{

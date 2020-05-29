@@ -743,7 +743,8 @@ namespace xero
 							return false;
 						}
 
-						dm->addTeam(Alliance::Red, slot, red[i].toString());
+						auto t = dm_->findTeamByKey(red[i].toString());
+						dm->addTeam(Alliance::Red, slot, red[i].toString(), t->number());
 						dm->setTablet(Alliance::Red, slot, red[i + 1].toString());
 					}
 
@@ -756,7 +757,8 @@ namespace xero
 							return false;
 						}
 
-						dm->addTeam(Alliance::Blue, slot, blue[i].toString());
+						auto t = dm_->findTeamByKey(red[i].toString());
+						dm->addTeam(Alliance::Blue, slot, blue[i].toString(), t->number());
 						dm->setTablet(Alliance::Blue, slot, blue[i + 1].toString());
 					}
 
@@ -1415,6 +1417,9 @@ namespace xero
 
 				for (auto field : fields)
 				{
+					if (field->isTemporary())
+						continue;
+
 					QJsonObject obj;
 					QJsonArray strarr;
 
