@@ -743,8 +743,9 @@ namespace xero
 				/// tell which items get data.  A value of 1 will generate data for all items.  A value
 				/// of two will generate data for 1/2.  3 for 1/3, etc.
 				/// \param profile the data profile for generating random data
-				/// \mod the modulo used to tell which items get random data
-				void generateRandomScoutingData(GameRandomProfile& profile, int mod);
+				/// \param redmax the maximum match number that will get random data
+				/// \param bluemax the maximum match number that will get random data
+				void generateRandomScoutingData(GameRandomProfile& profile, int redmax, int bluemax);
 
 				/// \brief remove any scouting data associated with the given tablet
 				/// \param tablet the tablet we want to remove data for

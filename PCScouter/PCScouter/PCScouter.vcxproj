@@ -142,6 +142,7 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
     <ClCompile Include="TabletPoolListWidget.cpp" />
     <ClCompile Include="TabletPoolWizardPage.cpp" />
     <ClCompile Include="TeamSummaryController.cpp" />
+    <ClCompile Include="TestDataInjector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="PCScouter.h" />
@@ -151,6 +152,7 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TeamSummaryController.h" />
+    <ClInclude Include="TestDataInjector.h" />
     <QtMoc Include="AboutDialog.h" />
     <ClInclude Include="AdvListWidget.h" />
     <QtMoc Include="ClientProtocolHandler.h" />

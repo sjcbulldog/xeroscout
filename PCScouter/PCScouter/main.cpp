@@ -15,6 +15,7 @@
 // 
 
 #include "PCScouter.h"
+#include "TestDataInjector.h"
 #include <QApplication>
 #include <QMessageBox>
 #include <SingleInstanceGuard.h>
@@ -35,18 +36,31 @@ int main(int argc, char *argv[])
 
 	QApplication a(argc, argv);
 
-	bool central = false;
-	QString name;
-
-	int i = 0;
+	int i = 1;
 	QStringList args = QCoreApplication::arguments();
-	while (i < args.size()) {
-		if (args[i] == "--central")
-			central = true;
-		else
-			name = args[i];
+	TestDataInjector& injector = TestDataInjector::getInstance();
 
-		i++;
+	while (i < args.size()) {
+		QString arg = args[i++];
+		if (arg == "--testinject")
+		{
+			if (i == args.size())
+			{
+				QMessageBox::critical(nullptr, "Error", "argument --testinject requires an NAME=VALUE line following");
+				return 1;
+			}
+
+			if (!injector.parseData(args[i++]))
+			{
+				QMessageBox::critical(nullptr, "Error", "argument --testinject, invalid following argument, expected NAME=VALUE");
+				return 1;
+			}
+		}
+		else
+		{
+			QMessageBox::critical(nullptr, "Error", "invalid command line argument '" + arg + "'");
+			return 1;
+		}
 	}
 
 	try {
@@ -54,8 +68,9 @@ int main(int argc, char *argv[])
 		w.show();
 		return a.exec();
 	}
-	catch (...) {
+	catch (const std::exception &ex) {
+		return 1;
 	}
 
-	return 1;
+	return 0;
 }

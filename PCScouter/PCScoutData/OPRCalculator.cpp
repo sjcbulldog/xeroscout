@@ -119,10 +119,13 @@ namespace xero
 				MatrixXd mpinv = mp.inverse();
 				MatrixXd opr = mpinv * rt;
 
+				dm_->blockSignals(true);
 				for (auto pair : team_to_index_)
 				{
 					dm_->setTeamOPR(pair.first, opr(pair.second));
 				}
+				dm_->blockSignals(false);
+				dm_->emitChangedSignal(ScoutingDataModel::ChangeType::TeamDataChanged);
 
 				return true;
 			}

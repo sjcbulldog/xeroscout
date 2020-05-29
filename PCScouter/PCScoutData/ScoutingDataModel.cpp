@@ -436,29 +436,25 @@ namespace xero
 				return data;
 			}
 
-			void ScoutingDataModel::generateRandomScoutingData(GameRandomProfile& profile, int mod)
+			void ScoutingDataModel::generateRandomScoutingData(GameRandomProfile& profile, int redmax, int bluemax)
 			{
-				int cnt = 0;
 				for (auto team : teams_)
 				{
-					if ((cnt % mod) == 0)
-						team->setTeamScoutingData(generateRandomData(profile, team_scouting_form_), true);
-
-					cnt++;
+					team->setTeamScoutingData(generateRandomData(profile, team_scouting_form_), true);
 				}
 
-				cnt = 0;
 				for (auto match : matches_)
 				{
-					for (int i = 1; i <= 3; i++)
+					if (match->match() <= redmax)
 					{
-						if ((cnt % mod) == 0)
+						for (int i = 1; i <= 3; i++)
 							match->setScoutingData(Alliance::Red, i, generateRandomData(profile, match_scouting_form_), true);
-						cnt++;
+					}
 
-						if ((cnt % mod) == 0)
+					if (match->match() <= bluemax)
+					{
+						for(int i = 1 ; i <= 3 ; i++)
 							match->setScoutingData(Alliance::Blue, i, generateRandomData(profile, match_scouting_form_), true);
-						cnt++;
 					}
 				}
 

@@ -1,15 +1,17 @@
 #include "ImportMatchDataController.h"
 #include "BlueAllianceEngine.h"
 #include "DataModelBuilder.h"
+#include "TestDataInjector.h"
 
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
 ImportMatchDataController::ImportMatchDataController(std::shared_ptr<xero::ba::BlueAlliance> ba,
-	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm) : ApplicationController(ba)
+	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, int maxmatch) : ApplicationController(ba)
 {
 	dm_ = dm;
 	state_ = State::Start;
+	maxmatch_ = maxmatch;
 }
 
 ImportMatchDataController::~ImportMatchDataController()
@@ -59,7 +61,10 @@ void ImportMatchDataController::run()
 				QStringList keys;
 
 				for (auto m : dm_->matches())
-					keys.push_back(m->key());
+				{
+					if (m->match() <= maxmatch_)
+						keys.push_back(m->key());
+				}
 
 				state_ = State::WaitingForDetail;
 				blueAlliance()->requestMatchesDetails(keys);
@@ -85,8 +90,11 @@ void ImportMatchDataController::run()
 void ImportMatchDataController::breakoutBlueAlliancePerRobotData(std::map<QString, std::pair<ScoutingDataMapPtr, ScoutingDataMapPtr>>& data)
 {
 	for (auto m : dm_->matches()) {
-		breakOutBAData(m, Alliance::Red, data[m->key()].first);
-		breakOutBAData(m, Alliance::Blue, data[m->key()].second);
+		if (m->match() <= maxmatch_)
+		{
+			breakOutBAData(m, Alliance::Red, data[m->key()].first);
+			breakOutBAData(m, Alliance::Blue, data[m->key()].second);
+		}
 	}
 }
 
@@ -224,7 +232,7 @@ void ImportMatchDataController::gotDetail()
 		if (!pair.second->scoreBreakdown().isEmpty())
 		{
 			auto m = dm_->findMatchByKey(pair.first);
-			if (m != nullptr)
+			if (m != nullptr && m->match() <= maxmatch_)
 			{
 				auto redmap = std::make_shared<ScoutingDataMap>();
 				DataModelBuilder::jsonToPropMap(pair.second->scoreBreakdown(), "red", redmap);

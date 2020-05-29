@@ -40,6 +40,7 @@
 #include "ImportZebraDataController.h"
 #include "TeamSummaryController.h"
 #include "OPRCalculator.h"
+#include "TestDataInjector.h"
 
 #include <QSqlDatabase>
 #include <QMessageBox>
@@ -72,13 +73,18 @@ using namespace xero::scouting::transport;
 
 PCScouter::PCScouter(QWidget *parent) : QMainWindow(parent)
 {
+	TestDataInjector& injector = TestDataInjector::getInstance();
 	summary_progress_ = new QProgressBar();
 	app_controller_ = nullptr;
 	app_disabled_ = false;
 
 	QDate now = QDate::currentDate();
 	year_ = now.year();
-	processArguments();
+
+#ifdef _DEBUG
+	if (injector.hasData("year") && injector.data("year").type() == QVariant::Int)
+		year_ = injector.data("year").toInt();
+#endif
 
 	createWindows();
 	createMenus();
@@ -119,25 +125,6 @@ PCScouter::PCScouter(QWidget *parent) : QMainWindow(parent)
 	setWindowIcon(icon);
 
 	shutdown_client_connection_ = false;
-}
-
-void PCScouter::processArguments()
-{
-	QStringList args = QCoreApplication::arguments();
-	int i = 0;
-
-	while (i < args.size())
-	{
-		QString arg = args.at(i++);
-		if (arg == "--year")
-		{
-			if (1 < args.size())
-			{
-				arg = args.at(i++);
-				year_ = arg.toInt();
-			}
-		}
-	}
 }
 
 void PCScouter::showEvent(QShowEvent* ev)
@@ -722,12 +709,20 @@ void PCScouter::importMatchDataComplete(bool err)
 
 void PCScouter::importMatchData()
 {
+	const char* maxmatchprop = "bamaxmatch";
+
 	if (data_model_ == nullptr) {
 		QMessageBox::critical(this, "Error", "You can only import match data into an event.  The currently no open event.  Either open an event with File/Open or create an event with File/New");
 		return;
 	}
 
-	app_controller_ = new ImportMatchDataController(blue_alliance_, data_model_);
+	int maxmatch = std::numeric_limits<int>::max();
+	TestDataInjector& injector = TestDataInjector::getInstance();
+
+	if (injector.hasData(maxmatchprop) && injector.data(maxmatchprop).type() == QVariant::Int)
+		maxmatch = injector.data(maxmatchprop).toInt();
+
+	app_controller_ = new ImportMatchDataController(blue_alliance_, data_model_, maxmatch);
 	connect(app_controller_, &ApplicationController::complete, this, &PCScouter::importMatchDataComplete);
 }
 
@@ -1240,10 +1235,22 @@ void PCScouter::magicWordTyped(SpecialListWidget::Word w)
 	disconnect(c);
 
 	if (w == SpecialListWidget::Word::XYZZY)
-		data_model_->generateRandomScoutingData(random_profile_, 1);
-	else
-		data_model_->generateRandomScoutingData(random_profile_, 2);
+	{
+		const char* redpropname = "redrandmaxmatch";
+		const char* bluepropname = "bluerandmaxmatch";
 
+		TestDataInjector& injector = TestDataInjector::getInstance();
+		int redmaxmatch = std::numeric_limits<int>::max();
+		int bluemaxmatch = std::numeric_limits<int>::max();
+
+		if (injector.hasData(redpropname) && injector.data(redpropname).type() == QVariant::Int)
+			redmaxmatch = injector.data(redpropname).toInt();
+
+		if (injector.hasData(bluepropname) && injector.data(bluepropname).type() == QVariant::Int)
+			bluemaxmatch = injector.data(bluepropname).toInt();
+
+		data_model_->generateRandomScoutingData(random_profile_, redmaxmatch, bluemaxmatch);
+	}
 
 	QMessageBox::information(this, "DataSet", "The dataset has been populated");
 	saveAndBackup();

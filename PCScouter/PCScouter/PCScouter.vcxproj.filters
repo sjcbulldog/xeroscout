@@ -88,6 +88,9 @@
     <ClCompile Include="KPIController.cpp">
       <Filter>AppControllers\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestDataInjector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="PCScouter.h">
@@ -153,6 +156,9 @@
     </ClInclude>
     <ClInclude Include="KPIController.h">
       <Filter>AppControllers\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestDataInjector.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

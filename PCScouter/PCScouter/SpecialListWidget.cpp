@@ -34,7 +34,13 @@ void SpecialListWidget::keyPressEvent(QKeyEvent* ev)
 		keyword_ = keyword_.right(10);
 
 	if (keyword_.length() >= 5 && keyword_.right(5) == "xyzzy")
+	{
 		emit magicWord(Word::XYZZY);
+		keyword_.clear();
+	}
 	else if (keyword_.length() >= 6 && keyword_.right(6) == "plough")
+	{
 		emit magicWord(Word::PLOUGH);
+		keyword_.clear();
+	}
 }

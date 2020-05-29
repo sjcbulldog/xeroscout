@@ -9,7 +9,8 @@ class ImportMatchDataController : public ApplicationController
 {
 public:
 	ImportMatchDataController(std::shared_ptr<xero::ba::BlueAlliance> ba,
-		std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
+		std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm,
+		int maxmatch = std::numeric_limits<int>::max());
 	virtual ~ImportMatchDataController();
 
 	bool isDone() override;
@@ -48,5 +49,6 @@ private:
 	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	std::list<std::shared_ptr<xero::scouting::datamodel::FieldDesc>> fields_;
 	std::map<QString, QStringList> strings_;
+	int maxmatch_;
 };
 
