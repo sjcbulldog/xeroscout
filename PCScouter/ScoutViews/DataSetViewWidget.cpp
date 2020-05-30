@@ -49,8 +49,9 @@ namespace xero
 				return ret;
 			}
 
-			DataSetViewWidget::DataSetViewWidget(QWidget* parent) : QSplitter(parent)
+			DataSetViewWidget::DataSetViewWidget(const QString &name, QWidget* parent) : QSplitter(parent)
 			{
+				name_ = name;
 				direction_ = true;
 				column_ = -1;
 
@@ -60,14 +61,28 @@ namespace xero
 				table_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Fixed);
 				addWidget(table_);
 
-				connect(table_->horizontalHeader(), &QHeaderView::sectionClicked, this, &DataSetViewWidget::sortLeftData);
+				connect(table_->horizontalHeader(), &QHeaderView::sectionClicked, this, &DataSetViewWidget::sortData);
 				table_->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
 				connect(table_->horizontalHeader(), &QHeaderView::customContextMenuRequested, this, &DataSetViewWidget::contextMenuRequested);
+
 				table_->horizontalHeader()->setSectionsMovable(true);
+				connect(table_->horizontalHeader(), &QHeaderView::sectionMoved, this, &DataSetViewWidget::columnMoved);
 			}
 
 			DataSetViewWidget::~DataSetViewWidget()
 			{
+			}
+
+			void DataSetViewWidget::columnMoved(int logindex, int oldindex, int newindex)
+			{
+				updateColumnOrder();
+			}
+
+			void DataSetViewWidget::updateColumnOrder()
+			{
+				colstate_ = table_->horizontalHeader()->saveState();
+				colgeom_ = table_->horizontalHeader()->saveGeometry();
+				dataModel()->setDatasetColumnOrder(name_, colstate_, colgeom_);
 			}
 
 			void DataSetViewWidget::hideColumn()
@@ -83,6 +98,7 @@ namespace xero
 						table_->setColumnHidden(index.column(), true);
 					}
 				}
+				updateColumnOrder();
 			}
 
 			void DataSetViewWidget::unhideColumns()
@@ -90,6 +106,15 @@ namespace xero
 				for (int i = 0; i < table_->columnCount(); i++) {
 					table_->setColumnHidden(i, false);
 				}
+				updateColumnOrder();
+			}
+
+			void DataSetViewWidget::resetColumns()
+			{
+				colstate_.clear();
+				colgeom_.clear();
+				dataModel()->setDatasetColumnOrder(name_, colstate_, colgeom_);
+				refreshView();
 			}
 
 			void DataSetViewWidget::contextMenuRequested(const QPoint& pt)
@@ -104,26 +129,14 @@ namespace xero
 				act = menu->addAction(tr("Unhide All Columns"));
 				connect(act, &QAction::triggered, this, &DataSetViewWidget::unhideColumns);
 
+				act = menu->addAction(tr("Reset Column Order"));
+				connect(act, &QAction::triggered, this, &DataSetViewWidget::resetColumns);
+
 				QPoint p = table_->mapToGlobal(pt);
 				menu->exec(p);
 			}
 
-			void DataSetViewWidget::sortRightData(int col)
-			{
-				if (col == column_)
-				{
-					direction_ = !direction_;
-				}
-				else
-				{
-					direction_ = true;
-					column_ = col;
-				}
-
-				table_->sortItems(column_, direction_ ? Qt::AscendingOrder : Qt::DescendingOrder);
-			}
-
-			void DataSetViewWidget::sortLeftData(int col)
+			void DataSetViewWidget::sortData(int col)
 			{
 				if (col == column_)
 				{
@@ -141,10 +154,24 @@ namespace xero
 			void DataSetViewWidget::refreshView()
 			{
 				updateData(table_);
+
+				if (colstate_.size() > 0)
+					table_->horizontalHeader()->restoreState(colstate_);
+
+				if (colgeom_.size() > 0)
+					table_->horizontalHeader()->restoreGeometry(colgeom_);
 			}
 
 			void DataSetViewWidget::updateData(QTableWidget* table)
 			{
+				table->clear();
+
+				while (table->columnCount() > 0)
+					table->removeColumn(0);
+
+				while (table->rowCount() > 0)
+					table->removeRow(0);
+
 				table->setColumnCount(data_.columnCount());
 				table->setRowCount(data_.rowCount());
 
@@ -153,7 +180,6 @@ namespace xero
 				{
 					headers.push_back(hdr->name());
 				}
-
 				table->setHorizontalHeaderLabels(headers);
 
 				for (int row = 0; row < data_.rowCount(); row++) {

@@ -83,6 +83,9 @@ namespace xero
 			constexpr const char* JsonRankingBlobName = "ranking";
 			constexpr const char* JsonGraphViewsName = "graphs";
 			constexpr const char* JsonTeamSummaryFieldsName = "teamsummary";
+			constexpr const char* JsonDatasetColumnOrdersName = "columnorder";
+			constexpr const char* JsonDatasetColumnsStateName = "state";
+			constexpr const char* JsonDatasetColumnsGeomName = "geom";
 			constexpr const char* JsonChoicesName = "graphs";
 		}
 	}

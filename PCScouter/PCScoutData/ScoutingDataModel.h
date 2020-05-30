@@ -45,8 +45,6 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			class TeamDataSummary;
-
 			/// The data model for the scouting data
 			class PCSCOUTDATA_EXPORT ScoutingDataModel : public QObject
 			{
@@ -72,6 +70,7 @@ namespace xero
 					ZebraDataAdded,					///< zebra data was added to the matches
 					GraphDescriptor,				///< the graph descriptors were changed
 					TeamSummaryFieldList,			///< the list of fields in the team summary changed
+					DataSetColumnOrder,				///< the column order for a dataset
 				};
 
 			public:
@@ -252,8 +251,33 @@ namespace xero
 					return match_extra_fields_;
 				}
 
+				/// \brief return the team summary list of fields
+				/// \returns the team summary list of fields
 				const QStringList& teamSummaryFields() const {
 					return team_summary_fields_;
+				}
+
+				/// \brief given a dataset name, return the column order
+				/// \returns the column order for a dataset
+				bool datasetColumnOrder(const QString& dsname, QByteArray &state, QByteArray &geom) const {
+					auto it = dataset_column_order_.find(dsname);
+					if (it == dataset_column_order_.end())
+						return false;
+					
+					state = it->second.first;
+					geom = it->second.second;
+					return true;
+				}
+
+				/// \brief return the names of the datasets with order data stored
+				/// \returns the names of the datasets with order data stored
+				const QStringList datasetColumnOrderNames() const {
+					QStringList list;
+
+					for (auto pair : dataset_column_order_)
+						list.push_back(pair.first);
+
+					return list;
 				}
 
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -297,6 +321,7 @@ namespace xero
 				bool setScoutingForms(std::shared_ptr<ScoutingForm> teamform, std::shared_ptr<ScoutingForm> matchform, QStringList& dups);
 
 				/// \brief sets the extra field descriptors that are team specific
+				/// \param fields the fields to add to the extra fields list
 				void addTeamExtraFields(std::list<std::shared_ptr<FieldDesc>> fields) {
 					for (auto f : fields)
 					{
@@ -358,11 +383,30 @@ namespace xero
 					return graph_descriptor_.load(grarray, err);
 				}
 
+				/// \brief set the list of fields that appear on the team summary
+				/// \param list the list of fields that appear on the team summary
 				void setTeamSummaryFields(const QStringList& list) {
 					team_summary_fields_ = list;
 					dirty_ = true;
 
 					emitChangedSignal(ChangeType::TeamSummaryFieldList);
+				}
+
+				/// \brief set the column order for a dataset
+				/// \param dsname the name of the dataset
+				/// \param list the column order for the columns
+				void setDatasetColumnOrder(const QString& dsname, const QByteArray &state, const QByteArray &geom) {
+					dataset_column_order_.insert_or_assign(dsname, std::make_pair(state, geom));
+					dirty_ = true;
+
+					emitChangedSignal(ChangeType::DataSetColumnOrder);
+				}
+
+				void clearDatasetColumnOrder() {
+					dataset_column_order_.clear();
+					dirty_ = true;
+
+					emitChangedSignal(ChangeType::DataSetColumnOrder);
 				}
 
 				/// \brief set the ranking data from the blue alliance.  
@@ -869,6 +913,8 @@ namespace xero
 				GraphDescriptorCollection graph_descriptor_;
 
 				QStringList team_summary_fields_;
+
+				std::map<QString, std::pair<QByteArray, QByteArray>> dataset_column_order_;
 			};
 
 		}

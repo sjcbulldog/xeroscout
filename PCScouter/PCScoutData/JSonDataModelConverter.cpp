@@ -2,6 +2,7 @@
 #include "ScoutDataJsonNames.h"
 #include "ScoutingDataModel.h"
 #include <QJsonArray>
+#include <QTextCodec>
 
 namespace xero
 {
@@ -459,6 +460,7 @@ namespace xero
 				obj[JsonHistoryName] = historyToJson();
 				obj[JsonGraphViewsName] = dm_->graphDescriptors().generateJSON();
 				obj[JsonTeamSummaryFieldsName] = encodeStringList(dm_->teamSummaryFields());
+				obj[JsonDatasetColumnOrdersName] = encodeColumnOrders();
 				doc.setObject(obj);
 				return doc;
 			}
@@ -1290,7 +1292,64 @@ namespace xero
 				if (obj.contains(JsonTeamSummaryFieldsName) && obj.value(JsonTeamSummaryFieldsName).isArray())
 					dm_->setTeamSummaryFields(decodeStringList(obj.value(JsonTeamSummaryFieldsName).toArray()));
 
+				if (obj.contains(JsonDatasetColumnOrdersName) && obj.value(JsonDatasetColumnOrdersName).isArray())
+					decodeColumnOrders(obj.value(JsonDatasetColumnOrdersName).toArray());
+
 				return true;
+			}
+
+			QJsonArray JSonDataModelConverter::encodeColumnOrders()
+			{
+				QJsonArray array;
+
+				for (auto name : dm_->datasetColumnOrderNames())
+				{
+					QJsonObject obj;
+
+					obj[JsonNameName] = name;
+					QByteArray state, geom;
+					dm_->datasetColumnOrder(name, state, geom);
+					obj[JsonDatasetColumnsStateName] = encodeBinary(state);
+					obj[JsonDatasetColumnsGeomName] = encodeBinary(geom);
+
+					array.push_back(obj);
+				}
+
+				return array;
+			}
+
+			void JSonDataModelConverter::decodeColumnOrders(const QJsonArray &array)
+			{
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (!array[i].isObject())
+						continue;
+
+					QJsonObject obj = array[i].toObject();
+
+					if (!obj.contains(JsonNameName) || !obj.value(JsonNameName).isString())
+						continue;
+
+					if (obj.contains(JsonDatasetColumnsStateName) && obj.value(JsonDatasetColumnsStateName).isString() &&
+						obj.contains(JsonDatasetColumnsGeomName) && obj.value(JsonDatasetColumnsGeomName).isString())
+					{
+						QByteArray state = decodeBinary(obj.value(JsonDatasetColumnsStateName).toString());
+						QByteArray geom = decodeBinary(obj.value(JsonDatasetColumnsGeomName).toString());
+						dm_->setDatasetColumnOrder(obj.value(JsonNameName).toString(), state, geom);
+					}
+				}
+			}
+
+			QString JSonDataModelConverter::encodeBinary(const QByteArray& data)
+			{
+				QByteArray a = data.toBase64();
+				return QTextCodec::codecForMib(106)->toUnicode(a);
+			}
+
+			QByteArray JSonDataModelConverter::decodeBinary(const QString& str)
+			{
+				QByteArray a = str.toUtf8();
+				return QByteArray::fromBase64(a);
 			}
 
 			QJsonArray JSonDataModelConverter::encodeStringList(const QStringList& list)

@@ -43,11 +43,17 @@ namespace xero
 				friend class DataSetViewWidgetItem;
 
 			public:
-				DataSetViewWidget(QWidget* parent);
+				DataSetViewWidget(const QString &name, QWidget* parent);
 				virtual ~DataSetViewWidget();
 
 				xero::scouting::datamodel::ScoutingDataSet& dataset() {
 					return data_;
+				}
+
+				virtual void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model) {
+					ViewBase::setDataModel(model);
+
+					model->datasetColumnOrder(name_, colstate_, colgeom_);
 				}
 
 				void refreshView();
@@ -59,13 +65,17 @@ namespace xero
 
 			private:
 				void updateData(QTableWidget* w);
-				void sortLeftData(int column);
-				void sortRightData(int column);
+				void sortData(int column);
 				void contextMenuRequested(const QPoint& pt);
 				void hideColumn();
 				void unhideColumns();
+				void resetColumns();
+
+				void columnMoved(int logindex, int oldindex, int newindex);
+				void updateColumnOrder();
 
 			private:
+				QString name_;
 				QPoint pt_;
 
 				xero::scouting::datamodel::ScoutingDataSet data_;
@@ -74,8 +84,9 @@ namespace xero
 				int column_;
 				bool direction_;
 
+				QByteArray colstate_;
+				QByteArray colgeom_;
 			};
-
 		}
 	}
 }

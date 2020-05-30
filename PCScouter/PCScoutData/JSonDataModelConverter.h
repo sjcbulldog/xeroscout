@@ -94,6 +94,11 @@ namespace xero
 				QJsonArray encodeStringList(const QStringList& list);
 				QStringList decodeStringList(const QJsonArray& array);
 
+				QString encodeBinary(const QByteArray& data);
+				QByteArray decodeBinary(const QString& str);
+
+				QJsonArray encodeColumnOrders();
+				void decodeColumnOrders(const QJsonArray& array);
 
 			private:
 				ScoutingDataModel* dm_;
