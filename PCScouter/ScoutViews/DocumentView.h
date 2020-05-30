@@ -46,7 +46,7 @@ namespace xero
 					PitView = 4,
 					MatchView = 5,
 					MatchDataSet = 6,
-					PitDataSet = 7,
+					TeamDataSet = 7,
 					CustomDataSet = 8,
 					TeamReport = 9,
 					AllTeamReport = 10,

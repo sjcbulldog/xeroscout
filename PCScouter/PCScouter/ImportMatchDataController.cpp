@@ -145,7 +145,7 @@ void ImportMatchDataController::setExtraFields()
 			// 
 			// Treat as a normal string
 			//
-			std::shared_ptr<FieldDesc> desc = std::make_shared<FieldDesc>(pair.first, FieldDesc::Type::String);
+			std::shared_ptr<FieldDesc> desc = std::make_shared<FieldDesc>(pair.first, FieldDesc::Type::String, false);
 			fields_.push_back(desc);
 		}
 		else
@@ -153,7 +153,7 @@ void ImportMatchDataController::setExtraFields()
 			//
 			// Treat as a choice
 			//
-			std::shared_ptr<FieldDesc> desc = std::make_shared<FieldDesc>(pair.first, pair.second);
+			std::shared_ptr<FieldDesc> desc = std::make_shared<FieldDesc>(pair.first, pair.second, false);
 			fields_.push_back(desc);
 		}
 	}
@@ -172,7 +172,7 @@ void ImportMatchDataController::processFieldDesc(ScoutingDataMapPtr data)
 		{
 			if (desc == nullptr)
 			{
-				fields_.push_back(std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Integer));
+				fields_.push_back(std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Integer, false));
 			}
 			else
 			{
@@ -183,7 +183,7 @@ void ImportMatchDataController::processFieldDesc(ScoutingDataMapPtr data)
 		{
 			if (desc == nullptr)
 			{
-				fields_.push_back(std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Boolean));
+				fields_.push_back(std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Boolean, false));
 			}
 			else
 			{
@@ -194,7 +194,7 @@ void ImportMatchDataController::processFieldDesc(ScoutingDataMapPtr data)
 		{
 			if (desc == nullptr)
 			{
-				fields_.push_back(std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Double));
+				fields_.push_back(std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Double, false));
 			}
 			else
 			{

@@ -33,7 +33,7 @@ namespace xero
 				{
 					minv_ = minv;
 					maxv_ = maxv;
-					addField(std::make_shared<FieldDesc>(tag, FieldDesc::Type::Integer));
+					addField(std::make_shared<FieldDesc>(tag, FieldDesc::Type::Integer, true));
 				}
 
 				virtual ~NumericFormItem()

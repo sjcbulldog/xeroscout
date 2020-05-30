@@ -1504,6 +1504,7 @@ namespace xero
 
 					obj[JsonNameName] = field->name();
 					obj[JsonTypeName] = static_cast<int>(field->type());
+					obj[JsonEditableName] = field->isEditable();
 
 					for (const QString& choice : field->choices())
 						strarr.push_back(choice);
@@ -1526,17 +1527,20 @@ namespace xero
 
 					QJsonObject obj = array[i].toObject();
 
-					if (!obj.contains(JsonNameName) || !obj.contains(JsonTypeName) || !obj.contains(JsonChoicesName))
+					if (!obj.contains(JsonNameName) || !obj.contains(JsonTypeName) || !obj.contains(JsonChoicesName) || !obj.contains(JsonEditableName))
 						continue;
 
-					if (!obj.value(JsonNameName).isString() || !obj.value(JsonTypeName).isDouble() || !obj.value(JsonChoicesName).isArray())
+					if (!obj.value(JsonNameName).isString() || !obj.value(JsonTypeName).isDouble() || !obj.value(JsonChoicesName).isArray() || !obj.value(JsonEditableName).isBool())
 						continue;
+
+
+					bool edit = obj.value(JsonEditableName).toBool();
 
 					QString name = obj.value(JsonNameName).toString();
 					FieldDesc::Type t = static_cast<FieldDesc::Type>(obj.value(JsonTypeName).toInt());
 
 					QJsonArray choices = obj.value(JsonChoicesName).toArray();
-					auto field = std::make_shared<FieldDesc>(name, t);
+					auto field = std::make_shared<FieldDesc>(name, t, edit);
 					for (auto v : choices)
 					{
 						if (v.isString())

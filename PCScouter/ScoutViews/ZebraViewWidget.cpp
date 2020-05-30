@@ -38,12 +38,22 @@ namespace xero
 				field_->setSizePolicy(p);
 				vlay->addWidget(field_);
 
+				slider_ = new TimeBoundWidget(0.0, 135.0, this);
+				vlay->addWidget(slider_);
+				connect(slider_, &TimeBoundWidget::rangeChanged, this, &ZebraViewWidget::rangeChanged);
+
 				matches_->setChecked(true);
 				matchesSelected(true);
 			}
 
 			ZebraViewWidget::~ZebraViewWidget()
 			{
+			}
+
+			void ZebraViewWidget::rangeChanged(double minv, double maxv)
+			{
+				setNeedRefresh();
+				createPlot();
 			}
 
 			void ZebraViewWidget::clearView()
@@ -158,6 +168,24 @@ namespace xero
 				return ret;
 			}
 
+			void ZebraViewWidget::getTimes(const QJsonArray& array, double& minv, double& maxv)
+			{
+				minv = std::numeric_limits<double>::max();
+				maxv = std::numeric_limits<double>::min();
+
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (array[i].isDouble())
+					{
+						double d = array[i].toDouble();
+						if (d > maxv)
+							maxv = d;
+						if (d < minv)
+							minv = d;
+					}
+				}
+			}
+
 			void ZebraViewWidget::createPlotMatch(const QString &key)
 			{
 				if (!needsRefresh())
@@ -178,17 +206,24 @@ namespace xero
 				if (!zebra.contains("alliances") || !zebra.value("alliances").isObject())
 					return;
 
+				double minv, maxv;
+				getTimes(zebra.value("times").toArray(), minv, maxv);
+				slider_->setMinimum(minv);
+				slider_->setMaximum(maxv);
+
 				std::vector<std::shared_ptr<RobotTrack>> tracks;
 				Alliance c = Alliance::Red;
 				for (int i = 1; i <= 3; i++)
 				{
 					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i));
+					t->setRange(slider_->rangeStart(), slider_->rangeEnd());
 					tracks.push_back(t);
 				}
 				c = Alliance::Blue;
 				for (int i = 1; i <= 3; i++)
 				{
 					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i));
+					t->setRange(slider_->rangeStart(), slider_->rangeEnd());
 					tracks.push_back(t);
 				}
 
@@ -286,9 +321,18 @@ namespace xero
 						continue;
 
 					auto track = std::make_shared<RobotTrack>(key, matchRobotColor(c, 1));
+					track->setRange(slider_->rangeStart(), slider_->rangeEnd());
 					tracks.push_back(track);
 
 					const QJsonObject& zebra = m->zebra();
+
+					QJsonArray times = zebra.value("times").toArray();
+					for (int i = 0; i < times.size(); i++) {
+						if (!times[i].isDouble())
+							return;
+
+						track->addTime(times[i].toDouble());
+					}
 
 					if (!zebra.contains("times") || !zebra.value("times").isArray())
 						continue;

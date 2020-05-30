@@ -19,6 +19,19 @@ namespace xero
                     color_ = c;
                 }
 
+                void setRange(double minv, double maxv) {
+                    range_start_ = minv;
+                    range_end_ = maxv;
+                }
+
+                double start() const {
+                    return range_start_;
+                }
+
+                double end() const {
+                    return range_end_;
+                }
+
                 const QString& team() const {
                     return team_;
                 }
@@ -33,6 +46,10 @@ namespace xero
 
                 int timeSize() {
                     return time_.size();
+                }
+
+                double time(int index) const {
+                    return time_[index];
                 }
 
                 void addPoint(const xero::paths::Translation2d& t) {
@@ -59,6 +76,8 @@ namespace xero
                 QColor color_;
                 std::vector<double> time_;
                 std::vector<xero::paths::Translation2d> points_;
+                double range_start_;
+                double range_end_;
             };
         }
     }

@@ -208,8 +208,15 @@ namespace xero
 				pen.setWidth(3);
 				paint.save();
 				paint.setPen(pen);
+				int stpt = -1, enpt = -1;
 
 				for (int i = 1; i < t->locSize(); i++) {
+					if (t->time(i) < t->start())
+						continue;
+
+					if (stpt == -1)
+						stpt = i;
+
 					xero::paths::Translation2d p1 = t->loc(i - 1);
 					xero::paths::Translation2d p2 = t->loc(i);
 
@@ -217,16 +224,25 @@ namespace xero
 					QPointF pf2 = worldToWindow(QPointF(p2.getX(), p2.getY()));
 
 					paint.drawLine(pf1, pf2);
+
+					if (t->time(i) > t->end())
+					{
+						enpt = i;
+						break;
+					}
 				}
 
-				xero::paths::Translation2d pt = t->loc(t->locSize() - 1);
+				if (enpt == -1)
+					enpt = t->locSize() - 1;
+
+				xero::paths::Translation2d pt = t->loc(enpt);
 				QPointF pf = worldToWindow(QPointF(pt.getX(), pt.getY()));
 				pen.setWidth(4.0);
 				paint.setPen(pen);
 				paint.drawLine(pf.x() - 12.0, pf.y() - 12.0, pf.x() + 12.0, pf.y() + 12.0);
 				paint.drawLine(pf.x() - 12.0, pf.y() + 12.0, pf.x() + 12.0, pf.y() - 12.0);
 
-				pt = t->loc(0);
+				pt = t->loc(stpt);
 				pf = worldToWindow(QPointF(pt.getX(), pt.getY()));
 				pen.setWidth(4.0);
 				paint.setPen(pen);

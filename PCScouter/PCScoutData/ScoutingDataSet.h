@@ -105,6 +105,10 @@ namespace xero
 					return get(row, col);
 				}
 
+				void set(int row, int col, const QVariant &v) {
+					(data_[row])[col] = v;
+				}
+
 				bool writeCSV(const QString& filename) const;
 
 				QVariant columnSummary(int col, bool html = false);

@@ -114,15 +114,18 @@
     <ClCompile Include="TeamSummaryWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TimeBoundWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DataSetItemDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MatchViewWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FlowLayout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DataSetViewWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QueryViewWidget.h">
@@ -200,6 +203,9 @@
     <ClInclude Include="TeamScheduleViewWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DataSetItemDelegate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scoutviews_global.h">
@@ -220,6 +226,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="TeamSummaryWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TimeBoundWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DataSetViewWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

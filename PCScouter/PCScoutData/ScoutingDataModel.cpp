@@ -88,18 +88,18 @@ namespace xero
 
 			void ScoutingDataModel::addTemporaryFieldDesc()
 			{
-				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::MatchKeyName, FieldDesc::Type::String, true));
-				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::TypeName, FieldDesc::Type::String, true));
-				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::SetName, FieldDesc::Type::Integer, true));
-				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::MatchName, FieldDesc::Type::Integer, true));
-				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::MatchTeamKeyName, FieldDesc::Type::String, true));
-				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::TeamNumberName, FieldDesc::Type::Integer, true));
-				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::AllianceName, FieldDesc::Type::String, true));
-				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::PositionName, FieldDesc::Type::Integer, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::MatchKeyName, FieldDesc::Type::String, false, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::TypeName, FieldDesc::Type::String, false, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::SetName, FieldDesc::Type::Integer, false, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::MatchName, FieldDesc::Type::Integer, false, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::MatchTeamKeyName, FieldDesc::Type::String, false, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::TeamNumberName, FieldDesc::Type::Integer, false, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::AllianceName, FieldDesc::Type::String, false, true));
+				match_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelMatch::PositionName, FieldDesc::Type::Integer, false, true));
 
-				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamName, FieldDesc::Type::String, true));
-				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamNumberName, FieldDesc::Type::Integer, true));
-				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamKeyName, FieldDesc::Type::String, true));
+				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamName, FieldDesc::Type::String, false, true));
+				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamNumberName, FieldDesc::Type::Integer, false, true));
+				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamKeyName, FieldDesc::Type::String, false, true));
 			}
 
 			bool ScoutingDataModel::load(const QString& filename)
@@ -533,6 +533,51 @@ namespace xero
 					list.push_back(f);
 
 				return list;
+			}
+
+			void ScoutingDataModel::changeTeamData(const QString& tkey, const QString& field, const QVariant& value)
+			{
+				auto t = findTeamByKeyInt(tkey);
+				ScoutingDataMapPtr data = std::make_shared<ScoutingDataMap>();
+				*data = *t->teamScoutingData();
+				data->insert_or_assign(field, value);
+				t->setTeamScoutingData(data, true);
+
+				TabletIdentity id("Central", QUuid());
+				QStringList teams;
+				QStringList matches;
+
+				teams.push_back(tkey);
+				SyncHistoryRecord rec(id, QDateTime::currentDateTime(), teams, matches);
+				addHistoryRecord(rec);
+
+				dirty_ = true;
+				emitChangedSignal(ChangeType::TeamDataChanged);
+			}
+
+			void ScoutingDataModel::changeMatchData(const QString& mkey, const QString& tkey, const QString& field, const QVariant& value)
+			{
+				auto m = findMatchByKeyInt(mkey);
+				Alliance a;
+				int slot;
+
+				m->teamToAllianceSlot(tkey, a, slot);
+
+				ScoutingDataMapPtr data = std::make_shared<ScoutingDataMap>();
+				*data = *m->scoutingData(a, slot);
+				data->insert_or_assign(field, value);
+				m->setScoutingData(a, slot, data, true);
+
+				TabletIdentity id("Central", QUuid());
+				QStringList teams;
+				QStringList matches;
+
+				matches.push_back(mkey);
+				SyncHistoryRecord rec(id, QDateTime::currentDateTime(), teams, matches);
+				addHistoryRecord(rec);
+
+				dirty_ = true;
+				emitChangedSignal(ChangeType::TeamDataChanged);
 			}
 		}
 	}

@@ -28,7 +28,7 @@ namespace xero
 					{
 						if (!hasField(name))
 						{
-							addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::StringChoice));
+							addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::StringChoice, true));
 						}
 
 						auto field = findField(name);
@@ -37,14 +37,14 @@ namespace xero
 					}
 					else
 					{
-						addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::Boolean));
+						addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::Boolean, true));
 					}
 				}
 
 				auto count = std::dynamic_pointer_cast<ImageFormCountSubItem>(item);
 				if (count != nullptr)
 				{
-					addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::Integer));
+					addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::Integer, true));
 				}
 			}
 
@@ -54,9 +54,9 @@ namespace xero
 
 				QString name = genComplexName(tag(), item->tag());
 				if (item->type() == ImageItemPublishInfo::PublishType::Average)
-					addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::Double));
+					addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::Double, true));
 				else
-					addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::Integer));
+					addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::Integer, true));
 			}
 
 			void ImageFormItem::addPublishedItems(DataCollection& d) const

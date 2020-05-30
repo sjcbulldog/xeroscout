@@ -1,4 +1,5 @@
 //
+//
 // Copyright 2020 by Jack W. (Butch) Griffin
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -230,7 +231,7 @@ void PCScouter::createWindows()
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("teamdata"), "Team Scouting Data", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PitDataSet)));
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamDataSet)));
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("match"), "Match Scouting Form - Red", view_selector_);
@@ -288,6 +289,13 @@ void PCScouter::createWindows()
 	left_right_splitter_->addWidget(top_bottom_splitter_);
 
 	view_frame_ = new DocumentView(year_, "", top_bottom_splitter_);
+
+	DataSetViewWidget * ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
+	connect(ds, &DataSetViewWidget::rowChanged, this, &PCScouter::matchRowChanged);
+
+	ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamDataSet));
+	connect(ds, &DataSetViewWidget::rowChanged, this, &PCScouter::teamRowChanged);
+
 	top_bottom_splitter_->addWidget(view_frame_);
 
 	logwin_ = new QTextEdit(top_bottom_splitter_);
@@ -981,7 +989,7 @@ void PCScouter::updateCurrentView()
 		}
 		break;
 
-		case DocumentView::ViewType::PitDataSet:
+		case DocumentView::ViewType::TeamDataSet:
 		{
 			DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
@@ -1157,7 +1165,7 @@ void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 			TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
 			tv->setNeedRefresh();
 
-			DataSetViewWidget* w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitDataSet));
+			DataSetViewWidget* w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamDataSet));
 			w->setNeedRefresh();
 
 			QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
@@ -1280,4 +1288,33 @@ void PCScouter::mergeMatchRequest(const QString& key, xero::scouting::datamodel:
 		ds->needsRefresh();
 		setMainView(DocumentView::ViewType::MergeListView);
 	}
+}
+
+void PCScouter::teamRowChanged(int row, int col)
+{
+	DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamDataSet));
+	auto& set = ds->dataset();
+
+	int keycol = set.getColumnByName("TeamKey");
+	QString tkey = set.get(row, keycol).toString();
+	QString colname = set.colHeader(col)->name();
+
+	data_model_->changeTeamData(tkey, colname, set.get(row, col));
+}
+
+void PCScouter::matchRowChanged(int row, int col)
+{
+	DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
+
+	auto& set = ds->dataset();
+
+	int keycol = set.getColumnByName("MatchKey");
+	QString mkey = set.get(row, keycol).toString();
+
+	keycol = set.getColumnByName("MatchTeamKey");
+	QString tkey = set.get(row, keycol).toString();
+
+	QString colname = set.colHeader(col)->name();
+
+	data_model_->changeMatchData(mkey, tkey, colname, set.get(row, col));
 }

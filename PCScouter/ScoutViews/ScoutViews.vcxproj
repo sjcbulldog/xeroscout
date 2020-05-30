@@ -92,6 +92,7 @@
     <ClCompile Include="ChangeHistoryView.cpp" />
     <ClCompile Include="ChartViewWrapper.cpp" />
     <ClCompile Include="DataMergeListWidget.cpp" />
+    <ClCompile Include="DataSetItemDelegate.cpp" />
     <ClCompile Include="DataSetViewWidget.cpp" />
     <ClCompile Include="DocumentView.cpp" />
     <ClCompile Include="ExpressionsEntryDialog.cpp" />
@@ -107,6 +108,7 @@
     <ClCompile Include="PathFieldView.cpp" />
     <ClCompile Include="Pose2d.cpp" />
     <ClCompile Include="PreMatchGraphView.cpp" />
+    <ClCompile Include="TimeBoundWidget.cpp" />
     <ClCompile Include="QueryViewWidget.cpp" />
     <ClCompile Include="RobotTrack.cpp" />
     <ClCompile Include="Rotation2d.cpp" />
@@ -124,6 +126,7 @@
     <ClInclude Include="AllianceGraphView.h" />
     <ClInclude Include="ChangeHistoryView.h" />
     <ClInclude Include="ChartViewWrapper.h" />
+    <ClInclude Include="DataSetItemDelegate.h" />
     <ClInclude Include="ExpressionsEntryDialog.h" />
     <ClInclude Include="GameField.h" />
     <ClInclude Include="GameFieldManager.h" />
@@ -133,6 +136,7 @@
     <ClInclude Include="ManagerBase.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="PreMatchGraphView.h" />
+    <QtMoc Include="TimeBoundWidget.h" />
     <ClInclude Include="RobotTrack.h" />
     <ClInclude Include="SelectTeamsDialog.h" />
     <QtMoc Include="TeamSummaryWidget.h" />
@@ -146,7 +150,7 @@
     <ClInclude Include="Twist2d.h" />
     <ClInclude Include="UnitConverter.h" />
     <ClInclude Include="ViewBase.h" />
-    <ClInclude Include="DataSetViewWidget.h" />
+    <QtMoc Include="DataSetViewWidget.h" />
     <ClInclude Include="FlowLayout.h" />
     <QtMoc Include="FormView.h" />
     <ClInclude Include="QueryViewWidget.h" />

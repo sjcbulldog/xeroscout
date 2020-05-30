@@ -42,8 +42,10 @@ namespace xero
 			{
 				friend class DataSetViewWidgetItem;
 
+				Q_OBJECT
+
 			public:
-				DataSetViewWidget(const QString &name, QWidget* parent);
+				DataSetViewWidget(const QString &name, bool editable, QWidget* parent);
 				virtual ~DataSetViewWidget();
 
 				xero::scouting::datamodel::ScoutingDataSet& dataset() {
@@ -63,6 +65,9 @@ namespace xero
 					refreshView();
 				}
 
+			signals:
+				void rowChanged(int row, int col);
+
 			private:
 				void updateData(QTableWidget* w);
 				void sortData(int column);
@@ -73,6 +78,9 @@ namespace xero
 
 				void columnMoved(int logindex, int oldindex, int newindex);
 				void updateColumnOrder();
+
+				void itemChanged(QTableWidgetItem* item);
+				void setDelegates();
 
 			private:
 				QString name_;
@@ -86,6 +94,8 @@ namespace xero
 
 				QByteArray colstate_;
 				QByteArray colgeom_;
+
+				bool editable_;
 			};
 		}
 	}

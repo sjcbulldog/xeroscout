@@ -61,11 +61,11 @@ namespace xero
 				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(0, 0, 255, 255), this));		// 3
 				addWidget(new TeamScheduleViewWidget(tablet, this));											// 4
 				addWidget(new MatchViewWidget(tablet, this));													// 5
-				addWidget(new DataSetViewWidget("matchdata", this));											// 6
-				addWidget(new DataSetViewWidget("teamdata", this));					  							// 7
+				addWidget(new DataSetViewWidget("matchdata", true, this));										// 6
+				addWidget(new DataSetViewWidget("teamdata", true, this));			  							// 7
 				addWidget(new QueryViewWidget(this));															// 8
 				addWidget(new TeamSummaryWidget(this));															// 9
-				addWidget(new DataSetViewWidget("allteam", this));												// 10
+				addWidget(new DataSetViewWidget("allteam", false, this));										// 10
 				addWidget(new ChangeHistoryView(this));															// 11
 				addWidget(new DataMergeListWidget(this));														// 12
 

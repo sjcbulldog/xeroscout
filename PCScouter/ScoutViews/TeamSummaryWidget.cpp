@@ -295,7 +295,7 @@ namespace xero
 					else
 					{
 						int col = matches_ds_.getColumnByName(field);
-						v = matches_ds_.columnSummary(col);
+						v = matches_ds_.columnSummary(col, true);
 					}
 
 					if (v.isValid())

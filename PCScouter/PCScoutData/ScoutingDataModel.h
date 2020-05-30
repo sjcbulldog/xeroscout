@@ -369,7 +369,7 @@ namespace xero
 					team->setOPR(opr);
 
 					if (getFieldByName(DataModelTeam::OPRName) == nullptr)
-						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::OPRName, FieldDesc::Type::Double, true));
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::OPRName, FieldDesc::Type::Double, false, true));
 
 					dirty_ = true;
 					emitChangedSignal(ChangeType::TeamDataChanged);
@@ -418,7 +418,7 @@ namespace xero
 					team->setRanking(obj);
 
 					if (getFieldByName(DataModelTeam::RankName) == nullptr)
-						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::RankName, FieldDesc::Type::Integer));
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::RankName, FieldDesc::Type::Integer, false));
 					
 					dirty_ = true;
 					emitChangedSignal(ChangeType::TeamDataChanged);
@@ -714,6 +714,10 @@ namespace xero
 				// These method are misc methods
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				void changeTeamData(const QString& tkey, const QString& field, const QVariant& value);
+				void changeMatchData(const QString &mkey, const QString& tkey, const QString& field, const QVariant& value);
+
 
 				/// \brief remove all but the latest scouting data
 				void removeOldScoutingData();

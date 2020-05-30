@@ -4,6 +4,7 @@
 #include "ViewBase.h"
 #include "PathFieldView.h"
 #include "DataModelMatch.h"
+#include "TimeBoundWidget.h"
 #include <QWidget>
 #include <QComboBox>
 #include <QRadioButton>
@@ -41,6 +42,10 @@ namespace xero
 				void createPlotMatch(const QString& key);
 				void createPlotTeam(const QString& key);
 
+				void rangeChanged(double minv, double maxv);
+
+				void getTimes(const QJsonArray& array, double& minv, double& maxv);
+
 				QColor matchRobotColor(xero::scouting::datamodel::Alliance c, int slot);
 				void processAlliance(const QJsonArray& arr, xero::scouting::datamodel::Alliance c, std::vector<std::shared_ptr<RobotTrack>>& tracks);
 				bool extractOneAlliance(const QJsonArray& arr, xero::scouting::datamodel::Alliance c, int slot, std::shared_ptr<RobotTrack> track);
@@ -50,6 +55,7 @@ namespace xero
 				QRadioButton* matches_;
 				QRadioButton* robot_;
 				PathFieldView* field_;
+				TimeBoundWidget* slider_;
 			};
 		}
 	}

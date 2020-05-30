@@ -22,17 +22,19 @@ namespace xero
 				};
 
 			public:
-				FieldDesc(const QString &name, FieldDesc::Type type, bool temp = false) {
+				FieldDesc(const QString &name, FieldDesc::Type type, bool editable, bool temp = false) {
 					name_ = name;
 					type_ = type;
 					temporary_ = temp;
+					editable_ = editable;
 				}
 
-				FieldDesc(const QString &name, const QStringList& list, bool temp = false) {
+				FieldDesc(const QString &name, const QStringList& list, bool editable, bool temp = false) {
 					name_ = name;
 					choices_ = list;
 					type_ = Type::StringChoice;
 					temporary_ = temp;
+					editable_ = editable;
 				}
 
 				FieldDesc::Type type() const {
@@ -55,11 +57,16 @@ namespace xero
 					return temporary_;
 				}
 
+				bool isEditable() const {
+					return editable_;
+				}
+
 			private:
 				QString name_;
 				Type type_;
 				QStringList choices_;
 				bool temporary_;
+				bool editable_;
 			};
 		}
 	}

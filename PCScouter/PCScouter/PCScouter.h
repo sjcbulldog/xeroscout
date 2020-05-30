@@ -129,6 +129,9 @@ private:
 	void logMessage(const QString& msg);
 	void errorMessage(const QString& msg);
 
+	void teamRowChanged(int row, int col);
+	void matchRowChanged(int row, int col);
+
 private:
 	// 
 	// Timer for background activities that must be done

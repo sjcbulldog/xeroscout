@@ -42,7 +42,7 @@ namespace xero
 
 				vlay->addWidget(top);
 
-				data_view_ = new DataSetViewWidget("query", this);
+				data_view_ = new DataSetViewWidget("query", false, this);
 				QSizePolicy p(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 				data_view_->setSizePolicy(p);
 				vlay->addWidget(data_view_);

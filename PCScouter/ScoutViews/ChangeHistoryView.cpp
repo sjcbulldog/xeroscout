@@ -28,7 +28,7 @@ namespace xero
 
 			QStringList ChangeHistoryView::headers_ =
 			{
-				"Tablet",
+				"Source",
 				"UUID",
 				"When",
 				"Teams",
@@ -58,7 +58,8 @@ namespace xero
 					QTreeWidgetItem* item = new QTreeWidgetItem(this);
 
 					item->setText(0, rec.id().name());
-					item->setText(1, rec.id().uid().toString());
+					if (!rec.id().uid().isNull())
+						item->setText(1, rec.id().uid().toString());
 					item->setText(2, rec.when().toString());
 
 					QString msg;
