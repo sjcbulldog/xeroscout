@@ -458,6 +458,7 @@ namespace xero
 				obj[JsonScoutingName] = scoutingToJsonFull();
 				obj[JsonHistoryName] = historyToJson();
 				obj[JsonGraphViewsName] = dm_->graphDescriptors().generateJSON();
+				obj[JsonTeamSummaryFieldsName] = encodeStringList(dm_->teamSummaryFields());
 				doc.setObject(obj);
 				return doc;
 			}
@@ -1286,7 +1287,35 @@ namespace xero
 					}
 				}
 
+				if (obj.contains(JsonTeamSummaryFieldsName) && obj.value(JsonTeamSummaryFieldsName).isArray())
+					dm_->setTeamSummaryFields(decodeStringList(obj.value(JsonTeamSummaryFieldsName).toArray()));
+
 				return true;
+			}
+
+			QJsonArray JSonDataModelConverter::encodeStringList(const QStringList& list)
+			{
+				QJsonArray array;
+				
+				for (const QString& e : list)
+				{
+					array.push_back(e);
+				}
+
+				return array;
+			}
+
+			QStringList JSonDataModelConverter::decodeStringList(const QJsonArray& array)
+			{
+				QStringList list;
+
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (array[i].isString())
+						list.push_back(array[i].toString());
+				}
+
+				return list;
 			}
 
 			QJsonArray JSonDataModelConverter::encode(const ConstScoutingDataMapPtr data)
@@ -1328,7 +1357,6 @@ namespace xero
 							obj[JsonValueName] = v.toDouble();
 						}
 						else {
-
 							qDebug() << "name: " << entry.first << ": variant not handled: " << v;
 							assert(false);
 						}
@@ -1347,20 +1375,17 @@ namespace xero
 				for (int i = 0; i < data.size(); i++) {
 					if (!data[i].isObject())
 					{
-						qDebug() << "bad data in encoded scouting result - not an object";
 						continue;
 					}
 
 					QJsonObject vobj = data[i].toObject();
 					if (!vobj.contains(JsonNameName) || !vobj.value(JsonNameName).isString())
 					{
-						qDebug() << "bad data in encoded scouting result - missing string field 'name'";
 						continue;
 					}
 
 					if (!vobj.contains(JsonTypeName) || !vobj.value(JsonTypeName).isString())
 					{
-						qDebug() << "bad data in encoded scouting result - missing string field 'type'";
 						continue;
 					}
 
@@ -1369,7 +1394,6 @@ namespace xero
 					{
 						if (!vobj.contains(JsonValueName) || !vobj.value(JsonValueName).isString())
 						{
-							qDebug() << "bad data in encoded scouting result - missing string field 'value'";
 							continue;
 						}
 						result->insert(std::make_pair(vobj.value(JsonNameName).toString(), QVariant(vobj.value(JsonValueName).toString())));
@@ -1378,7 +1402,6 @@ namespace xero
 					{
 						if (!vobj.contains(JsonValueName) || !vobj.value(JsonValueName).isDouble())
 						{
-							qDebug() << "bad data in encoded scouting result - missing integer field 'value'";
 							continue;
 						}
 						result->insert(std::make_pair(vobj.value(JsonNameName).toString(), QVariant(vobj.value(JsonValueName).toInt())));
@@ -1387,7 +1410,6 @@ namespace xero
 					{
 						if (!vobj.contains(JsonValueName) || !vobj.value(JsonValueName).isDouble())
 						{
-							qDebug() << "bad data in encoded scouting result - missing double field 'value'";
 							continue;
 						}
 						result->insert(std::make_pair(vobj.value(JsonNameName).toString(), QVariant(vobj.value(JsonValueName).toDouble())));
@@ -1396,7 +1418,6 @@ namespace xero
 					{
 						if (!vobj.contains("value") || !vobj.value(JsonValueName).isBool())
 						{
-							qDebug() << "bad data in encoded scouting result - missing boolean field 'value'";
 							continue;
 						}
 						result->insert(std::make_pair(vobj.value(JsonNameName).toString(), QVariant(vobj.value(JsonValueName).toBool())));
@@ -1404,7 +1425,6 @@ namespace xero
 					else
 					{
 						assert(false);
-						qDebug() << "decode data type not handled '" << type << "'";
 					}
 				}
 

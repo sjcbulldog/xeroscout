@@ -99,7 +99,6 @@ namespace xero
 						QJsonValue v = arr[i];
 						if (v.isString())
 						{
-							qDebug() << "Storing team key " << v.toString();
 							keys_.push_back(v.toString());
 						}
 					}
@@ -118,7 +117,6 @@ namespace xero
 					!obj.contains("lat") || !obj.contains("lng") || !obj.contains("location_name") || !obj.contains("website") ||
 					!obj.contains("rookie_year") || !obj.contains("motto") || !obj.contains("home_championship"))
 				{
-					qDebug() << "team dataset missing field";
 					return BlueAllianceResult::Status::JSONError;
 				}
 

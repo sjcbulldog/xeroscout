@@ -28,8 +28,6 @@ namespace xero
 				setMinimumSize(size_);
 				setMaximumSize(size_);
 
-				qDebug() << "ImageItemSize: " << size_;
-
 				DataCollection d;
 				setValues(d);
 			}

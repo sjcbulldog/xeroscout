@@ -52,8 +52,6 @@ namespace xero
 
 		bool BlueAllianceTransport::request(QString req, std::function<void(std::shared_ptr<QJsonDocument>, BlueAllianceResult::Status st, int code)> cb)
 		{
-			// qDebug() << "Request: '" << req << "'";
-
 			//
 			// Store the callback
 			//

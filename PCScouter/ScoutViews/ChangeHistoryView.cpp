@@ -31,7 +31,7 @@ namespace xero
 				"Tablet",
 				"UUID",
 				"When",
-				"Pits",
+				"Teams",
 				"Matches"
 			};
 

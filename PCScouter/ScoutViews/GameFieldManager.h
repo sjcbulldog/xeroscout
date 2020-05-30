@@ -51,9 +51,6 @@ public:
 
 protected:
 	virtual bool checkCount() {
-		if (fields_.size() == 0)
-			qDebug() << "no fields found, cannot start application - must have at least one field defined";
-
 		return fields_.size() > 0;
 	}
 

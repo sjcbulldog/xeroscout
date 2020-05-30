@@ -79,6 +79,7 @@ namespace xero
 				bool extractTabletID(const QJsonObject& obj, int version, TabletIdentity& id);
 				bool extractPits(const QJsonObject& obj, int version, const QString& tablet, QStringList& pits);
 				bool extractMatches(const QJsonObject& obj, int version, const QString& tablet, QStringList& matches);
+				bool extractTeamSummaries(const QJsonArray& array);
 
 				bool scoutingFromJsonFullV1(const QJsonObject& obj);
 				bool scoutingFromJsonFullV1Matches(const QJsonArray& obj);
@@ -89,6 +90,9 @@ namespace xero
 				QJsonObject historyToJson();
 
 				QJsonArray encodeScoutingData(const std::list<ConstScoutingDataMapPtr>& data);
+
+				QJsonArray encodeStringList(const QStringList& list);
+				QStringList decodeStringList(const QJsonArray& array);
 
 
 			private:

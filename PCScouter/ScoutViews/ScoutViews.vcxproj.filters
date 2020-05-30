@@ -111,6 +111,9 @@
     <ClCompile Include="TeamScheduleViewWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TeamSummaryWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MatchViewWidget.h">
@@ -214,6 +217,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="PathFieldView.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TeamSummaryWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

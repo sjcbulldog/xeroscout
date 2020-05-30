@@ -76,7 +76,6 @@ void KPIController::run()
 		switch (state_)
 		{
 		case State::Start:
-			qDebug() << "Start";
 			if (blueAlliance()->getEngine().events().size() == 0)
 				getEvents();
 			else if (blueAlliance()->getEngine().teams().size() == 0)

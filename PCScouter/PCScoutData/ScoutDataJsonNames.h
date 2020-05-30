@@ -82,6 +82,7 @@ namespace xero
 			constexpr const char* JsonMatchesChangedListName = "matcheschanged";
 			constexpr const char* JsonRankingBlobName = "ranking";
 			constexpr const char* JsonGraphViewsName = "graphs";
+			constexpr const char* JsonTeamSummaryFieldsName = "teamsummary";
 			constexpr const char* JsonChoicesName = "graphs";
 		}
 	}

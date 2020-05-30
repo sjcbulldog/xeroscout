@@ -74,7 +74,6 @@ namespace xero
 				if (!query.exec(qstr))
 				{
 					QSqlError err = query.lastError();
-					qDebug() << err.text();
 					return false;
 				}
 
@@ -125,7 +124,6 @@ namespace xero
 				if (!query.exec(qstr))
 				{
 					QSqlError err = query.lastError();
-					qDebug() << err.text();
 					return false;
 				}
 
@@ -174,7 +172,6 @@ namespace xero
 					if (!query.exec(qstr))
 					{
 						QSqlError err = query.lastError();
-						qDebug() << err.text();
 						return false;
 					}
 				}
@@ -191,7 +188,6 @@ namespace xero
 				if (!query.exec(qstr))
 				{
 					QSqlError err = query.lastError();
-					qDebug() << err.text();
 					error = err.text();
 
 					return false;

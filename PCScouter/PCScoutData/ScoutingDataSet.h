@@ -61,6 +61,16 @@ namespace xero
 					return headers_[col];
 				}
 
+				int getColumnByName(const QString &name) const {
+					for (int col = 0; col < columnCount(); col++)
+					{
+						if (headers_[col]->name() == name)
+							return col;
+					}
+
+					return -1;
+				}
+
 				const std::vector<QVariant>& row(int index) const {
 					return data_[index];
 				}
@@ -90,9 +100,16 @@ namespace xero
 					return (data_[row])[col];
 				}
 
+				const QVariant& get(int row, const QString& colname) const {
+					int col = getColumnByName(colname);
+					return get(row, col);
+				}
+
 				bool writeCSV(const QString& filename) const;
 
+#ifdef NOTYET
 				bool isColumnBool(int col) const;
+#endif
 
 			private:
 				std::vector<std::shared_ptr<FieldDesc>> headers_;

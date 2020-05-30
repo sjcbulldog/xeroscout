@@ -164,7 +164,7 @@ QWidget* TabletPoolWizardPage::createPitScoutList(QWidget* parent)
 	QVBoxLayout* l = new QVBoxLayout();
 	w->setLayout(l);
 
-	QLabel* label = new QLabel("Pit Scout List", w);
+	QLabel* label = new QLabel("Team Scout List", w);
 	l->addWidget(label);
 
 	pit_list_ = new AdvListWidget(w);

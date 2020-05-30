@@ -51,10 +51,6 @@ namespace xero
 					{
 						item.second->setValues(d);
 					}
-					else
-					{
-						qDebug() << "Missing Data";
-					}
 				}
 			}
 		}

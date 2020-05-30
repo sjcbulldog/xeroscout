@@ -909,12 +909,10 @@ void PCScouter::updateCurrentView()
 	{
 		case DocumentView::ViewType::TeamScoutingFormView:
 		{
-			qDebug() << "TeamScoutingFormView";
 			FormView* ds = dynamic_cast<FormView*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
 			{
-				qDebug() << "TeamScoutingFormView - refresh";
 				ds->setScoutingForm(data_model_->teamScoutingForm(), "");
 				ds->clearNeedRefresh();
 			}
@@ -984,12 +982,10 @@ void PCScouter::updateCurrentView()
 
 		case DocumentView::ViewType::PitDataSet:
 		{
-			qDebug() << "PitDataSet";
 			DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
 			{
-				qDebug() << "PitDataSet - refreshed";
 				data_model_->createTeamDataSet(ds->dataset());
 				ds->refreshView();
 				ds->clearNeedRefresh();

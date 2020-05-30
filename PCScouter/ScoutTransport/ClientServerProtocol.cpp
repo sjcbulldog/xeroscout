@@ -152,8 +152,6 @@ namespace xero
 
 				if (debug_)
 					emit displayLogMessage(msg);
-
-				qDebug() << msg;
 			}
 
 			void ClientServerProtocol::sendJson(uint32_t ptype, const QJsonDocument& doc, int comptype)

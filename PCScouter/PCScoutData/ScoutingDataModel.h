@@ -251,6 +251,10 @@ namespace xero
 					return match_extra_fields_;
 				}
 
+				const QStringList& teamSummaryFields() const {
+					return team_summary_fields_;
+				}
+
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
 				// These methods generate data sets.  The are a special case of the query methods in that they synthesis sets of data
@@ -351,6 +355,10 @@ namespace xero
 				/// \returns true if the info is updated
 				bool setGraphViews(const QJsonArray& grarray, QString &err) {
 					return graph_descriptor_.load(grarray, err);
+				}
+
+				void setTeamSummaryFields(const QStringList& list) {
+					team_summary_fields_ = list;
 				}
 
 				/// \brief set the ranking data from the blue alliance.  
@@ -855,6 +863,8 @@ namespace xero
 				bool emit_changes_;
 
 				GraphDescriptorCollection graph_descriptor_;
+
+				QStringList team_summary_fields_;
 			};
 
 		}

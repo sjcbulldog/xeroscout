@@ -820,7 +820,6 @@ void PCScoutApp::syncWithCentralUSB()
 
 void PCScoutApp::debugOutput(const QString& out)
 {
-	qDebug() << "CLIENT: " << out;
 	if (debug_act_->isChecked())
 		logwin_->append(out);
 }
@@ -1120,7 +1119,7 @@ void PCScoutApp::saveAllForms()
 
 QString PCScoutApp::generatePitTitle(std::shared_ptr<const DataModelTeam> t)
 {
-	return "Pit Scouting: " + QString::number(t->number()) + " - " + t->name();
+	return "Team Scouting: " + QString::number(t->number()) + " - " + t->name();
 }
 
 QString PCScoutApp::generateMatchTitle(std::shared_ptr<const DataModelMatch> m, std::shared_ptr<const DataModelTeam> t)

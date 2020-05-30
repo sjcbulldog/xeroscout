@@ -25,6 +25,7 @@
 #include "ZebraViewWidget.h"
 #include "PreMatchGraphView.h"
 #include "AllianceGraphView.h"
+#include "TeamSummaryWidget.h"
 #include <QLabel>
 #include <QDebug>
 #include <QFont>
@@ -55,7 +56,7 @@ namespace xero
 				label->setFont(font);
 
 				addWidget(label);																				// 0
-				addWidget(new FormView(images_, "PitTemplate", "Preview", QColor(0, 255, 0, 255), this));		// 1
+				addWidget(new FormView(images_, "TeamTemplate", "Preview", QColor(0, 255, 0, 255), this));		// 1
 				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(255, 0, 0, 255), this));		// 2
 				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(0, 0, 255, 255), this));		// 3
 				addWidget(new TeamScheduleViewWidget(tablet, this));											// 4
@@ -63,7 +64,7 @@ namespace xero
 				addWidget(new DataSetViewWidget(this));															// 6
 				addWidget(new DataSetViewWidget(this));															// 7
 				addWidget(new QueryViewWidget(this));															// 8
-				addWidget(new DataSetViewWidget(this));															// 9 team report - todo
+				addWidget(new TeamSummaryWidget(this));															// 9
 				addWidget(new DataSetViewWidget(this));															// 10
 				addWidget(new ChangeHistoryView(this));															// 11
 				addWidget(new DataMergeListWidget(this));														// 12

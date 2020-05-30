@@ -84,7 +84,6 @@ namespace xero
 				ret = std::make_shared<Team>(key, num, nick, name, city, state, country);
 				teams_by_key_.insert(std::make_pair(key, ret));
 				teams_by_number_.insert(std::make_pair(num, ret));
-				qDebug() << "Created team " << nick;
 			}
 			else
 			{
@@ -103,7 +102,6 @@ namespace xero
 			{
 				ret = std::make_shared<Event>(key, name, city, state, country, sdate, edate, year);
 				events_by_key_.insert(std::make_pair(key, ret));
-				qDebug() << "Created event " << name;
 			}
 			else
 			{
@@ -122,7 +120,6 @@ namespace xero
 			{
 				ret = std::make_shared<District>(key, abbrev, name, year);
 				districts_by_key_.insert(std::make_pair(key, ret));
-				qDebug() << "Created district " << abbrev << " " << name << " " << key << " " << year;
 			}
 			else
 			{
@@ -141,7 +138,6 @@ namespace xero
 			if (it == matches_by_key_.end()) {
 				ret = std::make_shared<Match>(key, comp_level, set_number, match_number, winning_alliance, etime, ptime, atime, red, blue);
 				matches_by_key_.insert(std::make_pair(key, ret));
-				qDebug() << "Created match " << key << " " << comp_level << " " << set_number << " " << match_number << " " << winning_alliance << " " << etime << " " << ptime << " " << atime << " ";
 			}
 			else {
 				ret = it->second;
@@ -214,7 +210,6 @@ namespace xero
 
 			if (st != BlueAllianceResult::Status::Success && code != 404)
 			{
-				qDebug() << "TRANSPORT ERROR";
 				std::shared_ptr<BlueAllianceResult> result = std::make_shared<BlueAllianceResult>(st);
 				addResult(result);
 				controller_ = nullptr;

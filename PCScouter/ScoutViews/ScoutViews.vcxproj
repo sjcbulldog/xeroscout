@@ -114,6 +114,7 @@
     <ClCompile Include="SelectTeamsDialog.cpp" />
     <ClCompile Include="SingleInstanceGuard.cpp" />
     <ClCompile Include="TeamScheduleViewWidget.cpp" />
+    <ClCompile Include="TeamSummaryWidget.cpp" />
     <ClCompile Include="Translation2d.cpp" />
     <ClCompile Include="Twist2d.cpp" />
     <ClCompile Include="UnitConverter.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="PreMatchGraphView.h" />
     <ClInclude Include="RobotTrack.h" />
     <ClInclude Include="SelectTeamsDialog.h" />
+    <QtMoc Include="TeamSummaryWidget.h" />
     <ClInclude Include="ZebraViewWidget.h" />
     <QtMoc Include="PathFieldView.h" />
     <ClInclude Include="Pose2d.h" />
