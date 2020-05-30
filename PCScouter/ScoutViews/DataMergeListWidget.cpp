@@ -44,7 +44,7 @@ namespace xero
 
 				for (auto p : dm->teams())
 				{
-					if (p->pitScoutingDataList().size() > 1)
+					if (p->teamScoutingDataList().size() > 1)
 					{
 						QTreeWidgetItem* item = new QTreeWidgetItem(tree_);
 						item->setText(0, "Pit Scout");

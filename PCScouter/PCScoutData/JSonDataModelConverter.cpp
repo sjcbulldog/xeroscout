@@ -317,7 +317,7 @@ namespace xero
 					QJsonArray arr;
 
 					tm[JsonKeyName] = t->key();
-					for (auto sd : t->pitScoutingDataList())
+					for (auto sd : t->teamScoutingDataList())
 						arr.push_back(encode(sd));
 					tm[JsonPitsName] = arr;
 

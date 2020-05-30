@@ -74,6 +74,25 @@ namespace xero
 					return ret;
 				}
 
+				bool hasValue(const QString& name) const {
+
+					if (hasScoutingData())
+					{
+						auto it = team_data_.back()->find(name);
+						if (it != team_data_.back()->end())
+							return true;
+					}
+
+					if (hasExtraData())
+					{
+						auto it = extra_data_->find(name);
+						if (it != extra_data_->end())
+							return true;
+					}
+
+					return false;
+				}
+
 				bool hasRank() const {
 					auto it = extra_data_->find(RankName);
 					return it != extra_data_->end();
@@ -125,7 +144,7 @@ namespace xero
 					return extra_data_;
 				}
 
-				std::list<ConstScoutingDataMapPtr> pitScoutingDataList() const {
+				std::list<ConstScoutingDataMapPtr> teamScoutingDataList() const {
 					std::list<ConstScoutingDataMapPtr> ret;
 
 					for (auto p : team_data_)

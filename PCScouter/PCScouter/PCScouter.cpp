@@ -1261,7 +1261,7 @@ void PCScouter::printProfileError(const QString& err)
 void PCScouter::mergePitRequest(const QString& key)
 {
 	auto t = data_model_->findTeamByKey(key);
-	ScoutDataMergeDialog dialog(data_model_->teamScoutingForm(), t->pitScoutingDataList());
+	ScoutDataMergeDialog dialog(data_model_->teamScoutingForm(), t->teamScoutingDataList());
 	if (dialog.exec() == QDialog::Accepted)
 	{
 		data_model_->setTeamScoutingData(key, dialog.result(), true);

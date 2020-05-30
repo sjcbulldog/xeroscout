@@ -58,11 +58,15 @@ namespace xero
                 QString generateMatchRecord();
                 QString generateTeamSummary();
 
+                QVariant matchValue(const QString& name);
+                void createMatchesDataSet();
+
             private:
                 QComboBox* box_;
                 QGroupBox* report_;
                 QTextEdit* report_txt_;
                 QString current_team_;
+                xero::scouting::datamodel::ScoutingDataSet matches_ds_;
             };
         }
     }

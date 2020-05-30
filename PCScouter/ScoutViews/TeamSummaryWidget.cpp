@@ -73,7 +73,7 @@ namespace xero
 				QPoint p = report_txt_->mapToGlobal(pt);
 				QMenu* menu = new QMenu("Team Summary");
 				
-				QMenu* vars = new QMenu("Add Variable");
+				QMenu* vars = new QMenu("Add Team Value");
 				for (auto f : addfields)
 				{
 					if (!rmfields.contains(f->name())) {
@@ -82,8 +82,23 @@ namespace xero
 						connect(act, &QAction::triggered, this, cb);
 					}
 				}
-
 				menu->addMenu(vars);
+
+				if (matches_ds_.columnCount() > 0)
+				{
+					vars = new QMenu("Add Match Value");
+					for (int i = 0; i < matches_ds_.columnCount(); i++)
+					{
+						auto hdr = matches_ds_.colHeader(i);
+						if (!rmfields.contains(hdr->name())) {
+							auto cb = std::bind(&TeamSummaryWidget::addVariable, this, hdr->name());
+							act = vars->addAction(hdr->name());
+							connect(act, &QAction::triggered, this, cb);
+						}
+					}
+
+					menu->addMenu(vars);
+				}
 
 				if (rmfields.size() > 0)
 				{
@@ -221,7 +236,12 @@ namespace xero
 						}
 
 						for (int slot = 1; slot <= 3; slot++)
-							html += "<td width=\"80\" bgcolor=\"#cee5ff\">" + m->team(Alliance::Blue, slot) + "</td>";
+						{
+							QString mkey = m->team(Alliance::Blue, slot);
+							html += "<td width=\"80\" bgcolor=\"#cee5ff\">";
+							html += mkey.mid(3);
+							html += "</td>";
+						}
 
 						ConstScoutingDataMapPtr exdata = m->extraData(Alliance::Red, 1);
 						auto it = exdata->find(prop);
@@ -268,17 +288,108 @@ namespace xero
 				html += "<tr><th colspan=\"2\">TeamInfo</th></tr>";
 
 				for (const QString& field : fields) {
-					html += "<tr>";
-					html += "<td width=\"40\" >" + field + "</td>";
+					QVariant v;
 
-					QVariant v = t->value(field);
-					html += "<td width=\"120\" >" + v.toString() + "</td>";
-					html += "</tr>";
+					if (t->hasValue(field))
+						v = t->value(field);
+					else
+						v = matchValue(field);
+
+					if (v.isValid())
+					{
+						html += "<tr>";
+						html += "<td width=\"40\" >" + field + "</td>";
+
+						html += "<td width=\"120\" >";
+						if (v.type() == QVariant::Type::Double)
+						{
+							html += QString::number(v.toDouble(), 'f', 2);
+						}
+						else
+						{
+							html += v.toString();
+						}
+
+						html += "</td>";
+						html += "</tr>";
+					}
 				}
 
 				html += "</table>";
 
 				return html;
+			}
+
+			void TeamSummaryWidget::createMatchesDataSet()
+			{
+				QString query, error;
+
+				query = "select * from matches where MatchTeamKey='" + current_team_ + "'";
+				if (!dataModel()->createCustomDataSet(matches_ds_, query, error))
+					return;
+			}
+
+			QVariant TeamSummaryWidget::matchValue(const QString& name)
+			{
+				QVariant ret;
+
+				int col = matches_ds_.getColumnByName(name);
+				if (col != -1)
+				{
+					auto hdr = matches_ds_.colHeader(col);
+					if (hdr->type() == FieldDesc::Type::Integer || hdr->type() == FieldDesc::Type::Double)
+					{
+						double total = 0.0;
+						for (int row = 0; row < matches_ds_.rowCount(); row++)
+							total += matches_ds_.get(row, col).toDouble();
+
+						total /= (double)matches_ds_.rowCount();
+						ret = QVariant(total);
+					}
+					else if (hdr->type() == FieldDesc::Type::Boolean)
+					{
+						int cnt = 0;
+						for (int row = 0; row < matches_ds_.rowCount(); row++)
+						{
+							if (matches_ds_.get(row, col).toBool())
+								cnt++;
+						}
+
+						ret = QVariant((double)cnt / (double)matches_ds_.rowCount());
+					}
+					else if (hdr->type() == FieldDesc::Type::StringChoice || hdr->type() == FieldDesc::Type::String)
+					{
+						std::map<QString, int> strmap;
+
+						for (int row = 0; row < matches_ds_.rowCount(); row++)
+						{
+							QString value = matches_ds_.get(row, col).toString();
+							int cnt = 0;
+							auto it = strmap.find(value);
+							if (it != strmap.end())
+								cnt = it->second;
+
+							cnt++;
+							strmap.insert_or_assign(value, cnt);
+						}
+
+						QString txt;
+						bool first = true;
+						for (auto pair : strmap)
+						{
+							if (!first)
+								txt += ", ";
+
+							txt += pair.first + " ";
+							double pcnt = (double)pair.second / matches_ds_.rowCount() * 100.0;
+							txt += "(" + QString::number(pcnt, 'f', 2) + ")";
+						}
+
+						ret = QVariant(txt);
+					}
+				}
+
+				return ret;
 			}
 
 			void TeamSummaryWidget::regenerate(bool force)
@@ -289,13 +400,14 @@ namespace xero
 					QString html;
 
 					current_team_ = key;
+					createMatchesDataSet();
+
 					report_txt_->clear();
 					html = generateTitle();
 					html += "<hr>";
 					html += generateTeamSummary();
 					html += "<hr>";
 					html += generateMatchRecord();
-
 
 					report_txt_->setHtml(html);
 				}
