@@ -122,7 +122,6 @@ private:
 
 	void printProfileError(const QString& err);
 
-	void processArguments();
 	void teamSummaryCompleted(bool err);
 
 	void processAppController();

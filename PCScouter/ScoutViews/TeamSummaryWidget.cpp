@@ -293,7 +293,10 @@ namespace xero
 					if (t->hasValue(field))
 						v = t->value(field);
 					else
-						v = matchValue(field);
+					{
+						int col = matches_ds_.getColumnByName(field);
+						v = matches_ds_.columnSummary(col);
+					}
 
 					if (v.isValid())
 					{
@@ -327,89 +330,6 @@ namespace xero
 				query = "select * from matches where MatchTeamKey='" + current_team_ + "'";
 				if (!dataModel()->createCustomDataSet(matches_ds_, query, error))
 					return;
-			}
-
-			QVariant TeamSummaryWidget::matchValue(const QString& name)
-			{
-				QVariant ret;
-
-				int col = matches_ds_.getColumnByName(name);
-				if (col != -1)
-				{
-					auto hdr = matches_ds_.colHeader(col);
-					if (hdr->type() == FieldDesc::Type::Integer || hdr->type() == FieldDesc::Type::Double)
-					{
-						double total = 0.0;
-						double count = 0.0;
-						for (int row = 0; row < matches_ds_.rowCount(); row++)
-						{
-							QVariant v = matches_ds_.get(row, col);
-							if (v.isValid())
-							{
-								total += matches_ds_.get(row, col).toDouble();
-								count += 1.0;
-							}
-						}
-
-						total /= count;
-						ret = QVariant(total);
-					}
-					else if (hdr->type() == FieldDesc::Type::Boolean)
-					{
-						double trueval = 0;
-						double count = 0.0;
-						for (int row = 0; row < matches_ds_.rowCount(); row++)
-						{
-							QVariant v = matches_ds_.get(row, col);
-							if (v.isValid())
-							{
-								if (v.toBool())
-									trueval += 1.0;
-								count += 1.0;
-							}
-						}
-
-						ret = QVariant(trueval / count);
-					}
-					else if (hdr->type() == FieldDesc::Type::StringChoice || hdr->type() == FieldDesc::Type::String)
-					{
-						std::map<QString, int> strmap;
-
-						double count = 0.0;
-						for (int row = 0; row < matches_ds_.rowCount(); row++)
-						{
-							QVariant v = matches_ds_.get(row, col);
-							if (v.isValid()) {
-								count += 1.0;
-								int cnt = 0;
-								auto it = strmap.find(v.toString());
-								if (it != strmap.end())
-									cnt = it->second;
-
-								cnt++;
-								strmap.insert_or_assign(v.toString(), cnt);
-							}
-						}
-
-						QString txt;
-						bool first = true;
-						for (auto pair : strmap)
-						{
-							if (!first)
-								txt += "<br/>";
-
-							txt += pair.first + " ";
-							double pcnt = (double)pair.second / count * 100.0;
-							txt += "(" + QString::number(pcnt, 'f', 2) + ")";
-
-							first = false;
-						}
-
-						ret = QVariant(txt);
-					}
-				}
-
-				return ret;
 			}
 
 			void TeamSummaryWidget::regenerate(bool force)

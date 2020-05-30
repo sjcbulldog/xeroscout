@@ -510,14 +510,11 @@ namespace xero
 			{
 				std::vector<std::shared_ptr<FieldDesc>> list;
 
-				//
-				// Get any fields from the team scouting form
-				//
-				auto flist = team_scouting_form_->fields();
-				for (auto f : flist)
+				for (auto f : team_extra_fields_)
 					list.push_back(f);
 
-				for (auto f : team_extra_fields_)
+				auto flist = team_scouting_form_->fields();
+				for (auto f : flist)
 					list.push_back(f);
 
 				return list;

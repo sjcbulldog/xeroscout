@@ -82,14 +82,14 @@
     <ClCompile Include="NewEventAppController.cpp">
       <Filter>AppControllers\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TeamSummaryController.cpp">
-      <Filter>AppControllers\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="KPIController.cpp">
       <Filter>AppControllers\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestDataInjector.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AllTeamSummaryController.cpp">
+      <Filter>AppControllers\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,14 +151,14 @@
     <ClInclude Include="NewEventAppController.h">
       <Filter>AppControllers\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TeamSummaryController.h">
-      <Filter>AppControllers\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="KPIController.h">
       <Filter>AppControllers\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TestDataInjector.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AllTeamSummaryController.h">
+      <Filter>AppControllers\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

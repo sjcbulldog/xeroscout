@@ -107,9 +107,7 @@ namespace xero
 
 				bool writeCSV(const QString& filename) const;
 
-#ifdef NOTYET
-				bool isColumnBool(int col) const;
-#endif
+				QVariant columnSummary(int col, bool html = false);
 
 			private:
 				std::vector<std::shared_ptr<FieldDesc>> headers_;

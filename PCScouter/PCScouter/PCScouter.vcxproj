@@ -126,6 +126,7 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
   <ItemGroup>
     <ClCompile Include="AboutDialog.cpp" />
     <ClCompile Include="AdvListWidget.cpp" />
+    <ClCompile Include="AllTeamSummaryController.cpp" />
     <ClCompile Include="ApplicationController.cpp" />
     <ClCompile Include="ClientProtocolHandler.cpp" />
     <ClCompile Include="DataModelBuilder.cpp" />
@@ -141,7 +142,6 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
     <ClCompile Include="SpecialListWidget.cpp" />
     <ClCompile Include="TabletPoolListWidget.cpp" />
     <ClCompile Include="TabletPoolWizardPage.cpp" />
-    <ClCompile Include="TeamSummaryController.cpp" />
     <ClCompile Include="TestDataInjector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -151,7 +151,7 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
     <QtRcc Include="PCScouter.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TeamSummaryController.h" />
+    <ClInclude Include="AllTeamSummaryController.h" />
     <ClInclude Include="TestDataInjector.h" />
     <QtMoc Include="AboutDialog.h" />
     <ClInclude Include="AdvListWidget.h" />

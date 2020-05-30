@@ -58,7 +58,6 @@ namespace xero
                 QString generateMatchRecord();
                 QString generateTeamSummary();
 
-                QVariant matchValue(const QString& name);
                 void createMatchesDataSet();
 
             private:

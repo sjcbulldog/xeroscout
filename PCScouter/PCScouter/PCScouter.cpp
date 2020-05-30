@@ -31,6 +31,7 @@
 #include "DataModelBuilder.h"
 #include "PreMatchGraphView.h"
 #include "AllianceGraphView.h"
+#include "TeamSummaryWidget.h"
 
 #include "USBServer.h"
 #include "TcpServer.h"
@@ -38,7 +39,7 @@
 #include "NewEventAppController.h"
 #include "ImportMatchDataController.h"
 #include "ImportZebraDataController.h"
-#include "TeamSummaryController.h"
+#include "AllTeamSummaryController.h"
 #include "OPRCalculator.h"
 #include "TestDataInjector.h"
 
@@ -1007,7 +1008,6 @@ void PCScouter::updateCurrentView()
 
 		case DocumentView::ViewType::TeamReport:
 		{
-	#ifdef TEAM_SUMMARY_NOT_READY
 			TeamSummaryWidget* ds = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
@@ -1015,7 +1015,6 @@ void PCScouter::updateCurrentView()
 				ds->refreshView();
 				ds->clearNeedRefresh();
 			}
-	#endif
 		}
 		break;
 
@@ -1025,7 +1024,7 @@ void PCScouter::updateCurrentView()
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
 			{
-				app_controller_ = new TeamSummaryController(blue_alliance_, data_model_, ds->dataset());
+				app_controller_ = new AllTeamSummaryController(blue_alliance_, data_model_, ds->dataset());
 				(void)connect(app_controller_, &ApplicationController::complete, this, &PCScouter::teamSummaryCompleted);
 			}
 		}
@@ -1145,10 +1144,8 @@ void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 			QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
 			qv->setNeedRefresh();
 
-	#ifdef TEAM_SUMMARY
 			TeamSummaryWidget* sw = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamReport));
 			sw->setNeedRefresh();
-	#endif
 		}
 		break;
 
@@ -1166,10 +1163,11 @@ void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 			QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
 			qv->setNeedRefresh();
 
-	#ifdef TEAM_SUMMARY_NOT_READY
 			TeamSummaryWidget* sw = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamReport));
 			sw->setNeedRefresh();
-	#endif
+
+			w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::AllTeamReport));
+			w->setNeedRefresh();
 		}
 		break;
 	}
