@@ -71,6 +71,7 @@ namespace xero
 					Reset,							///< the data model was reset
 					ZebraDataAdded,					///< zebra data was added to the matches
 					GraphDescriptor,				///< the graph descriptors were changed
+					TeamSummaryFieldList,			///< the list of fields in the team summary changed
 				};
 
 			public:
@@ -359,6 +360,9 @@ namespace xero
 
 				void setTeamSummaryFields(const QStringList& list) {
 					team_summary_fields_ = list;
+					dirty_ = true;
+
+					emitChangedSignal(ChangeType::TeamSummaryFieldList);
 				}
 
 				/// \brief set the ranking data from the blue alliance.  

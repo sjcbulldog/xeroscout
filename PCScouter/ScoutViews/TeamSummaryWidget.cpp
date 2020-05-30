@@ -340,37 +340,55 @@ namespace xero
 					if (hdr->type() == FieldDesc::Type::Integer || hdr->type() == FieldDesc::Type::Double)
 					{
 						double total = 0.0;
+						double count = 0.0;
 						for (int row = 0; row < matches_ds_.rowCount(); row++)
-							total += matches_ds_.get(row, col).toDouble();
+						{
+							QVariant v = matches_ds_.get(row, col);
+							if (v.isValid())
+							{
+								total += matches_ds_.get(row, col).toDouble();
+								count += 1.0;
+							}
+						}
 
-						total /= (double)matches_ds_.rowCount();
+						total /= count;
 						ret = QVariant(total);
 					}
 					else if (hdr->type() == FieldDesc::Type::Boolean)
 					{
-						int cnt = 0;
+						double trueval = 0;
+						double count = 0.0;
 						for (int row = 0; row < matches_ds_.rowCount(); row++)
 						{
-							if (matches_ds_.get(row, col).toBool())
-								cnt++;
+							QVariant v = matches_ds_.get(row, col);
+							if (v.isValid())
+							{
+								if (v.toBool())
+									trueval += 1.0;
+								count += 1.0;
+							}
 						}
 
-						ret = QVariant((double)cnt / (double)matches_ds_.rowCount());
+						ret = QVariant(trueval / count);
 					}
 					else if (hdr->type() == FieldDesc::Type::StringChoice || hdr->type() == FieldDesc::Type::String)
 					{
 						std::map<QString, int> strmap;
 
+						double count = 0.0;
 						for (int row = 0; row < matches_ds_.rowCount(); row++)
 						{
-							QString value = matches_ds_.get(row, col).toString();
-							int cnt = 0;
-							auto it = strmap.find(value);
-							if (it != strmap.end())
-								cnt = it->second;
+							QVariant v = matches_ds_.get(row, col);
+							if (v.isValid()) {
+								count += 1.0;
+								int cnt = 0;
+								auto it = strmap.find(v.toString());
+								if (it != strmap.end())
+									cnt = it->second;
 
-							cnt++;
-							strmap.insert_or_assign(value, cnt);
+								cnt++;
+								strmap.insert_or_assign(v.toString(), cnt);
+							}
 						}
 
 						QString txt;
@@ -378,11 +396,13 @@ namespace xero
 						for (auto pair : strmap)
 						{
 							if (!first)
-								txt += ", ";
+								txt += "<br/>";
 
 							txt += pair.first + " ";
-							double pcnt = (double)pair.second / matches_ds_.rowCount() * 100.0;
+							double pcnt = (double)pair.second / count * 100.0;
 							txt += "(" + QString::number(pcnt, 'f', 2) + ")";
+
+							first = false;
 						}
 
 						ret = QVariant(txt);
