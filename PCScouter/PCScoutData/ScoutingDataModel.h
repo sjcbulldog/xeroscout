@@ -71,6 +71,7 @@ namespace xero
 					GraphDescriptor,				///< the graph descriptors were changed
 					TeamSummaryFieldList,			///< the list of fields in the team summary changed
 					DataSetColumnOrder,				///< the column order for a dataset
+					MatchVideoAdded,				///< added match video links
 				};
 
 			public:
@@ -634,13 +635,22 @@ namespace xero
 					auto m = findMatchByKeyInt(key);
 					m->setZebra(obj);
 
+					dirty_ = true;
 					emitChangedSignal(ChangeType::ZebraDataAdded);
+				}
+
+				void assignVideos(const QString& key, const std::list<std::pair<QString, QString>>& videos) {
+					auto m = findMatchByKeyInt(key);
+					m->setVideos(videos);
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::MatchVideoAdded);
 				}
 
 				void updateGraphDescriptor(const GraphDescriptor& desc) {
 					graph_descriptor_.update(desc);
-					dirty_ = true;
 
+					dirty_ = true;
 					emitChangedSignal(ChangeType::GraphDescriptor);
 				}
 

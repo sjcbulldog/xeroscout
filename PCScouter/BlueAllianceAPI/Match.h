@@ -102,6 +102,18 @@ namespace xero
 				zebra_data_ = obj;
 			}
 
+			bool hasVideos() const {
+				return videos_.size() > 0;
+			}
+
+			void addVideo(const QString& type, const QString& key) {
+				videos_.push_back(std::make_pair(type, key));
+			}
+
+			const std::list<std::pair<QString, QString>>& videos() const {
+				return videos_;
+			}
+
 		private:
 			QString key_;
 			QString comp_level_;
@@ -115,6 +127,7 @@ namespace xero
 			std::shared_ptr<MatchAlliance> blue_;
 			QJsonObject score_breakdown_;
 			QJsonObject zebra_data_;
+			std::list<std::pair<QString, QString>> videos_;
 		};
 
 	}

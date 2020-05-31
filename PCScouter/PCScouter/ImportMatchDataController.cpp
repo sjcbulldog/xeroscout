@@ -229,10 +229,13 @@ void ImportMatchDataController::gotDetail()
 
 	auto matches = blueAlliance()->getEngine().matches();
 	for (auto pair : matches) {
+		auto m = dm_->findMatchByKey(pair.first);
+		if (m == nullptr)
+			continue;
+
 		if (!pair.second->scoreBreakdown().isEmpty())
 		{
-			auto m = dm_->findMatchByKey(pair.first);
-			if (m != nullptr && m->match() <= maxmatch_)
+			if (m->match() <= maxmatch_)
 			{
 				auto redmap = std::make_shared<ScoutingDataMap>();
 				DataModelBuilder::jsonToPropMap(pair.second->scoreBreakdown(), "red", redmap);
@@ -242,6 +245,11 @@ void ImportMatchDataController::gotDetail()
 
 				badata.insert_or_assign(m->key(), std::make_pair(redmap, bluemap));
 			}
+		}
+
+		if (pair.second->hasVideos())
+		{
+			dm_->assignVideos(m->key(), pair.second->videos());
 		}
 	}
 

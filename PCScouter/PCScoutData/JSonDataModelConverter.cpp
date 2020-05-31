@@ -282,6 +282,21 @@ namespace xero
 					if (extra)
 						obj[JsonZebraDataName] = m->zebra();
 
+					if (extra && m->videos_.size() > 0)
+					{
+						QJsonArray videos;
+
+						for (auto pair : m->videos_)
+						{
+							QJsonObject vobj;
+							vobj[JsonTypeName] = pair.first;
+							vobj[JsonKeyName] = pair.second;
+							videos.push_back(vobj);
+						}
+
+						obj[JsonVideosDataName] = videos;
+					}
+
 					matches.push_back(obj);
 				}
 				payload[JsonMatchesName] = matches;
@@ -795,6 +810,26 @@ namespace xero
 
 					if (mobj.contains(JsonZebraDataName) && mobj.value(JsonZebraDataName).isObject())
 						dm->setZebra(mobj.value(JsonZebraDataName).toObject());
+
+					if (mobj.contains(JsonVideosDataName) && mobj.value(JsonVideosDataName).isArray())
+					{
+						QJsonArray array = mobj.value(JsonVideosDataName).toArray();
+						for (int i = 0; i < array.size(); i++)
+						{
+							if (!array[i].isObject())
+								continue;
+
+							QJsonObject vobj = array[i].toObject();
+
+							if (!vobj.contains(JsonTypeName) || !vobj.value(JsonTypeName).isString())
+								continue;
+
+							if (!vobj.contains(JsonKeyName) || !vobj.value(JsonKeyName).isString())
+								continue;
+
+							dm->videos_.push_back(std::make_pair(vobj.value(JsonTypeName).toString(), vobj.value(JsonKeyName).toString()));
+						}
+					}
 				}
 
 				return true;

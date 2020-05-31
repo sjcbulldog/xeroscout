@@ -20,6 +20,7 @@
 #include <QBoxLayout>
 #include <QAction>
 #include <QMenu>
+#include <QDesktopServices>
 
 using namespace xero::scouting::datamodel;
 
@@ -49,19 +50,27 @@ namespace xero
 
 				lay = new QVBoxLayout();
 				report_->setLayout(lay);
-				report_txt_ = new QTextEdit(report_);
+				report_txt_ = new QTextBrowser(report_);
+				connect(report_txt_, &QTextBrowser::anchorClicked, this, &TeamSummaryWidget::videoLinkClicked);
 				lay->addWidget(report_txt_);
 
 				report_txt_->clear();
 				report_txt_->append("No Data");
 				report_txt_->setContextMenuPolicy(Qt::CustomContextMenu);
-				connect(report_txt_, &QTextEdit::customContextMenuRequested, this, &TeamSummaryWidget::contextMenu);
+				connect(report_txt_, &QTextBrowser::customContextMenuRequested, this, &TeamSummaryWidget::contextMenu);
 
 				report_txt_->setReadOnly(true);
+				report_txt_->setOpenLinks(false);
+				report_txt_->setOpenExternalLinks(false);
 			}
 
 			TeamSummaryWidget::~TeamSummaryWidget()
 			{
+			}
+
+			void TeamSummaryWidget::videoLinkClicked(const QUrl& link)
+			{
+				QDesktopServices::openUrl(link);
 			}
 
 			void TeamSummaryWidget::contextMenu(const QPoint& pt)
@@ -204,6 +213,14 @@ namespace xero
 						auto m = dataModel()->findMatchByKey(key.toString());
 						html += "<tr>";
 						html += "<td width=\"80\">";
+
+						QString youtube = m->youtubeKey();
+
+						if (youtube.length() > 0)
+						{
+							html += "<a href=\"https://www.youtube.com/watch?v=" + youtube + "\">";
+						}
+
 						if (m->compType() == "qm")
 						{
 							html += "Quals " + QString::number(m->match());
@@ -225,6 +242,11 @@ namespace xero
 						else if (m->compType() == "ef")
 						{
 							html += "Einsteins " + QString::number(m->set()) + " Match " + QString::number(m->match());
+						}
+
+						if (youtube.length() > 0)
+						{
+							html += "</a>";
 						}
 						html += "</td>";
 

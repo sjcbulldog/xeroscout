@@ -46,13 +46,47 @@ namespace xero
 		{
 			if (doc->isObject())
 			{
+				auto matmap = engine().matches();
+
 				QJsonObject obj = doc->object();
-				if (obj.contains("key") && obj.value("key").isString() && obj.contains("score_breakdown") && obj.value("score_breakdown").isObject())
+				if (!obj.contains("key") || !obj.value("key").isString())
 				{
-					auto matches = engine().matches();
-					auto it = matches.find(obj.value("key").toString());
-					if (it != matches.end()) {
-						it->second->setScoreBreakdown(obj.value("score_breakdown").toObject());
+					nextKey();
+					return BlueAllianceResult::Status::Success;
+				}
+
+				auto it = matmap.find(obj.value("key").toString());
+				if (it == matmap.end())
+				{
+					nextKey();
+					return BlueAllianceResult::Status::Success;
+				}
+
+				if (obj.contains("score_breakdown") && obj.value("score_breakdown").isObject())
+				{
+					it->second->setScoreBreakdown(obj.value("score_breakdown").toObject());
+				}
+
+				if (obj.contains("videos") && obj.value("videos").isArray())
+				{
+					QJsonArray videos = obj.value("videos").toArray();
+					for (int i = 0; i < videos.size(); i++)
+					{
+						if (!videos[i].isObject())
+							continue;
+
+						QJsonObject obj = videos[i].toObject();
+
+						if (!obj.contains("type") || !obj.value("type").isString())
+							continue;
+
+						if (!obj.contains("key") || !obj.value("key").isString())
+							continue;
+
+						QString type = obj.value("type").toString();
+						QString key = obj.value("key").toString();
+
+						it->second->addVideo(type, key);
 					}
 				}
 			}

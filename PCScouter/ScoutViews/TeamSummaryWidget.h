@@ -23,6 +23,7 @@
 #include <QGroupBox>
 #include <QComboBox>
 #include <QTextEdit>
+#include <QTextBrowser>
 #include <QCheckBox>
 #include <memory>
 
@@ -60,10 +61,12 @@ namespace xero
 
                 void createMatchesDataSet();
 
+                void videoLinkClicked(const QUrl& link);
+
             private:
                 QComboBox* box_;
                 QGroupBox* report_;
-                QTextEdit* report_txt_;
+                QTextBrowser* report_txt_;
                 QString current_team_;
                 xero::scouting::datamodel::ScoutingDataSet matches_ds_;
             };

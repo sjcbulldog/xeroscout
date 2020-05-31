@@ -268,7 +268,22 @@ namespace xero
 					return zebra_;
 				}
 
+				QString youtubeKey() const {
+					QString ret;
+
+					if (videos_.size() == 1 && videos_.front().first == "youtube")
+					{
+						ret = videos_.front().second;
+					}
+
+					return ret;
+				}
+
 			protected:
+				void setVideos(const std::list<std::pair<QString, QString>>& videos) {
+					videos_ = videos;
+				}
+
 				void setZebra(const QJsonObject& data) {
 					zebra_ = data;
 				}
@@ -547,6 +562,11 @@ namespace xero
 				// The zebra data for the match (stored as the JSON from the blue alliance)
 				//
 				QJsonObject zebra_;
+
+				//
+				// The videos for the match
+				//
+				std::list<std::pair<QString, QString>> videos_;
 			};
 		}
 	}
