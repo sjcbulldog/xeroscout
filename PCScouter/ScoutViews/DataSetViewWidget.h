@@ -55,7 +55,8 @@ namespace xero
 				virtual void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model) {
 					ViewBase::setDataModel(model);
 
-					model->datasetColumnOrder(name_, colstate_, colgeom_);
+					if (model != nullptr)
+						model->datasetColumnOrder(name_, colstate_, colgeom_);
 				}
 
 				void refreshView();

@@ -22,14 +22,16 @@ namespace xero
 
 				scale_ = fdesc->scale();
 				image_ = images.get(fdesc->imageTag());
+				if (image_ != nullptr)
+				{
+					QSize s = image_->size();
+					size_ = QSize(s.width() * scale_, s.height() * scale_);
+					setMinimumSize(size_);
+					setMaximumSize(size_);
 
-				QSize s = image_->size();
-				size_ = QSize(s.width() * scale_, s.height() * scale_);
-				setMinimumSize(size_);
-				setMaximumSize(size_);
-
-				DataCollection d;
-				setValues(d);
+					DataCollection d;
+					setValues(d);
+				}
 			}
 
 			ImageItemDisplay::~ImageItemDisplay()

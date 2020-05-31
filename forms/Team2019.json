@@ -1,0 +1,166 @@
+{
+  "form": "team",
+  "sections": [
+    {
+      "name": "General",
+      "items": [
+        {
+          "type": "text",
+          "tag": "team_scouter",
+          "name": "Scouter",
+          "maxlen": 32
+        },
+        {
+          "type": "numeric",
+          "tag": "pit_weight",
+          "name": "Weight (w/ bumpers)",
+          "minimum": 0,
+          "maximum": 200
+        },
+        {
+          "type": "choice",
+          "choices": [ "C++", "Java", "LV", "Python", "Other" ],
+          "tag": "pit_language",
+          "name": "Programming Language"
+        }
+      ]
+    },
+    {
+      "name": "Game Pieces",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "hatches_floor",
+          "name": "Hatches/Floor"
+        },
+        {
+          "type": "boolean",
+          "tag": "hatches_station",
+          "name": "Hatches/Loading Station"
+        },
+        {
+          "type": "boolean",
+          "tag": "cargo_floor",
+          "name": "Cargo/Floor"
+        },
+        {
+          "type": "boolean",
+          "tag": "cargo_station",
+          "name": "Cargo/Loading Station"
+        }
+      ]
+    },
+    {
+      "name": "DriveBase",
+      "items": [
+        {
+          "type": "choice",
+          "choices": [ "West Coast", "Mecanum", "Swerve", "Other" ],
+          "tag": "db_type",
+          "name": "Drive Base"
+        },
+        {
+          "type": "updown",
+          "tag": "db_wheels",
+          "name": "Wheels",
+          "minimum": 4,
+          "maximum": 12
+        },
+        {
+          "type": "updown",
+          "tag": "db_cims",
+          "name": "CIMs",
+          "minimum": 0,
+          "maximum": 8
+        },
+        {
+          "type": "updown",
+          "tag": "db_neos",
+          "name": "NEOs",
+          "minimum": 0,
+          "maximum": 8
+        },
+        {
+          "type": "updown",
+          "tag": "db_falcons",
+          "name": "Falcons",
+          "minimum": 0,
+          "maximum": 8
+        },
+        {
+          "type": "updown",
+          "tag": "db_others",
+          "name": "Other Motors",
+          "minimum": 0,
+          "maximum": 8
+        }
+      ]
+    },
+    {
+      "name": "Autonomous",
+      "items": [
+        {
+          "type": "image",
+          "image": "2019-field.jpg",
+          "tag": "auto",
+          "name": "AutoMode",
+          "scale": 0.80,
+          "publishitems": [
+          ],
+          "imageitems": [
+            {
+              "imageitemtype": "onoff",
+              "tag": "upleft",
+              "position": [ "centersize", 1332, 406, 40, 40 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "left",
+              "position": [ "centersize", 1260, 406, 40, 40 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "center",
+              "position": [ "centersize", 1260, 328, 40, 40 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "upright",
+              "position": [ "centersize", 1332, 250, 40, 40 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "right",
+              "position": [ "centersize", 1260, 250, 40, 40 ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Endgame",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "habl1",
+          "name": "Level 1"
+        },
+        {
+          "type": "boolean",
+          "tag": "habl2",
+          "name": "Level 2"
+        },
+        {
+          "type": "boolean",
+          "tag": "habl3",
+          "name": "Level 3"
+        },
+        {
+          "type": "boolean",
+          "tag": "habl3also",
+          "name": "Level 3 w/ Partner"
+        }
+      ]
+    }
+  ]
+}

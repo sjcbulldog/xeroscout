@@ -1,0 +1,1332 @@
+{
+  "form": "match",
+  "sections": [
+    {
+      "name" : "Scouter",
+      "items" : [
+        {
+          "type": "text",
+          "name": "Scouter",
+          "tag": "match_scouter",
+          "maxlen": 32
+        }
+      ]
+    },
+    {
+      "name": "PreMatch",
+      "items": [
+        {
+          "alliance": "red",
+          "type": "image",
+          "image": "2019-field.jpg",
+          "tag": "prematch",
+          "name": "PreMatch",
+          "scale": 0.80,
+          "publishitems": [
+            {
+              "tag": "hatches",
+              "type": "sum",
+              "imageitems": [ "clh3", "clh2", "clh1", "crh3", "crh2", "crh1"]
+            },
+            {
+              "tag": "balls",
+              "type": "sum",
+              "imageitems": [ "clb3", "clb2", "clb1", "crb3", "crb2", "crb1"]
+            }
+          ],
+          "imageitems": [
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh3",
+              "position": [ "centersize", 832, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh2",
+              "position": [ "centersize", 870, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh1",
+              "position": [ "centersize", 910, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb3",
+              "position": [ "centersize", 832, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb2",
+              "position": [ "centersize", 870, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb1",
+              "position": [ "centersize", 910, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh3",
+              "position": [ "centersize", 832, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh2",
+              "position": [ "centersize", 870, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh1",
+              "position": [ "centersize", 910, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb3",
+              "position": [ "centersize", 832, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb2",
+              "position": [ "centersize", 870, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb1",
+              "position": [ "centersize", 910, 230, 30, 30 ]
+            }
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2019-field.jpg",
+          "tag": "prematch",
+          "name": "PreMatch",
+          "scale": 0.80,
+          "publishitems": [
+            {
+              "tag": "hatches",
+              "type": "sum",
+              "imageitems": [ "clh3", "clh2", "clh1", "crh3", "crh2", "crh1"]
+            },
+            {
+              "tag": "balls",
+              "type": "sum",
+              "imageitems": [ "clb3", "clb2", "clb1", "crb3", "crb2", "crb1"]
+            }
+          ],
+          "imageitems" : [
+
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh3",
+              "position": [ "centersize", 758, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh2",
+              "position": [ "centersize", 718, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh1",
+              "position": [ "centersize", 678, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb3",
+              "position": [ "centersize", 758, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb2",
+              "position": [ "centersize", 718, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb1",
+              "position": [ "centersize", 678, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh3",
+              "position": [ "centersize", 758, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh2",
+              "position": [ "centersize", 718, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh1",
+              "position": [ "centersize", 678, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb3",
+              "position": [ "centersize", 758, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb2",
+              "position": [ "centersize", 718, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb1",
+              "position": [ "centersize", 678, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "cch1",
+              "position": [ "centersize", 592, 348, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ccb1",
+              "position": [ "centersize", 552, 348, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "cch2",
+              "position": [ "centersize", 592, 308, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ccb2",
+              "position": [ "centersize", 552, 308, 30, 30 ]
+            }            
+          ]
+        }        
+      ]
+    },
+    {
+      "name": "Autonomous",
+      "items": [
+        {
+          "alliance": "red",
+          "type": "image",
+          "image": "2019-field.jpg",
+          "tag": "auto",
+          "name": "AutoMode",
+          "scale": 0.80,
+          "publishitems": [
+            {
+              "tag": "hatches",
+              "type": "sum",
+              "imageitems": [ 
+                "clh3", "clh2", "clh1", "crh3", "crh2", "crh1",
+                "cch1", "cch2",
+                "hnl1", "hnl2", "hnl3", "hfl1", "hfl2", "hfl3",
+                "hnr1", "hnr2", "hnr3", "hfr1", "hfr2", "hfr3"
+              ]
+            },
+            {
+              "tag": "balls",
+              "type": "sum",
+              "imageitems": [ 
+                "clb3", "clb2", "clb1", "crb3", "crb2", "crb1",
+                "ccb1", "ccb2",
+                "bl11", "bl12", "bl21", "bl22", "bl31", "bl32",
+                "br11", "br12", "br21", "br22", "br31", "br32"
+              ]
+            }
+          ],
+          "imageitems": [
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "upleft",
+              "position": [ "centersize", 1332, 406, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "left",
+              "position": [ "centersize", 1260, 406, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "center",
+              "position": [ "centersize", 1260, 328, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "upright",
+              "position": [ "centersize", 1332, 250, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "right",
+              "position": [ "centersize", 1260, 250, 40, 40 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl1",
+              "position": [ "centersize", 1050, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl2",
+              "position": [ "centersize", 1150, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl3",
+              "position": [ "centersize", 1250, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl1",
+              "position": [ "centersize", 874, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl2",
+              "position": [ "centersize", 774, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl3",
+              "position": [ "centersize", 674, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl11",
+              "position": [ "centersize", 946, 590, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl12",
+              "position": [ "centersize", 986, 590, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl21",
+              "position": [ "centersize", 946, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl22",
+              "position": [ "centersize", 986, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl31",
+              "position": [ "centersize", 946, 510, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl32",
+              "position": [ "centersize", 986, 510, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr1",
+              "position": [ "centersize", 1050, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr2",
+              "position": [ "centersize", 1150, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr3",
+              "position": [ "centersize", 1250, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr1",
+              "position": [ "centersize", 874, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr2",
+              "position": [ "centersize", 774, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr3",
+              "position": [ "centersize", 674, 70, 80, 30 ]
+            },            
+            {
+              "imageitemtype": "onoff",
+              "tag": "br11",
+              "position": [ "centersize", 946, 70, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br12",
+              "position": [ "centersize", 986, 70, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br21",
+              "position": [ "centersize", 946, 110, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br22",
+              "position": [ "centersize", 986, 110, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br31",
+              "position": [ "centersize", 946, 150, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br32",
+              "position": [ "centersize", 986, 150, 30, 30 ]
+            },            
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh3",
+              "position": [ "centersize", 832, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh2",
+              "position": [ "centersize", 870, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh1",
+              "position": [ "centersize", 910, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb3",
+              "position": [ "centersize", 832, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb2",
+              "position": [ "centersize", 870, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb1",
+              "position": [ "centersize", 910, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh3",
+              "position": [ "centersize", 832, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh2",
+              "position": [ "centersize", 870, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh1",
+              "position": [ "centersize", 910, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb3",
+              "position": [ "centersize", 832, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb2",
+              "position": [ "centersize", 870, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb1",
+              "position": [ "centersize", 910, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "cch1",
+              "position": [ "centersize", 998, 348, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ccb1",
+              "position": [ "centersize", 1038, 348, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "cch2",
+              "position": [ "centersize", 998, 308, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ccb2",
+              "position": [ "centersize", 1038, 308, 30, 30 ]
+            }
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2019-field.jpg",
+          "tag": "auto",
+          "name": "AutoMode",
+          "scale": 0.80,
+          "publishitems": [
+            {
+              "tag": "hatches",
+              "type": "sum",
+              "imageitems": [ 
+                "clh3", "clh2", "clh1", "crh3", "crh2", "crh1",
+                "cch1", "cch2",
+                "hnl1", "hnl2", "hnl3", "hfl1", "hfl2", "hfl3",
+                "hnr1", "hnr2", "hnr3", "hfr1", "hfr2", "hfr3"
+              ]
+            },
+            {
+              "tag": "balls",
+              "type": "sum",
+              "imageitems": [ 
+                "clb3", "clb2", "clb1", "crb3", "crb2", "crb1",
+                "ccb1", "ccb2",
+                "bl11", "bl12", "bl21", "bl22", "bl31", "bl32",
+                "br11", "br12", "br21", "br22", "br31", "br32"
+              ]
+            }            
+          ],
+          "imageitems" : [
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "upleft",
+              "position": [ "centersize", 254, 250, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "left",
+              "position": [ "centersize", 334, 250, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "center",
+              "position": [ "centersize", 334, 328, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "upright",
+              "position": [ "centersize", 254, 406, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "right",
+              "position": [ "centersize", 334, 406, 40, 40 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl1",
+              "position": [ "centersize", 540, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl2",
+              "position": [ "centersize", 440, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl3",
+              "position": [ "centersize", 340, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl1",
+              "position": [ "centersize", 708, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl2",
+              "position": [ "centersize", 808, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl3",
+              "position": [ "centersize", 908, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl11",
+              "position": [ "centersize", 604, 70, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl12",
+              "position": [ "centersize", 644, 70, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl21",
+              "position": [ "centersize", 604, 110, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl22",
+              "position": [ "centersize", 644, 110, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl31",
+              "position": [ "centersize", 604, 150, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl32",
+              "position": [ "centersize", 644, 150, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr1",
+              "position": [ "centersize", 540, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr2",
+              "position": [ "centersize", 440, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr3",
+              "position": [ "centersize", 340, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr1",
+              "position": [ "centersize", 708, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr2",
+              "position": [ "centersize", 808, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr3",
+              "position": [ "centersize", 908, 590, 80, 30 ]
+            },            
+            {
+              "imageitemtype": "onoff",
+              "tag": "br11",
+              "position": [ "centersize", 604, 590, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br12",
+              "position": [ "centersize", 644, 590, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br21",
+              "position": [ "centersize", 604, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br22",
+              "position": [ "centersize", 644, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br31",
+              "position": [ "centersize", 604, 510, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br32",
+              "position": [ "centersize", 644, 510, 30, 30 ]
+            },            
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh3",
+              "position": [ "centersize", 758, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh2",
+              "position": [ "centersize", 718, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh1",
+              "position": [ "centersize", 678, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb3",
+              "position": [ "centersize", 758, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb2",
+              "position": [ "centersize", 718, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb1",
+              "position": [ "centersize", 678, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh3",
+              "position": [ "centersize", 758, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh2",
+              "position": [ "centersize", 718, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh1",
+              "position": [ "centersize", 678, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb3",
+              "position": [ "centersize", 758, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb2",
+              "position": [ "centersize", 718, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb1",
+              "position": [ "centersize", 678, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "cch1",
+              "position": [ "centersize", 592, 348, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ccb1",
+              "position": [ "centersize", 552, 348, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "cch2",
+              "position": [ "centersize", 592, 308, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ccb2",
+              "position": [ "centersize", 552, 308, 30, 30 ]
+            }            
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Teleop",
+      "items": [
+        {
+          "alliance": "red",
+          "type": "image",
+          "image": "2019-field.jpg",
+          "tag": "teleop",
+          "name": "Teleop",
+          "scale": 0.80,
+          "publishitems": [
+            {
+              "tag": "hatches",
+              "type": "sum",
+              "imageitems": [ 
+                "clh3", "clh2", "clh1", "crh3", "crh2", "crh1",
+                "cch1", "cch2",
+                "hnl1", "hnl2", "hnl3", "hfl1", "hfl2", "hfl3",
+                "hnr1", "hnr2", "hnr3", "hfr1", "hfr2", "hfr3"
+              ]
+            },
+            {
+              "tag": "balls",
+              "type": "sum",
+              "imageitems": [ 
+                "clb3", "clb2", "clb1", "crb3", "crb2", "crb1",
+                "ccb1", "ccb2",
+                "bl11", "bl12", "bl21", "bl22", "bl31", "bl32",
+                "br11", "br12", "br21", "br22", "br31", "br32"
+              ]
+            }
+          ],
+          "imageitems": [
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl1",
+              "position": [ "centersize", 1050, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl2",
+              "position": [ "centersize", 1150, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl3",
+              "position": [ "centersize", 1250, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl1",
+              "position": [ "centersize", 874, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl2",
+              "position": [ "centersize", 774, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl3",
+              "position": [ "centersize", 674, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl11",
+              "position": [ "centersize", 946, 590, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl12",
+              "position": [ "centersize", 986, 590, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl21",
+              "position": [ "centersize", 946, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl22",
+              "position": [ "centersize", 986, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl31",
+              "position": [ "centersize", 946, 510, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl32",
+              "position": [ "centersize", 986, 510, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr1",
+              "position": [ "centersize", 1050, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr2",
+              "position": [ "centersize", 1150, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr3",
+              "position": [ "centersize", 1250, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr1",
+              "position": [ "centersize", 874, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr2",
+              "position": [ "centersize", 774, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr3",
+              "position": [ "centersize", 674, 70, 80, 30 ]
+            },            
+            {
+              "imageitemtype": "onoff",
+              "tag": "br11",
+              "position": [ "centersize", 946, 70, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br12",
+              "position": [ "centersize", 986, 70, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br21",
+              "position": [ "centersize", 946, 110, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br22",
+              "position": [ "centersize", 986, 110, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br31",
+              "position": [ "centersize", 946, 150, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br32",
+              "position": [ "centersize", 986, 150, 30, 30 ]
+            },            
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh3",
+              "position": [ "centersize", 832, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh2",
+              "position": [ "centersize", 870, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh1",
+              "position": [ "centersize", 910, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb3",
+              "position": [ "centersize", 832, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb2",
+              "position": [ "centersize", 870, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb1",
+              "position": [ "centersize", 910, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh3",
+              "position": [ "centersize", 832, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh2",
+              "position": [ "centersize", 870, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh1",
+              "position": [ "centersize", 910, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb3",
+              "position": [ "centersize", 832, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb2",
+              "position": [ "centersize", 870, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb1",
+              "position": [ "centersize", 910, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "cch1",
+              "position": [ "centersize", 998, 348, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ccb1",
+              "position": [ "centersize", 1038, 348, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "cch2",
+              "position": [ "centersize", 998, 308, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ccb2",
+              "position": [ "centersize", 1038, 308, 30, 30 ]
+            }
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2019-field.jpg",
+          "tag": "teleop",
+          "name": "Teleop",
+          "scale": 0.80,
+          "publishitems": [
+            {
+              "tag": "hatches",
+              "type": "sum",
+              "imageitems": [ 
+                "clh3", "clh2", "clh1", "crh3", "crh2", "crh1",
+                "cch1", "cch2",
+                "hnl1", "hnl2", "hnl3", "hfl1", "hfl2", "hfl3",
+                "hnr1", "hnr2", "hnr3", "hfr1", "hfr2", "hfr3"
+              ]
+            },
+            {
+              "tag": "balls",
+              "type": "sum",
+              "imageitems": [ 
+                "clb3", "clb2", "clb1", "crb3", "crb2", "crb1",
+                "ccb1", "ccb2",
+                "bl11", "bl12", "bl21", "bl22", "bl31", "bl32",
+                "br11", "br12", "br21", "br22", "br31", "br32"
+              ]
+            }            
+          ],
+          "imageitems" : [
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl1",
+              "position": [ "centersize", 540, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl2",
+              "position": [ "centersize", 440, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnl3",
+              "position": [ "centersize", 340, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl1",
+              "position": [ "centersize", 708, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl2",
+              "position": [ "centersize", 808, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfl3",
+              "position": [ "centersize", 908, 70, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl11",
+              "position": [ "centersize", 604, 70, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl12",
+              "position": [ "centersize", 644, 70, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl21",
+              "position": [ "centersize", 604, 110, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl22",
+              "position": [ "centersize", 644, 110, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl31",
+              "position": [ "centersize", 604, 150, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "bl32",
+              "position": [ "centersize", 644, 150, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr1",
+              "position": [ "centersize", 540, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr2",
+              "position": [ "centersize", 440, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hnr3",
+              "position": [ "centersize", 340, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr1",
+              "position": [ "centersize", 708, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr2",
+              "position": [ "centersize", 808, 590, 80, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "hfr3",
+              "position": [ "centersize", 908, 590, 80, 30 ]
+            },            
+            {
+              "imageitemtype": "onoff",
+              "tag": "br11",
+              "position": [ "centersize", 604, 590, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br12",
+              "position": [ "centersize", 644, 590, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br21",
+              "position": [ "centersize", 604, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br22",
+              "position": [ "centersize", 644, 550, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br31",
+              "position": [ "centersize", 604, 510, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "br32",
+              "position": [ "centersize", 644, 510, 30, 30 ]
+            },            
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh3",
+              "position": [ "centersize", 758, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh2",
+              "position": [ "centersize", 718, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clh1",
+              "position": [ "centersize", 678, 390, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb3",
+              "position": [ "centersize", 758, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb2",
+              "position": [ "centersize", 718, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "clb1",
+              "position": [ "centersize", 678, 430, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh3",
+              "position": [ "centersize", 758, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh2",
+              "position": [ "centersize", 718, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crh1",
+              "position": [ "centersize", 678, 270, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb3",
+              "position": [ "centersize", 758, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb2",
+              "position": [ "centersize", 718, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "crb1",
+              "position": [ "centersize", 678, 230, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "cch1",
+              "position": [ "centersize", 592, 348, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ccb1",
+              "position": [ "centersize", 552, 348, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "cch2",
+              "position": [ "centersize", 592, 308, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ccb2",
+              "position": [ "centersize", 552, 308, 30, 30 ]
+            }            
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EndGame",
+      "items": [
+        {
+          "alliance": "red",
+          "type": "image",
+          "image": "2019-field.jpg",
+          "tag": "endgame",
+          "name": "EndGame",
+          "scale": 0.80,
+          "publishitems": [
+          ],
+          "imageitems": [
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l2left",
+              "position": [ "centersize", 1332, 406, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l1left",
+              "position": [ "centersize", 1260, 406, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l3",
+              "position": [ "centersize", 1332, 328, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l1center",
+              "position": [ "centersize", 1260, 328, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "none",
+              "position": [ "centersize", 1160, 328, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l2right",
+              "position": [ "centersize", 1332, 250, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l1right",
+              "position": [ "centersize", 1260, 250, 40, 40 ]
+            }
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2019-field.jpg",
+          "tag": "endgame",
+          "name": "EndGame",
+          "scale": 0.80,
+          "publishitems": [
+          ],
+          "imageitems" : [
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l2left",
+              "position": [ "centersize", 254, 250, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l1left",
+              "position": [ "centersize", 334, 250, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l3",
+              "position": [ "centersize", 254, 328, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l1center",
+              "position": [ "centersize", 334, 328, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "none",
+              "position": [ "centersize", 334, 428, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l2right",
+              "position": [ "centersize", 254, 406, 40, 40 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
+              "value": "l1right",
+              "position": [ "centersize", 334, 406, 40, 40 ]
+            }
+          ]
+        }        
+      ]
+    },    
+    {
+      "name": "General",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "general_brownout",
+          "name": "Brownout"
+        },
+        {
+          "type": "boolean",
+          "tag": "general_breakdown",
+          "name": "Breakdown"
+        }
+      ]
+    }
+  ]
+}

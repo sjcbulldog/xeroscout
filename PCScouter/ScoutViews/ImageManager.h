@@ -3,6 +3,7 @@
 #include "ImageSupplier.h"
 #include <QString>
 #include <QImage>
+#include <QFile>
 #include <memory>
 #include <map>
 
@@ -20,7 +21,10 @@ namespace xero
 
 				std::shared_ptr<QImage> get(const QString& tag);
 
-			public:
+			private:
+				std::shared_ptr<QImage> loadImage(const QString &str, const QString& file);
+
+			private:
 				std::map<QString, std::shared_ptr<QImage>> images_;
 			};
 		}
