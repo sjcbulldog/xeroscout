@@ -24,7 +24,6 @@ namespace xero
 				}
 
 				virtual void clearView() {
-					clearPanes();
 				}
 
 				static constexpr const char* Name = "match";

@@ -13,6 +13,7 @@ namespace xero
 		{
 			ChartViewWrapper::ChartViewWrapper(QWidget* parent) : QChartView(parent)
 			{
+				editor_ = nullptr;
 			}
 
 			ChartViewWrapper::~ChartViewWrapper()
@@ -36,6 +37,43 @@ namespace xero
 				{
 					QToolTip::hideText();
 				}
+			}
+
+			void ChartViewWrapper::editTitle()
+			{
+				if (editor_ == nullptr)
+				{
+					editor_ = new EditName(this);
+					(void)connect(editor_, &EditName::returnPressed, this, &ChartViewWrapper::editorDone);
+					(void)connect(editor_, &EditName::escapePressed, this, &ChartViewWrapper::editorAborted);
+
+					QFont font = editor_->font();
+					font.setPointSize(20);
+					font.setBold(true);
+					editor_->setFont(font);
+
+					editor_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+				}
+
+				QRect r(20, 28, width() - 40, 40);
+				editor_->setGeometry(r);
+				editor_->setText(chart()->title());
+				editor_->setVisible(true);
+				editor_->setFocus();
+				editor_->selectAll();
+			}
+
+			void ChartViewWrapper::editorDone()
+			{
+				chart()->setTitle(editor_->text());
+				editor_->setVisible(false);
+
+				emit titleChanged();
+			}
+
+			void ChartViewWrapper::editorAborted()
+			{
+				editor_->setVisible(false);
 			}
 		}
 	}

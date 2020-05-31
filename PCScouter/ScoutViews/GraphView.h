@@ -53,11 +53,12 @@ namespace xero
 					return keys_;
 				}
 
-				void clearPanes();
 				virtual void createTop(QGroupBox* top) = 0;
 
 			private:
 				static const int constexpr MaxPanes = 9;
+
+				std::shared_ptr<ChartViewWrapper> createForPane(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
 
 				bool addDataElements(const QString& query, xero::scouting::datamodel::ScoutingDataMapPtr varvalues, xero::scouting::datamodel::ScoutingDataSet& ds);
 				QStringList findAllFieldsUsed(xero::scouting::datamodel::ScoutDataExprContext& ctxt, const QStringList& exprlist, std::vector<std::shared_ptr<xero::expr::Expr>>& exprs);
@@ -73,17 +74,19 @@ namespace xero
 				void deletePane(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
 				void addExpr(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
 
+				void editTitle(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
+
 			private:
 				QGroupBox* top_;
 				QWidget* bottom_;
 				QGridLayout* grid_;
-				std::vector<std::shared_ptr<QtCharts::QChartView>> charts_;
+				std::vector<std::shared_ptr<ChartViewWrapper>> charts_;
 				xero::scouting::datamodel::GraphDescriptor desc_;
 
 				QStringList keys_;
 				QStringList augmentation_;
 
-				std::list<std::pair<std::shared_ptr<QtCharts::QChartView>, std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane>>> pane_chart_map_;
+				std::list<std::pair<std::shared_ptr<ChartViewWrapper>, std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane>>> pane_chart_map_;
 			};
 		}
 	}

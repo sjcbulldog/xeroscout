@@ -95,6 +95,7 @@
     <ClCompile Include="DataSetItemDelegate.cpp" />
     <ClCompile Include="DataSetViewWidget.cpp" />
     <ClCompile Include="DocumentView.cpp" />
+    <ClCompile Include="EditName.cpp" />
     <ClCompile Include="ExpressionsEntryDialog.cpp" />
     <ClCompile Include="FlowLayout.cpp" />
     <ClCompile Include="FormView.cpp" />
@@ -125,8 +126,9 @@
   <ItemGroup>
     <ClInclude Include="AllianceGraphView.h" />
     <ClInclude Include="ChangeHistoryView.h" />
-    <ClInclude Include="ChartViewWrapper.h" />
+    <QtMoc Include="ChartViewWrapper.h" />
     <ClInclude Include="DataSetItemDelegate.h" />
+    <QtMoc Include="EditName.h" />
     <ClInclude Include="ExpressionsEntryDialog.h" />
     <ClInclude Include="GameField.h" />
     <ClInclude Include="GameFieldManager.h" />

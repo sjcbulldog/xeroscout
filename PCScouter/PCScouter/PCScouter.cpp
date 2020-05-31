@@ -348,10 +348,8 @@ void PCScouter::createMenus()
 	import_zebra_data_ = import_menu_->addAction(tr("Import BlueAlliance Zebra Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importZebraData);
 
-#ifdef IMPORT_KPI_NOT_READY
-	import_kpi_data_ = import_menu_->addAction(tr("KPI Data"));
-	(void)connect(import_kpi_data_, &QAction::triggered, this, &PCScouter::importKPIData);
-#endif
+	act = import_menu_->addAction(tr("KPI Data"));
+	(void)connect(act, &QAction::triggered, this, &PCScouter::importKPIData);
 
 	import_menu_->addSeparator();
 
@@ -707,7 +705,7 @@ void PCScouter::importKPIData()
 		teams.push_back(team->key());
 
 	setEnabled(false);
-	app_controller_ = new KPIController(blue_alliance_, year_, teams, data_model_->evkey(), data_model_->teamScoutingForm(), data_model_->matchScoutingForm());
+	app_controller_ = new KPIController(blue_alliance_, data_model_->startDate(), teams, data_model_->evkey(), data_model_->teamScoutingForm(), data_model_->matchScoutingForm());
 }
 
 void PCScouter::importMatchDataComplete(bool err)

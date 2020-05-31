@@ -42,17 +42,17 @@ int main(int argc, char *argv[])
 
 	while (i < args.size()) {
 		QString arg = args[i++];
-		if (arg == "--testinject")
+		if (arg == "--inject")
 		{
 			if (i == args.size())
 			{
-				QMessageBox::critical(nullptr, "Error", "argument --testinject requires an NAME=VALUE line following");
+				QMessageBox::critical(nullptr, "Error", "argument --inject requires an NAME=VALUE line following");
 				return 1;
 			}
 
 			if (!injector.parseData(args[i++]))
 			{
-				QMessageBox::critical(nullptr, "Error", "argument --testinject, invalid following argument, expected NAME=VALUE");
+				QMessageBox::critical(nullptr, "Error", "argument --inject, invalid following argument, expected NAME=VALUE");
 				return 1;
 			}
 		}

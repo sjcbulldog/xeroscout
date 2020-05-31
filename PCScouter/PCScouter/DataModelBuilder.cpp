@@ -52,7 +52,7 @@ std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
 	}
 	auto ev = evit->second;
 
-	auto dm = std::make_shared<ScoutingDataModel>(ev->key(), ev->name());
+	auto dm = std::make_shared<ScoutingDataModel>(ev->key(), ev->name(), ev->start());
 	QStringList tags;
 	if (!dm->setScoutingForms(team, match, tags)) {
 		error = "duplicate tags '";

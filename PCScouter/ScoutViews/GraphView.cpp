@@ -66,28 +66,43 @@ namespace xero
 
 			void GraphView::newPane()
 			{
-				bool ok;
-
-				QString txt = QInputDialog::getText(this, "Pane Title", "Title", QLineEdit::Normal, "", &ok);
-				if (ok)
-				{
-					desc_.addPane(txt);
-					refreshCharts();
-				}
-
+				desc_.addPane("New Graph");
+				refreshCharts();
 				dataModel()->updateGraphDescriptor(desc_);
+			}
+
+			void GraphView::editTitle(std::shared_ptr<GraphDescriptor::GraphPane> pane)
+			{
+				auto chart = createForPane(pane);
+				chart->editTitle();
 			}
 
 			void GraphView::deletePane(std::shared_ptr<GraphDescriptor::GraphPane> pane)
 			{
-				for (auto pair : pane_chart_map_)
+				std::shared_ptr<ChartViewWrapper> chart = nullptr;
+
+				for (auto it = pane_chart_map_.begin(); it != pane_chart_map_.end(); it++)
 				{
-					if (pair.second == pane)
+					if (it->second == pane)
 					{
-						grid_->removeWidget(pair.first.get());
+						chart = it->first;
+						grid_->removeWidget(it->first.get());
+						pane_chart_map_.erase(it);
 						break;
 					}
 				}
+				assert(chart != nullptr);
+
+				for (auto it = charts_.begin(); it != charts_.end(); it++)
+				{
+					if (*it == chart)
+					{
+						chart = nullptr;
+						charts_.erase(it);
+						break;
+					}
+				}
+				assert(chart == nullptr);
 
 				desc_.deletePane(pane);
 				refreshCharts();
@@ -197,11 +212,15 @@ namespace xero
 						connect(act, &QAction::triggered, this, &GraphView::newPane);
 					}
 
+					auto editcb = std::bind(&GraphView::editTitle, this, pane);
+					act = menu->addAction("Edit Title");
+					connect(act, &QAction::triggered, editcb);
+
 					if (view != nullptr)
 					{
 						auto cb = std::bind(&GraphView::addExpr, this, pane);
 						act = menu->addAction("Add Expressions");
-						connect(act, &QAction::triggered, this, cb);
+						connect(act, &QAction::triggered, cb);
 
 						const QStringList& x = pane->x();
 						QMenu* sub = new QMenu("Add Variable");
@@ -212,7 +231,7 @@ namespace xero
 							{
 								act = sub->addAction(f->name());
 								auto cb = std::bind(&GraphView::addVariable, this, pane, f->name());
-								connect(act, &QAction::triggered, this, cb);
+								connect(act, &QAction::triggered, cb);
 							}
 						}
 
@@ -225,7 +244,7 @@ namespace xero
 							{
 								act = sub->addAction(field);
 								auto cb = std::bind(&GraphView::removeVariable, this, pane, field);
-								connect(act, &QAction::triggered, this, cb);
+								connect(act, &QAction::triggered, cb);
 							}
 
 							menu->addMenu(sub);
@@ -233,12 +252,13 @@ namespace xero
 
 						cb = std::bind(&GraphView::setRange, this, pane);
 						act = menu->addAction("Set Range");
-						connect(act, &QAction::triggered, this, cb);
+						connect(act, &QAction::triggered, cb);
 					}
 
-					act = menu->addAction("Remove Pane");
+					if (pane_chart_map_.size() > 0)
+						act = menu->addAction("Remove Pane");
 					auto cb = std::bind(&GraphView::deletePane, this, pane);
-					connect(act, &QAction::triggered, this, cb);
+					connect(act, &QAction::triggered, cb);
 
 					menu->exec(ev->globalPos());
 				}
@@ -246,8 +266,6 @@ namespace xero
 
 			void GraphView::refreshCharts()
 			{
-				clearView();
-
 				if (!desc_.isValid() || desc_.count() == 0 || dataModel() == nullptr)
 					return;
 
@@ -265,7 +283,9 @@ namespace xero
 				//
 				// Update the chart layouts
 				//
+				bottom_->setLayout(nullptr);
 				delete grid_;
+
 				grid_ = new QGridLayout();
 				bottom_->setLayout(grid_);
 
@@ -349,33 +369,39 @@ namespace xero
 
 				for (int i = 0; i < grid_->rowCount(); i++)
 					grid_->setRowStretch(i, 1);
+
+				grid_->update();
 			}
 
-			void GraphView::clearPanes()
-			{
-				for (auto w : charts_)
-					grid_->removeWidget(w.get());
 
-				charts_.clear();
+			std::shared_ptr<ChartViewWrapper> GraphView::createForPane(std::shared_ptr<GraphDescriptor::GraphPane> pane)
+			{
+				for (auto pair : pane_chart_map_)
+				{
+					if (pair.second == pane)
+						return pair.first;
+				}
+
+				std::shared_ptr<ChartViewWrapper> chart = std::make_shared<ChartViewWrapper>(bottom_);
+				charts_.push_back(chart);
+				chart->chart()->setDropShadowEnabled(true);
+				chart->chart()->setTitle(pane->title());
+				chart->setRenderHint(QPainter::Antialiasing);
+				pane_chart_map_.push_back(std::make_pair(chart, pane));
+
+				return chart;
 			}
 
 			void GraphView::generateCharts()
 			{
-				pane_chart_map_.clear();
-
 				for (int i = 0; i < desc_.count(); i++)
 				{
-					std::shared_ptr<GraphDescriptor::GraphPane> panedesc = desc_.pane(i);
-					auto chart = std::make_shared<ChartViewWrapper>(nullptr);
-					chart->chart()->setDropShadowEnabled(true);
-					chart->chart()->setTitle(panedesc->title());
-					charts_.push_back(chart);
-					pane_chart_map_.push_back(std::make_pair(chart, panedesc));
-					chart->setRenderHint(QPainter::Antialiasing);
+					std::shared_ptr<GraphDescriptor::GraphPane> pane = desc_.pane(i);
+					std::shared_ptr<ChartViewWrapper> chart = createForPane(pane);
 
-					if (panedesc->x().count() > 0 && keys_.count() > 0)
+					if (pane->x().count() > 0 && keys_.count() > 0)
 					{
-						generateOneChart(panedesc, chart, keys_);
+						generateOneChart(pane, chart, keys_);
 					}
 				}
 			}
@@ -547,6 +573,11 @@ namespace xero
 				std::map<QString, std::vector<QVariant>> data;
 				double ymax = 0;
 
+				chart->chart()->removeAllSeries();
+				auto axes = chart->chart()->axes();
+				for (auto axis : axes)
+					chart->chart()->removeAxis(axis);
+
 				if (!getData(data, teams, pane->x()))
 					return false;
 
@@ -582,12 +613,12 @@ namespace xero
 							yval = 0;
 
 						*set << yval;
+						cnt++;
 						if (yval > ymax)
 							ymax = yval;
 					}
 					series->append(set);
 				}
-
 				chart->chart()->addSeries(series);
 				chart->chart()->setAnimationOptions(QChart::SeriesAnimations);
 

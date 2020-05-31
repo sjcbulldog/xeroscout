@@ -120,6 +120,9 @@
     <ClCompile Include="DataSetItemDelegate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EditName.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MatchViewWidget.h">
@@ -191,9 +194,6 @@
     <ClInclude Include="AllianceGraphView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ChartViewWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ExpressionsEntryDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -232,6 +232,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="DataSetViewWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="EditName.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ChartViewWrapper.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

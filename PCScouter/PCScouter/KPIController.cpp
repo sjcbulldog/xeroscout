@@ -9,12 +9,12 @@
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
-KPIController::KPIController(std::shared_ptr<BlueAlliance> ba, int year, const QStringList& teams, 
+KPIController::KPIController(std::shared_ptr<BlueAlliance> ba, const QDate &evdate, const QStringList& teams, 
 	const QString& evkey, std::shared_ptr<const ScoutingForm> team, std::shared_ptr<const ScoutingForm> match) : ApplicationController(ba)
 {
+	evdate_ = evdate;
 	state_ = State::Start;
 	teams_ = teams;
-	year_ = year;
 	evkey_ = evkey;
 	team_ = team;
 	match_ = match;
@@ -50,20 +50,8 @@ void KPIController::computeKPI()
 			if (teams_.contains(team->key()))
 			{
 				//
-				// We have a hit, a team we were interseted in was at another event
+				// We have a team and a previous event for the team, get the data we want
 				//
-				query = "select * from matches where " + QString(DataModelMatch::MatchTeamKeyName) + "='" + team->key() + "'";
-				model->createCustomDataSet(ds, query, error);
-
-				//
-				// Now process the data set.  Only projess those entries that start with
-				// the letters 'ba_' as these come from the blue alliance
-				//
-				for (int i = 0; i < ds.columnCount(); i++)
-				{
-					if (!ds.headers().at(i)->name().startsWith("ba_"))
-						continue;
-				}
 			}
 		}
 	}
@@ -136,7 +124,6 @@ void KPIController::gotMatches()
 
 void KPIController::gotTeamEvents()
 {
-	QDate now = QDate::currentDate();
 	auto& bateams = blueAlliance()->getEngine().teams();
 	auto& baevents = blueAlliance()->getEngine().events();
 
@@ -157,7 +144,7 @@ void KPIController::gotTeamEvents()
 				if (evit == baevents.end())
 					continue;
 
-				if (evit->second->start() > now)
+				if (evit->second->start() > evdate_)
 					continue;
 
 				if (evlist_.contains(ev))
@@ -177,7 +164,8 @@ void KPIController::gotTeamEvents()
 void KPIController::getEvents()
 {
 	state_ = State::WaitingOnEvents;
-	blueAlliance()->requestEvents(year_);
+	int year = evdate_.year();
+	blueAlliance()->requestEvents(year);
 }
 
 void KPIController::getTeams()
@@ -189,6 +177,7 @@ void KPIController::getTeams()
 void KPIController::getTeamEvents()
 {
 	state_ = State::WaitingOnTeamEvents;
-	blueAlliance()->requestTeamEvents(teams_, year_);
+	int year = evdate_.year();
+	blueAlliance()->requestTeamEvents(teams_, year);
 }
 
