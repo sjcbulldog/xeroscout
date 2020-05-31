@@ -40,6 +40,10 @@ namespace xero
 						return title_;
 					}
 
+					void setTitle(const QString& txt) {
+						title_ = txt;
+					}
+
 					void addX(const QString& var) {
 						if (!x_.contains(var))
 							x_.push_back(var);

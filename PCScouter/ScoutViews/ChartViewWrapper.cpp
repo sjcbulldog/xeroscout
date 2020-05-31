@@ -4,6 +4,7 @@
 #include <QToolTip>
 
 using namespace QtCharts;
+using namespace xero::scouting::datamodel;
 
 namespace xero
 {
@@ -11,9 +12,10 @@ namespace xero
 	{
 		namespace views
 		{
-			ChartViewWrapper::ChartViewWrapper(QWidget* parent) : QChartView(parent)
+			ChartViewWrapper::ChartViewWrapper(QWidget* parent, std::shared_ptr<GraphDescriptor::GraphPane> pane) : QChartView(parent)
 			{
 				editor_ = nullptr;
+				pane_ = pane;
 			}
 
 			ChartViewWrapper::~ChartViewWrapper()
@@ -68,7 +70,7 @@ namespace xero
 				chart()->setTitle(editor_->text());
 				editor_->setVisible(false);
 
-				emit titleChanged();
+				emit titleChanged(pane_, editor_->text());
 			}
 
 			void ChartViewWrapper::editorAborted()

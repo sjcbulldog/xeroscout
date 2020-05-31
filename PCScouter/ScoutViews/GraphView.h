@@ -38,6 +38,7 @@ namespace xero
 
 			protected:
 				void mousePressEvent(QMouseEvent* ev) override;
+				void keyPressEvent(QKeyEvent* ev) override;
 
 				void setTeamsColors(const QStringList& teams, const QStringList &aug) {
 					keys_ = teams; 
@@ -75,6 +76,7 @@ namespace xero
 				void addExpr(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
 
 				void editTitle(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
+				void titleChanged(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane, const QString& text);
 
 			private:
 				QGroupBox* top_;
@@ -87,6 +89,8 @@ namespace xero
 				QStringList augmentation_;
 
 				std::list<std::pair<std::shared_ptr<ChartViewWrapper>, std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane>>> pane_chart_map_;
+
+				int count_;
 			};
 		}
 	}

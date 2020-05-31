@@ -16,6 +16,7 @@
 #include <QMenu>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QKeyEvent>
 
 using namespace QtCharts;
 using namespace xero::expr;
@@ -34,10 +35,19 @@ namespace xero
 				top_ = nullptr;
 
 				setMouseTracking(true);
+				setFocusPolicy(Qt::StrongFocus);
+
+				count_ = 1;
 			}
 
 			GraphView::~GraphView()
 			{
+			}
+
+			void GraphView::keyPressEvent(QKeyEvent* ev)
+			{
+				if (ev->key() == Qt::Key_Insert && pane_chart_map_.size() < MaxPanes)
+					newPane();
 			}
 
 			void GraphView::create()
@@ -66,7 +76,7 @@ namespace xero
 
 			void GraphView::newPane()
 			{
-				desc_.addPane("New Graph");
+				desc_.addPane("New Graph " + QString::number(count_++));
 				refreshCharts();
 				dataModel()->updateGraphDescriptor(desc_);
 			}
@@ -86,6 +96,7 @@ namespace xero
 					if (it->second == pane)
 					{
 						chart = it->first;
+						qDebug() << "Deleting " << chart->chart()->title();
 						grid_->removeWidget(it->first.get());
 						pane_chart_map_.erase(it);
 						break;
@@ -373,6 +384,11 @@ namespace xero
 				grid_->update();
 			}
 
+			void GraphView::titleChanged(std::shared_ptr<GraphDescriptor::GraphPane> pane, const QString& text)
+			{
+				pane->setTitle(text);
+				dataModel()->updateGraphDescriptor(desc_);
+			}
 
 			std::shared_ptr<ChartViewWrapper> GraphView::createForPane(std::shared_ptr<GraphDescriptor::GraphPane> pane)
 			{
@@ -382,7 +398,8 @@ namespace xero
 						return pair.first;
 				}
 
-				std::shared_ptr<ChartViewWrapper> chart = std::make_shared<ChartViewWrapper>(bottom_);
+				std::shared_ptr<ChartViewWrapper> chart = std::make_shared<ChartViewWrapper>(bottom_, pane);
+				connect(chart.get(),& ChartViewWrapper::titleChanged, this, &GraphView::titleChanged);
 				charts_.push_back(chart);
 				chart->chart()->setDropShadowEnabled(true);
 				chart->chart()->setTitle(pane->title());
