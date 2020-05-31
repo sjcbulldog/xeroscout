@@ -28,7 +28,7 @@ namespace xero
 	{
 		namespace views
 		{
-			FormView::FormView(ImageManager& images, QString name, QString title, QColor titlec, QWidget* parent) : QWidget(parent), images_(images)
+			FormView::FormView(ImageManager& images, QString name, QString title, QColor titlec, QWidget* parent) : QWidget(parent), ViewBase("FormView"), images_(images)
 			{
 				name_ = name;
 				title_txt_ = title;

@@ -9,7 +9,7 @@ namespace xero
 	{
 		namespace views
 		{
-			DataMergeListWidget::DataMergeListWidget(QWidget* parent) : QWidget(parent)
+			DataMergeListWidget::DataMergeListWidget(QWidget* parent) : QWidget(parent), ViewBase("DataMergeListWidget")
 			{
 				QStringList headers = { "Type", "Key", "Item" };
 

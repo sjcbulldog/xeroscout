@@ -23,8 +23,6 @@ namespace xero
 {
 	namespace ba
 	{
-
-
 		class FetchTeamsController : public EngineController
 		{
 		public:

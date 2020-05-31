@@ -64,6 +64,7 @@ namespace xero
 			bool requestZebraData(const QStringList& keys);
 			bool requestTeamEvents(const QStringList& keys, int year);
 			bool requestRankings(const QString& evkey);
+			bool requestEventTeams(const QString& evkey);
 
 		private:
 			void init();

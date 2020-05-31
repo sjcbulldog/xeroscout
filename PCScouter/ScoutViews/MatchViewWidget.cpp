@@ -62,7 +62,7 @@ namespace xero
 				"Name"
 			};
 
-			MatchViewWidget::MatchViewWidget(const QString &tablet, QWidget* parent) : QTreeWidget(parent)
+			MatchViewWidget::MatchViewWidget(const QString &tablet, QWidget* parent) : QTreeWidget(parent), ViewBase("MatchViewWidget")
 			{
 				tablet_ = tablet;
 

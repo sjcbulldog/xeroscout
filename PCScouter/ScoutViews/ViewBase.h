@@ -17,6 +17,7 @@
 #pragma once
 
 #include "ScoutingDataModel.h"
+#include <QDebug>
 #include <memory>
 
 namespace xero
@@ -25,11 +26,11 @@ namespace xero
 	{
 		namespace views
 		{
-
 			class ViewBase
 			{
 			public:
-				ViewBase() {
+				ViewBase(const QString &name) {
+					name_ = name;
 					need_refresh_ = true;
 				}
 
@@ -45,10 +46,13 @@ namespace xero
 				}
 
 				virtual void setNeedRefresh() {
+					qDebug() << "SetNeedRefresh: " << name_;
+
 					need_refresh_ = true;
 				}
 
 				virtual void clearNeedRefresh() {
+					qDebug() << "ClearNeedRefresh: " << name_;
 					need_refresh_ = false;
 				}
 
@@ -68,6 +72,7 @@ namespace xero
 			private:
 				std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model_;
 				bool need_refresh_;
+				QString name_;
 			};
 		}
 	}

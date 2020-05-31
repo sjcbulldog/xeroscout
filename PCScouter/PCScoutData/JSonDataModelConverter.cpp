@@ -203,6 +203,8 @@ namespace xero
 				payload[JsonEvNameName] = dm_->evname();
 				payload[JsonMatchScoutingFormName] = dm_->matchScoutingForm()->obj();
 				payload[JsonPitScoutingFormName] = dm_->teamScoutingForm()->obj();
+				payload[JsonStartDateName] = QString::number(dm_->startDate().toJulianDay());
+				payload[JsonEndDateName] = QString::number(dm_->startDate().toJulianDay());
 
 				payload[JsonTeamExtraFieldsName] = encodeFields(dm_->teamExtraFields());
 				payload[JsonMatchExtraFieldsName] = encodeFields(dm_->matchExtraFields());
@@ -534,6 +536,22 @@ namespace xero
 					return false;
 				}
 				dm_->event_name_ = obj[JsonEvNameName].toString();
+
+				if (!obj.contains(JsonStartDateName) || !obj.value(JsonStartDateName).isString()) {
+					errors_.push_back("expected string field '" + QString(JsonEvKeyName) + "'");
+					return false;
+				}
+
+				qint64 julian = obj.value(JsonStartDateName).toString().toLongLong();
+				dm_->start_date_ = QDate::fromJulianDay(julian);
+
+				if (!obj.contains(JsonEndDateName) || !obj.value(JsonEndDateName).isString()) {
+					errors_.push_back("expected string field '" + QString(JsonEvKeyName) + "'");
+					return false;
+				}
+
+				julian = obj.value(JsonEndDateName).toString().toLongLong();
+				dm_->end_date_ = QDate::fromJulianDay(julian);
 
 				return true;
 			}

@@ -118,6 +118,8 @@ namespace xero
 				for (int i = 0; i < count(); i++)
 				{
 					QWidget* w = widget(i);
+
+
 					ViewBase* vb = dynamic_cast<ViewBase*>(w);
 					if (vb != nullptr)
 						vb->clearView();
@@ -137,9 +139,12 @@ namespace xero
 			void DocumentView::needsRefreshAll()
 			{
 				for (int i = 0; i < count(); i++) {
+
+					MatchViewWidget* vw = dynamic_cast<MatchViewWidget*>(widget(i));
 					ViewBase* vb = dynamic_cast<ViewBase*>(widget(i));
+
 					if (vb != nullptr)
-						vb->needsRefresh();
+						vb->setNeedRefresh();
 				}
 
 				ViewBase* vb = dynamic_cast<ViewBase*>(widget(static_cast<int>(view_)));

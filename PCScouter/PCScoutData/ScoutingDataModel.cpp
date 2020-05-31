@@ -34,11 +34,12 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			ScoutingDataModel::ScoutingDataModel(const QString& evkey, const QString& evname, const QDate &date)
+			ScoutingDataModel::ScoutingDataModel(const QString& evkey, const QString& evname, const QDate &date, const QDate &end)
 			{
 				ev_key_ = evkey;
 				event_name_ = evname;
 				start_date_ = date;
+				end_date_ = end;
 
 				filename_ = QStandardPaths::locate(QStandardPaths::DocumentsLocation, ev_key_);
 

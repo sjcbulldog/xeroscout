@@ -38,6 +38,8 @@ namespace xero
 			constexpr const char* JsonPayloadName = "payload";
 			constexpr const char* JsonVersionName = "version";
 			constexpr const char* JsonEvKeyName = "evkey";
+			constexpr const char* JsonStartDateName = "start";
+			constexpr const char* JsonEndDateName = "end";
 			constexpr const char* JsonEvNameName = "evname";
 			constexpr const char* JsonMatchScoutingFormName = "scoutingform";
 			constexpr const char* JsonPitScoutingFormName = "pitform";

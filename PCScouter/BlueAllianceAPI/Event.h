@@ -19,6 +19,7 @@
 #include "EventWeekCalculator.h"
 #include <QString>
 #include <QDate>
+#include <QDebug>
 
 namespace xero
 {
@@ -101,6 +102,14 @@ namespace xero
 				return matches_;
 			}
 
+			void addTeam(const QString& key) {
+				team_keys_.push_back(key);
+			}
+
+			const QStringList& teamKeys() const {
+				return team_keys_;
+			}
+
 		private:
 			QString key_;
 			QString name_;
@@ -112,6 +121,7 @@ namespace xero
 			int year_;
 			int week_;
 
+			QStringList team_keys_;
 			std::list<std::shared_ptr<Match>> matches_;
 			std::shared_ptr<District> district_;
 		};

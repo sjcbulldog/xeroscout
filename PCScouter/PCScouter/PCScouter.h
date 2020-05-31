@@ -82,6 +82,9 @@ private:
 	void saveEventAs();
 	void closeEventHandler();
 
+	void importMatchSchedule();
+	void importMatchScheduleComplete(bool err);
+
 	void importMatchData();
 	void importMatchDataComplete(bool err);
 

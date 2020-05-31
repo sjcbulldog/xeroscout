@@ -41,6 +41,8 @@
 #include "ImportMatchDataController.h"
 #include "ImportZebraDataController.h"
 #include "AllTeamSummaryController.h"
+#include "ImportMatchScheduleController.h"
+
 #include "OPRCalculator.h"
 #include "TestDataInjector.h"
 
@@ -342,14 +344,19 @@ void PCScouter::createMenus()
 	menuBar()->addMenu(import_menu_);
 	(void)connect(import_menu_, &QMenu::aboutToShow, this, &PCScouter::showingImportMenu);
 
-	import_match_data_ = import_menu_->addAction(tr("Import BlueAlliance Match Data"));
+	import_match_data_ = import_menu_->addAction(tr("Import Match Schedule"));
+	(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
+
+	import_match_data_ = import_menu_->addAction(tr("Import BlueAlliance Match Results"));
 	(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchData);
 
 	import_zebra_data_ = import_menu_->addAction(tr("Import BlueAlliance Zebra Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importZebraData);
 
-	act = import_menu_->addAction(tr("KPI Data"));
+#ifdef NOTYET
+	act = import_menu_->addAction(tr("Compute Known Performance Indicators"));
 	(void)connect(act, &QAction::triggered, this, &PCScouter::importKPIData);
+#endif
 
 	import_menu_->addSeparator();
 
@@ -487,9 +494,6 @@ void PCScouter::processAppController()
 {
 	if (!app_controller_->isDisplayInitialized())
 	{
-		if (app_controller_->shouldDisableApp())
-			disableApp();
-
 		if (app_controller_->providesProgress())
 		{
 			summary_progress_->setMinimum(0);
@@ -502,6 +506,11 @@ void PCScouter::processAppController()
 	}
 
 	app_controller_->run();
+
+	if (app_controller_->shouldDisableApp() && !app_disabled_)
+		disableApp();
+	else if (!app_controller_->shouldDisableApp() && app_disabled_)
+		enableApp();
 
 	if (app_controller_->isDone())
 	{
@@ -710,8 +719,9 @@ void PCScouter::importKPIData()
 
 void PCScouter::importMatchDataComplete(bool err)
 {
-	view_frame_->needsRefreshAll();
 	saveAndBackup();
+	view_frame_->needsRefreshAll();
+	updateCurrentView();
 }
 
 void PCScouter::importMatchData()
@@ -731,6 +741,26 @@ void PCScouter::importMatchData()
 
 	app_controller_ = new ImportMatchDataController(blue_alliance_, data_model_, maxmatch);
 	connect(app_controller_, &ApplicationController::complete, this, &PCScouter::importMatchDataComplete);
+}
+
+void PCScouter::importMatchScheduleComplete(bool err)
+{
+	saveAndBackup();
+	view_frame_->needsRefreshAll();
+	updateCurrentView();
+}
+
+void PCScouter::importMatchSchedule()
+{
+	const char* maxmatchprop = "bamaxmatch";
+
+	if (data_model_ == nullptr) {
+		QMessageBox::critical(this, "Error", "You can only import match data into an event.  The currently no open event.  Either open an event with File/Open or create an event with File/New");
+		return;
+	}
+
+	app_controller_ = new ImportMatchScheduleController(blue_alliance_, data_model_);
+	connect(app_controller_, &ApplicationController::complete, this, &PCScouter::importMatchScheduleComplete);
 }
 
 void PCScouter::importZebraDataComplete(bool err)
@@ -801,7 +831,13 @@ void PCScouter::newEventBA()
 	if (settings_.contains("tablets"))
 		tablets = settings_.value("tablets").toStringList();
 
-	app_controller_ = new NewEventAppController(blue_alliance_, tablets, year_);
+	auto ctlr = new NewEventAppController(blue_alliance_, tablets, year_);
+	app_controller_ = ctlr;
+
+	TestDataInjector& injector = TestDataInjector::getInstance();
+	if (injector.hasData("nomatches") && injector.data("nomatches").toBool())
+		ctlr->simNoMatches();
+
 	(void)connect(app_controller_, &NewEventAppController::complete, this, &PCScouter::newEventComplete);
 	(void)connect(app_controller_, &ApplicationController::logMessage, this, &PCScouter::logMessage);
 	(void)connect(app_controller_, &ApplicationController::errorMessage, this, &PCScouter::errorMessage);

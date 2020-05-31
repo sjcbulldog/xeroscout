@@ -23,7 +23,7 @@ namespace xero
 	{
 		namespace views
 		{
-			QueryViewWidget::QueryViewWidget(QWidget* parent) : QWidget(parent)
+			QueryViewWidget::QueryViewWidget(QWidget* parent) : QWidget(parent), ViewBase("QueryViewWidget")
 			{
 				QVBoxLayout* vlay = new QVBoxLayout();
 				setLayout(vlay);

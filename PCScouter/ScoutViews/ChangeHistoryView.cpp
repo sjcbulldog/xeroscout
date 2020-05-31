@@ -35,7 +35,7 @@ namespace xero
 				"Matches"
 			};
 
-			ChangeHistoryView::ChangeHistoryView(QWidget* parent) : QTreeWidget(parent)
+			ChangeHistoryView::ChangeHistoryView(QWidget* parent) : QTreeWidget(parent), ViewBase("ChangeHistoryView")
 			{
 				setColumnCount(5);
 				setHeaderLabels(headers_);

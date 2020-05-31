@@ -125,6 +125,18 @@ namespace xero
 			return true;
 		}
 
+		bool BlueAlliance::requestEventTeams(const QString& evkey)
+		{
+			if (busy_ || engine_state_ != EngineState::Up)
+				return false;;
+
+			engine_->requestEventTeams(evkey);
+			fetch_type_ = "rankings";
+			busy_ = true;
+
+			return true;
+		}
+
 		void BlueAlliance::init()
 		{
 			QString server = "https://www.thebluealliance.com/api/v3";

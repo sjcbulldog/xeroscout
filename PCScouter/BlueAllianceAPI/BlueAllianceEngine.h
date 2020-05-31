@@ -50,6 +50,7 @@ namespace xero
 			void requestTeamEvents(const QStringList& keys, int year);
 			void requestMatchesDetail(const QStringList& keys);
 			void requestRankings(const QString& evkey);
+			void requestEventTeams(const QString& evkey);
 
 			std::shared_ptr<Team> createTeam(QString key, int num, QString nick, QString name, QString city, QString state, QString country);
 			size_t teamCount() const { return teams_by_number_.size(); }

@@ -79,7 +79,7 @@ namespace xero
 				/// \param evname the event name
 				/// \param teamform the name of the file containing the team scouting form
 				/// \param matchform the name of the file contining the match scouting form
-				ScoutingDataModel(const QString& evkey, const QString& evname, const QDate& start);
+				ScoutingDataModel(const QString& evkey, const QString& evname, const QDate& start, const QDate& end);
 
 				/// \brief create a new data model
 				ScoutingDataModel();
@@ -97,6 +97,12 @@ namespace xero
 				/// \return the starting data for the event
 				const QDate& startDate() const {
 					return start_date_;
+				}
+
+				/// \brief returns the starting data for the event
+				/// \return the starting data for the event
+				const QDate& endDate() const {
+					return end_date_;
 				}
 
 				/// \brief return the Blue Alliance event key
@@ -925,6 +931,7 @@ namespace xero
 				std::map<QString, std::pair<QByteArray, QByteArray>> dataset_column_order_;
 
 				QDate start_date_;
+				QDate end_date_;
 			};
 
 		}

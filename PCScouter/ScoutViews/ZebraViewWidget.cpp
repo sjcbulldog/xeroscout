@@ -10,7 +10,7 @@ namespace xero
 	{
 		namespace views
 		{
-			ZebraViewWidget::ZebraViewWidget(QWidget* parent) : QWidget(parent)
+			ZebraViewWidget::ZebraViewWidget(QWidget* parent) : QWidget(parent), ViewBase("ZebraViewWidget")
 			{
 				QVBoxLayout* vlay = new QVBoxLayout();
 				setLayout(vlay);

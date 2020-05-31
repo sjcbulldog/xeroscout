@@ -88,6 +88,7 @@
     <ClCompile Include="District.cpp" />
     <ClCompile Include="EventWeekCalculator.cpp" />
     <ClCompile Include="FetchEventsController.cpp" />
+    <ClCompile Include="FetchEventTeamsController.cpp" />
     <ClCompile Include="FetchMatchController.cpp" />
     <ClCompile Include="FetchMatchesController.cpp" />
     <ClCompile Include="FetchTeamEventsController.cpp" />
@@ -106,6 +107,7 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventWeekCalculator.h" />
     <ClInclude Include="FetchEventsController.h" />
+    <ClInclude Include="FetchEventTeamsController.h" />
     <ClInclude Include="FetchMatchController.h" />
     <ClInclude Include="FetchMatchesController.h" />
     <ClInclude Include="FetchTeamEventsController.h" />

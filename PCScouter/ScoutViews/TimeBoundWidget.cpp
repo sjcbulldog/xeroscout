@@ -192,10 +192,20 @@ namespace xero
 
 					p.drawLine(x, height, x, height + TickRegionHeight);
 
+					int cnt = 0;
 					for (double vsmall = value + 1.0; vsmall <= value + 9.0; vsmall += 1.0)
 					{
+						cnt++;
 						int x = timeToPixel(vsmall);
-						p.drawLine(x, height, x, height + TickRegionHeight / 2);
+						
+						if (cnt == 5)
+						{
+							p.drawLine(x, height, x, height + 3 * TickRegionHeight / 4);
+						}
+						else
+						{
+							p.drawLine(x, height, x, height + TickRegionHeight / 2);
+						}
 					}
 
 					value += 10.0;

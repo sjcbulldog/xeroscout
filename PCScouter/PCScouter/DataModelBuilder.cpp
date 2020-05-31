@@ -31,6 +31,113 @@ void DataModelBuilder::jsonToPropMap(const QJsonObject& obj, const QString& alli
 	}
 }
 
+bool DataModelBuilder::addTeamsMatches(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm)
+{
+	bool assignteams = false;
+
+	auto it = engine.events().find(dm->evkey());
+	if (it == engine.events().end())
+		return false;
+
+	dm->blockSignals(true);
+
+	auto matches = engine.matches();
+
+	if (dm->teams().size() == 0)
+	{
+		assignteams = true;
+
+		QStringList teamlist;
+		auto ev = it->second;
+		for (auto pair : matches)
+		{
+			for (auto teamkey : pair.second->blue()->getTeams())
+			{
+				if (!teamlist.contains(teamkey))
+					teamlist.push_back(teamkey);
+			}
+
+			for (auto teamkey : pair.second->red()->getTeams())
+			{
+				if (!teamlist.contains(teamkey))
+					teamlist.push_back(teamkey);
+			}
+		}
+
+		auto teams = engine.teams();
+		for (const QString& teamkey : teamlist) {
+			auto it = teams.find(teamkey);
+			if (it == teams.end())
+				return false;
+
+			dm->addTeam(it->second->key(), it->second->num(), it->second->nick());
+		}
+	}
+
+	for (auto pair : matches)
+	{
+		auto m = pair.second;
+		if (m->compLevel() != "qm")
+			continue;
+
+		std::shared_ptr<DataModelMatch> mptr = dm->addMatch(m->key(), m->compLevel(), m->setNumber(), m->matchNumber(), m->eTime());
+
+		QStringList& red = m->red()->getTeams();
+		for (int i = 0; i < red.size(); i++) {
+			QString team = m->red()->getTeams().at(i);
+			auto t = dm->findTeamByKey(team);
+			dm->addTeamToMatch(mptr->key(), Alliance::Red, i + 1, team, t->number());
+		}
+
+		QStringList& blue = m->blue()->getTeams();
+		for (int i = 0; i < blue.size(); i++) {
+			QString team = m->blue()->getTeams().at(i);
+			auto t = dm->findTeamByKey(team);
+			dm->addTeamToMatch(mptr->key(), Alliance::Blue, i + 1, team, t->number());
+		}
+	}
+
+
+	// Assign tablets to matches
+	dm->assignMatches();
+
+	if (assignteams)
+	{
+		// Assign tablets to team pits
+		dm->assignTeams();
+	}
+
+	dm->blockSignals(false);
+
+	return true;
+}
+
+
+bool DataModelBuilder::addTeams(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, const QStringList &teamlist)
+{
+	auto it = engine.events().find(dm->evkey());
+	if (it == engine.events().end())
+		return false;
+
+	dm->blockSignals(true);
+
+	auto teams = engine.teams();
+	for (const QString& teamkey : teamlist) {
+		auto it = teams.find(teamkey);
+		if (it == teams.end())
+			return false;
+
+		dm->addTeam(it->second->key(), it->second->num(), it->second->nick());
+	}
+
+	// Assign tablets to team pits
+	dm->assignTeams();
+
+	dm->blockSignals(false);
+
+	return true;
+}
+
 //
 // Build a data model for an event from blue alliance data.  In this case we are given
 // scouting forms that are ours to own.
@@ -52,7 +159,7 @@ std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
 	}
 	auto ev = evit->second;
 
-	auto dm = std::make_shared<ScoutingDataModel>(ev->key(), ev->name(), ev->start());
+	auto dm = std::make_shared<ScoutingDataModel>(ev->key(), ev->name(), ev->start(), ev->end());
 	QStringList tags;
 	if (!dm->setScoutingForms(team, match, tags)) {
 		error = "duplicate tags '";

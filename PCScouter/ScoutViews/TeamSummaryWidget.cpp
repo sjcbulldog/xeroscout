@@ -29,7 +29,7 @@ namespace xero
 	{
 		namespace views
 		{
-			TeamSummaryWidget::TeamSummaryWidget(QWidget* parent) : QWidget(parent)
+			TeamSummaryWidget::TeamSummaryWidget(QWidget* parent) : QWidget(parent), ViewBase("TeamSummaryWidget")
 			{
 				QBoxLayout* lay = new QVBoxLayout();
 				setLayout(lay);
@@ -194,9 +194,10 @@ namespace xero
 				if (dataModel()->createCustomDataSet(ds, query, err))
 				{
 					html = "<center><table border=\"1\">";
-					html += "<tr><th colspan=\"9\">Matches</th></tr>";
+					html += "<tr><th colspan=\"10\">Matches</th></tr>";
 					for (int row = 0; row < ds.rowCount(); row++)
 					{
+						bool isred = true;
 						QVariant key = ds.get(row, "MatchKey");
 						assert(key.type() == QVariant::String);
 
@@ -231,7 +232,16 @@ namespace xero
 						{
 							QString mkey = m->team(Alliance::Red, slot);
 							html += "<td width=\"80\" bgcolor=\"#ff9999\">";
+							if (mkey == current_team_)
+							{
+								html += "<p style=\"text-decoration:underline;font-weight:bold;\">";
+								isred = true;
+							}
 							html += mkey.mid(3);
+							if (mkey == current_team_)
+							{
+								html += "</p>";
+							}
 							html += "</td>";
 						}
 
@@ -239,31 +249,83 @@ namespace xero
 						{
 							QString mkey = m->team(Alliance::Blue, slot);
 							html += "<td width=\"80\" bgcolor=\"#cee5ff\">";
+							if (mkey == current_team_)
+							{
+								isred = false;
+								html += "<p style=\"text-decoration:underline;font-weight:bold;\">";
+							}
 							html += mkey.mid(3);
+							if (mkey == current_team_)
+							{
+								html += "</p>";
+							}
 							html += "</td>";
 						}
 
+						int bluescore = -1, redscore = -1;
 						ConstScoutingDataMapPtr exdata = m->extraData(Alliance::Red, 1);
 						auto it = exdata->find(prop);
 						if (it != exdata->end())
-						{
-							html += "<td width=\"40\" bgcolor=\"#ff9999\">" + it->second.toString() +  "</td>";
-						}
-						else
-						{
-							html += "<td width=\"40\"></td>";
-						}
+							redscore = it->second.toInt();
 
 						exdata = m->extraData(Alliance::Blue, 1);
 						it = exdata->find(prop);
 						if (it != exdata->end())
+							bluescore = it->second.toInt();
+
+						if (redscore != -1)
 						{
-							html += "<td width=\"40\" bgcolor=\"#cee5ff\">" + it->second.toString() + "</td>";
+							html += "<td width=\"40\" bgcolor=\"#ff9999\" style=\"text-align:center\">";
+							if (redscore > bluescore)
+								html += "<b>";
+							html += QString::number(redscore);
+							if (redscore > bluescore)
+								html += "</b>";
+							html += "</td>";
 						}
 						else
 						{
 							html += "<td width=\"40\"></td>";
 						}
+
+						if (bluescore != -1)
+						{
+							html += "<td width=\"40\" bgcolor=\"#cee5ff\" style=\"text-align:center\">";
+							if (redscore < bluescore)
+								html += "<b>";
+							html += QString::number(bluescore);
+							if (redscore < bluescore)
+								html += "</b>";
+							html += "</td>";
+						}
+						else
+						{
+							html += "<td width=\"40\"></td>";
+						}
+
+						QString status;
+
+						if (bluescore != -1 && redscore != -1)
+						{
+							if (bluescore == redscore)
+								status = "T";
+							else if (isred)
+							{
+								if (redscore > bluescore)
+									status = "W";
+								else
+									status = "L";
+							}
+							else
+							{
+								if (redscore < bluescore)
+									status = "W";
+								else
+									status = "L";
+							}
+						}
+
+						html += "<td width=\"40\" style=\"text-align:center\"><b>" + status + "</b></td>";
 					}
 					html += "</table></center>";
 				}
@@ -295,27 +357,29 @@ namespace xero
 					else
 					{
 						int col = matches_ds_.getColumnByName(field);
-						v = matches_ds_.columnSummary(col, true);
+						if (col != -1)
+							v = matches_ds_.columnSummary(col, true);
 					}
 
-					if (v.isValid())
+					html += "<tr>";
+					html += "<td width=\"40\" >" + field + "</td>";
+
+					html += "<td width=\"120\" >";
+					if (!v.isValid())
 					{
-						html += "<tr>";
-						html += "<td width=\"40\" >" + field + "</td>";
-
-						html += "<td width=\"120\" >";
-						if (v.type() == QVariant::Type::Double)
-						{
-							html += QString::number(v.toDouble(), 'f', 2);
-						}
-						else
-						{
-							html += v.toString();
-						}
-
-						html += "</td>";
-						html += "</tr>";
+						html += "No Data";
 					}
+					else if (v.type() == QVariant::Type::Double)
+					{
+						html += QString::number(v.toDouble(), 'f', 2);
+					}
+					else
+					{
+						html += v.toString();
+					}
+
+					html += "</td>";
+					html += "</tr>";
 				}
 
 				html += "</table>";

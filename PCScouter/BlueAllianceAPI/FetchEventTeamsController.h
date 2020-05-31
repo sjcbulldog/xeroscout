@@ -21,13 +21,11 @@ namespace xero
 {
 	namespace ba
 	{
-		class MatchAlliance;
-
-		class FetchMatchesController : public EngineController
+		class FetchEventTeamsController : public EngineController
 		{
 		public:
-			FetchMatchesController(BlueAllianceEngine& engine, const QString& evid);
-			virtual ~FetchMatchesController();
+			FetchEventTeamsController(BlueAllianceEngine& engine, const QString& evkey);
+			virtual ~FetchEventTeamsController();
 
 			virtual QString query();
 			virtual BlueAllianceResult::Status processJson(int code, std::shared_ptr<QJsonDocument> doc);
@@ -35,21 +33,10 @@ namespace xero
 
 			virtual std::shared_ptr<BlueAllianceResult> finishedResult();
 			virtual std::shared_ptr<BlueAllianceResult> startResult();
-			virtual std::shared_ptr<BlueAllianceResult> progressResult();
 
 		private:
-			enum class State
-			{
-				ReadingMatches,
-				Complete
-			};
-
-			std::shared_ptr<MatchAlliance> parseAlliance(QJsonObject obj);
-
-
-		private:
-			QString evid_;
-			State state_;
+			QString evkey_;
+			bool done_;
 		};
 
 	}

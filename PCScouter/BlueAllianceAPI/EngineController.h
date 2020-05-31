@@ -23,8 +23,6 @@ namespace xero
 {
 	namespace ba
 	{
-
-
 		class BlueAllianceEngine;
 
 		class EngineController

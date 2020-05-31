@@ -23,6 +23,7 @@
 #include "FetchZebraController.h"
 #include "FetchTeamEventsController.h"
 #include "FetchRankingController.h"
+#include "FetchEventTeamsController.h"
 #include <QDebug>
 #include <functional>
 
@@ -342,6 +343,17 @@ namespace xero
 		{
 			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchRankingController>(*this, evkey);
+			auto result = controller_->startResult();
+			if (result != nullptr)
+				addResult(result);
+
+			processControllerResult(nullptr, BlueAllianceResult::Status::Success, 200);
+		}
+
+		void BlueAllianceEngine::requestEventTeams(const QString& evkey)
+		{
+			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+			controller_ = std::make_shared<FetchEventTeamsController>(*this, evkey);
 			auto result = controller_->startResult();
 			if (result != nullptr)
 				addResult(result);

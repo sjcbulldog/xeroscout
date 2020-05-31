@@ -52,7 +52,7 @@ namespace xero
 				return ret;
 			}
 
-			DataSetViewWidget::DataSetViewWidget(const QString &name, bool editable, QWidget* parent) : QSplitter(parent)
+			DataSetViewWidget::DataSetViewWidget(const QString &name, bool editable, QWidget* parent) : QSplitter(parent), ViewBase("DataSetViewWidgetItem")
 			{
 				editable_ = true;
 				name_ = name;

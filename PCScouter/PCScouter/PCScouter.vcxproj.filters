@@ -91,6 +91,9 @@
     <ClCompile Include="AllTeamSummaryController.cpp">
       <Filter>AppControllers\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ImportMatchScheduleController.cpp">
+      <Filter>AppControllers\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="PCScouter.h">
@@ -158,6 +161,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AllTeamSummaryController.h">
+      <Filter>AppControllers\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportMatchScheduleController.h">
       <Filter>AppControllers\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

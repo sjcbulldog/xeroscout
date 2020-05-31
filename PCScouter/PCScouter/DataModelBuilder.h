@@ -25,6 +25,10 @@ public:
 		buildModel(xero::ba::BlueAllianceEngine& engine, const QString &pitform, const QString &matchform, 
 		const QString& evkey, QString& error);
 
+	static bool addTeamsMatches(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
+
+	static bool addTeams(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, const QStringList &keys);
+
 	static void jsonToPropMap(const QJsonObject& obj, const QString& alliance, xero::scouting::datamodel::ScoutingDataMapPtr map);
 };
 

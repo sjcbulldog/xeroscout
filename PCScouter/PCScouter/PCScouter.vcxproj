@@ -131,6 +131,7 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
     <ClCompile Include="ClientProtocolHandler.cpp" />
     <ClCompile Include="DataModelBuilder.cpp" />
     <ClCompile Include="ImportMatchDataController.cpp" />
+    <ClCompile Include="ImportMatchScheduleController.cpp" />
     <ClCompile Include="ImportZebraDataController.cpp" />
     <ClCompile Include="KPIController.cpp" />
     <ClCompile Include="main.cpp" />
@@ -152,6 +153,7 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllTeamSummaryController.h" />
+    <ClInclude Include="ImportMatchScheduleController.h" />
     <ClInclude Include="TestDataInjector.h" />
     <QtMoc Include="AboutDialog.h" />
     <ClInclude Include="AdvListWidget.h" />

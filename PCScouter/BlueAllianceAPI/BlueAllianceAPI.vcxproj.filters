@@ -66,6 +66,9 @@
     <ClCompile Include="FetchRankingController.cpp">
       <Filter>Controllers\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FetchEventTeamsController.cpp">
+      <Filter>Controllers\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BACountResult.h">
@@ -81,9 +84,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="District.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Event.h">
@@ -123,6 +123,12 @@
       <Filter>Controllers\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FetchRankingController.h">
+      <Filter>Controllers\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineController.h">
+      <Filter>Controllers\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FetchEventTeamsController.h">
       <Filter>Controllers\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -25,7 +25,7 @@ namespace xero
 		namespace views
 		{
 
-			TeamScheduleViewWidget::TeamScheduleViewWidget(const QString &tablet, QWidget* parent) : QTreeWidget(parent)
+			TeamScheduleViewWidget::TeamScheduleViewWidget(const QString &tablet, QWidget* parent) : QTreeWidget(parent), ViewBase("TeamScheduleViewWidget")
 			{
 				QStringList headers = { "Number", "Scouted", "Tablet", "Name" };
 

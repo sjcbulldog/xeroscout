@@ -28,7 +28,7 @@ namespace xero
 	{
 		namespace views
 		{
-			GraphView::GraphView(QWidget *parent)
+			GraphView::GraphView(QWidget *parent) : QWidget(parent), ViewBase("GraphView")
 			{
 				bottom_ = nullptr;
 				grid_ = nullptr;

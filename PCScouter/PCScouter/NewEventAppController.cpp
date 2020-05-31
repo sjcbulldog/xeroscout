@@ -18,6 +18,11 @@ NewEventAppController::~NewEventAppController()
 {
 }
 
+bool NewEventAppController::shouldDisableApp()
+{
+	return state_ == State::WaitingForEvents || state_ == State::WaitingForMatches || state_ == State::WaitingForTeams;
+}
+
 bool NewEventAppController::isDone()
 {
 	return state_ == State::Done || state_ == State::Error;
@@ -56,7 +61,7 @@ void NewEventAppController::run()
 			break;
 
 		case State::WaitingForEvents:
-			promptUser();
+			state_ = State::Start;
 			break;
 
 		case State::WaitingForMatches:
@@ -66,85 +71,98 @@ void NewEventAppController::run()
 		case State::WaitingForTeams:
 			gotTeams();
 			break;
+
+		case State::NoMatches:
+			noMatches();
+			break;
+
+		case State::WaitingForEventTeams:
+			gotEventTeams();
+			break;
+
+		case State::WaitingForTeamDetail:
+			gotTeamDetail();
+			break;
 		}
+	}
+}
+
+void NewEventAppController::gotTeamDetail()
+{
+	auto it = blueAlliance()->getEngine().events().find(dm_->evkey());
+	if (it == blueAlliance()->getEngine().events().end())
+	{
+		state_ = State::Done;
+		emit complete(false);
+	}
+	else
+	{
+		DataModelBuilder::addTeams(blueAlliance()->getEngine(), dm_, it->second->teamKeys());
+	}
+
+	state_ = State::Done;
+	emit complete(false);
+}
+
+void NewEventAppController::gotEventTeams()
+{
+	auto it = blueAlliance()->getEngine().events().find(dm_->evkey());
+	if (it == blueAlliance()->getEngine().events().end())
+	{
+		state_ = State::Done;
+		emit complete(false);
+	}
+	else
+	{
+		state_ = State::WaitingForTeamDetail;
+		blueAlliance()->requestTeams(it->second->teamKeys());
 	}
 }
 
 void NewEventAppController::gotTeams()
 {
-	auto teams = blueAlliance()->getEngine().teams();
-	for (const QString& teamkey : team_keys_) {
-		auto it = teams.find(teamkey);
-		if (it == teams.end()) {
-			//
-			// The key is in the form of frc####, so we extract the number from
-			// the key for the team number
-			//
-			int teamno = teamkey.mid(3).toInt();
-			emit logMessage("team '" + teamkey + "' missing from BlueAlliance data");
-
-			QString mockname = "Team #" + QString::number(teamno);
-			dm_->addTeam(teamkey, teamno, mockname);
-		}
-		else {
-			dm_->addTeam(it->second->key(), it->second->num(), it->second->nick());
-		}
-	}
-
-	auto matches = blueAlliance()->getEngine().matches();
-	for (auto pair : matches)
-	{
-		auto m = pair.second;
-		if (m->compLevel() != "qm")
-			continue;
-
-		std::shared_ptr<DataModelMatch> dm = dm_->addMatch(m->key(), m->compLevel(), m->setNumber(), m->matchNumber(), m->eTime());
-
-		QStringList& red = m->red()->getTeams();
-		for (int i = 0; i < red.size(); i++) {
-			QString team = m->red()->getTeams().at(i);
-			auto t = dm_->findTeamByKey(team);
-			dm_->addTeamToMatch(dm->key(), Alliance::Red, i + 1, team, t->number());
-		}
-
-		QStringList& blue = m->blue()->getTeams();
-		for (int i = 0; i < blue.size(); i++) {
-			QString team = m->blue()->getTeams().at(i);
-			auto t = dm_->findTeamByKey(team);
-			dm_->addTeamToMatch(dm->key(), Alliance::Blue, i + 1, team, t->number());
-		}
-	}
-
-	// Assign tablets to matches
-	dm_->assignMatches();
-
-	// Assign tablets to team pits
-	dm_->assignTeams();
+	//
+	// Create the teams and matches, and assign matchs and teams to tablets
+	//
+	DataModelBuilder::addTeamsMatches(blueAlliance()->getEngine(), dm_);
 
 	emit complete(false);
 	state_ = State::Done;
+}
+
+void NewEventAppController::noMatches()
+{
+	state_ = State::WaitingForEventTeams;
+	blueAlliance()->requestEventTeams(dm_->evkey());
 }
 
 void NewEventAppController::gotMatches()
 {
 	team_keys_.clear();
 
-	for (auto& pair : blueAlliance()->getEngine().matches()) {
-		for (auto& team : pair.second->red()->getTeams())
-		{
-			if (!team_keys_.contains(team))
-				team_keys_.push_back(team);
-		}
-
-		for (auto& team : pair.second->blue()->getTeams())
-		{
-			if (!team_keys_.contains(team))
-				team_keys_.push_back(team);
-		}
+	if (blueAlliance()->getEngine().matches().size() == 0 || sim_no_matches_)
+	{
+		state_ = State::NoMatches;
 	}
+	else
+	{
+		for (auto& pair : blueAlliance()->getEngine().matches()) {
+			for (auto& team : pair.second->red()->getTeams())
+			{
+				if (!team_keys_.contains(team))
+					team_keys_.push_back(team);
+			}
 
-	blueAlliance()->requestTeams(team_keys_);
-	state_ = State::WaitingForTeams;
+			for (auto& team : pair.second->blue()->getTeams())
+			{
+				if (!team_keys_.contains(team))
+					team_keys_.push_back(team);
+			}
+		}
+
+		blueAlliance()->requestTeams(team_keys_);
+		state_ = State::WaitingForTeams;
+	}
 }
 
 void NewEventAppController::start()
