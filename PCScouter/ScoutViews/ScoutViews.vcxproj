@@ -102,7 +102,6 @@
     <ClCompile Include="GameFieldManager.cpp" />
     <ClCompile Include="GraphConfigurationDialog.cpp" />
     <ClCompile Include="GraphView.cpp" />
-    <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="ManagerBase.cpp" />
     <ClCompile Include="MatchViewWidget.cpp" />
     <ClCompile Include="MathUtils.cpp" />
@@ -134,7 +133,6 @@
     <ClInclude Include="GameFieldManager.h" />
     <ClInclude Include="GraphConfigurationDialog.h" />
     <ClInclude Include="GraphView.h" />
-    <ClInclude Include="ImageManager.h" />
     <ClInclude Include="ManagerBase.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="PreMatchGraphView.h" />

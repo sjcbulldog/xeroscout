@@ -105,9 +105,6 @@
     <ClCompile Include="ExpressionsEntryDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TeamScheduleViewWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -195,9 +192,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExpressionsEntryDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TeamScheduleViewWidget.h">

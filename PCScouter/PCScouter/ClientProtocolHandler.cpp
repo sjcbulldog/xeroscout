@@ -20,11 +20,13 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMessageBox>
+#include <QBuffer>
+#include <QTextCodec>
 
 using namespace xero::scouting::datamodel;
 using namespace xero::scouting::transport;
 
-ClientProtocolHandler::ClientProtocolHandler(ScoutTransport* s, std::shared_ptr<ScoutingDataModel> model, bool debug)
+ClientProtocolHandler::ClientProtocolHandler(ScoutTransport* s, xero::scouting::datamodel::ImageManager& images, std::shared_ptr<ScoutingDataModel> model, bool debug) : images_(images)
 {
 	data_model_ = model;
 	client_ = new ClientServerProtocol(s, true, false, debug);
@@ -44,6 +46,7 @@ ClientProtocolHandler::ClientProtocolHandler(ScoutTransport* s, std::shared_ptr<
 	handlers_.insert(std::make_pair(ClientServerProtocol::ErrorReply, std::bind(&ClientProtocolHandler::handleErrorReply, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestScoutingData, std::bind(&ClientProtocolHandler::handleScoutingRequest, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::SyncDone, std::bind(&ClientProtocolHandler::handleSyncDone, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::RequestImageData, std::bind(&ClientProtocolHandler::handleImageRequest, this, std::placeholders::_1)));
 
 	client_->start();
 }
@@ -79,6 +82,48 @@ void ClientProtocolHandler::handleUnxpectedPacket(const QJsonDocument& doc)
 	client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 
 	emit errorMessage("protocol error - unexpected packet received");
+}
+
+void ClientProtocolHandler::handleImageRequest(const QJsonDocument& doc)
+{
+	QJsonDocument reply;
+	QJsonObject obj;
+	QJsonObject replyobj;
+
+	if (!doc.isObject())
+	{
+		emit errorMessage("protocol error - TabletID packet should have contained JSON object");
+		return;
+	}
+
+	obj = doc.object();
+	if (!obj.contains(JsonImageName) || !obj.value(JsonImageName).isString())
+	{
+		emit errorMessage("protocol error - JSON image name is missing");
+		return;
+	}
+
+	QString imname = obj.value(JsonImageName).toString();
+	auto image = images_.get(imname);
+
+	if (image == nullptr)
+	{
+		replyobj[JsonMessageName] = "image '" + imname + "' is not found";
+		reply.setObject(replyobj);
+		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+	}
+	else
+	{
+		QByteArray ba;
+		QBuffer buffer(&ba);
+		image->save(&buffer, "PNG");
+
+		QByteArray a = ba.toBase64();
+		replyobj[JsonImageName] = imname;
+		replyobj[JsonImageDataName] = QTextCodec::codecForMib(106)->toUnicode(a);
+		reply.setObject(replyobj);
+		client_->sendJson(ClientServerProtocol::ProvideImageData, reply, comp_type_);
+	}
 }
 
 void ClientProtocolHandler::handleTabletID(const QJsonDocument& doc)

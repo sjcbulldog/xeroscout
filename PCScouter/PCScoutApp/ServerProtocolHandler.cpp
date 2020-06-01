@@ -22,7 +22,8 @@
 using namespace xero::scouting::datamodel;
 using namespace xero::scouting::transport;
 
-ServerProtocolHandler::ServerProtocolHandler(const TabletIdentity& id, std::shared_ptr<ScoutingDataModel> dm, ScoutTransport* trans, int comptype, bool debug)
+ServerProtocolHandler::ServerProtocolHandler(const TabletIdentity& id, xero::scouting::datamodel::ImageManager& images, 
+	std::shared_ptr<ScoutingDataModel> dm, ScoutTransport* trans, int comptype, bool debug) : images_(images)
 {
 	done_ = false;
 	comp_type_ = comptype;
@@ -37,6 +38,7 @@ ServerProtocolHandler::ServerProtocolHandler(const TabletIdentity& id, std::shar
 	handlers_.insert(std::make_pair(ClientServerProtocol::ScoutingDataReply, std::bind(&ServerProtocolHandler::handleScoutingDataReply, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::TabletSelectionList, std::bind(&ServerProtocolHandler::handleTabletList, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::ErrorReply, std::bind(&ServerProtocolHandler::handleErrorReply, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::ProvideImageData, std::bind(&ServerProtocolHandler::handleImage, this, std::placeholders::_1)));
 
 	server_ = new ClientServerProtocol(trans, false, true, debug_);
 	connect(server_, &ClientServerProtocol::jsonReceived, this, &ServerProtocolHandler::jsonReceived);
@@ -247,6 +249,80 @@ void ServerProtocolHandler::handleTabletList(const QJsonDocument& doc)
 	}
 }
 
+void ServerProtocolHandler::requestImage()
+{
+	QJsonObject obj;
+	QJsonDocument doc;
+
+	if (needed_images_.count() > 0)
+	{
+		QString image = needed_images_.front();
+		needed_images_.pop_front();
+
+		obj[JsonImageName] = image;
+		doc.setObject(obj);
+		server_->sendJson(ClientServerProtocol::RequestImageData, doc, comp_type_);
+	}
+	else if (!reset_)
+	{
+		emit displayLogMessage("Sending scouting data to central machine");
+
+		//
+		// Generate the scouting data for this tablet only (by name)
+		//
+		QJsonDocument scoutingData = data_model_->generateScoutingData(&id_, id_.name());
+
+		//
+		// Send the data down to the central
+		//
+		server_->sendJson(ClientServerProtocol::DataModelScoutingPacket, scoutingData, comp_type_);
+	}
+	else
+	{
+		//
+		// We are doing a reset of the tablet, request any scouting data available
+		//
+		obj[JsonNameName] = id_.name();
+		doc.setObject(obj);
+		server_->sendJson(ClientServerProtocol::RequestScoutingData, doc, comp_type_);
+	}
+}
+
+void ServerProtocolHandler::handleImage(const QJsonDocument& doc)
+{
+	QJsonDocument reply;
+	QJsonObject obj;
+
+	if (!doc.isObject())
+	{
+		obj[JsonMessageName] = "image data json was invalid, json was not an object";
+		reply.setObject(obj);
+		server_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+	}
+
+	obj = doc.object();
+	if (!obj.contains(JsonImageName) || !obj.value(JsonImageName).isString())
+	{
+		obj[JsonMessageName] = "image data json was invalid, missing 'image' field";
+		reply.setObject(obj);
+		server_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+	}
+
+	if (!obj.contains(JsonImageDataName) || !obj.value(JsonImageDataName).isString())
+	{
+		obj[JsonMessageName] = "image data json was invalid, missing 'imagedata' field";
+		reply.setObject(obj);
+		server_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+	}
+
+	QByteArray a = obj.value(JsonImageDataName).toString().toUtf8();
+	QByteArray data = QByteArray::fromBase64(a);
+
+	images_.put(obj.value(JsonImageName).toString(), data);
+
+	requestImage();
+}
+
 void ServerProtocolHandler::handleCoreData(const QJsonDocument& doc)
 {
 	QJsonDocument reply;
@@ -277,29 +353,16 @@ void ServerProtocolHandler::handleCoreData(const QJsonDocument& doc)
 	}
 	else
 	{
-		if (!reset_) {
-			emit displayLogMessage("Sending scouting data to central machine");
+		QStringList imagelist = data_model_->teamScoutingForm()->images();
+		imagelist.append(data_model_->matchScoutingForm()->images());
 
-			//
-			// Generate the scouting data for this tablet only (by name)
-			//
-			QJsonDocument scoutingData = data_model_->generateScoutingData(&id_, id_.name());
-
-			//
-			// Send the data down to the central
-			//
-			server_->sendJson(ClientServerProtocol::DataModelScoutingPacket, scoutingData, comp_type_);
-		}
-		else
+		for (const QString& image : imagelist)
 		{
-			//
-			// We are doing a reset of the tablet, request any scouting data available
-			//
-			obj[JsonNameName] = id_.name();
-			reply.setObject(obj);
-			server_->sendJson(ClientServerProtocol::RequestScoutingData, reply, comp_type_);
-
+			if (images_.get(image) == nullptr)
+				needed_images_.push_back(image);
 		}
+
+		requestImage();
 	}
 }
 

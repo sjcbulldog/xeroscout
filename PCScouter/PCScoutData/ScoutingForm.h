@@ -73,6 +73,8 @@ namespace xero
 
 				std::shared_ptr<FormItemDesc> itemByName(const QString& name) const;
 
+				QStringList images() const;
+
 			private:
 				void parse(const QString& filename);
 				bool parseSection(const QJsonObject& obj, int index);

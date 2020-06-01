@@ -23,6 +23,7 @@
 #include "BluetoothClientTransport.h"
 #include "BluetoothConnectDialog.h"
 #include "FormInstance.h"
+#include "ImageManager.h"
 #include <QMainWindow>
 #include <QMainWindow>
 #include <QSplitter>
@@ -196,4 +197,6 @@ private:
 	QHostAddress host_addr_;
 
 	std::map<QString, std::shared_ptr<xero::scouting::datamodel::FormInstance>> form_instances_;
+
+	xero::scouting::datamodel::ImageManager images_;
 };

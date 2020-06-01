@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pcscoutdata_global.h"
 #include "ImageSupplier.h"
 #include <QString>
 #include <QImage>
@@ -11,21 +12,27 @@ namespace xero
 {
 	namespace scouting
 	{
-		namespace views
+		namespace datamodel
 		{
-			class ImageManager : public xero::scouting::datamodel::ImageSupplier
+			class PCSCOUTDATA_EXPORT ImageManager : public xero::scouting::datamodel::ImageSupplier
 			{
 			public:
-				ImageManager();
+				ImageManager(bool server);
 				virtual ~ImageManager();
 
 				std::shared_ptr<QImage> get(const QString& tag);
+				bool put(const QString& tag, const QByteArray& data);
 
 			private:
 				std::shared_ptr<QImage> loadImage(const QString &str, const QString& file);
 
 			private:
 				std::map<QString, std::shared_ptr<QImage>> images_;
+
+				static QStringList server_path_;
+				static QStringList client_path_;
+
+				bool server_;
 			};
 		}
 	}

@@ -9,7 +9,7 @@
 using namespace xero::scouting::views;
 using namespace xero::scouting::datamodel;
 
-PCFormViewer::PCFormViewer(QWidget *parent) : QMainWindow(parent)
+PCFormViewer::PCFormViewer(QWidget *parent) : QMainWindow(parent), images_(true)
 {
 	createWindows();
 	createMenus();
@@ -135,7 +135,7 @@ void PCFormViewer::createWindows()
 	left_right_splitter_->addWidget(top_bottom_splitter_);
 
 	QString name = "[None]";
-	view_frame_ = new DocumentView(-1, name, top_bottom_splitter_);
+	view_frame_ = new DocumentView(images_, -1, name, top_bottom_splitter_);
 	view_frame_->setDataModel(nullptr);
 	top_bottom_splitter_->addWidget(view_frame_);
 

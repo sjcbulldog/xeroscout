@@ -36,7 +36,7 @@ namespace xero
 				Q_OBJECT
 
 			public:
-				FormView(ImageManager &images, QString name, QString title, QColor c, QWidget* parent = Q_NULLPTR);
+				FormView(xero::scouting::datamodel::ImageManager &images, QString name, QString title, QColor c, QWidget* parent = Q_NULLPTR);
 				virtual ~FormView();
 
 				void setScoutingForm(std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form, const QString& alliance);
@@ -66,7 +66,7 @@ namespace xero
 				std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form_;
 				std::shared_ptr<xero::scouting::datamodel::FormInstance> instance_;
 
-				ImageManager& images_;
+				xero::scouting::datamodel::ImageManager& images_;
 			};
 		}
 	}

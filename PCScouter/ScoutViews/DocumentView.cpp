@@ -31,13 +31,15 @@
 #include <QFont>
 #include <QCoreApplication>
 
+using namespace xero::scouting::datamodel;
+
 namespace xero
 {
 	namespace scouting
 	{
 		namespace views
 		{
-			DocumentView::DocumentView(int year, const QString &tablet, QWidget* parent) : QStackedWidget(parent)
+			DocumentView::DocumentView(ImageManager &mgr, int year, const QString &tablet, QWidget* parent): images_(mgr)
 			{
 				bool gamemgr = true;
 				QString yearstr = QString::number(year);

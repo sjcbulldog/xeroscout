@@ -10,7 +10,6 @@ namespace xero
 	{
 		namespace datamodel
 		{
-
 			JSonDataModelConverter::JSonDataModelConverter(ScoutingDataModel* dm)
 			{
 				dm_ = dm;

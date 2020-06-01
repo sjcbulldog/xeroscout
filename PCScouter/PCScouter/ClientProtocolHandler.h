@@ -19,6 +19,7 @@
 #include "TabletIdentity.h"
 #include "ClientServerProtocol.h"
 #include "ScoutingDataModel.h"
+#include "ImageManager.h"
 #include <QObject>
 #include <QTcpSocket>
 #include <QTextEdit>
@@ -28,7 +29,7 @@ class ClientProtocolHandler : public QObject
 	Q_OBJECT
 
 public:
-	ClientProtocolHandler(xero::scouting::transport::ScoutTransport* socket, 
+	ClientProtocolHandler(xero::scouting::transport::ScoutTransport* socket, xero::scouting::datamodel::ImageManager& images,
 			std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> data, bool debug);
 	virtual ~ClientProtocolHandler();
 
@@ -63,6 +64,7 @@ private:
 	void handleErrorReply(const QJsonDocument& doc);
 	void handleScoutingRequest(const QJsonDocument& doc);
 	void handleSyncDone(const QJsonDocument& doc);
+	void handleImageRequest(const QJsonDocument& doc);
 
 private:
 	xero::scouting::transport::ClientServerProtocol* client_;
@@ -73,5 +75,7 @@ private:
 	bool reset_;
 
 	std::map<uint32_t, std::function<void(const QJsonDocument& doc)>> handlers_;
+
+	xero::scouting::datamodel::ImageManager& images_;
 };
 

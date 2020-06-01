@@ -59,7 +59,7 @@ namespace xero
 				};
 
 			public:
-				DocumentView(int year, const QString &tablet, QWidget* parent = Q_NULLPTR);
+				DocumentView(xero::scouting::datamodel::ImageManager& mgr, int year, const QString &tablet, QWidget* parent = Q_NULLPTR);
 				~DocumentView();
 
 				void setTablet(const QString& tablet) {
@@ -121,7 +121,7 @@ namespace xero
 				ViewType view_;
 				std::map<QString, QWidget*> scouting_forms_;
 				GameFieldManager field_mgr_;
-				ImageManager images_;
+				xero::scouting::datamodel::ImageManager &images_;
 			};
 		}
 	}

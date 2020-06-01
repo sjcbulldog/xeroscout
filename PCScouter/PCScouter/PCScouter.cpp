@@ -75,7 +75,7 @@ using namespace xero::scouting::transport;
 // Initialization ...
 ////////////////////////////////////////////////////////////
 
-PCScouter::PCScouter(QWidget *parent) : QMainWindow(parent)
+PCScouter::PCScouter(QWidget *parent) : QMainWindow(parent), images_(true)
 {
 	TestDataInjector& injector = TestDataInjector::getInstance();
 	summary_progress_ = new QProgressBar();
@@ -224,63 +224,63 @@ void PCScouter::createWindows()
 	(void)connect(view_selector_, &SpecialListWidget::magicWord, this, &PCScouter::magicWordTyped);
 	left_right_splitter_->addWidget(view_selector_);
 
-	item = new QListWidgetItem(loadIcon("teams"), "Team Scouting Form", view_selector_);
+	item = new QListWidgetItem(loadIcon("teams.png"), "Team Scouting Form", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamScoutingFormView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("teams"), "Team Scouting Status", view_selector_);
+	item = new QListWidgetItem(loadIcon("teams.png"), "Team Scouting Status", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PitView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("teamdata"), "Team Scouting Data", view_selector_);
+	item = new QListWidgetItem(loadIcon("teamdata.png"), "Team Scouting Data", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamDataSet)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("match"), "Match Scouting Form - Red", view_selector_);
+	item = new QListWidgetItem(loadIcon("match.png"), "Match Scouting Form - Red", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewRed)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("match"), "Match Scouting Form - Blue", view_selector_);
+	item = new QListWidgetItem(loadIcon("match.png"), "Match Scouting Form - Blue", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewBlue)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("schedule"), "Match Scouting Status", view_selector_);
+	item = new QListWidgetItem(loadIcon("schedule.png"), "Match Scouting Status", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("matchdata"), "Match Scouting Data", view_selector_);
+	item = new QListWidgetItem(loadIcon("matchdata.png"), "Match Scouting Data", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchDataSet)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("matchdata"), "Pre-Match Graphs", view_selector_);
+	item = new QListWidgetItem(loadIcon("matchdata.png"), "Pre-Match Graphs", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchGraphView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("summary"), "Single Team Summary", view_selector_);
+	item = new QListWidgetItem(loadIcon("summary.png"), "Single Team Summary", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamReport)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("summary"), "All Team Summary", view_selector_);
+	item = new QListWidgetItem(loadIcon("summary.png"), "All Team Summary", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::AllTeamReport)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("matchdata"), "Alliance Graphs", view_selector_);
+	item = new QListWidgetItem(loadIcon("matchdata.png"), "Alliance Graphs", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::AllianceGraphView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("customdata"), "Custom Data", view_selector_);
+	item = new QListWidgetItem(loadIcon("customdata.png"), "Custom Data", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::CustomDataSet)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("customdata"), "Zebra Data", view_selector_);
+	item = new QListWidgetItem(loadIcon("customdata.png"), "Zebra Data", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraDataView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("history"), "Change History", view_selector_);
+	item = new QListWidgetItem(loadIcon("history.png"), "Change History", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::HistoryView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("history"), "Merge List", view_selector_);
+	item = new QListWidgetItem(loadIcon("history.png"), "Merge List", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MergeListView)));
 	view_selector_->addItem(item);
 
@@ -290,7 +290,7 @@ void PCScouter::createWindows()
 	top_bottom_splitter_->setOrientation(Qt::Orientation::Vertical);
 	left_right_splitter_->addWidget(top_bottom_splitter_);
 
-	view_frame_ = new DocumentView(year_, "", top_bottom_splitter_);
+	view_frame_ = new DocumentView(images_, year_, "", top_bottom_splitter_);
 
 	DataSetViewWidget * ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
 	connect(ds, &DataSetViewWidget::rowChanged, this, &PCScouter::matchRowChanged);
@@ -424,7 +424,7 @@ void PCScouter::syncWithTablet(ScoutTransport *trans)
 	logwin_->append("Sync requested from '" + trans->description() + "'");
 
 	disableApp();
-	tablet_client_ = new ClientProtocolHandler(trans, data_model_, debug_act_->isChecked());
+	tablet_client_ = new ClientProtocolHandler(trans, images_, data_model_, debug_act_->isChecked());
 	connect(tablet_client_, &ClientProtocolHandler::errorMessage, this, &PCScouter::clientError);
 	connect(tablet_client_, &ClientProtocolHandler::tabletAttached, this, &PCScouter::clientTabletAttached);
 	connect(tablet_client_, &ClientProtocolHandler::complete, this, &PCScouter::clientComplete);
@@ -626,9 +626,13 @@ void PCScouter::setupViews()
 
 QIcon PCScouter::loadIcon(const QString& filename)
 {
-	QString iconfile = QCoreApplication::applicationDirPath() + "/" + filename;
-	QPixmap image(iconfile);
-	return QIcon(image);
+	QIcon default;
+
+	auto image = images_.get(filename);
+	if (image == nullptr)
+		return default;
+
+	return QIcon(QPixmap::fromImage(*image));
 }
 
 void PCScouter::disableApp()

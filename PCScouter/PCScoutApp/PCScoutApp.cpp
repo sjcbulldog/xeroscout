@@ -41,7 +41,7 @@ using namespace xero::scouting::datamodel;
 using namespace xero::scouting::views;
 using namespace xero::scouting::transport;
 
-PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent)
+PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
 {
 	server_ = nullptr;
 	ignore_view_select_changes_ = false;
@@ -412,7 +412,7 @@ void PCScoutApp::createWindows()
 	QString name = identity_.name();
 	if (name.length() == 0)
 		name = "[None]";
-	view_frame_ = new DocumentView(-1, name, top_bottom_splitter_);
+	view_frame_ = new DocumentView(images_, -1, name, top_bottom_splitter_);
 	view_frame_->setDataModel(data_model_);
 	top_bottom_splitter_->addWidget(view_frame_);
 
@@ -687,7 +687,7 @@ void PCScoutApp::syncWithCentralNetwork()
 
 void PCScoutApp::startSync(ScoutTransport* trans)
 {
-	server_ = new ServerProtocolHandler(identity_, data_model_, trans, 1, debug_act_->isChecked());
+	server_ = new ServerProtocolHandler(identity_, images_, data_model_, trans, 1, debug_act_->isChecked());
 
 	server_complete_connect_ = connect(server_, &ServerProtocolHandler::complete, this, &PCScoutApp::complete);
 	server_display_connect_ = connect(server_, &ServerProtocolHandler::displayLogMessage, this, &PCScoutApp::displayLogMessage);

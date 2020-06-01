@@ -20,6 +20,7 @@
 #include "ScoutingDataModel.h"
 #include "TabletIdentity.h"
 #include "ClientServerProtocol.h"
+#include "ImageManager.h"
 #include <QObject>
 #include <QJsonDocument>
 #include <QTimer>
@@ -31,6 +32,7 @@ class ServerProtocolHandler : public QObject
 
 public:
 	ServerProtocolHandler(const xero::scouting::datamodel::TabletIdentity &id, 
+							xero::scouting::datamodel::ImageManager &images,
 							std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, 
 							xero::scouting::transport::ScoutTransport* trans, int comptype, bool debug=false);
 	virtual ~ServerProtocolHandler();
@@ -57,6 +59,7 @@ private:
 	void protocolAbort(const QString &errmsg);
 	void disconnected();
 	void displayProtcolLogMessage(const QString& msg);
+	void requestImage();
 
 private:
 	void handleUnxpectedPacket(const QJsonDocument& doc);
@@ -66,6 +69,7 @@ private:
 	void handleScoutingData(const QJsonDocument& doc);
 	void handleScoutingDataReply(const QJsonDocument& doc);
 	void handleErrorReply(const QJsonDocument& doc);
+	void handleImage(const QJsonDocument& doc);
 
 private:
 	//
@@ -111,5 +115,9 @@ private:
 	// We are done, disconnects are ok
 	//
 	bool done_;
+
+	QStringList needed_images_;
+
+	xero::scouting::datamodel::ImageManager& images_;
 };
 

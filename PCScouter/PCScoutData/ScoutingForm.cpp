@@ -804,6 +804,26 @@ namespace xero
 				name = obj.value("name").toString();
 				return true;
 			}
+
+			QStringList ScoutingForm::images() const
+			{
+				QStringList list;
+
+				for (auto s : sections_)
+				{
+					for (auto item : s->items())
+					{
+						std::shared_ptr<const ImageFormItem> im = std::dynamic_pointer_cast<const ImageFormItem>(item);
+						if (im != nullptr)
+						{
+							if (!list.contains(im->imageTag()))
+								list.push_back(im->imageTag());
+						}
+					}
+				}
+
+				return list;
+			}
 		}
 	}
 }

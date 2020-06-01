@@ -195,4 +195,6 @@ private:
 
 	ApplicationController* app_controller_;
 	bool app_disabled_;
+
+	xero::scouting::datamodel::ImageManager images_;
 };

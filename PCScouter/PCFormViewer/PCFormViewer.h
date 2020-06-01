@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DocumentView.h"
+#include "ImageManager.h"
 #include <QMainWindow>
 #include <QMainWindow>
 #include <QMainWindow>
@@ -50,4 +51,6 @@ private:
     QMenu* file_menu_;
 
     QSettings settings_;
+
+    xero::scouting::datamodel::ImageManager images_;
 };
