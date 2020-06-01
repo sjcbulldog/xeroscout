@@ -46,13 +46,10 @@ namespace xero
 				}
 
 				virtual void setNeedRefresh() {
-					qDebug() << "SetNeedRefresh: " << name_;
-
 					need_refresh_ = true;
 				}
 
 				virtual void clearNeedRefresh() {
-					qDebug() << "ClearNeedRefresh: " << name_;
 					need_refresh_ = false;
 				}
 

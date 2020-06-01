@@ -56,6 +56,8 @@ namespace xero
 
 				virtual void createTop(QGroupBox* top) = 0;
 
+				bool changeTriggered() { return changed_triggered_; }
+
 			private:
 				static const int constexpr MaxPanes = 9;
 
@@ -91,6 +93,7 @@ namespace xero
 				std::list<std::pair<std::shared_ptr<ChartViewWrapper>, std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane>>> pane_chart_map_;
 
 				int count_;
+				bool changed_triggered_;
 			};
 		}
 	}

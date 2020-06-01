@@ -38,6 +38,7 @@ namespace xero
 				setFocusPolicy(Qt::StrongFocus);
 
 				count_ = 1;
+				changed_triggered_ = false;
 			}
 
 			GraphView::~GraphView()
@@ -117,7 +118,10 @@ namespace xero
 
 				desc_.deletePane(pane);
 				refreshCharts();
+
+				changed_triggered_ = true;
 				dataModel()->updateGraphDescriptor(desc_);
+				changed_triggered_ = false;
 			}
 
 			void GraphView::addVariable(std::shared_ptr<GraphDescriptor::GraphPane> pane, const QString &var)
@@ -125,7 +129,10 @@ namespace xero
 				pane->addX(var);
 
 				refreshCharts();
+
+				changed_triggered_ = true;
 				dataModel()->updateGraphDescriptor(desc_);
+				changed_triggered_ = false;
 			}
 
 			void GraphView::addExpr(std::shared_ptr<GraphDescriptor::GraphPane> pane)
@@ -135,7 +142,7 @@ namespace xero
 				QStringList list;
 				for (auto f : dataModel()->getAllFields())
 				{
-					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer)
+					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer || f->type() == FieldDesc::Type::Boolean)
 						list.push_back(f->name());
 				}
 				ExpressionsEntryDialog dialog(list, this);
@@ -155,7 +162,10 @@ namespace xero
 					pane->addX(dialog.expr());
 
 					refreshCharts();
+
+					changed_triggered_ = true;
 					dataModel()->updateGraphDescriptor(desc_);
+					changed_triggered_ = false;
 				}
 			}
 
@@ -164,7 +174,10 @@ namespace xero
 				pane->removeX(var);
 
 				refreshCharts();
+
+				changed_triggered_ = true;
 				dataModel()->updateGraphDescriptor(desc_);
+				changed_triggered_ = false;
 			}
 
 			void GraphView::setRange(std::shared_ptr<GraphDescriptor::GraphPane> pane)
@@ -182,7 +195,10 @@ namespace xero
 				pane->setRange(minv, maxv);
 
 				refreshCharts();
+
+				changed_triggered_ = true;
 				dataModel()->updateGraphDescriptor(desc_);
+				changed_triggered_ = false;
 			}
 
 			void GraphView::mousePressEvent(QMouseEvent* ev)
@@ -238,7 +254,7 @@ namespace xero
 
 						for (auto f : dataModel()->getAllFields())
 						{
-							if (!x.contains(f->name()))
+							if (!x.contains(f->name()) && (f->type() == FieldDesc::Type::Integer || f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Boolean))
 							{
 								act = sub->addAction(f->name());
 								auto cb = std::bind(&GraphView::addVariable, this, pane, f->name());
@@ -416,10 +432,7 @@ namespace xero
 					std::shared_ptr<GraphDescriptor::GraphPane> pane = desc_.pane(i);
 					std::shared_ptr<ChartViewWrapper> chart = createForPane(pane);
 
-					if (pane->x().count() > 0 && keys_.count() > 0)
-					{
-						generateOneChart(pane, chart, keys_);
-					}
+					generateOneChart(pane, chart, keys_);
 				}
 			}
 
@@ -491,14 +504,14 @@ namespace xero
 
 				for (auto f : dataModel()->getAllFields())
 				{
-					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer)
+					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer || f->type() == FieldDesc::Type::Boolean)
 						alllist.push_back(f->name());
 				}
 				ScoutDataExprContext ctxt(alllist);
 
 				for (auto f : dataModel()->getMatchFields())
 				{
-					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer)
+					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer || f->type() == FieldDesc::Type::Boolean)
 						matchfields.push_back(f->name());
 				}
 
@@ -564,7 +577,7 @@ namespace xero
 
 					if (count > 0)
 					{
-						query += " from teams where " + QString(DataModelMatch::MatchTeamKeyName) + "='" + team + "'";
+						query += " from teams where " + QString(DataModelTeam::TeamKeyName) + "='" + team + "'";
 						if (!addDataElements(query, varvalues, ds))
 						{
 							data.clear();

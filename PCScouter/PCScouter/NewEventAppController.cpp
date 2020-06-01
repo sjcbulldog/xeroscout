@@ -12,6 +12,7 @@ NewEventAppController::NewEventAppController(std::shared_ptr<BlueAlliance> ba, c
 	tablets_ = tablets;
 	state_ = State::Start;
 	year_ = year;
+	sim_no_matches_ = false;
 }
 
 NewEventAppController::~NewEventAppController()

@@ -1122,7 +1122,6 @@ void PCScouter::updateCurrentView()
 			else if (ds->needsRefresh())
 			{
 				ds->refreshView();
-				ds->refreshCharts();
 				ds->clearNeedRefresh();
 			}
 		}

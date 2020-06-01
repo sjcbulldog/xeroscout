@@ -41,6 +41,21 @@ namespace xero
 				}
 			}
 
+			void ChartViewWrapper::mouseDoubleClickEvent(QMouseEvent* ev)
+			{
+				QFontMetrics fm(chart()->titleFont());
+				int size = fm.horizontalAdvance(chart()->title());
+
+				if (ev->pos().y() < chart()->margins().top() + fm.height())
+				{
+					int c = chart()->rect().center().x();
+					if (ev->pos().x() > c - size / 2 && ev->pos().x() < c + size / 2)
+					{
+						editTitle();
+					}
+				}
+			}
+
 			void ChartViewWrapper::editTitle()
 			{
 				if (editor_ == nullptr)
@@ -48,12 +63,6 @@ namespace xero
 					editor_ = new EditName(this);
 					(void)connect(editor_, &EditName::returnPressed, this, &ChartViewWrapper::editorDone);
 					(void)connect(editor_, &EditName::escapePressed, this, &ChartViewWrapper::editorAborted);
-
-					QFont font = editor_->font();
-					font.setPointSize(20);
-					font.setBold(true);
-					editor_->setFont(font);
-
 					editor_->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 				}
 

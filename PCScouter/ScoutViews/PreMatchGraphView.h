@@ -19,8 +19,11 @@ namespace xero
 				virtual ~PreMatchGraphView();
 
 				virtual void refreshView() {
-					updateComboBox();
-					refreshCharts();
+					if (!changeTriggered())
+					{
+						updateComboBox();
+						refreshCharts();
+					}
 				}
 
 				virtual void clearView() {

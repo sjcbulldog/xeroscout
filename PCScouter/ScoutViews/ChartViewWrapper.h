@@ -28,6 +28,7 @@ namespace xero
 
 			protected:
 				void mouseMoveEvent(QMouseEvent* ev);
+				void mouseDoubleClickEvent(QMouseEvent* ev);
 
 			private:
 				void editorDone();

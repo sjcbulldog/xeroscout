@@ -18,7 +18,8 @@ namespace xero
 				virtual ~AllianceGraphView();
 
 				virtual void refreshView() {
-					refreshCharts();
+					if (!changeTriggered())
+						refreshCharts();
 				}
 
 				virtual void clearView() {
