@@ -81,6 +81,5 @@ namespace xero
 		private:
 			Status st_;
 		};
-
 	}
 }

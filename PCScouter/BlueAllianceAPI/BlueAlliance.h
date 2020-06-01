@@ -17,6 +17,7 @@
 #pragma once
 
 #include "blueallianceapi_global.h"
+#include "BlueAllianceResult.h"
 #include <QString>
 #include <vector>
 
@@ -76,6 +77,7 @@ namespace xero
 			int loaded_;
 			int total_;
 			QString fetch_type_;
+			BlueAllianceResult::Status status_;
 		};
 	}
 }

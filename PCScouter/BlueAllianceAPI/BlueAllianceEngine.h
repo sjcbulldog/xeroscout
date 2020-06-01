@@ -94,6 +94,8 @@ namespace xero
 			std::map<QString, std::shared_ptr<District>> districts_by_key_;
 
 			std::map<QString, std::shared_ptr<Match>> matches_by_key_;
+
+			QString error_message_;
 		};
 
 	}

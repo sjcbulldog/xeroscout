@@ -154,7 +154,7 @@ namespace xero
 			switch (engine_state_)
 			{
 			case EngineState::Down:
-				result = QString("BlueAlliance is not reachable");
+				result = QString("BlueAlliance is not reachable - ") + BlueAllianceResult::toString(status_);
 				break;
 
 			case EngineState::Initializing:
@@ -193,6 +193,8 @@ namespace xero
 				case EngineState::Initializing:
 					if (result->status() != BlueAllianceResult::Status::Success) 
 					{
+						status_ = result->status();
+
 						//
 						// Error in getting blue alliance status.  This basically makes
 						// blue alliance data unavailable.

@@ -43,6 +43,7 @@ namespace xero
 				static constexpr const uint32_t RequestScoutingData = 0x80000006;
 				static constexpr const uint32_t RequestImageData = 0x80000007;
 				static constexpr const uint32_t ProvideImageData = 0x80000008;
+				static constexpr const uint32_t ServerIDPacket = 0x80000009;
 				static constexpr const uint32_t SyncDone = 0x80001000;
 				static constexpr const uint32_t ErrorReply = 0x8000FFFF;
 

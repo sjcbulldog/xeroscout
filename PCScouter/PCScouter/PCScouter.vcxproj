@@ -69,7 +69,7 @@
       <AdditionalDependencies>ScoutViews.lib;PCScoutData.lib;BlueAllianceAPI.lib;ScoutTransport.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\fields
+      <Command>if not exist "$(OutDir)fields" mkdir $(OutDir)fields
 copy $(ProjectDir)fields\*.* $(OutDir)\fields
 copy $(ProjectDir)images\*.* $(OutDir)
 $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe
@@ -81,8 +81,7 @@ mkdir $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlite.dll $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
 copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
-mkdir $(OutDir)\forms
-copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
+</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>c:\cygwin64\bin\bash incver.sh</Command>
@@ -104,7 +103,7 @@ copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
       <AdditionalDependencies>ScoutViews.lib;PCScoutData.lib;BlueAllianceAPI.lib;ScoutTransport.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)\fields
+      <Command>if not exist "$(OutDir)fields" mkdir $(OutDir)fields
 copy $(ProjectDir)fields\*.* $(OutDir)\fields
 copy $(ProjectDir)images\*.* $(OutDir)
 $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe
@@ -116,8 +115,7 @@ mkdir $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlite.dll $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
 copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
-mkdir $(OutDir)\forms
-copy $(SolutionDir)..\forms\*.json $(OutDir)\forms</Command>
+</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>c:\cygwin64\bin\bash incver.sh</Command>
