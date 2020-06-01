@@ -640,7 +640,7 @@ namespace xero
 						}
 
 						if (isnan(yval) || isinf(yval))
-							yval = 0;
+							yval = 0.0;
 
 						*set << yval;
 						cnt++;
