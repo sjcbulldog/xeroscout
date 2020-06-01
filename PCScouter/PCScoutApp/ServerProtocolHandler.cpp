@@ -337,6 +337,39 @@ void ServerProtocolHandler::handleCoreData(const QJsonDocument& doc)
 	QStringList err;
 	emit displayLogMessage("Received 'core' data from central machine - updating data model");
 
+	QUuid uid;
+	if (!data_model_->peekUUID(doc, uid))
+	{
+		//
+		// Shutdown the connection
+		//
+		emit errorMessage("Error loading 'core' data - missing data model UUID");
+
+		//
+		// Tell the central something went wrong
+		//
+		obj[JsonMessageName] = "error loading 'core' data on tablet - missing data model UUID";
+		reply.setObject(obj);
+		server_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+	}
+
+	if (!data_model_->uuid().isNull() && data_model_->uuid() != uid)
+	{
+		//
+		// The data loaded locally is for a different data model, we cannot mix the data so
+		// tell the user something is wrong
+		//
+
+		emit errorMessage("The data on this tablet is for a different data set, to sync this tablet with the given central, first reset the tablet, then sych.");
+
+		//
+		// Tell the central something went wrong
+		//
+		obj[JsonMessageName] = "data on tablet is for different dataset";
+		reply.setObject(obj);
+		server_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+	}
+
 	if (!data_model_->loadCoreJSON(doc, err))
 	{
 		//

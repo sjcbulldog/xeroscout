@@ -43,7 +43,7 @@ namespace xero
 					TeamScoutingFormView = 1,
 					MatchScoutingFormViewRed = 2,
 					MatchScoutingFormViewBlue = 3,
-					PitView = 4,
+					TeamView = 4,
 					MatchView = 5,
 					MatchDataSet = 6,
 					TeamDataSet = 7,
@@ -80,6 +80,8 @@ namespace xero
 						if (vb != nullptr)
 							vb->setDataModel(model);
 					}
+
+					needsRefreshAll();
 				}
 
 				void clearAll();

@@ -104,7 +104,7 @@ namespace xero
 
 				QTreeWidget* tree;
 
-				tree = dynamic_cast<QTreeWidget*>(getWidget(ViewType::PitView));
+				tree = dynamic_cast<QTreeWidget*>(getWidget(ViewType::TeamView));
 				(void)connect(tree, &QTreeWidget::itemDoubleClicked, this, &DocumentView::teamItemDoubleClicked);
 
 				tree = dynamic_cast<QTreeWidget*>(getWidget(ViewType::MatchView));
@@ -189,7 +189,7 @@ namespace xero
 				const QVariant& v = item->data(0, Qt::UserRole);
 
 				if (v.isValid() && v.type() == QVariant::String)
-					emit itemDoubleClicked(ViewType::PitView, v.toString());
+					emit itemDoubleClicked(ViewType::TeamView, v.toString());
 			}
 
 			void DocumentView::matchItemDoubleClicked(QTreeWidgetItem* item, int col)

@@ -42,6 +42,18 @@ private:
     static constexpr const char* TopBottomSplitterSettings = "topbottom";
 
 private:
+    void updateWindow();
+
+    void addSection();
+    void addBoolean();
+    void addUpDown();
+    void addNumeric();
+    void addChoice();
+    void addText();
+    void addImage();
+    void addTimerCount();
+
+private:
 	QSplitter* left_right_splitter_;
 	QListWidget* view_selector_;
     QSplitter* top_bottom_splitter_;
@@ -49,8 +61,11 @@ private:
     QTextEdit* logwin_;
 
     QMenu* file_menu_;
+    QMenu* edit_menu_;
 
     QSettings settings_;
 
     xero::scouting::datamodel::ImageManager images_;
+
+    std::shared_ptr<xero::scouting::datamodel::ScoutingForm> form_;
 };

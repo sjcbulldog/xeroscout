@@ -294,7 +294,7 @@ void PCScoutApp::setupViews()
 {
 	FormView* view;
 
-	TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
+	TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamView));
 	std::list<std::shared_ptr<const DataModelTeam>> teams;
 	for (auto t : data_model_->teams()) {
 		if (t->tablet() == identity_.name())
@@ -348,7 +348,7 @@ void PCScoutApp::complete(bool reset)
 	if (mv != nullptr)
 		mv->setTablet(identity_.name());
 
-	TeamScheduleViewWidget* pv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
+	TeamScheduleViewWidget* pv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamView));
 	if (pv != nullptr)
 		pv->setTablet(identity_.name());
 
@@ -395,12 +395,12 @@ void PCScoutApp::createWindows()
 	f.setPointSizeF(18.0);
 	view_selector_->setFont(f);
 
-	item = new QListWidgetItem(loadIcon("teams"), "Pit Scouting", view_selector_);
-	item->setData(Qt::UserRole, QVariant(3));
+	item = new QListWidgetItem(loadIcon("teams"), "Team Scouting", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamView)));
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("schedule"), "Match Scouting", view_selector_);
-	item->setData(Qt::UserRole, QVariant(4));
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchView)));
 	view_selector_->addItem(item);
 
 	view_selector_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
@@ -633,7 +633,7 @@ void PCScoutApp::removeAllScoutingFormsFromViews()
 		i--;
 	}
 
-	view_frame_->setViewType(DocumentView::ViewType::PitView);
+	view_frame_->setViewType(DocumentView::ViewType::TeamView);
 }
 
 void PCScoutApp::setTeamNumber()
@@ -905,7 +905,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 {
 	int index;
 
-	if (t == DocumentView::ViewType::PitView)
+	if (t == DocumentView::ViewType::TeamView)
 	{
 		auto team = data_model_->findTeamByKey(key);
 		QString title = generatePitTitle(team);
@@ -913,7 +913,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 		index = startScouting(key, "team", title, Alliance::Red, data_model_->teamScoutingForm());
 		saveForm(index);
 
-		TeamScheduleViewWidget* w = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
+		TeamScheduleViewWidget* w = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamView));
 		w->setScoutingField(key, true);
 	}
 	else if (t == DocumentView::ViewType::MatchView)

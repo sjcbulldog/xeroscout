@@ -199,6 +199,7 @@ namespace xero
 
 				payload[JsonVersionName] = core_version_;
 				payload[JsonEvKeyName] = dm_->evkey();
+				payload[JsonDataModelUUID] = dm_->uuid().toString();
 				payload[JsonEvNameName] = dm_->evname();
 				payload[JsonMatchScoutingFormName] = dm_->matchScoutingForm()->obj();
 				payload[JsonPitScoutingFormName] = dm_->teamScoutingForm()->obj();
@@ -544,6 +545,12 @@ namespace xero
 				}
 
 				dm_->ev_key_ = obj[JsonEvKeyName].toString();
+
+				if (!obj.contains(JsonDataModelUUID) || !obj.value(JsonDataModelUUID).isString()) {
+					errors_.push_back("expected string field '" + QString(JsonDataModelUUID) + "'");
+					return false;
+				}
+				dm_->uuid_ = QUuid::fromString(obj.value(JsonDataModelUUID).toString());
 
 				if (!obj.contains(JsonEvNameName) || !obj.value(JsonEvNameName).isString()) {
 					errors_.push_back("expected string field '" + QString(JsonEvNameName) + "'");
@@ -1193,6 +1200,25 @@ namespace xero
 						added.push_back(matchres.value(JsonKeyName).toString());
 				}
 
+				return true;
+			}
+
+			bool JSonDataModelConverter::peekUUID(const QJsonDocument &doc, QUuid& uuid)
+			{
+				if (!doc.isObject())
+					return false;
+
+				QJsonObject obj = doc.object();
+
+				if (!obj.contains(JsonPayloadName) || !obj.value(JsonPayloadName).isObject())
+					return false;
+
+				obj = obj.value(JsonPayloadName).toObject();
+
+				if (!obj.contains(JsonDataModelUUID) || !obj.value(JsonDataModelUUID).isString())
+					return false;
+
+				uuid = QUuid::fromString(obj.value(JsonDataModelUUID).toString());
 				return true;
 			}
 

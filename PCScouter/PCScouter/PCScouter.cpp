@@ -229,7 +229,7 @@ void PCScouter::createWindows()
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("teams.png"), "Team Scouting Status", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PitView)));
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamView)));
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("teamdata.png"), "Team Scouting Data", view_selector_);
@@ -658,6 +658,7 @@ void PCScouter::setDataModelStatus()
 	else
 	{
 		QString str = "Data Model";
+		str += " " + data_model_->uuid().toString();
 		str += " " + QString::number(data_model_->teams().size()) + " teams";
 		str += " " + QString::number(data_model_->matches().size()) + " matches";
 		data_model_status_->setText(str);
@@ -821,6 +822,8 @@ void PCScouter::newEventComplete(bool err)
 
 		QMessageBox::information(this, "Save File", "The event has been created, please save the data to a file");
 		saveEventAs();
+
+		setDataModelStatus();
 	}
 }
 
@@ -830,6 +833,9 @@ void PCScouter::newEventBA()
 		QMessageBox::warning(this, "Warning", "Cannot create new event, current event has unsaved changes");
 		return;
 	}
+
+	data_model_ = std::make_shared<ScoutingDataModel>();
+	view_frame_->setDataModel(data_model_);
 
 	QStringList tablets;
 	if (settings_.contains("tablets"))
@@ -990,7 +996,7 @@ void PCScouter::updateCurrentView()
 		}
 		break;
 
-		case DocumentView::ViewType::PitView:
+		case DocumentView::ViewType::TeamView:
 		{
 			TeamScheduleViewWidget* ds = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
@@ -1199,7 +1205,7 @@ void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 		case ScoutingDataModel::ChangeType::TeamAdded:
 		case ScoutingDataModel::ChangeType::TeamDataChanged:
 		{
-			TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::PitView));
+			TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamView));
 			tv->setNeedRefresh();
 
 			DataSetViewWidget* w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamDataSet));

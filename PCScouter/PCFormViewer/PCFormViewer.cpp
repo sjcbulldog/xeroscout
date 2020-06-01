@@ -4,6 +4,8 @@
 #include <QMenuBar>
 #include <QFileDialog>
 #include <QCoreApplication>
+#include <QInputDialog>
+#include <QMessageBox>
 #include <memory>
 
 using namespace xero::scouting::views;
@@ -37,6 +39,8 @@ PCFormViewer::PCFormViewer(QWidget *parent) : QMainWindow(parent), images_(true)
 			sizes.push_back(v.toInt());
 		top_bottom_splitter_->setSizes(sizes);
 	}
+
+	form_ = std::make_shared<ScoutingForm>();
 }
 
 void PCFormViewer::closeEvent(QCloseEvent* ev)
@@ -85,24 +89,30 @@ void PCFormViewer::loadForm()
 	dir = info.absoluteDir().absolutePath();
 	settings_.setValue("DIRPATH", dir);
 
-	auto form = std::make_shared<ScoutingForm>(filename);
-	if (!form->isOK())
+	form_ = std::make_shared<ScoutingForm>(filename);
+	if (!form_->isOK())
 	{
-		for (const QString& err : form->errors())
+		for (const QString& err : form_->errors())
 			logwin_->append(err);
 
 		logwin_->append("Scout form load failed");
+		form_ = nullptr;
 	}
 	else
 	{
-		FormView* ds;
-
-		ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormViewRed));
-		ds->setScoutingForm(form, "red");
-
-		ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormViewBlue));
-		ds->setScoutingForm(form, "blue");
+		updateWindow();
 	}
+}
+
+void PCFormViewer::updateWindow()
+{
+	FormView* ds;
+
+	ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormViewRed));
+	ds->setScoutingForm(form_, "red");
+
+	ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormViewBlue));
+	ds->setScoutingForm(form_, "blue");
 }
 
 void PCFormViewer::createWindows()
@@ -155,4 +165,90 @@ void PCFormViewer::createMenus()
 
 	act = file_menu_->addAction(tr("Exit"));
 	(void)connect(act, &QAction::triggered, this, &PCFormViewer::close);
+
+	edit_menu_ = new QMenu(tr("Edit"));
+	menuBar()->addMenu(edit_menu_);
+
+	act = edit_menu_->addAction(tr("Add Section"));
+	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addSection);
+
+	edit_menu_->addSeparator();
+
+	act = edit_menu_->addSection(tr("Add Boolean"));
+	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addBoolean);
+
+	act = edit_menu_->addSection(tr("Add Up/Down"));
+	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addUpDown);
+
+	act = edit_menu_->addSection(tr("Add Numeric"));
+	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addNumeric);
+
+	act = edit_menu_->addSection(tr("Add Choice"));
+	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addChoice);
+
+	act = edit_menu_->addSection(tr("Add Text"));
+	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addText);
+
+	act = edit_menu_->addSection(tr("Add Images"));
+	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addImage);
+}
+
+void PCFormViewer::addBoolean()
+{
+	bool ok;
+
+	QString name = QInputDialog::getText(this, "Boolean Title", "Boolean Title", QLineEdit::Normal, "", &ok);
+	if (!ok)
+		return;
+
+	QString tag = QInputDialog::getText(this, "Boolean Tag", "Boolean Tag", QLineEdit::Normal, "", &ok);
+	if (!ok)
+		return;
+}
+
+void PCFormViewer::addUpDown()
+{
+
+}
+
+void PCFormViewer::addNumeric()
+{
+
+}
+
+void PCFormViewer::addChoice()
+{
+
+}
+
+void PCFormViewer::addText()
+{
+
+}
+
+void PCFormViewer::addImage()
+{
+
+}
+
+void PCFormViewer::addTimerCount()
+{
+
+}
+
+void PCFormViewer::addSection()
+{
+	bool ok;
+
+	QString name = QInputDialog::getText(this, "Section Title", "Section Title", QLineEdit::Normal, "", &ok);
+	if (!ok)
+		return;
+
+	if (!form_->addSection(name))
+	{
+		QMessageBox::critical(this, "Error", "Invalid section added");
+		return;
+	}
+
+	updateWindow();
 }

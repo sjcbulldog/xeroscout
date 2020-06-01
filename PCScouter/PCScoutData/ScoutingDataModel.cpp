@@ -40,6 +40,7 @@ namespace xero
 				event_name_ = evname;
 				start_date_ = date;
 				end_date_ = end;
+				uuid_ = QUuid::createUuid();
 
 				filename_ = QStandardPaths::locate(QStandardPaths::DocumentsLocation, ev_key_);
 
@@ -60,6 +61,11 @@ namespace xero
 
 			ScoutingDataModel::~ScoutingDataModel()
 			{
+			}
+
+			bool ScoutingDataModel::peekUUID(const QJsonDocument& doc, QUuid& uuid)
+			{
+				return JSonDataModelConverter::peekUUID(doc, uuid);
 			}
 
 			bool ScoutingDataModel::setScoutingForms(std::shared_ptr<ScoutingForm> teamform, std::shared_ptr<ScoutingForm> matchform, QStringList &dups)

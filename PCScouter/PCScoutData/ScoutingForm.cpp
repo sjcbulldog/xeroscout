@@ -52,6 +52,11 @@ namespace xero
 				"UPDATE", "USING", "VACUUM", "VALUES", "VIEW", "VIRTUAL", "WHEN", "WHERE", "WINDOW", "WITH", "WITHOUT"
 			};
 
+			ScoutingForm::ScoutingForm()
+			{
+				parsed_ok_ = true;
+			}
+
 			ScoutingForm::ScoutingForm(const QString& filename)
 			{
 				parsed_ok_ = false;
@@ -66,6 +71,18 @@ namespace xero
 
 			ScoutingForm::~ScoutingForm()
 			{
+			}
+
+			bool ScoutingForm::addSection(const QString& name)
+			{
+				for (auto s : sections_)
+				{
+					if (s->name() == name)
+						return false;
+				}
+
+				sections_.push_back(std::make_shared<FormSection>(name));
+				return true;
 			}
 
 			std::shared_ptr<FormItemDesc> ScoutingForm::itemByName(const QString& name) const

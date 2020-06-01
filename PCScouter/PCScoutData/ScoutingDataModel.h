@@ -112,6 +112,12 @@ namespace xero
 					return ev_key_;
 				}
 
+				/// \brief return the UUID for this data file
+				/// \returns the UUID for this datafile
+				const QUuid& uuid() const {
+					return uuid_;
+				}
+
 				/// \brief return the graph view descriptors
 				/// \returns the graph descriptors
 				const GraphDescriptorCollection& graphDescriptors() const {
@@ -795,6 +801,12 @@ namespace xero
 				/// \returns true if the data was loaded into the data model, false otherwise
 				bool loadScoutingDataJSON(const QJsonDocument& doc, TabletIdentity& tablet, QString& error, QStringList& pits, QStringList& matches);
 
+				/// \brief peek into the json document and get the UUID for the dataset
+				/// \param doc the document to examine
+				/// \param uuid the returned UUID
+				/// \returns true if the UUID was found, otherwise false
+				bool peekUUID(const QJsonDocument& doc, QUuid& uuid);
+
 				/// \brief reset the data in the data model
 				/// This destroys all data in the data model.  Wse with care
 				void reset() {
@@ -802,6 +814,8 @@ namespace xero
 
 					ev_key_.clear();
 					event_name_.clear();
+
+					uuid_ = QUuid();
 
 					match_scouting_form_ = nullptr;
 					team_scouting_form_ = nullptr;
@@ -915,6 +929,7 @@ namespace xero
 
 				bool dirty_;
 
+				QUuid uuid_;
 				QString ev_key_;
 				QString event_name_;
 

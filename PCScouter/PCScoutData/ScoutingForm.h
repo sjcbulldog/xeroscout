@@ -36,6 +36,7 @@ namespace xero
 			class PCSCOUTDATA_EXPORT ScoutingForm
 			{
 			public:
+				ScoutingForm();
 				ScoutingForm(const QString& jsonfile);
 				ScoutingForm(const QJsonObject& obj);
 				virtual ~ScoutingForm();
@@ -74,6 +75,8 @@ namespace xero
 				std::shared_ptr<FormItemDesc> itemByName(const QString& name) const;
 
 				QStringList images() const;
+
+				bool addSection(const QString& name);
 
 			private:
 				void parse(const QString& filename);

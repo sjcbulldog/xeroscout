@@ -66,6 +66,8 @@ namespace xero
 				static QJsonArray encodeFields(std::list<std::shared_ptr<FieldDesc>> list);
 				std::list<std::shared_ptr<FieldDesc>> decodeFields(const QJsonArray& array);
 
+				static bool peekUUID(const QJsonDocument &doc, QUuid& uuid);
+
 			private:
 				bool coreFromJsonV1(const QJsonObject& obj);
 				bool extractNameAndKey(const QJsonObject& obj, int version);

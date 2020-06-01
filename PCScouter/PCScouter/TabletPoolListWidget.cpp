@@ -18,6 +18,7 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QMimeData>
+#include <QMessageBox>
 
 TabletPoolListWidget::TabletPoolListWidget(QWidget* parent) : QListWidget(parent)
 {
@@ -34,6 +35,28 @@ TabletPoolListWidget::~TabletPoolListWidget()
 
 void TabletPoolListWidget::itemRenamed(QListWidgetItem* item)
 {
+	//
+	// See if the name is valid, if not, we kick off the edit cycle again
+	//
+	const QString &text = item->text();
+
+	if (!text[0].isLetter())
+	{
+		QMessageBox::critical(this, "Error", "A tablet name must start with a letter and consists of letters, numbers, and '_'");
+		item->setText(oldname_);
+		return;
+	}
+
+	for (int i = 1; i < text.length(); i++)
+	{
+		if (!text[i].isLetterOrNumber() && text[i] != '_')
+		{
+			QMessageBox::critical(this, "Error", "A tablet name must start with a letter and consists of letters, numbers, and '_'");
+			item->setText(oldname_);
+			return;
+		}
+	}
+
 	emit tabletRenamed(oldname_, item->text());
 }
 
@@ -44,7 +67,7 @@ void TabletPoolListWidget::insertNewTablet()
 	int i = 1;
 	QString name;
 	while (true) {
-		name = "New Tablet #" + QString::number(i);
+		name = "New_Tablet_" + QString::number(i);
 		if (findItems(name, Qt::MatchExactly).size() == 0)
 			break;
 		i++;
