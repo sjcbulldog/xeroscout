@@ -77,9 +77,6 @@ bool DataModelBuilder::addTeamsMatches(xero::ba::BlueAllianceEngine& engine, std
 	for (auto pair : matches)
 	{
 		auto m = pair.second;
-		if (m->compLevel() != "qm")
-			continue;
-
 		std::shared_ptr<DataModelMatch> mptr = dm->addMatch(m->key(), m->compLevel(), m->setNumber(), m->matchNumber(), m->eTime());
 
 		QStringList& red = m->red()->getTeams();
