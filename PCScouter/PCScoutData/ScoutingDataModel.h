@@ -75,6 +75,14 @@ namespace xero
 				};
 
 			public:
+				enum class Role
+				{
+					CentralMachine,					///< The central machine that contains the scouting data model
+					ScoutingTablet,					///< A table that contains part of the data model relevant to that tablet
+					CoachMachine,					///< A coaches machine that contains the entire scouting model, but pulls down match and team information from the centrals
+				};
+
+			public:
 				/// \brief create a new data model
 				/// \param evkey the event Blue Alliance key
 				/// \param evname the event name
@@ -83,7 +91,7 @@ namespace xero
 				ScoutingDataModel(const QString& evkey, const QString& evname, const QDate& start, const QDate& end);
 
 				/// \brief create a new data model
-				ScoutingDataModel();
+				ScoutingDataModel(Role r);
 
 				/// \brief destroy this data model
 				virtual ~ScoutingDataModel();
@@ -104,6 +112,12 @@ namespace xero
 				/// \return the starting data for the event
 				const QDate& endDate() const {
 					return end_date_;
+				}
+
+				/// \brief return the role for this data model
+				/// \returns the role for this data model
+				Role role() const {
+					return role_;
 				}
 
 				/// \brief return the Blue Alliance event key
@@ -957,6 +971,8 @@ namespace xero
 
 				QDate start_date_;
 				QDate end_date_;
+
+				Role role_;
 			};
 
 		}

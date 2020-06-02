@@ -23,7 +23,8 @@
 #include "USBTransport.h"
 #include "AboutDialog.h"
 #include "ClientServerProtocol.h"
-#include "BluetoothClientTransport.h"
+#include "BluetoothClient.h"
+#include "BluetoothTransport.h"
 #include "BluetoothConnectDialog.h"
 #include "SelectMatch.h"
 #include <QMenuBar>
@@ -89,7 +90,7 @@ PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
 		identity_ = TabletIdentity(settings_.value(TabletNameKey).toString(), identity_.uid());
 	}
 
-	data_model_ = std::make_shared<ScoutingDataModel>();
+	data_model_ = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::ScoutingTablet);
 
 	createWindows();
 	createMenus();
@@ -162,6 +163,7 @@ PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
 		debug_act_->setChecked(true);
 
 	bt_transport_ = nullptr;
+	bt_client_ = nullptr;
 	close_dialog_ = false;
 }
 
@@ -458,10 +460,8 @@ void PCScoutApp::createMenus()
 	act = sync_menu_->addAction(tr("USB Sync"));
 	(void)connect(act, &QAction::triggered, this, &PCScoutApp::syncWithCentralUSB);
 
-#ifdef BLUETOOTH_SYNC_NOT_READY
 	act = sync_menu_->addAction(tr("Bluetooth Sync"));
 	(void)connect(act, &QAction::triggered, this, &PCScoutApp::syncWithCentralBluetooth);
-#endif
 
 	settings_menu_ = new QMenu(tr("&Settings"));
 	f = menuBar()->font();
@@ -711,7 +711,6 @@ void PCScoutApp::startSync(ScoutTransport* trans)
 	state_ = State::Synchronizing;
 }
 
-#ifdef BLUETOOTH_SYNC_NOT_READY
 void PCScoutApp::syncWithCentralBluetooth()
 {
 	saveAllForms();
@@ -720,11 +719,9 @@ void PCScoutApp::syncWithCentralBluetooth()
 
 	setEnabled(false);
 
-	bt_transport_ = new BluetoothClientTransport();
-	connect(bt_transport_, &BluetoothClientTransport::foundDevice, this, &PCScoutApp::foundService);
-	connect(bt_transport_, &BluetoothClientTransport::finished, this, &PCScoutApp::discoveryFinished);
-	connect(bt_transport_, &BluetoothClientTransport::serverConnected, this, &PCScoutApp::btConnected);
-	connect(bt_transport_, &BluetoothClientTransport::serverConnectFailed, this, &PCScoutApp::btConnectFailed);
+	bt_client_ = new BluetoothClient();
+	connect(bt_client_, &BluetoothClient::foundDevice, this, &PCScoutApp::foundDevice);
+	connect(bt_client_, &BluetoothClient::discoveryFinished, this, &PCScoutApp::discoveryFinished);
 
 	if (!bt_transport_->search())
 	{
@@ -737,18 +734,6 @@ void PCScoutApp::syncWithCentralBluetooth()
 	dialog_ = new BluetoothConnectDialog();
 	(void)connect(dialog_, &BluetoothConnectDialog::selected, this, &PCScoutApp::serverSelected);
 	dialog_->show();
-}
-
-void PCScoutApp::btConnected()
-{
-	startSync(bt_transport_);
-}
-
-void PCScoutApp::btConnectFailed()
-{
-	QMessageBox::critical(this, "Connect Error", "Could not connect to central via bluetooth");
-	delete bt_transport_;
-	bt_transport_ = nullptr;
 }
 
 void PCScoutApp::serverSelected(const QString& name)
@@ -779,17 +764,26 @@ void PCScoutApp::serverSelected(const QString& name)
 		return;
 	}
 
-	if (!bt_transport_->init(sinfo))
-	{
-		//
-		// This could happen
-		//
-		QMessageBox::critical(this, "Error", "Could not connect to selected central machine");
-		return;
-	}
+	connect(bt_client_, &BluetoothClient::connected, this, &PCScoutApp::serverConnected);
+	connect(bt_client_, &BluetoothClient::connectError, this, &PCScoutApp::serverConnectionError);
+	bt_client_->connectToServer(sinfo);
 }
 
-void PCScoutApp::foundService(const QBluetoothDeviceInfo& info)
+void PCScoutApp::serverConnectionError(const QString& err)
+{
+	delete bt_client_;
+	bt_client_ = nullptr;
+	QMessageBox::critical(this, "Error", "Could not connect to selected central machine - " + err);
+}
+
+void PCScoutApp::serverConnected(BluetoothTransport *trans)
+{
+	delete bt_client_;
+	bt_client_ = nullptr;
+	startSync(trans);
+}
+
+void PCScoutApp::foundDevice(const QBluetoothDeviceInfo& info)
 {
 	servers_.push_back(info);
 
@@ -811,7 +805,6 @@ void PCScoutApp::discoveryFinished()
 		setEnabled(true);
 	}
 }
-#endif
 
 void PCScoutApp::syncWithCentralUSB()
 {

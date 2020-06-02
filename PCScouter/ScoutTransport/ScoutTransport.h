@@ -45,7 +45,6 @@ namespace xero
 				virtual void run() = 0;
 				virtual QString type() = 0;
 				virtual QString description() = 0;
-				virtual bool canTakeConnections() { return false; }
 				virtual void close() = 0;
 
 				void setServer(bool v) { server_ = v; }

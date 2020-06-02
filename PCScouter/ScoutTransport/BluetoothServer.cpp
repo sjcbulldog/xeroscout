@@ -1,4 +1,6 @@
-#include "BluetoothServerTransport.h"
+#include "BluetoothServer.h"
+#include "BluetoothIDS.h"
+#include "BluetoothTransport.h"
 #include <QBluetoothLocalDevice>
 
 namespace xero
@@ -7,23 +9,18 @@ namespace xero
 	{
 		namespace transport
 		{
-
-			BluetoothServerTransport::BluetoothServerTransport()
+			BluetoothServer::BluetoothServer()
 			{
 				server_ = nullptr;
-				socket_ = nullptr;
 			}
 
-			BluetoothServerTransport::~BluetoothServerTransport()
+			BluetoothServer::~BluetoothServer()
 			{
 				if (server_ != nullptr)
 					delete server_;
-
-				if (socket_ != nullptr)
-					delete socket_;
 			}
 
-			bool BluetoothServerTransport::init()
+			bool BluetoothServer::init()
 			{
 				QBluetoothLocalDevice dev;
 
@@ -36,7 +33,7 @@ namespace xero
 				dev.powerOn();
 
 				server_ = new QBluetoothServer(QBluetoothServiceInfo::RfcommProtocol, this);
-				(void)connect(server_, &QBluetoothServer::newConnection, this, &BluetoothServerTransport::newConnection);
+				(void)connect(server_, &QBluetoothServer::newConnection, this, &BluetoothServer::newConnection);
 
 				if (!server_->listen(dev.address()))
 				{
@@ -53,14 +50,14 @@ namespace xero
 				serviceInfo.setAttribute(QBluetoothServiceInfo::BluetoothProfileDescriptorList,	profileSequence);
 
 				classId.clear();
-				classId << QVariant::fromValue(serviceID());
+				classId << QVariant::fromValue(BluetoothIDS::serviceID());
 				classId << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::SerialPort));
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceClassIds, classId);
 
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceName, tr("XeroScout Synchronization"));
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceDescription, tr("XeroScout Synchronization Server"));
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceProvider, tr("xeroscout.org"));
-				serviceInfo.setServiceUuid(QBluetoothUuid(serviceID()));
+				serviceInfo.setServiceUuid(QBluetoothUuid(BluetoothIDS::serviceID()));
 
 				QBluetoothServiceInfo::Sequence publicBrowse;
 				publicBrowse << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::PublicBrowseGroup));
@@ -80,76 +77,23 @@ namespace xero
 				return true;
 			}
 
-			void BluetoothServerTransport::newConnection()
+			void BluetoothServer::newConnection()
 			{
-				socket_ = server_->nextPendingConnection();
-				if (socket_ == nullptr)
+				QBluetoothSocket *socket = server_->nextPendingConnection();
+				if (socket == nullptr)
 					return;
 
-				data_.clear();
-
-				read_connection_ = connect(socket_, &QBluetoothSocket::readyRead, this, &BluetoothServerTransport::readAvailableData);
-				disconnected_connection_ = connect(socket_, &QBluetoothSocket::disconnected, this, &BluetoothServerTransport::disconnected);
-
-				QString name = socket_->peerName();
-				if (name.isEmpty())
-					name = socket_->peerAddress().toString();
-				emit connected(this);
+				BluetoothTransport* t = new BluetoothTransport(socket);
+				emit connected(t);
 			}
 
-			void BluetoothServerTransport::readAvailableData()
-			{
-				data_ += socket_->readAll();
-
-				emit transportDataAvailable();
-			}
-
-			void BluetoothServerTransport::disconnected()
-			{
-				emit transportDisconnected();
-			}
-
-			bool BluetoothServerTransport::write(const QByteArray& data)
-			{
-				qint64 written;
-				qint64 index = 0;
-				
-				do {
-					written = socket_->write(data.data() + index, data.size() - index);
-					if (written == -1)
-						return false;
-
-					index += written;
-
-				} while (index != data.size());
-
-				return true;
-			}
-
-			QByteArray BluetoothServerTransport::readAll()
-			{
-				QByteArray d = data_;
-				data_.clear();
-				return d;
-			}
-
-			void BluetoothServerTransport::flush()
+			void BluetoothServer::run()
 			{
 			}
 
-			void BluetoothServerTransport::run()
+			QString BluetoothServer::name()
 			{
-			}
-
-			QString BluetoothServerTransport::type()
-			{
-				QString ret = "BluetoothServerTransport";
-				return ret;
-			}
-
-			QString BluetoothServerTransport::description()
-			{
-				QString ret = "BluetoothServerTransport";
+				QString ret = "BluetoothServer";
 				return ret;
 			}
 		}

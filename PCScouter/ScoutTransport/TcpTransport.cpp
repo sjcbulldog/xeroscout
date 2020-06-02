@@ -31,9 +31,6 @@ namespace xero
 				receive_connection_ = connect(socket_, &QTcpSocket::readyRead, this, &TcpTransport::dataReceived);
 				disconnect_connection_ = connect(socket_, &QTcpSocket::disconnected, this, &TcpTransport::streamDisconnected);
 				error_connection_ = connect(socket_, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), this, &TcpTransport::errorReceived);
-
-				qDebug() << "Created client transport at address 0x" << QString::number(reinterpret_cast<qulonglong>(this), 16);
-				qDebug() << "    QTcpSocket, address 0x" << QString::number(reinterpret_cast<qulonglong>(socket_), 16);
 			}
 
 			TcpTransport::TcpTransport(TcpServer *server, QTcpSocket* s)
@@ -44,18 +41,10 @@ namespace xero
 				receive_connection_ = connect(socket_, &QTcpSocket::readyRead, this, &TcpTransport::dataReceived);
 				disconnect_connection_ = connect(socket_, &QTcpSocket::disconnected, this, &TcpTransport::streamDisconnected);
 				error_connection_ = connect(socket_, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), this, &TcpTransport::errorReceived);
-
-				qDebug() << "Created server transport at address 0x" << QString::number(reinterpret_cast<qulonglong>(this), 16);
-				qDebug() << "    QTcpSocket, address 0x" << QString::number(reinterpret_cast<qulonglong>(socket_), 16);
 			}
 
 			TcpTransport::~TcpTransport()
 			{
-				if (server_ == nullptr)
-					qDebug() << "Destroying client transport at address 0x" << QString::number(reinterpret_cast<qulonglong>(this), 16);
-				else
-					qDebug() << "Destroying server transport at address 0x" << QString::number(reinterpret_cast<qulonglong>(this), 16);
-
 				disconnect(receive_connection_);
 				disconnect(disconnect_connection_);
 				disconnect(error_connection_);
@@ -64,7 +53,6 @@ namespace xero
 
 				if (server_ == nullptr)
 				{
-					qDebug() << "    destroying QTcpSocket, address 0x" << QString::number(reinterpret_cast<qulonglong>(socket_), 16);
 					delete socket_;
 				}
 

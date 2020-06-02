@@ -20,7 +20,8 @@
 #include "DocumentView.h"
 #include "ScoutingDataModel.h"
 #include "TabletIdentity.h"
-#include "BluetoothClientTransport.h"
+#include "BluetoothTransport.h"
+#include "BluetoothClient.h"
 #include "BluetoothConnectDialog.h"
 #include "FormInstance.h"
 #include "ImageManager.h"
@@ -62,9 +63,7 @@ private:
 	void syncWithCentralNetwork();
 	void syncWithCentralUSB();
 	void syncWithCentralNetworkDirect();
-#ifdef BLUETOOTH_SYNC_NOT_READY
 	void syncWithCentralBluetooth();
-#endif
 	void about();
 
 	void readBroadcast();
@@ -113,13 +112,11 @@ private:
 	void addTeam();
 	void addMatch();
 
-#ifdef BLUETOOTH_SYNC_NOT_READY
-	void foundService(const QBluetoothDeviceInfo& info);
+	void foundDevice(const QBluetoothDeviceInfo& info);
 	void discoveryFinished();
 	void serverSelected(const QString& name);
-	void btConnected();
-	void btConnectFailed();
-#endif
+	void serverConnected(BluetoothTransport* trans);
+	void serverConnectionError(const QString& err);
 
 private:
 	static constexpr const char* GeometrySettings = "geometry";
@@ -192,7 +189,8 @@ private:
 
 	QString server_ip_;
 
-	xero::scouting::transport::BluetoothClientTransport* bt_transport_;
+	xero::scouting::transport::BluetoothClient* bt_client_;
+	xero::scouting::transport::BluetoothTransport* bt_transport_;
 	BluetoothConnectDialog* dialog_;
 	std::list<QBluetoothDeviceInfo> servers_;
 	bool close_dialog_;

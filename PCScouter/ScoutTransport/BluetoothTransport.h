@@ -1,7 +1,7 @@
 #pragma once
 
 #include "scouttransport_global.h"
-#include "BluetoothBaseTransport.h"
+#include "ScoutTransport.h"
 #include <QBluetoothServiceDiscoveryAgent>
 #include <QBluetoothDeviceDiscoveryAgent>
 #include <QBluetoothSocket>
@@ -13,13 +13,13 @@ namespace xero
 	{
 		namespace transport
 		{
-			class SCOUTTRANSPORT_EXPORT BluetoothClientTransport : public BluetoothBaseTransport
+			class SCOUTTRANSPORT_EXPORT BluetoothTransport : public ScoutTransport
 			{
 				Q_OBJECT
 
 			public:
-				BluetoothClientTransport();
-				virtual ~BluetoothClientTransport();
+				BluetoothTransport(QBluetoothSocket *socket);
+				virtual ~BluetoothTransport();
 
 				bool search();
 				bool init(const QBluetoothDeviceInfo& serviceInfo);
@@ -30,31 +30,20 @@ namespace xero
 				virtual void run() ;
 				virtual QString type() ;
 				virtual QString description() ;
+				virtual bool init();
+				virtual void close();
 
 			signals:
-				void serverConnected();
-				void serverConnectFailed();
-				void foundDevice(const QBluetoothDeviceInfo& info);
 				void finished();
 
 			private:
-				void timerExpired();
-				void deviceDiscovered(const QBluetoothDeviceInfo& devinfo);
-				void discoveryFinished();
-
 				void readSocket();
-				void connected();
 				void disconnected();
 				void error(QBluetoothSocket::SocketError error);
 
 			private:
 				QBluetoothSocket* socket_;
-				QBluetoothDeviceDiscoveryAgent* agent_;
-				std::list<QBluetoothAddress> found_;
-				QTimer* timer_;
 				QByteArray data_;
-				bool connecting_;
-				int timeout_;
 			};
 		}
 	}

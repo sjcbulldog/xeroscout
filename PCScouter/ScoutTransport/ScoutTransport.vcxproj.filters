@@ -42,6 +42,18 @@
     <ClCompile Include="USBServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BluetoothIDS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BluetoothServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BluetoothTransport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BluetoothClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scouttransport_global.h">
@@ -62,6 +74,9 @@
     <ClInclude Include="TcpServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BluetoothIDS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ScoutTransport.h">
@@ -71,6 +86,15 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ScoutServer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="BluetoothServer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="BluetoothTransport.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="BluetoothClient.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

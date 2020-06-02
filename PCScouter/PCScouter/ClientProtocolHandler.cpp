@@ -39,10 +39,7 @@ ClientProtocolHandler::ClientProtocolHandler(ScoutTransport* s, xero::scouting::
 	connect(client_, &ClientServerProtocol::displayLogMessage, this, &ClientProtocolHandler::displayProtocolLogMessage);
 
 	handlers_.insert(std::make_pair(ClientServerProtocol::TabletIDPacket, std::bind(&ClientProtocolHandler::handleTabletID, this, std::placeholders::_1)));
-	handlers_.insert(std::make_pair(ClientServerProtocol::DataModelCorePacket, std::bind(&ClientProtocolHandler::handleUnxpectedPacket, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::DataModelScoutingPacket, std::bind(&ClientProtocolHandler::handleScoutingData, this, std::placeholders::_1)));
-	handlers_.insert(std::make_pair(ClientServerProtocol::ScoutingDataReply, std::bind(&ClientProtocolHandler::handleUnxpectedPacket, this, std::placeholders::_1)));
-	handlers_.insert(std::make_pair(ClientServerProtocol::TabletSelectionList, std::bind(&ClientProtocolHandler::handleUnxpectedPacket, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::ErrorReply, std::bind(&ClientProtocolHandler::handleErrorReply, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestScoutingData, std::bind(&ClientProtocolHandler::handleScoutingRequest, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::SyncDone, std::bind(&ClientProtocolHandler::handleSyncDone, this, std::placeholders::_1)));
@@ -360,26 +357,6 @@ void ClientProtocolHandler::handleScoutingRequest(const QJsonDocument& doc)
 
 	QString tablet = obj.value(JsonNameName).toString();
 	client_->sendJson(ClientServerProtocol::DataModelScoutingPacket, data_model_->generateScoutingData(nullptr, tablet), comp_type_);
-}
-
-void ClientProtocolHandler::handleAllData(const QJsonDocument& doc)
-{
-	if (data_model_ != nullptr) {
-		QMessageBox::warning(nullptr, "Existing Data", "The tablet tried to push central core data, but there is already data loaded - operation aborted");
-		return;
-	}
-
-	emit displayLogMessage("Received central core data from a tablet");
-	data_model_ = std::make_shared<ScoutingDataModel>();
-
-	QStringList err;
-	if (!data_model_->loadAllJSON(doc, err))
-	{
-		emit errorMessage("error loading data from tablet - " + err.front());
-		return;
-	}
-
-	emit complete();
 }
 
 void ClientProtocolHandler::handleScoutingData(const QJsonDocument& doc)

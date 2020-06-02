@@ -12,11 +12,11 @@ public:
 	SelectMatch(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, QWidget *parent = Q_NULLPTR);
 	~SelectMatch();
 
-	const QString& matchKey() const {
+	QString matchKey() const {
 		return match_key_;
 	}
 
-	const QString& whichPlayer() const {
+	QString whichPlayer() const {
 		return ui.scout_list_->currentItem()->data(Qt::UserRole).toString();
 	}
 

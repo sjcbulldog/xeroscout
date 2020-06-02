@@ -88,6 +88,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BluetoothClient.cpp" />
+    <ClCompile Include="BluetoothIDS.cpp" />
+    <ClCompile Include="BluetoothTransport.cpp" />
+    <ClCompile Include="BluetoothServer.cpp" />
     <ClCompile Include="ClientServerProtocol.cpp" />
     <ClCompile Include="CRCCCITT.cpp" />
     <ClCompile Include="ScoutServer.cpp" />
@@ -97,6 +101,10 @@
     <ClCompile Include="USBTransport.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="BluetoothClient.h" />
+    <ClInclude Include="BluetoothIDS.h" />
+    <QtMoc Include="BluetoothTransport.h" />
+    <QtMoc Include="BluetoothServer.h" />
     <ClInclude Include="CRCCCITT.h" />
     <QtMoc Include="ScoutServer.h" />
     <ClInclude Include="TcpServer.h" />

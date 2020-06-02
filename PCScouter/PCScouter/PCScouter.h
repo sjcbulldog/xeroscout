@@ -43,7 +43,7 @@ class PCScouter : public QMainWindow
 	Q_OBJECT
 
 public:
-	PCScouter(QWidget *parent = Q_NULLPTR);
+	PCScouter(bool coach, QWidget *parent = Q_NULLPTR);
 
 protected:
 	void closeEvent(QCloseEvent* ev);
@@ -197,4 +197,6 @@ private:
 	bool app_disabled_;
 
 	xero::scouting::datamodel::ImageManager images_;
+
+	bool coach_;
 };

@@ -22,10 +22,12 @@
 
 int main(int argc, char *argv[])
 {
+#ifndef _DEBUG
 	SingleInstanceGuard guard("SingleInstance-PCScouter");
 	if (!guard.tryToRun()) {
 		return 0;
 	}
+#endif
 
 	QCoreApplication::setOrganizationName("ErrorCodeXero");
 	QCoreApplication::setOrganizationDomain("www.wilsonvillerobotics.com");
@@ -35,6 +37,8 @@ int main(int argc, char *argv[])
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 	QApplication a(argc, argv);
+
+	bool coach = false;
 
 	int i = 1;
 	QStringList args = QCoreApplication::arguments();
@@ -56,6 +60,10 @@ int main(int argc, char *argv[])
 				return 1;
 			}
 		}
+		else if (arg == "--coach")
+		{
+			coach = true;
+		}
 		else
 		{
 			QMessageBox::critical(nullptr, "Error", "invalid command line argument '" + arg + "'");
@@ -64,7 +72,7 @@ int main(int argc, char *argv[])
 	}
 
 	try {
-		PCScouter w;
+		PCScouter w(coach);
 		w.show();
 		return a.exec();
 	}

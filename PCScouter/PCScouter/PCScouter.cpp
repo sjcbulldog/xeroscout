@@ -75,8 +75,10 @@ using namespace xero::scouting::transport;
 // Initialization ...
 ////////////////////////////////////////////////////////////
 
-PCScouter::PCScouter(QWidget *parent) : QMainWindow(parent), images_(true)
+PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_(true)
 {
+	coach_ = coach;
+
 	TestDataInjector& injector = TestDataInjector::getInstance();
 	summary_progress_ = new QProgressBar();
 	app_controller_ = nullptr;
@@ -163,7 +165,8 @@ void PCScouter::showEvent(QShowEvent* ev)
 	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
 	path += "/views" + QString::number(year_) + ".json";
 
-	createTransports();
+	if (!coach_)
+		createTransports();
 }
 
 void PCScouter::closeEvent(QCloseEvent* ev)
@@ -353,7 +356,7 @@ void PCScouter::createMenus()
 	import_zebra_data_ = import_menu_->addAction(tr("Import BlueAlliance Zebra Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importZebraData);
 
-#ifdef NOTYET
+#ifdef KNOWN_PERFORMANCE_INDICATORS
 	act = import_menu_->addAction(tr("Compute Known Performance Indicators"));
 	(void)connect(act, &QAction::triggered, this, &PCScouter::importKPIData);
 #endif
@@ -834,9 +837,6 @@ void PCScouter::newEventBA()
 		return;
 	}
 
-	data_model_ = std::make_shared<ScoutingDataModel>();
-	view_frame_->setDataModel(data_model_);
-
 	QStringList tablets;
 	if (settings_.contains("tablets"))
 		tablets = settings_.value("tablets").toStringList();
@@ -871,8 +871,7 @@ void PCScouter::openEvent()
 	if (filename.length() == 0)
 		return;
 
-	data_model_ = std::make_shared<ScoutingDataModel>();
-
+	data_model_ = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::CentralMachine);
 	if (!data_model_->load(filename)) {
 		QMessageBox::critical(this, "Error", "Could not load event data file");
 		data_model_ = nullptr;

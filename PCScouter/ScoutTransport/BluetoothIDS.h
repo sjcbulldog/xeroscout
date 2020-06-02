@@ -9,12 +9,13 @@ namespace xero
 	{
 		namespace transport
 		{
-			class BluetoothBaseTransport : public ScoutTransport
+			class BluetoothIDS
 			{
-			public:
-				BluetoothBaseTransport();
-				virtual ~BluetoothBaseTransport();
+			private:
+				BluetoothIDS();
+				virtual ~BluetoothIDS();
 
+			public:
 				static const QBluetoothUuid &serviceID() {
 					return serviceid;
 				}
