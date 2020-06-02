@@ -703,6 +703,12 @@ void PCScoutApp::startSync(ScoutTransport* trans)
 
 void PCScoutApp::syncWithCentralBluetooth()
 {
+	if (team_number_ == -1)
+	{
+		QMessageBox::warning(this, "No Team Number", "This tablet has not been given a team number, use the Settings/Set Team Number menu item to resolve");
+		return;
+	}
+
 	saveAllForms();
 	if (data_model_ != nullptr && data_model_->filename().length() > 0)
 		saveAndBackup();
