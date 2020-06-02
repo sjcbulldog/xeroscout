@@ -394,7 +394,7 @@ namespace xero
 
 				QJsonArray pits;
 				for (auto t : dm_->teams()) {
-					if (t->tablet() == tablet && t->teamScoutingData() != nullptr)
+					if (t->teamScoutingData() != nullptr)
 					{
 						QJsonObject team;
 						team[JsonTeamName] = t->key();
@@ -407,10 +407,22 @@ namespace xero
 
 				QJsonArray matches;
 				for (auto m : dm_->matches()) {
-					Alliance c;
-					int slot;
+					Alliance c = Alliance::Red;
+					for (int slot = 1; slot <= 3; slot++)
+					{
+						if (m->hasScoutingData(c, slot)) {
+							QJsonObject match;
+							match[JsonKeyName] = m->key();
+							match[JsonAllianceName] = toString(c);
+							match[JsonSlotName] = slot;
+							match[JsonResultName] = encode(m->scoutingData(c, slot));
 
-					if (m->tabletToAllianceSlot(tablet, c, slot))
+							matches.push_back(match);
+						}
+					}
+
+					c = Alliance::Blue;
+					for (int slot = 1; slot <= 3; slot++)
 					{
 						if (m->hasScoutingData(c, slot)) {
 							QJsonObject match;
@@ -445,7 +457,7 @@ namespace xero
 				QJsonDocument doc;
 				QJsonObject obj;
 
-				obj[JsonTypeName] = JsonTableDatatName;
+				obj[JsonTypeName] = JsonTableDataName;
 				obj[JsonCoreName] = coreToJson(false);
 				obj[JsonScoutingName] = scoutingToJson(nullptr, tablet);
 
@@ -1285,7 +1297,7 @@ namespace xero
 					return false;
 				}
 
-				if (obj.value(JsonTypeName).toString() != JsonAllName && obj.value(JsonTypeName).toString() != JsonTableDatatName) {
+				if (obj.value(JsonTypeName).toString() != JsonAllName && obj.value(JsonTypeName).toString() != JsonTableDataName) {
 					errors_.push_back("JSON document is not a 'all' document");
 					return false;
 				}
@@ -1318,12 +1330,12 @@ namespace xero
 					return false;
 				}
 
-				if (obj.value(JsonTypeName).toString() != JsonAllName && obj.value(JsonTypeName).toString() != JsonTableDatatName) {
+				if (obj.value(JsonTypeName).toString() != JsonAllName && obj.value(JsonTypeName).toString() != JsonTableDataName) {
 					errors_.push_back("JSON document is not a 'all' document");
 					return false;
 				}
 
-				if (obj.value(JsonTypeName).toString() == JsonTableDatatName)
+				if (obj.value(JsonTypeName).toString() == JsonTableDataName)
 					isTablet = true;
 
 				if (!obj.contains(JsonCoreName) || !obj.value(JsonCoreName).isObject())

@@ -1,4 +1,5 @@
 //
+//
 // Copyright 2020 by Jack W. (Butch) Griffin
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +25,7 @@
 #include "ClientServerProtocol.h"
 #include "BluetoothClientTransport.h"
 #include "BluetoothConnectDialog.h"
+#include "SelectMatch.h"
 #include <QMenuBar>
 #include <QMenu>
 #include <QCoreApplication>
@@ -479,6 +481,18 @@ void PCScoutApp::createMenus()
 	debug_act_->setCheckable(true);
 	(void)connect(debug_act_, &QAction::triggered, this, &PCScoutApp::debugToggled);
 
+	add_menu_ = new QMenu(tr("&Add"));
+	f = menuBar()->font();
+	f.setPointSizeF(size);
+	add_menu_->setFont(f);
+	menuBar()->addMenu(add_menu_);
+
+	act = add_menu_->addAction(tr("Team Scouting Assignment"));
+	(void)connect(act, &QAction::triggered, this, &PCScoutApp::addTeam);
+
+	act = add_menu_->addAction(tr("Match Scouting Assignment"));
+	(void)connect(act, &QAction::triggered, this, &PCScoutApp::addMatch);
+
 	help_menu_ = new QMenu(tr("Help"));
 	f = menuBar()->font();
 	f.setPointSizeF(size);
@@ -525,7 +539,7 @@ void PCScoutApp::extractDataFromForm(int view, const QString &label)
 
 		QStringList pieces = label.split(':');
 
-		if (pieces.size() == 2 && pieces.front() == "Pit") {
+		if (pieces.size() == 2 && pieces.front() == "Team") {
 			// Pit form
 			int tnum = pieces[1].toInt();
 			auto t = data_model_->findTeamByNumber(tnum);
@@ -908,7 +922,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 	if (t == DocumentView::ViewType::TeamView)
 	{
 		auto team = data_model_->findTeamByKey(key);
-		QString title = generatePitTitle(team);
+		QString title = generateTeamTitle(team);
 
 		index = startScouting(key, "team", title, Alliance::Red, data_model_->teamScoutingForm());
 		saveForm(index);
@@ -1040,7 +1054,7 @@ void PCScoutApp::createTeamScoutingForms()
 			Alliance c;
 			int slot;
 
-			QString title = generatePitTitle(t);
+			QString title = generateTeamTitle(t);
 			int index = startScouting(t->key(), "team", title, Alliance::Red, data_model_->teamScoutingForm());
 
 			FormView* form = dynamic_cast<FormView*>(view_frame_->getWidget(index));
@@ -1117,7 +1131,7 @@ void PCScoutApp::saveAllForms()
 	setupViews();
 }
 
-QString PCScoutApp::generatePitTitle(std::shared_ptr<const DataModelTeam> t)
+QString PCScoutApp::generateTeamTitle(std::shared_ptr<const DataModelTeam> t)
 {
 	return "Team Scouting: " + QString::number(t->number()) + " - " + t->name();
 }
@@ -1163,4 +1177,74 @@ void PCScoutApp::chooseTabletName(const QString &evkey, const QStringList& list,
 		settings_.setValue(TabletGUIDKey, identity_.uid().toString());
 		settings_.setValue(TabletNameKey, identity_.name());
 	}
+}
+
+void PCScoutApp::addTeam()
+{
+	QStringList list;
+	bool ok;
+
+	for (auto t : data_model_->teams())
+		list.push_back(QString::number(t->number()));
+
+	QString item = QInputDialog::getItem(this, "Pick Team", "Team", list, 0, false, &ok);
+	if (!ok)
+		return;
+
+	int num = item.toInt();
+
+	std::shared_ptr<const DataModelTeam> team;
+	for (auto t : data_model_->teams())
+	{
+		if (t->number() == num)
+		{
+			team = t;
+			break;
+		}
+	}
+
+	assert(team != nullptr);
+	data_model_->assignTeamTablet(team->key(), identity_.name());
+	view_frame_->refreshAll();
+
+	QString title = generateTeamTitle(team);
+	int index = startScouting(team->key(), "team", title, Alliance::Red, data_model_->teamScoutingForm());
+	saveForm(index);
+}
+
+void PCScoutApp::addMatch()
+{
+	SelectMatch dialog(data_model_, this);
+
+	if (dialog.exec() == QDialog::Rejected)
+		return;
+
+	QString mkey = dialog.matchKey();
+	QString which = dialog.whichPlayer();
+
+	Alliance c;
+	int slot;
+
+	if (which.startsWith("red"))
+	{
+		c = Alliance::Red;
+		which = which.mid(4);
+		slot = which.toInt();
+	}
+	else
+	{
+		c = Alliance::Blue;
+		which = which.mid(5);
+		slot = which.toInt();
+	}
+
+	data_model_->assignMatchTablet(mkey, c, slot, identity_.name());
+	view_frame_->refreshAll();
+
+	auto m = data_model_->findMatchByKey(mkey);
+	QString tkey = m->team(c, slot);
+	auto team = data_model_->findTeamByKey(tkey);
+	QString title = generateMatchTitle(m, team);
+	int index = startScouting(mkey, "match", title, c, data_model_->matchScoutingForm());
+	saveForm(index);
 }

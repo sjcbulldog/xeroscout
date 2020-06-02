@@ -95,7 +95,7 @@ private:
 
 	void removeAllScoutingFormsFromViews();
 
-	QString generatePitTitle(std::shared_ptr<const xero::scouting::datamodel::DataModelTeam> t);
+	QString generateTeamTitle(std::shared_ptr<const xero::scouting::datamodel::DataModelTeam> t);
 	QString generateMatchTitle(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> m, std::shared_ptr<const xero::scouting::datamodel::DataModelTeam> t);
 
 	void startWaitForServer();
@@ -109,6 +109,9 @@ private:
 	void startSync(xero::scouting::transport::ScoutTransport* trans);
 
 	void debugToggled();
+
+	void addTeam();
+	void addMatch();
 
 #ifdef BLUETOOTH_SYNC_NOT_READY
 	void foundService(const QBluetoothDeviceInfo& info);
@@ -159,6 +162,7 @@ private:
 	QMenu* settings_menu_;
 	QAction* debug_act_;
 	QMenu* help_menu_;
+	QMenu* add_menu_;
 
 	//
 	// Application settings

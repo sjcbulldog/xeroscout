@@ -351,6 +351,8 @@ void ServerProtocolHandler::handleCoreData(const QJsonDocument& doc)
 		obj[JsonMessageName] = "error loading 'core' data on tablet - missing data model UUID";
 		reply.setObject(obj);
 		server_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+
+		return;
 	}
 
 	if (!data_model_->uuid().isNull() && data_model_->uuid() != uid)
@@ -368,6 +370,8 @@ void ServerProtocolHandler::handleCoreData(const QJsonDocument& doc)
 		obj[JsonMessageName] = "data on tablet is for different dataset";
 		reply.setObject(obj);
 		server_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+
+		return;
 	}
 
 	if (!data_model_->loadCoreJSON(doc, err))

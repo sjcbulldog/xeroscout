@@ -96,6 +96,7 @@
     <ClCompile Include="BluetoothConnectDialog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PCScoutApp.cpp" />
+    <ClCompile Include="SelectMatch.cpp" />
     <ClCompile Include="ServerProtocolHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -107,8 +108,10 @@
   <ItemGroup>
     <QtUic Include="AboutDialog.ui" />
     <QtUic Include="BluetoothConnectDialog.ui" />
+    <QtUic Include="SelectMatch.ui" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="SelectMatch.h" />
     <QtMoc Include="ServerProtocolHandler.h" />
     <QtMoc Include="AboutDialog.h" />
     <QtMoc Include="BluetoothConnectDialog.h" />
