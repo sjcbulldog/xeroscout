@@ -25,7 +25,6 @@
 #include "ClientServerProtocol.h"
 #include "BluetoothClient.h"
 #include "BluetoothTransport.h"
-#include "BluetoothConnectDialog.h"
 #include "SelectMatch.h"
 #include <QMenuBar>
 #include <QMenu>
@@ -48,7 +47,6 @@ PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
 {
 	server_ = nullptr;
 	ignore_view_select_changes_ = false;
-	host_addr_valid_ = false;
 
 	if (settings_.contains(TabletGUIDKey))
 	{
@@ -163,7 +161,7 @@ PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
 		debug_act_->setChecked(true);
 
 	bt_client_ = nullptr;
-	close_dialog_ = false;
+	host_addr_valid_ = false;
 }
 
 void PCScoutApp::mergeDataFile()
@@ -266,13 +264,6 @@ void PCScoutApp::showEvent(QShowEvent* ev)
 
 void PCScoutApp::processTimer()
 {
-	if (dialog_ != nullptr && close_dialog_)
-	{
-		dialog_->close();
-		delete dialog_;
-		dialog_ = nullptr;
-	}
-
 	switch (state_)
 	{
 	case State::Shutdown:
@@ -718,9 +709,9 @@ void PCScoutApp::syncWithCentralBluetooth()
 
 	setEnabled(false);
 
-	bt_client_ = new BluetoothClient();
-	connect(bt_client_, &BluetoothClient::foundService, this, &PCScoutApp::foundService);
-	connect(bt_client_, &BluetoothClient::discoveryFinished, this, &PCScoutApp::discoveryFinished);
+	bt_client_ = new BluetoothClient(team_number_);
+	connect(bt_client_, &BluetoothClient::connected, this, &PCScoutApp::serverConnected);
+	connect(bt_client_, &BluetoothClient::connectError, this, &PCScoutApp::serverConnectionError);
 
 	if (!bt_client_->search())
 	{
@@ -728,41 +719,6 @@ void PCScoutApp::syncWithCentralBluetooth()
 		bt_client_ = nullptr;
 		return;
 	}
-
-	close_dialog_ = false;
-	dialog_ = new BluetoothConnectDialog();
-	(void)connect(dialog_, &BluetoothConnectDialog::selected, this, &PCScoutApp::serverSelected);
-	dialog_->show();
-}
-
-void PCScoutApp::serverSelected(const QString& name)
-{
-	close_dialog_ = true;
-	QBluetoothServiceInfo sinfo;
-	bool found = false;
-
-	for (const auto& info : servers_)
-	{
-		QString remote = info.serviceName();
-		if (remote == name)
-		{
-			sinfo = info;
-			found = true;
-		}
-	}
-
-	if (!found)
-	{
-		//
-		// This should never happen
-		//
-		QMessageBox::critical(this, "Error", "Cannot find selected central machine");
-		return;
-	}
-
-	connect(bt_client_, &BluetoothClient::connected, this, &PCScoutApp::serverConnected);
-	connect(bt_client_, &BluetoothClient::connectError, this, &PCScoutApp::serverConnectionError);
-	bt_client_->connectToServer(sinfo);
 }
 
 void PCScoutApp::serverConnectionError(const QString& err)
@@ -777,26 +733,6 @@ void PCScoutApp::serverConnected(BluetoothTransport *trans)
 	delete bt_client_;
 	bt_client_ = nullptr;
 	startSync(trans);
-}
-
-void PCScoutApp::foundService(const QBluetoothServiceInfo& info)
-{
-	servers_.push_back(info);
-
-	QString remote = info.serviceName();
-	dialog_->addDevice(remote);
-}
-
-void PCScoutApp::discoveryFinished()
-{
-	if (servers_.size() == 0 && dialog_ != nullptr) {
-		dialog_->close();
-		QMessageBox::critical(this, "No Servers", "No bluetooth XeroScout central machines were found in range");
-
-		delete dialog_;
-		dialog_ = nullptr;
-		setEnabled(true);
-	}
 }
 
 void PCScoutApp::syncWithCentralUSB()

@@ -424,7 +424,7 @@ void PCScouter::createTransports()
 		logwin_->append("Synchronization transport '" + server->name() + "' failed to initialized");
 	}
 
-	server = std::make_shared<BluetoothServer>(this);
+	server = std::make_shared<BluetoothServer>(team_number_, this);
 	if (server->init())
 	{
 		(void)connect(server.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);

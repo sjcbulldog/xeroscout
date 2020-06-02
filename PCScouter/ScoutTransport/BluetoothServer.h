@@ -17,7 +17,7 @@ namespace xero
 				Q_OBJECT
 
 			public:
-				BluetoothServer(QObject *parent);
+				BluetoothServer(int team, QObject *parent);
 				virtual ~BluetoothServer();
 
 				virtual bool init() ;
@@ -31,6 +31,7 @@ namespace xero
 			private:
 				QBluetoothServer* server_;
 				QBluetoothServiceInfo serviceInfo;
+				int team_;
 			};
 		}
 	}

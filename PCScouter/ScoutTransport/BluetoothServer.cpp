@@ -10,8 +10,9 @@ namespace xero
 	{
 		namespace transport
 		{
-			BluetoothServer::BluetoothServer(QObject *parent) : ScoutServer(parent)
+			BluetoothServer::BluetoothServer(int team, QObject *parent) : ScoutServer(parent)
 			{
+				team_ = team;
 				server_ = nullptr;
 			}
 
@@ -52,7 +53,7 @@ namespace xero
 				classId << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::SerialPort));
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceClassIds, classId);
 
-				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceName, tr("XeroScout Synchronization"));
+				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceName, BluetoothIDS::serviceName(team_));
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceDescription, tr("XeroScout Synchronization Server"));
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceProvider, tr("xeroscout.org"));
 				serviceInfo.setServiceUuid(QBluetoothUuid(BluetoothIDS::serviceID()));

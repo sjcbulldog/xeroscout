@@ -37,9 +37,6 @@
     <ClCompile Include="ServerProtocolHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BluetoothConnectDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SelectMatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,9 +49,6 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ServerProtocolHandler.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="BluetoothConnectDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="SelectMatch.h">

@@ -17,11 +17,16 @@ namespace xero
 
 			public:
 				static const QBluetoothUuid &serviceID() {
-					return serviceid;
+					return service_id_;
+				}
+
+				static QString serviceName(int team) {
+					return service_name_ + "-" + QString::number(team);
 				}
 
 			private:
-				static const QBluetoothUuid serviceid;
+				static const QBluetoothUuid service_id_;
+				static const QString service_name_;
 			};
 		}
 	}

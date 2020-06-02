@@ -22,7 +22,6 @@
 #include "TabletIdentity.h"
 #include "BluetoothTransport.h"
 #include "BluetoothClient.h"
-#include "BluetoothConnectDialog.h"
 #include "FormInstance.h"
 #include "ImageManager.h"
 #include <QMainWindow>
@@ -190,14 +189,9 @@ private:
 	QString server_ip_;
 
 	xero::scouting::transport::BluetoothClient* bt_client_;
-	BluetoothConnectDialog* dialog_;
-	std::list<QBluetoothServiceInfo> servers_;
-	bool close_dialog_;
+	std::map<QString, std::shared_ptr<xero::scouting::datamodel::FormInstance>> form_instances_;
+	xero::scouting::datamodel::ImageManager images_;
 
 	bool host_addr_valid_;
 	QHostAddress host_addr_;
-
-	std::map<QString, std::shared_ptr<xero::scouting::datamodel::FormInstance>> form_instances_;
-
-	xero::scouting::datamodel::ImageManager images_;
 };

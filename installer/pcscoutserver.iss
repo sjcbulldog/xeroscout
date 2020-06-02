@@ -3,7 +3,7 @@
 
 #define MyAppName "XeroScouter"
 #define MySecondName "XeroScout"
-#define MyAppVersion "0.1.22"
+#define MyAppVersion "0.2.0"
 #define MyAppPublisher "ErrorCodeXero"
 #define MyAppURL "http://www.wilsonvillerobotics.com/"
 #define MyAppExeName "PCScouter.exe"
@@ -27,7 +27,7 @@ LicenseFile=C:\cygwin64\home\{#MyUserName}\projects\scouting\license.txt
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 OutputDir=C:\cygwin64\home\{#MyUserName}\projects\scouting\installer
-OutputBaseFilename=xeroscout
+OutputBaseFilename=xeroscout-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern

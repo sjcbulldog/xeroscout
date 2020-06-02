@@ -42,9 +42,10 @@ namespace xero
 
 			void BluetoothTransport::error(QBluetoothSocket::SocketError error)
 			{
-				delete socket_;
-				socket_ = nullptr;
-				emit transportError("Bluetooth socket error");
+				if (error == QBluetoothSocket::SocketError::RemoteHostClosedError)
+					emit transportDisconnected();
+				else
+					emit transportError("Bluetooth socket error");
 			}
 
 			bool BluetoothTransport::write(const QByteArray& data)
@@ -96,8 +97,6 @@ namespace xero
 
 			void BluetoothTransport::close()
 			{
-				socket_->close();
-				delete socket_;
 				socket_ = nullptr;
 			}
 		}

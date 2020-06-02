@@ -16,19 +16,17 @@ namespace xero
 				Q_OBJECT
 
 			public:
-				BluetoothClient();
+				BluetoothClient(int team);
 				virtual ~BluetoothClient();
 
 				bool search();
-				void connectToServer(const QBluetoothServiceInfo& info);
 
 			signals:
-				void discoveryFinished();
-				void foundService(const QBluetoothServiceInfo& info);
 				void connected(BluetoothTransport* trans);
 				void connectError(const QString& err);
 
 			private:
+				void connectToServer(const QBluetoothServiceInfo& info);
 				void serviceDiscovered(const QBluetoothServiceInfo& devinfo);
 				void timerExpired();
 				void socketConnected();
@@ -36,11 +34,13 @@ namespace xero
 
 
 			private:
+				int team_;
 				QTimer* timer_;
 				QBluetoothServiceDiscoveryAgent* agent_;
 				std::list<QBluetoothServiceInfo> found_;
 				QBluetoothSocket* socket_;
 				int timeout_;
+				QString service_name_;
 			};
 		}
 	}

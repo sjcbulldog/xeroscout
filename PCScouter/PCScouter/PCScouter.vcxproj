@@ -46,8 +46,8 @@
     <QtModules>bluetooth;charts;core;gui;network;printsupport;sql;webengine;webenginewidgets;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>msvc2017_64_14_2_1_</QtInstall>
-    <QtModules>bluetooth;charts;core;datavisualization;gui;network;printsupport;sql;webengine;webenginewidgets;widgets</QtModules>
+    <QtInstall>msvc2019_64</QtInstall>
+    <QtModules>bluetooth;charts;core;gui;network;printsupport;sql;webengine;webenginewidgets;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
     <Import Project="$(QtMsBuild)\qt.props" />

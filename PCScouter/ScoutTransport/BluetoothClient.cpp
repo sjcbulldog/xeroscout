@@ -10,8 +10,9 @@ namespace xero
 	{
 		namespace transport
 		{
-			BluetoothClient::BluetoothClient()
+			BluetoothClient::BluetoothClient(int team)
 			{
+				team_ = team;
 				socket_ = nullptr;
 				agent_ = nullptr;
 				timer_ = nullptr;
@@ -41,6 +42,32 @@ namespace xero
 
 			void BluetoothClient::socketConnectError(QBluetoothSocket::SocketError error)
 			{
+				const char* err = "unknown error";
+
+				switch (error)
+				{
+				case QBluetoothSocket::SocketError::UnknownSocketError:
+					break;
+				case QBluetoothSocket::SocketError::RemoteHostClosedError:
+					err = "remote host closed";
+					break;
+				case QBluetoothSocket::SocketError::HostNotFoundError:
+					err = "host not found";
+					break;
+				case QBluetoothSocket::SocketError::ServiceNotFoundError:
+					err = "service not found";
+					break;
+				case QBluetoothSocket::SocketError::NetworkError:
+					err = "network error";
+					break;
+				case QBluetoothSocket::SocketError::UnsupportedProtocolError:
+					err = "unsupported protocol";
+					break;
+				case QBluetoothSocket::SocketError::OperationError:
+					err = "operation error";
+					break;
+				}
+				emit connectError(QString("error connecting to xero scout server - ") + err);
 			}
 
 			void BluetoothClient::timerExpired()
@@ -50,7 +77,7 @@ namespace xero
 				timer_ = nullptr;
 
 				agent_->stop();
-				emit discoveryFinished();
+				emit connectError("Timeout connecting to bluetooth xero scout server");
 			}
 
 			bool BluetoothClient::search()
@@ -80,23 +107,14 @@ namespace xero
 
 			void BluetoothClient::serviceDiscovered(const QBluetoothServiceInfo& service)
 			{
-				auto it = std::find_if(found_.begin(), found_.end(), [service](const QBluetoothServiceInfo& info) { return service.serviceName() == info.serviceName();  });
-				if (it == found_.end())
+				if (service.serviceName() == BluetoothIDS::serviceName(team_))
 				{
-					emit foundService(service);
-					found_.push_back(service);
+					timer_->stop();
+					delete timer_;
+					timer_ = nullptr;
+					agent_->stop();
+					connectToServer(service);
 				}
-
-				qDebug() << "Discovered service on"
-					<< service.device().name() << service.device().address().toString();
-				qDebug() << "\tService name:" << service.serviceName();
-				qDebug() << "\tDescription:"
-					<< service.attribute(QBluetoothServiceInfo::ServiceDescription).toString();
-				qDebug() << "\tProvider:"
-					<< service.attribute(QBluetoothServiceInfo::ServiceProvider).toString();
-				qDebug() << "\tL2CAP protocol service multiplexer:"
-					<< service.protocolServiceMultiplexer();
-				qDebug() << "\tRFCOMM server channel:" << service.serverChannel();
 			}
 		}
 	}

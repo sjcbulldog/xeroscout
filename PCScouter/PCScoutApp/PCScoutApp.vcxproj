@@ -46,7 +46,7 @@
     <QtModules>bluetooth;core;gui;network;sql;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>msvc2017_64_14_2_1_</QtInstall>
+    <QtInstall>msvc2019_64</QtInstall>
     <QtModules>bluetooth;core;gui;network;sql;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
@@ -93,7 +93,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AboutDialog.cpp" />
-    <ClCompile Include="BluetoothConnectDialog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PCScoutApp.cpp" />
     <ClCompile Include="SelectMatch.cpp" />
@@ -114,7 +113,6 @@
     <QtMoc Include="SelectMatch.h" />
     <QtMoc Include="ServerProtocolHandler.h" />
     <QtMoc Include="AboutDialog.h" />
-    <QtMoc Include="BluetoothConnectDialog.h" />
     <ClInclude Include="build.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
