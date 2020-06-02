@@ -16,7 +16,7 @@ namespace xero
 				friend class USBTransport;
 
 			public:
-				USBServer();
+				USBServer(QObject *parent);
 				virtual ~USBServer();
 
 				void run() override;

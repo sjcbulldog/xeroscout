@@ -7,7 +7,7 @@ namespace xero
 	{
 		namespace transport
 		{
-			ScoutServer::ScoutServer()
+			ScoutServer::ScoutServer(QObject *parent) : QObject(parent)
 			{
 			}
 

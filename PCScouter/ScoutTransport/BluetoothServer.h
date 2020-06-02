@@ -17,7 +17,7 @@ namespace xero
 				Q_OBJECT
 
 			public:
-				BluetoothServer();
+				BluetoothServer(QObject *parent);
 				virtual ~BluetoothServer();
 
 

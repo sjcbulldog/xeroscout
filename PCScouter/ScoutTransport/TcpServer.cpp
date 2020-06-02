@@ -8,7 +8,7 @@ namespace xero
 	{
 		namespace transport
 		{
-			TcpServer::TcpServer(QObject *p)
+			TcpServer::TcpServer(QObject *p) : ScoutServer(p)
 			{
 				parent_ = p;
 				child_ = nullptr;

@@ -9,7 +9,7 @@ namespace xero
 	{
 		namespace transport
 		{
-			BluetoothServer::BluetoothServer()
+			BluetoothServer::BluetoothServer(QObject *parent) : ScoutServer(parent)
 			{
 				server_ = nullptr;
 			}

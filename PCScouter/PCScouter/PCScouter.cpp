@@ -36,6 +36,7 @@
 
 #include "USBServer.h"
 #include "TcpServer.h"
+#include "BluetoothServer.h"
 
 #include "NewEventAppController.h"
 #include "ImportMatchDataController.h"
@@ -397,28 +398,42 @@ void PCScouter::createMenus()
 
 void PCScouter::createTransports()
 {
-	std::shared_ptr<ScoutServer> trans = std::make_shared<USBServer>();
-	if (trans->init())
+	std::shared_ptr<ScoutServer> server;
+	
+	server = std::make_shared<USBServer>(this);
+	if (server->init())
 	{
-		(void)connect(trans.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
-		transport_servers_.push_back(trans);
-		logwin_->append("Synchronization transport '" + trans->name() + "' initialized");
+		(void)connect(server.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
+		transport_servers_.push_back(server);
+		logwin_->append("Synchronization transport '" + server->name() + "' initialized");
 	}
 	else
 	{
-		logwin_->append("Synchronization transport '" + trans->name() + "' failed to initialized");
+		logwin_->append("Synchronization transport '" + server->name() + "' failed to initialized");
 	}
 
-	trans = std::make_shared<TcpServer>(this);
-	if (trans->init())
+	server = std::make_shared<TcpServer>(this);
+	if (server->init())
 	{
-		(void)connect(trans.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
-		transport_servers_.push_back(trans);
-		logwin_->append("Synchronization transport '" + trans->name() + "' initialized");
+		(void)connect(server.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
+		transport_servers_.push_back(server);
+		logwin_->append("Synchronization transport '" + server->name() + "' initialized");
 	}
 	else
 	{
-		logwin_->append("Synchronization transport '" + trans->name() + "' failed to initialized");
+		logwin_->append("Synchronization transport '" + server->name() + "' failed to initialized");
+	}
+
+	server = std::make_shared<BluetoothServer>(this);
+	if (server->init())
+	{
+		(void)connect(server.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
+		transport_servers_.push_back(server);
+		logwin_->append("Synchronization transport '" + server->name() + "' initialized");
+	}
+	else
+	{
+		logwin_->append("Synchronization transport '" + server->name() + "' failed to initialized");
 	}
 }
 

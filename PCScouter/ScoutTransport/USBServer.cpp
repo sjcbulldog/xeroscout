@@ -10,7 +10,7 @@ namespace xero
 	{
 		namespace transport
 		{
-			USBServer::USBServer()
+			USBServer::USBServer(QObject *parent) : ScoutServer(parent)
 			{
 				usb_ = new XeroPCCableTransfer(-1, -1);
 				dead_child_ = nullptr;
