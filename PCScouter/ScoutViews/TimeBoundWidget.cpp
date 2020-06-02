@@ -1,6 +1,7 @@
 #include "TimeBoundWidget.h"
 #include <QPainter>
 #include <QMouseEvent>
+#include <cmath>
 
 namespace xero
 {

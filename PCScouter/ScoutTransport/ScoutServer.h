@@ -21,6 +21,7 @@ namespace xero
 				virtual bool init() = 0;
 				virtual void run() = 0;
 				virtual QString name() = 0;
+				virtual QString hwinfo() = 0;
 
 			signals:
 				void connected(ScoutTransport *);

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QObject>
 #include "BlueAlliance.h"
+#include <QObject>
+#include <memory>
 
 class ApplicationController : public QObject
 {

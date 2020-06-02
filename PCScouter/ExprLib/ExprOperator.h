@@ -2,6 +2,7 @@
 
 #include "ExprNode.h"
 #include <vector>
+#include <memory>
 
 namespace xero
 {

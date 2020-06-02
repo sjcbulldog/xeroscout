@@ -19,13 +19,12 @@
 #include "blueallianceapi_global.h"
 #include <QString>
 #include <list>
+#include <memory>
 
 namespace xero
 {
 	namespace ba
 	{
-
-
 		class Team;
 		class Event;
 

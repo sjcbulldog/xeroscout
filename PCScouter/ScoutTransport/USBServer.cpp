@@ -45,6 +45,11 @@ namespace xero
 				}
 			}
 
+			QString USBServer::hwinfo()
+			{
+				return QString(usb_->description().c_str());
+			}
+
 			bool USBServer::init()
 			{
 				inited_ = usb_->init();

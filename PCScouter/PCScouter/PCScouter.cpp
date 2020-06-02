@@ -405,7 +405,7 @@ void PCScouter::createTransports()
 	{
 		(void)connect(server.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
 		transport_servers_.push_back(server);
-		logwin_->append("Synchronization transport '" + server->name() + "' initialized");
+		logwin_->append("Synchronization transport '" + server->name() + "' initialized - " + server->hwinfo());
 	}
 	else
 	{
@@ -417,7 +417,7 @@ void PCScouter::createTransports()
 	{
 		(void)connect(server.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
 		transport_servers_.push_back(server);
-		logwin_->append("Synchronization transport '" + server->name() + "' initialized");
+		logwin_->append("Synchronization transport '" + server->name() + "' initialized - " + server->hwinfo());
 	}
 	else
 	{
@@ -429,7 +429,7 @@ void PCScouter::createTransports()
 	{
 		(void)connect(server.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
 		transport_servers_.push_back(server);
-		logwin_->append("Synchronization transport '" + server->name() + "' initialized");
+		logwin_->append("Synchronization transport '" + server->name() + "' initialized - " + server->hwinfo());
 	}
 	else
 	{

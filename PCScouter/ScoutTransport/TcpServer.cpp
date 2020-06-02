@@ -1,6 +1,7 @@
 #include "TcpServer.h"
 #include "TcpTransport.h"
 #include "ClientServerProtocol.h"
+#include <QNetworkInterface>
 
 namespace xero
 {
@@ -17,6 +18,25 @@ namespace xero
 
 			TcpServer::~TcpServer()
 			{
+			}
+
+			QString TcpServer::hwinfo()
+			{
+				QString ret;
+
+				auto list = QNetworkInterface::allAddresses();
+				for (const auto& addr : list)
+				{
+					if (addr.isLoopback() || addr.isNull() || addr.isLinkLocal())
+						continue;
+
+					if (ret.length() > 0)
+						ret += ", ";
+
+					ret += addr.toString();
+				}
+
+				return ret;
 			}
 
 			void TcpServer::run()

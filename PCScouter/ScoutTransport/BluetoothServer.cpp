@@ -20,9 +20,15 @@ namespace xero
 					delete server_;
 			}
 
+			QString BluetoothServer::hwinfo()
+			{
+				return server_->serverAddress().toString();
+			}
+
 			bool BluetoothServer::init()
 			{
 				QBluetoothLocalDevice dev;
+				auto list = QBluetoothLocalDevice::allDevices();
 
 				if (!dev.isValid())
 				{
@@ -31,6 +37,8 @@ namespace xero
 				}
 
 				dev.powerOn();
+				qDebug() << dev.name();
+				dev.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
 
 				server_ = new QBluetoothServer(QBluetoothServiceInfo::RfcommProtocol, this);
 				(void)connect(server_, &QBluetoothServer::newConnection, this, &BluetoothServer::newConnection);
@@ -42,16 +50,10 @@ namespace xero
 					return false;
 				}
 
-				QBluetoothServiceInfo::Sequence profileSequence;
 				QBluetoothServiceInfo::Sequence classId;
-				classId << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::SerialPort));
-				classId << QVariant::fromValue(quint16(0x100));
-				profileSequence.append(QVariant::fromValue(classId));
-				serviceInfo.setAttribute(QBluetoothServiceInfo::BluetoothProfileDescriptorList,	profileSequence);
 
 				classId.clear();
 				classId << QVariant::fromValue(BluetoothIDS::serviceID());
-				classId << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::SerialPort));
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceClassIds, classId);
 
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceName, tr("XeroScout Synchronization"));
@@ -65,9 +67,6 @@ namespace xero
 
 				QBluetoothServiceInfo::Sequence protocolDescriptorList;
 				QBluetoothServiceInfo::Sequence protocol;
-				protocol << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::L2cap));
-				protocolDescriptorList.append(QVariant::fromValue(protocol));
-				protocol.clear();
 				protocol << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::Rfcomm))	<< QVariant::fromValue(quint8(server_->serverPort()));
 				protocolDescriptorList.append(QVariant::fromValue(protocol));
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ProtocolDescriptorList,	protocolDescriptorList);

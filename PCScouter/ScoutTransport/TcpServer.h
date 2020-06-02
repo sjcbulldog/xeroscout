@@ -22,6 +22,7 @@ namespace xero
 				void run() override;
 				bool init() override;
 				QString name() override { return "TCP"; }
+				virtual QString hwinfo();
 
 			private:
 				void closingChild(TcpTransport*);
