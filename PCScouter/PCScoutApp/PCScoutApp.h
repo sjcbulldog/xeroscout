@@ -115,7 +115,7 @@ private:
 	void foundDevice(const QBluetoothDeviceInfo& info);
 	void discoveryFinished();
 	void serverSelected(const QString& name);
-	void serverConnected(BluetoothTransport* trans);
+	void serverConnected(xero::scouting::transport::BluetoothTransport* trans);
 	void serverConnectionError(const QString& err);
 
 private:
@@ -190,7 +190,6 @@ private:
 	QString server_ip_;
 
 	xero::scouting::transport::BluetoothClient* bt_client_;
-	xero::scouting::transport::BluetoothTransport* bt_transport_;
 	BluetoothConnectDialog* dialog_;
 	std::list<QBluetoothDeviceInfo> servers_;
 	bool close_dialog_;

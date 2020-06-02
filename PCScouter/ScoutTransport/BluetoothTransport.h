@@ -21,9 +21,6 @@ namespace xero
 				BluetoothTransport(QBluetoothSocket *socket);
 				virtual ~BluetoothTransport();
 
-				bool search();
-				bool init(const QBluetoothDeviceInfo& serviceInfo);
-
 				virtual bool write(const QByteArray& data) ;
 				virtual QByteArray readAll() ;
 				virtual void flush() ;

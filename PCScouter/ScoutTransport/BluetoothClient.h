@@ -1,5 +1,6 @@
 #pragma once
 
+#include "scouttransport_global.h"
 #include "BluetoothTransport.h"
 #include <QObject>
 #include <QBluetoothDeviceDiscoveryAgent>
@@ -10,7 +11,7 @@ namespace xero
 	{
 		namespace transport
 		{
-			class BluetoothClient : public QObject
+			class SCOUTTRANSPORT_EXPORT BluetoothClient : public QObject
 			{
 				Q_OBJECT
 

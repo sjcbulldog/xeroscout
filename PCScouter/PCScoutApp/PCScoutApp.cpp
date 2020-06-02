@@ -162,7 +162,6 @@ PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
 	if (settings_.contains(DebugParamName) && settings_.value(DebugParamName).toBool())
 		debug_act_->setChecked(true);
 
-	bt_transport_ = nullptr;
 	bt_client_ = nullptr;
 	close_dialog_ = false;
 }
@@ -723,10 +722,10 @@ void PCScoutApp::syncWithCentralBluetooth()
 	connect(bt_client_, &BluetoothClient::foundDevice, this, &PCScoutApp::foundDevice);
 	connect(bt_client_, &BluetoothClient::discoveryFinished, this, &PCScoutApp::discoveryFinished);
 
-	if (!bt_transport_->search())
+	if (!bt_client_->search())
 	{
-		delete bt_transport_;
-		bt_transport_ = nullptr;
+		delete bt_client_;
+		bt_client_ = nullptr;
 		return;
 	}
 
