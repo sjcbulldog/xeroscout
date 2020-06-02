@@ -41,6 +41,9 @@ namespace xero
 				QBluetoothSocket* socket_;
 				int timeout_;
 				QString service_name_;
+
+				QMetaObject::Connection c1_;
+				QMetaObject::Connection c2_;
 			};
 		}
 	}

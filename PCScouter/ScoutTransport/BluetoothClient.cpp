@@ -21,13 +21,18 @@ namespace xero
 
 			BluetoothClient::~BluetoothClient()
 			{
+				if (agent_ != nullptr)
+					delete agent_;
+
+				if (timer_ != nullptr)
+					delete timer_;
 			}
 
 			void BluetoothClient::connectToServer(const QBluetoothServiceInfo& info)
 			{
 				socket_ = new QBluetoothSocket();
-				connect(socket_, &QBluetoothSocket::connected, this, &BluetoothClient::socketConnected);
-				connect(socket_, static_cast<void (QBluetoothSocket::*)(QBluetoothSocket::SocketError)>(&QBluetoothSocket::error), this, &BluetoothClient::socketConnectError);
+				c1_ = connect(socket_, &QBluetoothSocket::connected, this, &BluetoothClient::socketConnected);
+				c2_ = connect(socket_, static_cast<void (QBluetoothSocket::*)(QBluetoothSocket::SocketError)>(&QBluetoothSocket::error), this, &BluetoothClient::socketConnectError);
 
 				socket_->connectToService(info);
 			}
@@ -36,7 +41,9 @@ namespace xero
 			{
 				BluetoothTransport* trans = new BluetoothTransport(socket_);
 				socket_ = nullptr;
-
+				
+				disconnect(c1_);
+				disconnect(c2_);
 				emit connected(trans);
 			}
 
@@ -67,6 +74,9 @@ namespace xero
 					err = "operation error";
 					break;
 				}
+
+				disconnect(c1_);
+				disconnect(c2_);
 				emit connectError(QString("error connecting to xero scout server - ") + err);
 			}
 
@@ -113,6 +123,8 @@ namespace xero
 					delete timer_;
 					timer_ = nullptr;
 					agent_->stop();
+					delete agent_;
+					agent_ = nullptr;
 					connectToServer(service);
 				}
 			}

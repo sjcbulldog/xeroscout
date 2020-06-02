@@ -410,6 +410,7 @@ void ClientProtocolHandler::handleErrorReply(const QJsonDocument& doc)
 	}
 
 	emit errorMessage("error returned from tablet - " + obj.value(JsonMessageName).toString());
+	emit complete();
 }
 
 void ClientProtocolHandler::handleSyncDone(const QJsonDocument &doc)
