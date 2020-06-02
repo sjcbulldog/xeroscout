@@ -3,7 +3,7 @@
 #include "scouttransport_global.h"
 #include "BluetoothTransport.h"
 #include <QObject>
-#include <QBluetoothDeviceDiscoveryAgent>
+#include <QBluetoothServiceDiscoveryAgent>
 
 namespace xero
 {
@@ -20,17 +20,16 @@ namespace xero
 				virtual ~BluetoothClient();
 
 				bool search();
-				void connectToServer(const QBluetoothDeviceInfo& info);
+				void connectToServer(const QBluetoothServiceInfo& info);
 
 			signals:
 				void discoveryFinished();
-				void foundDevice(const QBluetoothDeviceInfo& info);
+				void foundService(const QBluetoothServiceInfo& info);
 				void connected(BluetoothTransport* trans);
 				void connectError(const QString& err);
 
 			private:
-				bool createTransport(const QBluetoothDeviceInfo& info);
-				void deviceDiscovered(const QBluetoothDeviceInfo& devinfo);
+				void serviceDiscovered(const QBluetoothServiceInfo& devinfo);
 				void timerExpired();
 				void socketConnected();
 				void socketConnectError(QBluetoothSocket::SocketError error);
@@ -38,8 +37,8 @@ namespace xero
 
 			private:
 				QTimer* timer_;
-				QBluetoothDeviceDiscoveryAgent* agent_;
-				std::list<QBluetoothAddress> found_;
+				QBluetoothServiceDiscoveryAgent* agent_;
+				std::list<QBluetoothServiceInfo> found_;
 				QBluetoothSocket* socket_;
 				int timeout_;
 			};

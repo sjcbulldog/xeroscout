@@ -719,7 +719,7 @@ void PCScoutApp::syncWithCentralBluetooth()
 	setEnabled(false);
 
 	bt_client_ = new BluetoothClient();
-	connect(bt_client_, &BluetoothClient::foundDevice, this, &PCScoutApp::foundDevice);
+	connect(bt_client_, &BluetoothClient::foundService, this, &PCScoutApp::foundService);
 	connect(bt_client_, &BluetoothClient::discoveryFinished, this, &PCScoutApp::discoveryFinished);
 
 	if (!bt_client_->search())
@@ -738,15 +738,12 @@ void PCScoutApp::syncWithCentralBluetooth()
 void PCScoutApp::serverSelected(const QString& name)
 {
 	close_dialog_ = true;
-	QBluetoothDeviceInfo sinfo;
+	QBluetoothServiceInfo sinfo;
 	bool found = false;
 
-	for (const QBluetoothDeviceInfo& info : servers_)
+	for (const auto& info : servers_)
 	{
-		QString remote = info.name();
-		if (remote.isEmpty())
-			remote = info.address().toString();
-
+		QString remote = info.serviceName();
 		if (remote == name)
 		{
 			sinfo = info;
@@ -782,14 +779,11 @@ void PCScoutApp::serverConnected(BluetoothTransport *trans)
 	startSync(trans);
 }
 
-void PCScoutApp::foundDevice(const QBluetoothDeviceInfo& info)
+void PCScoutApp::foundService(const QBluetoothServiceInfo& info)
 {
 	servers_.push_back(info);
 
-	QString remote = info.name();
-	if (remote.isEmpty())
-		remote = info.address().toString();
-
+	QString remote = info.serviceName();
 	dialog_->addDevice(remote);
 }
 

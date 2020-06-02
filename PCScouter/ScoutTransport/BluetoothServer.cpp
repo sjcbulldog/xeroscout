@@ -2,6 +2,7 @@
 #include "BluetoothIDS.h"
 #include "BluetoothTransport.h"
 #include <QBluetoothLocalDevice>
+#include <QBluetoothAddress>
 
 namespace xero
 {
@@ -27,33 +28,28 @@ namespace xero
 
 			bool BluetoothServer::init()
 			{
-				QBluetoothLocalDevice dev;
-				auto list = QBluetoothLocalDevice::allDevices();
-
-				if (!dev.isValid())
-				{
-					qDebug() << "no bluetooth device found";
-					return false;
-				}
-
-				dev.powerOn();
-				qDebug() << dev.name();
-				dev.setHostMode(QBluetoothLocalDevice::HostDiscoverable);
+				QBluetoothAddress addr;
 
 				server_ = new QBluetoothServer(QBluetoothServiceInfo::RfcommProtocol, this);
 				(void)connect(server_, &QBluetoothServer::newConnection, this, &BluetoothServer::newConnection);
 
-				if (!server_->listen(dev.address()))
+				if (!server_->listen(addr))
 				{
 					delete server_;
 					server_ = nullptr;
 					return false;
 				}
 
+				QBluetoothServiceInfo::Sequence profileSequence;
 				QBluetoothServiceInfo::Sequence classId;
+				classId << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::SerialPort));
+				classId << QVariant::fromValue(quint16(0x100));
+				profileSequence.append(QVariant::fromValue(classId));
+				serviceInfo.setAttribute(QBluetoothServiceInfo::BluetoothProfileDescriptorList, profileSequence);
 
 				classId.clear();
-				classId << QVariant::fromValue(BluetoothIDS::serviceID());
+				classId << QVariant::fromValue(QBluetoothUuid(BluetoothIDS::serviceID()));
+				classId << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::SerialPort));
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceClassIds, classId);
 
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ServiceName, tr("XeroScout Synchronization"));
@@ -67,11 +63,14 @@ namespace xero
 
 				QBluetoothServiceInfo::Sequence protocolDescriptorList;
 				QBluetoothServiceInfo::Sequence protocol;
+				protocol << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::L2cap));
+				protocolDescriptorList.append(QVariant::fromValue(protocol));
+				protocol.clear();
 				protocol << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::Rfcomm))	<< QVariant::fromValue(quint8(server_->serverPort()));
 				protocolDescriptorList.append(QVariant::fromValue(protocol));
 				serviceInfo.setAttribute(QBluetoothServiceInfo::ProtocolDescriptorList,	protocolDescriptorList);
 
-				serviceInfo.registerService(dev.address());
+				serviceInfo.registerService(addr);
 
 				return true;
 			}
