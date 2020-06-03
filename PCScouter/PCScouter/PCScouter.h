@@ -60,6 +60,8 @@ private:
 	static constexpr const char* DebugSetting = "debug";
 
 private:
+	void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
+
 	void enableApp();
 	void disableApp();
 

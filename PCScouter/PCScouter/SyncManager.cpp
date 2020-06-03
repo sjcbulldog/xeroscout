@@ -17,6 +17,11 @@ SyncManager::~SyncManager()
 {
 }
 
+void SyncManager::setDataModel(std::shared_ptr<ScoutingDataModel> dm)
+{
+	dm_ = dm;
+}
+
 void SyncManager::createTransports()
 {
 	std::shared_ptr<ScoutServer> server;
@@ -58,9 +63,8 @@ void SyncManager::createTransports()
 	}
 }
 
-void SyncManager::run(std::shared_ptr<ScoutingDataModel> dm)
+void SyncManager::run()
 {
-	dm_ = dm;
 	for (auto prev : previous_)
 		delete prev;
 	previous_.clear();

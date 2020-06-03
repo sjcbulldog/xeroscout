@@ -175,6 +175,18 @@ void PCScouter::showEvent(QShowEvent* ev)
 	sync_mgr_->createTransports();
 }
 
+void PCScouter::setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm)
+{
+	data_model_ = dm;
+	view_frame_->setDataModel(dm);
+	sync_mgr_->setDataModel(dm);
+
+	if (data_model_ != nullptr)
+	{
+		connect(data_model_.get(), &ScoutingDataModel::modelChanged, this, &PCScouter::dataModelChanged);
+	}
+}
+
 void PCScouter::closeEvent(QCloseEvent* ev)
 {
 	if (data_model_ != nullptr && data_model_->isDirty()) {
@@ -478,8 +490,7 @@ void PCScouter::processTimer()
 		statusBar()->showMessage(blue_alliance_->getStatus());
 	}
 
-	sync_mgr_->run(data_model_);
-
+	sync_mgr_->run();
 
 	if (app_controller_ != nullptr)
 		processAppController();
@@ -758,10 +769,9 @@ void PCScouter::newEventComplete(bool err)
 	else
 	{
 		settings_.setValue(TabletPoolSetting, ctrl->tablets());
-		data_model_ = ctrl->dataModel();
+		setDataModel(ctrl->dataModel());
 		view_frame_->setDataModel(data_model_);
 
-		connect(data_model_.get(), &ScoutingDataModel::modelChanged, this, &PCScouter::dataModelChanged);
 		setMainView(DocumentView::ViewType::MatchView);
 
 		QMessageBox::information(this, "Save File", "The event has been created, please save the data to a file");
@@ -812,18 +822,13 @@ void PCScouter::openEvent()
 	if (filename.length() == 0)
 		return;
 
-	data_model_ = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::CentralMachine);
-	if (!data_model_->load(filename)) {
+	auto dm = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::CentralMachine);
+	if (!dm->load(filename)) {
 		QMessageBox::critical(this, "Error", "Could not load event data file");
-		data_model_ = nullptr;
-		view_frame_->setDataModel(nullptr);
+		return;
 	}
-	else {
-		view_frame_->setDataModel(data_model_);
-	}
-
+	setDataModel(dm);
 	setupViews();
-	connect(data_model_.get(), &ScoutingDataModel::modelChanged, this, &PCScouter::dataModelChanged);
 }
 
 void PCScouter::saveEvent()
@@ -858,8 +863,7 @@ void PCScouter::closeEventHandler()
 			}
 		}
 
-		data_model_ = nullptr;
-		view_frame_->setDataModel(nullptr);
+		setDataModel(nullptr);
 		setMainView(DocumentView::ViewType::NoModelView);
 		updateCurrentView();
 	}

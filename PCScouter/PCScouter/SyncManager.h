@@ -17,7 +17,8 @@ public:
 	SyncManager(xero::scouting::datamodel::ImageManager &images, int team_number);
 	virtual ~SyncManager();
 
-	void run(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
+	void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
+	void run();
 	void createTransports();
 
 signals:
