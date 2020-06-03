@@ -50,19 +50,13 @@ namespace xero
 				disconnect(error_connection_);
 
 				socket_->close();
-
-				if (server_ == nullptr)
-				{
-					delete socket_;
-				}
-
 				socket_ = nullptr;
 			}
 
 			void TcpTransport::close()
 			{
 				if (server_ != nullptr)
-					server_->closingChild(this);
+					server_->closing(this);
 			}
 
 			QString TcpTransport::description()
@@ -85,7 +79,6 @@ namespace xero
 
 			void TcpTransport::streamDisconnected()
 			{
-				qDebug() << (server_ == nullptr ? QString("client: ") : QString("server: ")) + "TcpTransport: stream disconnected";
 				emit transportDisconnected();
 			}
 
@@ -94,108 +87,7 @@ namespace xero
 				if (err == QAbstractSocket::SocketError::RemoteHostClosedError)
 					emit transportDisconnected();
 				else
-					emit transportError(toString(err));
-			}
-
-			QString TcpTransport::toString(QAbstractSocket::SocketError err)
-			{
-				QString errstr;
-
-				switch (err) {
-				case QAbstractSocket::SocketError::ConnectionRefusedError:
-					errstr = "ConnectionRefusedError";
-					break;
-
-				case QAbstractSocket::SocketError::RemoteHostClosedError:
-					errstr = "RemoteHostClosedError";
-					break;
-
-				case QAbstractSocket::SocketError::HostNotFoundError:
-					errstr = "HostNotFoundError";
-					break;
-
-				case QAbstractSocket::SocketError::SocketAccessError:
-					errstr = "SocketAccessError";
-					break;
-
-				case QAbstractSocket::SocketError::SocketResourceError:
-					errstr = "SocketResourceError";
-					break;
-
-				case QAbstractSocket::SocketError::SocketTimeoutError:
-					errstr = "SocketTimeoutError";
-					break;
-
-				case QAbstractSocket::SocketError::DatagramTooLargeError:
-					errstr = "DatagramTooLargeError";
-					break;
-
-				case QAbstractSocket::SocketError::NetworkError:
-					errstr = "NetworkError";
-					break;
-
-				case QAbstractSocket::SocketError::AddressInUseError:
-					errstr = "AddressInUseError";
-					break;
-
-				case QAbstractSocket::SocketError::SocketAddressNotAvailableError:
-					errstr = "SocketAddressNotAvailableError";
-					break;
-
-				case QAbstractSocket::SocketError::UnsupportedSocketOperationError:
-					errstr = "UnsupportedSocketOperationError";
-					break;
-
-				case QAbstractSocket::SocketError::UnfinishedSocketOperationError:
-					errstr = "UnfinishedSocketOperationError";
-					break;
-
-				case QAbstractSocket::SocketError::ProxyAuthenticationRequiredError:
-					errstr = "ProxyAuthenticationRequiredError";
-					break;
-
-				case QAbstractSocket::SocketError::SslHandshakeFailedError:
-					errstr = "SslHandshakeFailedError";
-					break;
-
-				case QAbstractSocket::SocketError::ProxyConnectionRefusedError:
-					errstr = "ProxyConnectionRefusedError";
-					break;
-
-				case QAbstractSocket::SocketError::ProxyConnectionClosedError:
-					errstr = "ProxyConnectionClosedError";
-					break;
-
-				case QAbstractSocket::SocketError::ProxyConnectionTimeoutError:
-					errstr = "ProxyConnectionTimeoutError";
-					break;
-
-				case QAbstractSocket::SocketError::ProxyNotFoundError:
-					errstr = "ProxyNotFoundError";
-					break;
-
-				case QAbstractSocket::SocketError::ProxyProtocolError:
-					errstr = "ProxyProtocolError";
-					break;
-
-				case QAbstractSocket::SocketError::OperationError:
-					errstr = "OperationError";
-					break;
-
-				case QAbstractSocket::SocketError::SslInternalError:
-					errstr = "SslInternalError";
-					break;
-
-				case QAbstractSocket::SocketError::SslInvalidUserDataError:
-					errstr = "SslInvalidUserDataError";
-					break;
-
-				case QAbstractSocket::SocketError::TemporaryError:
-					errstr = "TemporaryError";
-					break;
-				}
-
-				return errstr;
+					emit transportError("tcp/ip transport error - " + socket_->errorString());
 			}
 
 			void TcpTransport::dataReceived()
@@ -206,8 +98,6 @@ namespace xero
 			QByteArray TcpTransport::readAll()
 			{
 				QByteArray data = socket_->readAll();
-
-				// qDebug() << (server_ == nullptr ? QString("client: ") : QString("server: ")) + "TcpTransport: received " + QString::number(data.size()) + " bytes";
 
 				return data;
 			}
@@ -221,8 +111,6 @@ namespace xero
 					written = socket_->write(data.data() + index, data.size() - index);
 					if (written == -1)
 						return false;
-
-					// qDebug() << (server_ == nullptr ? QString("client: ") : QString("server: ")) + "TcpTransport: wrote " + QString::number(written) + " bytes";
 
 					index += written;
 

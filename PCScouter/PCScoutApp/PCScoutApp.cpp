@@ -602,8 +602,7 @@ void PCScoutApp::resetTablet()
 	identity_ = TabletIdentity(identity_.uid());
 	settings_.setValue(TabletNameKey, "");
 
-	data_model_->resetFilename();
-	data_model_->removeScoutingData(identity_.name());
+	data_model_ = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::ScoutingTablet);
 
 	view_frame_->setTablet("[NONE]");
 	tablet_name_->setText("[NO NAME]");

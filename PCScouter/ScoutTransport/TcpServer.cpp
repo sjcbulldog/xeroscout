@@ -39,6 +39,12 @@ namespace xero
 				return ret;
 			}
 
+			void TcpServer::closing(TcpTransport* trans)
+			{
+				assert(child_ == trans);
+				child_ = nullptr;
+			}
+
 			void TcpServer::run()
 			{
 				if (child_ == nullptr && server_->hasPendingConnections())
@@ -58,12 +64,6 @@ namespace xero
 					return false;
 
 				return true;
-			}
-
-			void TcpServer::closingChild(TcpTransport* child)
-			{
-				delete child_;
-				child_ = nullptr;
 			}
 		}
 	}

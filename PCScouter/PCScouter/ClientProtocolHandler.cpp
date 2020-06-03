@@ -26,12 +26,15 @@
 using namespace xero::scouting::datamodel;
 using namespace xero::scouting::transport;
 
+int ClientProtocolHandler::master_id_ = 0;
+
 ClientProtocolHandler::ClientProtocolHandler(ScoutTransport* s, xero::scouting::datamodel::ImageManager& images, std::shared_ptr<ScoutingDataModel> model, bool debug) : images_(images)
 {
 	data_model_ = model;
 	client_ = new ClientServerProtocol(s, true, false, debug);
 	debug_ = debug;
 	comp_type_ = 0;
+	id_ = master_id_++;
 
 	connect(client_, &ClientServerProtocol::jsonReceived, this, &ClientProtocolHandler::receivedJSON);
 	connect(client_, &ClientServerProtocol::errorDetected, this, &ClientProtocolHandler::protocolAbort);
@@ -410,7 +413,6 @@ void ClientProtocolHandler::handleErrorReply(const QJsonDocument& doc)
 	}
 
 	emit errorMessage("error returned from tablet - " + obj.value(JsonMessageName).toString());
-	emit complete();
 }
 
 void ClientProtocolHandler::handleSyncDone(const QJsonDocument &doc)

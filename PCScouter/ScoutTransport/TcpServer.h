@@ -25,7 +25,7 @@ namespace xero
 				virtual QString hwinfo();
 
 			private:
-				void closingChild(TcpTransport*);
+				void closing(TcpTransport*);
 
 			private:
 				QTcpServer* server_;

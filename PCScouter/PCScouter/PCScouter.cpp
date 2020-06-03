@@ -78,7 +78,7 @@ using namespace xero::scouting::transport;
 
 PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_(true)
 {
-	coach_ = coach;
+	sync_mgr_ = nullptr;
 
 	TestDataInjector& injector = TestDataInjector::getInstance();
 	summary_progress_ = new QProgressBar();
@@ -136,6 +136,12 @@ PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_
 
 void PCScouter::showEvent(QShowEvent* ev)
 {
+	sync_mgr_ = new SyncManager(images_, team_number_);
+	connect(sync_mgr_, &SyncManager::logMessage, this, &PCScouter::logMessage);
+	connect(sync_mgr_, &SyncManager::syncComplete, this, &PCScouter::saveAndBackup);
+	connect(sync_mgr_, &SyncManager::enableApp, this, &PCScouter::enableApp);
+	connect(sync_mgr_, &SyncManager::disableApp, this, &PCScouter::disableApp);
+
 	blue_alliance_ = std::make_shared<BlueAlliance>();
 
 	timer_ = new QTimer(this);
@@ -166,8 +172,7 @@ void PCScouter::showEvent(QShowEvent* ev)
 	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
 	path += "/views" + QString::number(year_) + ".json";
 
-	if (!coach_)
-		createTransports();
+	sync_mgr_->createTransports();
 }
 
 void PCScouter::closeEvent(QCloseEvent* ev)
@@ -396,86 +401,6 @@ void PCScouter::createMenus()
 // Synchronization ....
 /////////////////////////////////////////////////////////////
 
-void PCScouter::createTransports()
-{
-	std::shared_ptr<ScoutServer> server;
-	
-	server = std::make_shared<USBServer>(this);
-	if (server->init())
-	{
-		(void)connect(server.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
-		transport_servers_.push_back(server);
-		logwin_->append("Synchronization transport '" + server->name() + "' initialized - " + server->hwinfo());
-	}
-	else
-	{
-		logwin_->append("Synchronization transport '" + server->name() + "' failed to initialized");
-	}
-
-	server = std::make_shared<TcpServer>(this);
-	if (server->init())
-	{
-		(void)connect(server.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
-		transport_servers_.push_back(server);
-		logwin_->append("Synchronization transport '" + server->name() + "' initialized - " + server->hwinfo());
-	}
-	else
-	{
-		logwin_->append("Synchronization transport '" + server->name() + "' failed to initialized");
-	}
-
-	server = std::make_shared<BluetoothServer>(team_number_, this);
-	if (server->init())
-	{
-		(void)connect(server.get(), &ScoutServer::connected, this, &PCScouter::syncWithTablet);
-		transport_servers_.push_back(server);
-		logwin_->append("Synchronization transport '" + server->name() + "' initialized - " + server->hwinfo());
-	}
-	else
-	{
-		logwin_->append("Synchronization transport '" + server->name() + "' failed to initialized");
-	}
-}
-
-void PCScouter::syncWithTablet(ScoutTransport *trans)
-{
-	logwin_->append("Sync requested from '" + trans->description() + "'");
-
-	disableApp();
-	tablet_client_ = new ClientProtocolHandler(trans, images_, data_model_, debug_act_->isChecked());
-	connect(tablet_client_, &ClientProtocolHandler::errorMessage, this, &PCScouter::clientError);
-	connect(tablet_client_, &ClientProtocolHandler::tabletAttached, this, &PCScouter::clientTabletAttached);
-	connect(tablet_client_, &ClientProtocolHandler::complete, this, &PCScouter::clientComplete);
-	connect(tablet_client_, &ClientProtocolHandler::clientDisconnected, this, &PCScouter::clientDisconnected);
-	connect(tablet_client_, &ClientProtocolHandler::displayLogMessage, this, &PCScouter::displayMessage);
-}
-
-void PCScouter::clientError(const QString &errmsg)
-{
-	logwin_->append("Client connection error - " + errmsg);
-	shutdown_client_connection_ = true;
-}
-
-void PCScouter::clientDisconnected()
-{
-	shutdown_client_connection_ = true;
-}
-
-void PCScouter::clientComplete()
-{
-	if (data_model_ == nullptr && tablet_client_->dataModel() != nullptr)
-	{
-		data_model_ = tablet_client_->dataModel();
-		saveEventAs();
-	}
-	else 
-	{
-		saveAndBackup();
-	}
-
-	setMainView(view_frame_->viewType());
-	enableApp();
-}
 
 void PCScouter::clientTabletAttached(const TabletIdentity &id)
 {
@@ -553,8 +478,8 @@ void PCScouter::processTimer()
 		statusBar()->showMessage(blue_alliance_->getStatus());
 	}
 
-	for (auto trans : transport_servers_)
-		trans->run();
+	sync_mgr_->run(data_model_);
+
 
 	if (app_controller_ != nullptr)
 		processAppController();
@@ -563,6 +488,7 @@ void PCScouter::processTimer()
 	{
 		delete tablet_client_;
 		tablet_client_ = nullptr;
+		shutdown_client_connection_ = false;
 	}
 }
 

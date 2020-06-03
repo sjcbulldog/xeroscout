@@ -41,6 +41,10 @@ public:
 		return data_model_;
 	}
 
+	int id() {
+		return id_;
+	}
+
 signals:
 	void complete();
 	void clientDisconnected();
@@ -77,5 +81,8 @@ private:
 	std::map<uint32_t, std::function<void(const QJsonDocument& doc)>> handlers_;
 
 	xero::scouting::datamodel::ImageManager& images_;
+
+	int id_;
+	static int master_id_;
 };
 

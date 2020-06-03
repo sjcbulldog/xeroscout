@@ -45,7 +45,7 @@ namespace xero
 				if (error == QBluetoothSocket::SocketError::RemoteHostClosedError)
 					emit transportDisconnected();
 				else
-					emit transportError("Bluetooth socket error");
+					emit transportError("bluetooth transport error - " + socket_->errorString());
 			}
 
 			bool BluetoothTransport::write(const QByteArray& data)

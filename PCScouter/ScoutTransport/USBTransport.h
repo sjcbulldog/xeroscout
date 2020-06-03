@@ -34,7 +34,7 @@ namespace xero
 			{
 			public:
 				USBTransport();
-				USBTransport(USBServer *server, xero::device::usb::XeroPCCableTransfer *dev);
+				USBTransport(USBServer *server, xero::device::usb::XeroPCCableTransfer* dev);
 
 				virtual ~USBTransport();
 

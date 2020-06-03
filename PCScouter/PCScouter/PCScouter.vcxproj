@@ -139,6 +139,7 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
     <ClCompile Include="SelectScoutingFormsWizardPage.cpp" />
     <ClCompile Include="NewEventBlueAllianceWizard.cpp" />
     <ClCompile Include="SpecialListWidget.cpp" />
+    <ClCompile Include="SyncManager.cpp" />
     <ClCompile Include="TabletPoolListWidget.cpp" />
     <ClCompile Include="TabletPoolWizardPage.cpp" />
     <ClCompile Include="TestDataInjector.cpp" />
@@ -152,6 +153,7 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
   <ItemGroup>
     <ClInclude Include="AllTeamSummaryController.h" />
     <ClInclude Include="ImportMatchScheduleController.h" />
+    <QtMoc Include="SyncManager.h" />
     <ClInclude Include="TestDataInjector.h" />
     <QtMoc Include="AboutDialog.h" />
     <ClInclude Include="AdvListWidget.h" />

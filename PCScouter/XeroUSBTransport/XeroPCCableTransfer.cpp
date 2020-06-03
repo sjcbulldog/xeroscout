@@ -117,6 +117,9 @@ namespace xero
 			const std::string& XeroPCCableTransfer::description()
 			{
 				USBDevice* dev = reinterpret_cast<USBDevice*>(dev_);
+				if (dev == nullptr)
+					return "Invalid";
+
 				return dev->description();
 			}
 		}

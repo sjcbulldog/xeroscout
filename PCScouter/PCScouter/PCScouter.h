@@ -25,6 +25,7 @@
 #include "GameRandomProfile.h"
 #include "ApplicationController.h"
 #include "KPIController.h"
+#include "SyncManager.h"
 #include <QMainWindow>
 #include <QSplitter>
 #include <QListWidget>
@@ -64,7 +65,6 @@ private:
 
 	void createWindows();
 	void createMenus();
-	void createTransports();
 
 	void dataModelChanged(xero::scouting::datamodel::ScoutingDataModel::ChangeType type);
 
@@ -112,8 +112,6 @@ private:
 	void clientTabletAttached(const xero::scouting::datamodel::TabletIdentity& id);
 	void setupViews();
 	void setMainView(xero::scouting::views::DocumentView::ViewType type);
-
-	void syncWithTablet(xero::scouting::transport::ScoutTransport* trans);
 
 	void magicWordTyped(SpecialListWidget::Word w);
 
@@ -184,7 +182,7 @@ private:
 	QString query_;
 	int year_;
 
-	std::list<std::shared_ptr<xero::scouting::transport::ScoutServer>> transport_servers_;
+
 
 	QLabel* data_model_status_;
 	QLabel* ip_addr_label_;
@@ -198,5 +196,5 @@ private:
 
 	xero::scouting::datamodel::ImageManager images_;
 
-	bool coach_;
+	SyncManager* sync_mgr_;
 };

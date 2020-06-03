@@ -25,7 +25,7 @@ namespace xero
 				virtual QString hwinfo();
 
 			private:
-				void closingChild(USBTransport*);
+				void closing(USBTransport*);
 
 			private:
 				bool inited_;
@@ -34,8 +34,6 @@ namespace xero
 				USBTransport* future_child_;
 				USBTransport* active_child_;
 				USBTransport* dead_child_;
-
-				QObject* parent_;
 			};
 		}
 	}

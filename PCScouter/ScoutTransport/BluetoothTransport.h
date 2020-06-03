@@ -18,7 +18,7 @@ namespace xero
 				Q_OBJECT
 
 			public:
-				BluetoothTransport(QBluetoothSocket *socket);
+				BluetoothTransport(QBluetoothSocket* socket);
 				virtual ~BluetoothTransport();
 
 				virtual bool write(const QByteArray& data) ;

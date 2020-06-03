@@ -55,7 +55,7 @@ namespace xero
 				thread_.join();
 
 				//
-				// If there is a server, the server owns the USB device
+				// If we created the USB device, we delete it
 				//
 				if (server_ == nullptr)
 					delete usb_;
@@ -81,7 +81,7 @@ namespace xero
 			void USBTransport::close()
 			{
 				if (server_ != nullptr)
-					server_->closingChild(this);
+					server_->closing(this);
 			}
 
 			void USBTransport::run()
@@ -171,9 +171,6 @@ namespace xero
 				{
 					if (!usb_->receive(data))
 					{
-						if (server_ != nullptr)
-							qDebug() << "USBTransport: server: error";
-
 						error_ = true;
 						break;
 					}
@@ -182,8 +179,6 @@ namespace xero
 							break;
 
 						appendReadData(data);
-						if (server_ != nullptr)
-							qDebug() << "USBTransport: server: read " + data.size() << "bytes";
 					}
 				}
 			}

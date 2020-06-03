@@ -29,9 +29,8 @@ namespace xero
 			class SCOUTTRANSPORT_EXPORT TcpTransport : public ScoutTransport
 			{
 			public:
-				TcpTransport(QTcpSocket* s);
 				TcpTransport(TcpServer *server, QTcpSocket* s);
-				TcpTransport();
+				TcpTransport(QTcpSocket* s);
 				virtual ~TcpTransport();
 
 				QString toString(QAbstractSocket::SocketError err);
@@ -55,6 +54,7 @@ namespace xero
 				QMetaObject::Connection receive_connection_;
 				QMetaObject::Connection disconnect_connection_;
 				QMetaObject::Connection error_connection_;
+
 				TcpServer* server_;
 			};
 		}

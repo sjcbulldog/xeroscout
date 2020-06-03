@@ -131,10 +131,8 @@ namespace xero
 					disconnect(errorReceived_);
 
 					transport_->close();
-					if (free_trans_) {
-						delete transport_;
-						transport_ = nullptr;
-					}
+					delete transport_;
+					transport_ = nullptr;
 				}
 			}
 
