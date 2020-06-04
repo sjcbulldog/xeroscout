@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "CoachSync.h"
 #include "ScoutingDataModel.h"
 #include "DocumentView.h"
 #include "BlueAlliance.h"
@@ -105,11 +106,9 @@ private:
 	void setDataModelStatus();
 
 	void updateCurrentView();
+	void syncWithCentral();
 
-	void clientError(const QString &errmsg);
 	void displayMessage(const QString &msg);
-	void clientComplete();
-	void clientDisconnected();
 
 	void clientTabletAttached(const xero::scouting::datamodel::TabletIdentity& id);
 	void setupViews();
@@ -143,6 +142,7 @@ private:
 	QTimer* timer_;
 	QTimer* ping_timer_;
 	QProgressBar* summary_progress_;
+	CoachSync *coach_sync_;
 
 	//
 	// Window related items

@@ -36,6 +36,7 @@
 
 #include "USBServer.h"
 #include "TcpServer.h"
+#include "USBTransport.h"
 #include "BluetoothServer.h"
 
 #include "NewEventAppController.h"
@@ -344,10 +345,13 @@ void PCScouter::createMenus()
 	file_menu_ = new QMenu(tr("&File"));
 	menuBar()->addMenu(file_menu_);
 
-	act = file_menu_->addAction(tr("New Event"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::newEventBA);
+	if (!coach_)
+	{
+		act = file_menu_->addAction(tr("New Event"));
+		(void)connect(act, &QAction::triggered, this, &PCScouter::newEventBA);
 
-	file_menu_->addSeparator();
+		file_menu_->addSeparator();
+	}
 
 	act = file_menu_->addAction(tr("Open Event"));
 	(void)connect(act, &QAction::triggered, this, &PCScouter::openEvent);
@@ -369,14 +373,23 @@ void PCScouter::createMenus()
 	menuBar()->addMenu(import_menu_);
 	(void)connect(import_menu_, &QMenu::aboutToShow, this, &PCScouter::showingImportMenu);
 
-	import_match_data_ = import_menu_->addAction(tr("Import Match Schedule"));
-	(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
+	if (!coach_)
+	{
+		import_match_data_ = import_menu_->addAction(tr("Import Match Schedule"));
+		(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
+	}
 
 	import_match_data_ = import_menu_->addAction(tr("Import BlueAlliance Match Results"));
 	(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchData);
 
 	import_zebra_data_ = import_menu_->addAction(tr("Import BlueAlliance Zebra Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importZebraData);
+
+	if (coach_)
+	{
+		act = import_menu_->addAction(tr("Sync With Central"));
+		(void)connect(act, &QAction::triggered, this, &PCScouter::syncWithCentral);
+	}
 
 #ifdef KNOWN_PERFORMANCE_INDICATORS
 	act = import_menu_->addAction(tr("Compute Known Performance Indicators"));
@@ -416,6 +429,18 @@ void PCScouter::createMenus()
 /////////////////////////////////////////////////////////////
 // Synchronization ....
 /////////////////////////////////////////////////////////////
+
+void PCScouter::syncWithCentral()
+{
+	if (coach_sync_ != nullptr || sync_mgr_->isBusy())
+		return;
+
+	USBTransport* trans = new USBTransport();
+
+	disableApp();
+	coach_sync_ = new CoachSync(trans, data_model_, images_, debug_act_->isChecked());
+	coach_sync_->start();
+}
 
 
 void PCScouter::clientTabletAttached(const TabletIdentity &id)

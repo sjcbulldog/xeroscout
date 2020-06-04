@@ -20,6 +20,9 @@ public:
 	void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
 	void run();
 	void createTransports();
+	bool isBusy() const {
+		return client_ != nullptr;
+	}
 
 signals:
 	void logMessage(const QString& msg);
