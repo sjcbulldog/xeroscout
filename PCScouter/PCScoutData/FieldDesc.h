@@ -27,6 +27,7 @@ namespace xero
 					type_ = type;
 					temporary_ = temp;
 					editable_ = editable;
+					warning_limits_ = false;
 				}
 
 				FieldDesc(const QString &name, const QStringList& list, bool editable, bool temp = false) {
@@ -35,6 +36,7 @@ namespace xero
 					type_ = Type::StringChoice;
 					temporary_ = temp;
 					editable_ = editable;
+					warning_limits_ = false;
 				}
 
 				FieldDesc::Type type() const {
@@ -61,12 +63,33 @@ namespace xero
 					return editable_;
 				}
 
+				void setLimits(double minv, double maxv) {
+					min_limit_ = minv;
+					max_limit_ = maxv;
+					warning_limits_ = true;
+				}
+
+				double hasLimits() const {
+					return warning_limits_;
+				}
+
+				double minLimit() const {
+					return min_limit_;
+				}
+
+				double maxLimit() const {
+					return max_limit_;
+				}
+
 			private:
 				QString name_;
 				Type type_;
 				QStringList choices_;
 				bool temporary_;
 				bool editable_;
+				bool warning_limits_;
+				double min_limit_;
+				double max_limit_;
 			};
 		}
 	}

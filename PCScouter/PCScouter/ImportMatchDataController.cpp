@@ -128,6 +128,10 @@ void ImportMatchDataController::breakOutBAData(std::shared_ptr<const DataModelMa
 		}
 	}
 
+	newdata1->insert_or_assign(DataModelMatch::BlueAllianceDataField, QVariant(true));
+	newdata2->insert_or_assign(DataModelMatch::BlueAllianceDataField, QVariant(true));
+	newdata3->insert_or_assign(DataModelMatch::BlueAllianceDataField, QVariant(true));
+
 	dm_->addMatchExtraData(m->key(), c, 1, newdata1);
 	dm_->addMatchExtraData(m->key(), c, 2, newdata2);
 	dm_->addMatchExtraData(m->key(), c, 3, newdata3);

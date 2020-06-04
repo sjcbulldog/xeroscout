@@ -44,7 +44,10 @@ namespace xero
 				auto count = std::dynamic_pointer_cast<ImageFormCountSubItem>(item);
 				if (count != nullptr)
 				{
-					addField(std::make_shared<FieldDesc>(name, FieldDesc::Type::Integer, true));
+					auto field = std::make_shared<FieldDesc>(name, FieldDesc::Type::Integer, true);
+					if (count->hasLimits())
+						field->setLimits(count->minLimit(), count->maxLimit());
+					addField(field);
 				}
 			}
 

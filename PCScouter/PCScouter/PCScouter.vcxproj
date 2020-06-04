@@ -127,6 +127,7 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
     <ClCompile Include="AllTeamSummaryController.cpp" />
     <ClCompile Include="ApplicationController.cpp" />
     <ClCompile Include="ClientProtocolHandler.cpp" />
+    <ClCompile Include="CoachSync.cpp" />
     <ClCompile Include="DataModelBuilder.cpp" />
     <ClCompile Include="ImportMatchDataController.cpp" />
     <ClCompile Include="ImportMatchScheduleController.cpp" />
@@ -152,6 +153,7 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllTeamSummaryController.h" />
+    <QtMoc Include="CoachSync.h" />
     <ClInclude Include="ImportMatchScheduleController.h" />
     <QtMoc Include="SyncManager.h" />
     <ClInclude Include="TestDataInjector.h" />

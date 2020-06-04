@@ -12,10 +12,12 @@
         },
         {
           "type": "numeric",
-          "tag": "pit_weight",
+          "tag": "weight",
           "name": "Weight (w/ bumpers)",
           "minimum": 0,
-          "maximum": 200
+          "maximum": 200,
+          "minlimit":120,
+          "maxlimit":150
         },
         {
           "type": "choice",

@@ -2,8 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "XeroScouter"
+#define MyCoachName "XeroCoach"
 #define MySecondName "XeroScout"
-#define MyAppVersion "0.2.0"
+#define MyAppVersion "0.2.1"
 #define MyAppPublisher "ErrorCodeXero"
 #define MyAppURL "http://www.wilsonvillerobotics.com/"
 #define MyAppExeName "PCScouter.exe"
@@ -48,6 +49,8 @@ Source: "C:\cygwin64\home\ButchGriffin\projects\scouting\forms\2020\*.*"; DestDi
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyCoachName}"; Filename: "{app}\{#MyAppExeName}"; Parameters: "--coach"
+Name: "{autodesktop}\{#MyCoachName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; Parameters: "--coach"
 Name: "{autoprograms}\{#MyScoutAppExeName}"; Filename: "{app}\{#MyScoutAppExeName}"
 Name: "{autodesktop}\{#MyScoutAppExeName}"; Filename: "{app}\{#MyScoutAppExeName}"; Tasks: desktopicon
 Name: "{autoprograms}\{#MyFormViewerExeName}"; Filename: "{app}\{#MyFormViewerExeName}"

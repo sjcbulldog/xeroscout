@@ -274,6 +274,15 @@ namespace xero
 							str = data_.get(row, col).toString();
 						}
 						DataSetViewWidgetItem* item = new DataSetViewWidgetItem(str);
+
+						if (colhdr->hasLimits() && colhdr->type() == FieldDesc::Type::Integer && v.isValid())
+						{
+							double intpart;
+							double value = v.toDouble();
+							if (value < colhdr->minLimit() - 0.01 || value > colhdr->maxLimit() + 0.01)
+								item->setBackgroundColor(QColor(0xFF, 0xEE, 0xEE));
+						}
+
 						if (colhdr->isEditable() && editable_)
 							item->setFlags(Qt::ItemFlag::ItemIsSelectable | Qt::ItemFlag::ItemIsEnabled | Qt::ItemFlag::ItemIsEditable);
 						else

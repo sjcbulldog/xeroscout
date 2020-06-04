@@ -36,6 +36,15 @@ namespace xero
 					addField(std::make_shared<FieldDesc>(tag, FieldDesc::Type::Integer, true));
 				}
 
+				NumericFormItem(const QString& display, const QString& tag, int minv, int maxv, int minlimit, int maxlimit) : FormItemDesc(display, tag)
+				{
+					minv_ = minv;
+					maxv_ = maxv;
+					auto field = std::make_shared<FieldDesc>(tag, FieldDesc::Type::Integer, true);
+					field->setLimits(minlimit, maxlimit);
+					addField(field);
+				}
+
 				virtual ~NumericFormItem()
 				{
 				}

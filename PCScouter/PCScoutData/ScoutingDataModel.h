@@ -774,6 +774,9 @@ namespace xero
 				/// \returns the team number
 				int teamKeyToNumber(const QString& key);
 
+				QJsonDocument generateZebraData(const QStringList& matchkeys);
+				QJsonDocument generateMatchDetailData(const QStringList& matchkeys);
+
 				/// \brief generate a JSON document that represents all of the data in the data model
 				/// \returns a json documentthat represents all of the data in the data model
 				QJsonDocument generateAllJSONDocument();
@@ -787,6 +790,9 @@ namespace xero
 				/// \param the tablet we want data for
 				/// \returns a JSON document that represents the scouting data in the data model
 				QJsonDocument generateScoutingData(const TabletIdentity* sender, const QString& tablet);
+
+				bool loadMatchDetailData(const QJsonDocument& doc);
+				bool loadZebraData(const QJsonDocument& doc);
 
 				/// \brief load all of the json data in the document into the data model.
 				/// The JSON data is expected to be of type 'all' which means both core data and scouting data.

@@ -78,6 +78,7 @@ using namespace xero::scouting::transport;
 
 PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_(true)
 {
+	coach_ = coach;
 	sync_mgr_ = nullptr;
 
 	TestDataInjector& injector = TestDataInjector::getInstance();
@@ -88,10 +89,8 @@ PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_
 	QDate now = QDate::currentDate();
 	year_ = now.year();
 
-#ifdef _DEBUG
 	if (injector.hasData("year") && injector.data("year").type() == QVariant::Int)
 		year_ = injector.data("year").toInt();
-#endif
 
 	createWindows();
 	createMenus();
@@ -172,7 +171,12 @@ void PCScouter::showEvent(QShowEvent* ev)
 	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
 	path += "/views" + QString::number(year_) + ".json";
 
-	sync_mgr_->createTransports();
+	if (!coach_)
+		sync_mgr_->createTransports();
+	else
+	{
+		logwin_->append("Started in coach mode");
+	}
 }
 
 void PCScouter::setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm)

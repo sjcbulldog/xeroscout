@@ -61,15 +61,20 @@ private:
 private:
 	void handleUnxpectedPacket(const QJsonDocument& doc);
 	void handleTabletID(const QJsonDocument& doc);
+	void handleCoachID(const QJsonDocument& doc);
 	void handleTabletIDReset(const QJsonObject& obj);
 	void handleTabletIDSync(const QJsonObject& obj);
-	void handleAllData(const QJsonDocument& doc);
 	void handleScoutingData(const QJsonDocument& doc);
 	void handleErrorReply(const QJsonDocument& doc);
 	void handleScoutingRequest(const QJsonDocument& doc);
 	void handleSyncDone(const QJsonDocument& doc);
 	void handleImageRequest(const QJsonDocument& doc);
-
+	void handleMatchDetailDataRequest(const QJsonDocument& doc);
+	void handleZebraDataRequest(const QJsonDocument& doc);
+	void handleCompleteButListening(const QJsonDocument& doc);
+	void handleProvideZebraData(const QJsonDocument& doc);
+	void handleProvideMatchDetailData(const QJsonDocument& doc);
+		
 private:
 	xero::scouting::transport::ClientServerProtocol* client_;
 	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> data_model_;
@@ -84,5 +89,8 @@ private:
 
 	int id_;
 	static int master_id_;
+
+	bool requested_zebra_;
+	bool requested_match_detail_;
 };
 

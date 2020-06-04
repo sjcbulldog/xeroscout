@@ -46,6 +46,8 @@ namespace xero
 				QJsonDocument scoutingToJsonDoc(const TabletIdentity* sender, const QString& tablet);
 				QJsonDocument allToJsonDoc();
 				QJsonDocument tabletToJsonDoc(const QString &tablet);
+				QJsonDocument zebraData(const QStringList& keys);
+				QJsonDocument matchDetailData(const QStringList& keys);
 
 				bool coreFromJson(const QJsonObject& obj);
 				bool scoutingFromJson(const QJsonObject& obj, TabletIdentity& id, QStringList& pits, QStringList& matches);
@@ -55,6 +57,8 @@ namespace xero
 				bool scoutingFromJson(const QJsonDocument& obj, TabletIdentity&, QStringList& pits, QStringList& matches);
 				bool allFromJson(const QJsonDocument& obj);
 				bool scoutingFromAllJson(const QJsonDocument& obj);
+				bool zebraFromJson(const QJsonDocument& doc);
+				bool matchDetailFromJson(const QJsonDocument& doc);
 
 				const QStringList& errors() {
 					return errors_;

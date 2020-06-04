@@ -41,7 +41,7 @@ namespace xero
 				int rows = 0;
 				for (auto m : dm_->matches())
 				{
-					if (m->hasExtraField(Alliance::Red, BATotalPoints) && m->hasExtraField(Alliance::Blue, BATotalPoints))
+					if (m->hasExtraField(Alliance::Red, 1, BATotalPoints) && m->hasExtraField(Alliance::Blue, 1, BATotalPoints))
 						rows += 2;
 				}
 
@@ -58,7 +58,7 @@ namespace xero
 
 				for (auto m : dm_->matches())
 				{
-					if (!m->hasExtraField(Alliance::Red, BATotalPoints) || !m->hasExtraField(Alliance::Blue, BATotalPoints))
+					if (!m->hasExtraField(Alliance::Red, 1, BATotalPoints) || !m->hasExtraField(Alliance::Blue, 1, BATotalPoints))
 						continue;
 
 					Alliance c = Alliance::Red;

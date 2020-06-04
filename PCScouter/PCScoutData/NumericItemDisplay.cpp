@@ -13,11 +13,10 @@ namespace xero
 		{
 			NumericItemDisplay::NumericItemDisplay(ImageSupplier &images, const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(images, desc, parent)
 			{
-				QWidget* w = new QWidget();
 				QHBoxLayout* layout = new QHBoxLayout();
-				w->setLayout(layout);
+				setLayout(layout);
 
-				QLabel* label = new QLabel(desc->display(), w);
+				QLabel* label = new QLabel(desc->display(), this);
 				layout->addWidget(label);
 				QFont font = label->font();
 				font.setPointSizeF(16.0);
@@ -25,7 +24,7 @@ namespace xero
 
 				auto ndesc = dynamic_cast<const NumericFormItem *>(desc);
 
-				edit_ = new QLineEdit(parent);
+				edit_ = new QLineEdit(this);
 				edit_->setValidator(new QIntValidator(ndesc->minValue(), ndesc->maxValue(), parent));
 				layout->addWidget(edit_);
 				font = edit_->font();

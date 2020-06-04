@@ -191,6 +191,19 @@ namespace xero
 				return conv.coreToJsonDoc(extra);
 			}
 
+			QJsonDocument ScoutingDataModel::generateZebraData(const QStringList &keys)
+			{
+				JSonDataModelConverter conv(this);
+				return conv.zebraData(keys);
+			}
+
+
+			QJsonDocument ScoutingDataModel::generateMatchDetailData(const QStringList &keys)
+			{
+				JSonDataModelConverter conv(this);
+				return conv.matchDetailData(keys);
+			}
+
 			QJsonDocument ScoutingDataModel::generateScoutingData(const TabletIdentity* sender, const QString& tablet)
 			{
 				JSonDataModelConverter conv(this);
@@ -219,6 +232,26 @@ namespace xero
 					error = conv.errors();
 					return false;
 				}
+
+				return true;
+			}
+
+			bool ScoutingDataModel::loadZebraData(const QJsonDocument& doc)
+			{
+				JSonDataModelConverter conv(this);
+
+				if (!conv.zebraFromJson(doc))
+					return false;
+
+				return true;
+			}
+
+			bool ScoutingDataModel::loadMatchDetailData(const QJsonDocument& doc)
+			{
+				JSonDataModelConverter conv(this);
+
+				if (!conv.matchDetailFromJson(doc))
+					return false;
 
 				return true;
 			}

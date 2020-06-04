@@ -537,7 +537,19 @@ namespace xero
 				minv = obj.value("minimum").toInt();
 				maxv = obj.value("maximum").toInt();
 
-				return std::make_shared<NumericFormItem>(name, tag, minv, maxv);
+				std::shared_ptr<NumericFormItem> item;
+
+				if (obj.contains("minlimit") && obj.value("minlimit").isDouble() && obj.contains("maxlimit") && obj.value("maxlimit").isDouble())
+				{
+					int minlim = obj.value("minlimit").toInt();
+					int maxlim = obj.value("maxlimit").toInt();
+					item = std::make_shared<NumericFormItem>(name, tag, minv, maxv, minlim, maxlim);
+				}
+				else
+				{
+					item = std::make_shared<NumericFormItem>(name, tag, minv, maxv);
+				}
+				return item;
 			}
 
 			std::shared_ptr<FormItemDesc> ScoutingForm::parseText(const QString& sectname, int i, const QJsonObject& obj)
@@ -666,8 +678,22 @@ namespace xero
 						minv = iobj.value("minimum").toInt();
 						maxv = iobj.value("maximum").toInt();
 
-						auto subitem = std::make_shared<ImageFormCountSubItem>(iobj.value("tag").toString(), r, minv, maxv);
-						image->addSubItem(subitem);
+						if (keys.size() != 5)
+							qDebug() << keys;
+
+						if (iobj.contains("minlimit") && iobj.value("minlimit").isDouble() && iobj.contains("maxlimit") && iobj.value("maxlimit").isDouble())
+						{
+							int minlim = iobj.value("minlimit").toInt();
+							int maxlim = iobj.value("maxlimit").toInt();
+							auto subitem = std::make_shared<ImageFormCountSubItem>(iobj.value("tag").toString(), r, minv, maxv, minlim, maxlim);
+							image->addSubItem(subitem);
+						}
+						else
+						{
+							auto subitem = std::make_shared<ImageFormCountSubItem>(iobj.value("tag").toString(), r, minv, maxv);
+							image->addSubItem(subitem);
+						}
+
 					}
 				}
 

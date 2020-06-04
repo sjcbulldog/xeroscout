@@ -1642,6 +1642,151 @@ namespace xero
 
 				return ret;
 			}
+
+			QJsonDocument JSonDataModelConverter::zebraData(const QStringList &keys)
+			{
+				QJsonDocument doc;
+				QJsonObject obj;
+				QJsonArray array;
+
+				for(const QString &k : keys)
+				{
+					auto m = dm_->findMatchByKey(k);
+					if (m != nullptr && m->hasZebra())
+					{
+						QJsonObject zobj;
+						zobj[JsonKeyName] = k;
+						zobj[JsonDataName] = m->zebra();
+
+						array.push_back(zobj);
+					}
+				}
+
+				obj[JsonZebraDataName] = array;
+				doc.setObject(obj);
+				return doc;
+			}
+
+			bool JSonDataModelConverter::zebraFromJson(const QJsonDocument &doc)
+			{
+				if (!doc.isObject())
+					return false;
+
+				QJsonObject obj = doc.object();
+				if (!obj.contains(JsonZebraDataName) || !obj.value(JsonZebraDataName).isArray())
+					return false;
+
+				QJsonArray array = obj.value(JsonZebraDataName).toArray();
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (!array[i].isObject())
+						continue;
+
+					QJsonObject zobj = array[i].toObject();
+					if (!zobj.contains(JsonKeyName) || !zobj.value(JsonKeyName).isString() || !zobj.contains(JsonDataName) || !zobj.value(JsonDataName).isObject())
+						continue;
+
+					dm_->assignZebraData(zobj.value(JsonKeyName).toString(), zobj.value(JsonDataName).toObject());
+				}
+
+				return true;
+			}
+
+			QJsonDocument JSonDataModelConverter::matchDetailData(const QStringList& keys)
+			{
+				QJsonDocument doc;
+				QJsonObject obj;
+				QJsonArray array;
+
+				for (const QString& k : keys)
+				{
+					auto m = dm_->findMatchByKey(k);
+					if (m != nullptr && m->hasBlueAllianceData())
+					{
+						QJsonObject dobj;
+						dobj[JsonKeyName] = k;
+						QJsonArray darr;
+
+						Alliance c = Alliance::Red;
+						for (int slot = 1; slot <= 3; slot++)
+						{
+							QJsonObject dobj;
+							dobj[JsonAllianceName] = toString(c);
+							dobj[JsonSlotName] = slot;
+							dobj[JsonDataName] = encode(m->extraData(c, slot));
+							darr.push_back(dobj);
+						}
+
+						c = Alliance::Blue;
+						for (int slot = 1; slot <= 3; slot++)
+						{
+							QJsonObject dobj;
+							dobj[JsonAllianceName] = toString(c);
+							dobj[JsonSlotName] = slot;
+							dobj[JsonDataName] = encode(m->extraData(c, slot));
+							darr.push_back(dobj);
+						}
+
+						dobj[JsonDataName] = darr;
+						array.push_back(dobj);
+					}
+				}
+
+				obj[JsonMatchDetailName] = array;
+				doc.setObject(obj);
+				return doc;
+			}
+
+			bool JSonDataModelConverter::matchDetailFromJson(const QJsonDocument& doc)
+			{
+				if (!doc.isObject())
+					return false;
+
+				QJsonObject obj = doc.object();
+				if (!obj.contains(JsonMatchDetailName) || !obj.value(JsonMatchDetailName).isArray())
+					return false;
+
+				QJsonArray array = obj.value(JsonMatchDetailName).toArray();
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (!array[i].isObject())
+						continue;
+
+					QJsonObject eobj = array[i].toObject();
+					if (!eobj.contains(JsonKeyName) || !eobj.value(JsonKeyName).isString())
+						continue;
+					QString key = eobj.value(JsonKeyName).toString();
+
+					if (!eobj.contains(JsonDataName) || !eobj.value(JsonDataName).isArray())
+						continue;
+
+					QJsonArray darr = eobj.value(JsonDataName).toArray();
+
+					for (int i = 0; i < darr.size(); i++)
+					{
+						if (!darr[i].isObject())
+							continue;
+
+						QJsonObject extra = darr[i].toObject();
+						if (!extra.contains(JsonAllianceName) || !extra.value(JsonAllianceName).isString())
+							continue;
+
+						if (!extra.contains(JsonSlotName) || !extra.value(JsonSlotName).isDouble())
+							continue;
+
+						if (!extra.contains(JsonDataName) || !extra.value(JsonDataName).isArray())
+							continue;
+
+						Alliance c = allianceFromString(extra.value(JsonAllianceName).toString());
+						int slot = extra.value(JsonSlotName).toInt();
+						QJsonArray ex = extra.value(JsonDataName).toArray();
+
+						dm_->addMatchExtraData(key, c, slot, decode(ex));
+					}
+				}
+
+				return true;
+			}
 		}
 	}
 }

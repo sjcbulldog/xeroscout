@@ -45,6 +45,7 @@ namespace xero
 				static constexpr const char* MatchTeamKeyName = "MatchTeamKey";
 				static constexpr const char* AllianceName = "Alliance";
 				static constexpr const char* PositionName = "Position";
+				static constexpr const char* BlueAllianceDataField = "__bluealliance";
 
 			public:
 				DataModelMatch(const QString& key, const QString& comp, int set, int match, int etime) {
@@ -56,6 +57,25 @@ namespace xero
 				}
 
 				virtual ~DataModelMatch() {
+				}
+
+				bool hasBlueAllianceData() const {
+					Alliance c = Alliance::Red;
+
+					for (int slot = 1; slot <= 3; slot++)
+					{
+						if (!hasExtraField(c, slot, BlueAllianceDataField))
+							return false;
+					}
+
+					c = Alliance::Blue;
+					for (int slot = 1; slot <= 3; slot++)
+					{
+						if (!hasExtraField(c, slot, BlueAllianceDataField))
+							return false;
+					}
+
+					return true;
 				}
 
 				QString title() const {
@@ -147,10 +167,10 @@ namespace xero
 					return robot->extraData();
 				}
 
-				bool hasExtraField(Alliance a, const QString &name) const {
+				bool hasExtraField(Alliance a, int slot, const QString &name) const {
 					bool ret = false;
 
-					auto robot = findRobotByColorSlot(a, 1);
+					auto robot = findRobotByColorSlot(a, slot);
 					assert(robot != nullptr);
 
 					if (robot->hasExtraData())
@@ -262,6 +282,10 @@ namespace xero
 				void removeOldScoutingData() {
 					for (auto robot : robots_)
 						robot->removeOldScoutingData();
+				}
+
+				bool hasZebra() const {
+					return zebra_.isEmpty();
 				}
 
 				const QJsonObject& zebra() const {

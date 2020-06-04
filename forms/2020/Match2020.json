@@ -31,6 +31,11 @@
           ],
           "imageitems": [
             {
+              "imageitemtype": "onoff",
+              "tag": "line",
+              "position": [ "centersize", 780, 160, 60, 60 ]
+            },
+            {
               "imageitemtype": "choice",
               "tag": "starting_position",
               "value": "farleft",
@@ -119,6 +124,8 @@
               "tag": "highgoal",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 8,
               "position": [ "bounds", 1120, 378, 1199, 476 ]
             },
             {
@@ -126,6 +133,8 @@
               "tag": "lowgoal",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 8,
               "position": [ "bounds", 1120, 278, 1199, 376 ]
             },
             {
@@ -133,6 +142,8 @@
               "tag": "eject",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 4,
               "position": [ "bounds", 1120, 178, 1199, 276 ]
             }
           ]
@@ -152,6 +163,11 @@
             }
           ],
           "imageitems": [
+            {
+              "imageitemtype": "onoff",
+              "tag": "line",
+              "position": [ "centersize", 400, 434, 60, 60 ]
+            },
             {
               "imageitemtype": "choice",
               "tag": "starting_position",
@@ -241,6 +257,8 @@
               "tag": "highgoal",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 8,
               "position": [ "bounds", 0, 128, 80, 226 ]
             },
             {
@@ -248,6 +266,8 @@
               "tag": "lowgoal",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 8,
               "position": [ "bounds", 0, 228, 80, 326 ]
             },
             {
@@ -255,6 +275,8 @@
               "tag": "eject",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 4,
               "position": [ "bounds", 0, 328, 80, 426 ]
             }
           ]
@@ -294,6 +316,8 @@
               "tag": "highgoal",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 12,
               "position": [ "bounds", 1120, 378, 1199, 476 ]
             },
             {
@@ -301,6 +325,8 @@
               "tag": "lowgoal",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 12,
               "position": [ "bounds", 1120, 278, 1199, 376 ]
             },
             {
@@ -308,6 +334,8 @@
               "tag": "ejected",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 6,
               "position": [ "bounds", 1120, 178, 1199, 276 ]
             }
           ]
@@ -342,6 +370,8 @@
               "tag": "highgoal",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 12,
               "position": [ "bounds", 0, 128, 80, 226 ]
             },
             {
@@ -349,6 +379,8 @@
               "tag": "lowgoal",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 12,
               "position": [ "bounds", 0, 228, 80, 326 ]
             },
             {
@@ -356,6 +388,8 @@
               "tag": "eject",
               "minimum": 0,
               "maximum": 20,
+              "minlimit" : 0,
+              "maxlimit" : 6,
               "position": [ "bounds", 0, 328, 80, 426 ]
             }
           ]
@@ -374,59 +408,60 @@
           "imageitems": [
             {
               "imageitemtype": "onoff",
-              "tag": "parked",
-              "position": [ "centersize", 90, 60, 100, 100 ]
-            },
-            {
-              "imageitemtype": "onoff",
               "tag": "level",
               "position": [ "centersize", 900, 60, 100, 100 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "climb_position",
-              "value": "noclimb",
-              "position": [ "centersize", 524, 530, 900, 40 ]
+              "tag": "position",
+              "value" : "parked",
+              "position": [ "centersize", 90, 180, 100, 100 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "climb_position",
+              "tag": "position",
+              "value": "noclimb",
+              "position": [ "centersize", 90, 60, 100, 100 ]
+            },
+            {
+              "imageitemtype": "choice",
+              "tag": "position",
               "value": "pneg3",
               "position": [ "centersize", 98, 484, 40, 40 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "climb_position",
+              "tag": "position",
               "value": "pneg2",
               "position": [ "centersize", 240, 484, 40, 40 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "climb_position",
+              "tag": "position",
               "value": "pnet1",
               "position": [ "centersize", 382, 484, 40, 40 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "climb_position",
+              "tag": "position",
               "value": "pzero",
               "position": [ "centersize", 524, 484, 40, 40 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "climb_position",
+              "tag": "position",
               "value": "ppos1",
               "position": [ "centersize", 666, 484, 40, 40 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "climb_position",
+              "tag": "position",
               "value": "ppos2",
               "position": [ "centersize", 808, 484, 40, 40 ]
             },
             {
               "imageitemtype": "choice",
-              "tag": "climb_position",
+              "tag": "position",
               "value": "ppos3",
               "position": [ "centersize", 950, 484, 40, 40 ]
             }

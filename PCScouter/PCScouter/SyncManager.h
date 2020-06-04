@@ -29,7 +29,7 @@ signals:
 
 private:
 	void displayMessage(const QString& msg);
-	void syncWithTablet(xero::scouting::transport::ScoutTransport* transport);
+	void syncWithRemote(xero::scouting::transport::ScoutTransport* transport);
 	void clientError(const QString& errmsg);
 	void clientDisconnected();
 	void complete();

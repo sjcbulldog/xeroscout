@@ -42,11 +42,20 @@ ClientProtocolHandler::ClientProtocolHandler(ScoutTransport* s, xero::scouting::
 	connect(client_, &ClientServerProtocol::displayLogMessage, this, &ClientProtocolHandler::displayProtocolLogMessage);
 
 	handlers_.insert(std::make_pair(ClientServerProtocol::TabletIDPacket, std::bind(&ClientProtocolHandler::handleTabletID, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::CoachIDPacket, std::bind(&ClientProtocolHandler::handleCoachID, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::DataModelScoutingPacket, std::bind(&ClientProtocolHandler::handleScoutingData, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::ErrorReply, std::bind(&ClientProtocolHandler::handleErrorReply, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestScoutingData, std::bind(&ClientProtocolHandler::handleScoutingRequest, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::SyncDone, std::bind(&ClientProtocolHandler::handleSyncDone, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestImageData, std::bind(&ClientProtocolHandler::handleImageRequest, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::RequestMatchDetailData, std::bind(&ClientProtocolHandler::handleMatchDetailDataRequest, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::RequestZebraData, std::bind(&ClientProtocolHandler::handleZebraDataRequest, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::CompleteButListening, std::bind(&ClientProtocolHandler::handleCompleteButListening, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::ProvideZebraData, std::bind(&ClientProtocolHandler::handleProvideZebraData, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::ProvideMatchDetailData, std::bind(&ClientProtocolHandler::handleProvideMatchDetailData, this, std::placeholders::_1)));
+
+	requested_match_detail_ = false;
+	requested_zebra_ = false;
 
 	client_->start();
 }
@@ -55,7 +64,6 @@ ClientProtocolHandler::~ClientProtocolHandler()
 {
 	delete client_;
 }
-
 
 void ClientProtocolHandler::displayProtocolLogMessage(const QString& msg)
 {
@@ -418,6 +426,147 @@ void ClientProtocolHandler::handleErrorReply(const QJsonDocument& doc)
 void ClientProtocolHandler::handleSyncDone(const QJsonDocument &doc)
 {
 	emit complete();
+}
+
+void ClientProtocolHandler::handleCoachID(const QJsonDocument& doc)
+{
+	QJsonObject obj = doc.object();
+	QJsonObject replyobj;
+	QJsonDocument reply;
+
+	if (obj.contains(JsonCompressionName) && obj.value(JsonCompressionName).isDouble())
+	{
+		comp_type_ = obj.value(JsonCompressionName).toInt();
+	}
+
+	emit displayLogMessage("Sending 'core' data to coaches laptop ...");
+
+	if (obj.contains(JsonCompressionName) && replyobj.value(JsonCompressionName).isDouble())
+	{
+		comp_type_ = obj.value(JsonCompressionName).toInt();
+	}
+
+	client_->sendJson(ClientServerProtocol::DataModelCorePacket, data_model_->generateCoreJSONDocument(false), comp_type_);
+}
+
+void ClientProtocolHandler::handleMatchDetailDataRequest(const QJsonDocument& doc)
+{
+	QJsonDocument reply;
+	QJsonObject replyobj;
+
+	if (!doc.isObject())
+	{
+		replyobj[JsonMessageName] = "image data json was invalid, top level was not an object";
+		reply.setObject(replyobj);
+		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+		return;
+	}
+
+	QJsonObject obj = doc.object();
+	if (!obj.contains(JsonZebraDataName) || !obj.value(JsonZebraDataName).isArray())
+	{
+		replyobj[JsonMessageName] = "image data json was invalid, json was invalid";
+		reply.setObject(replyobj);
+		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+		return;
+	}
+
+	QJsonArray array = obj.value(JsonZebraDataName).toArray();
+	QStringList keys;
+	for (int i = 0; i < array.size(); i++)
+	{
+		if (array[i].isString())
+			keys.push_back(array[i].toString());
+	}
+
+	reply = data_model_->generateMatchDetailData(keys);
+	client_->sendJson(ClientServerProtocol::ProvideMatchDetailData, reply, comp_type_);
+}
+
+void ClientProtocolHandler::handleZebraDataRequest(const QJsonDocument& doc)
+{
+	QJsonDocument reply;
+	QJsonObject replyobj;
+
+	if (!doc.isObject())
+	{
+		replyobj[JsonMessageName] = "image data json was invalid, top level was not an object";
+		reply.setObject(replyobj);
+		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+		return;
+	}
+
+	QJsonObject obj = doc.object();
+	if (!obj.contains(JsonZebraDataName) || !obj.value(JsonZebraDataName).isArray())
+	{
+		replyobj[JsonMessageName] = "image data json was invalid, json was invalid";
+		reply.setObject(replyobj);
+		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+		return;
+	}
+
+	QJsonArray array = obj.value(JsonZebraDataName).toArray();
+	QStringList keys;
+	for (int i = 0; i < array.size(); i++)
+	{
+		if (array[i].isString())
+			keys.push_back(array[i].toString());
+	}
+
+	reply = data_model_->generateZebraData(keys);
+	client_->sendJson(ClientServerProtocol::ProvideZebraData, reply, comp_type_);
+}
+
+void ClientProtocolHandler::handleCompleteButListening(const QJsonDocument& doc)
+{
+	QJsonObject replyobj;
+	QJsonDocument reply;
+	QJsonArray zebra;
+
+	//
+	// Ask for missing zebra data, tell the central what matches are missing data
+	//
+	for (auto m : data_model_->matches())
+	{
+		if (m->hasZebra())
+			zebra.push_back(m->key());
+	}
+
+	replyobj[JsonZebraDataName] = zebra;
+	reply.setObject(replyobj);
+	client_->sendJson(ClientServerProtocol::RequestZebraData, reply, comp_type_);
+}
+
+void ClientProtocolHandler::handleProvideZebraData(const QJsonDocument& doc)
+{
+	QJsonObject replyobj;
+	QJsonDocument reply;
+
+	if (!data_model_->loadZebraData(doc))
+	{
+		replyobj[JsonMessageName] = "image data json was invalid, could not load zebra data";
+		reply.setObject(replyobj);
+		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+		return;
+	}
+
+	//
+	// Ask for missing match detail data, tell the central what matches are missing data
+	//
+	QJsonArray badata;
+	for (auto m : data_model_->matches())
+	{
+		if (m->hasBlueAllianceData())
+			badata.push_back(m->key());
+	}
+
+	replyobj[JsonZebraDataName] = badata;
+	reply.setObject(replyobj);
+	client_->sendJson(ClientServerProtocol::RequestZebraData, reply, comp_type_);
+}
+
+void ClientProtocolHandler::handleProvideMatchDetailData(const QJsonDocument& doc)
+{
 }
 
 void ClientProtocolHandler::receivedJSON(uint32_t ptype, const QJsonDocument& doc)

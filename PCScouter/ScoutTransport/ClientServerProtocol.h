@@ -44,6 +44,12 @@ namespace xero
 				static constexpr const uint32_t RequestImageData = 0x80000007;
 				static constexpr const uint32_t ProvideImageData = 0x80000008;
 				static constexpr const uint32_t ServerIDPacket = 0x80000009;
+				static constexpr const uint32_t CoachIDPacket = 0x8000000A;
+				static constexpr const uint32_t RequestZebraData = 0x8000000B;
+				static constexpr const uint32_t RequestMatchDetailData = 0x8000000C;
+				static constexpr const uint32_t CompleteButListening = 0x8000000D;
+				static constexpr const uint32_t ProvideZebraData = 0x8000000E;
+				static constexpr const uint32_t ProvideMatchDetailData = 0x8000000F;
 				static constexpr const uint32_t SyncDone = 0x80001000;
 				static constexpr const uint32_t ErrorReply = 0x8000FFFF;
 

@@ -199,4 +199,6 @@ private:
 	xero::scouting::datamodel::ImageManager images_;
 
 	SyncManager* sync_mgr_;
+
+	bool coach_;
 };

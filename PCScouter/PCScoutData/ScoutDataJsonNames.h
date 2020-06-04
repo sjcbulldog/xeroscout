@@ -22,7 +22,6 @@ namespace xero
 	{
 		namespace datamodel
 		{
-
 			constexpr const char* JsonMessageName = "message";
 			constexpr const char* JsonNameName = "name";
 			constexpr const char* JsonUuidName = "uuid";
@@ -47,6 +46,7 @@ namespace xero
 			constexpr const char* JsonTeamExtraFieldsName = "teamextra";
 			constexpr const char* JsonMatchExtraFieldsName = "matchextra";
 			constexpr const char* JsonKeyName = "key";
+			constexpr const char* JsonDataName = "data";
 			constexpr const char* JsonNumberName = "number";
 			constexpr const char* JsonAssignName = "assign";
 			constexpr const char* JsonExtraTeamData = "extra";
@@ -60,6 +60,8 @@ namespace xero
 			constexpr const char* JsonExtraDataRedName = "badata_red";
 			constexpr const char* JsonExtraDataBlueName = "badata_blue";
 			constexpr const char* JsonZebraDataName = "zebra";
+			constexpr const char* JsonMatchDetailName = "matchdetail";
+			constexpr const char* JsonMatchesDataName = "matches";
 			constexpr const char* JsonVideosDataName = "videos";
 			constexpr const char* JsonMatchesName = "matches";
 			constexpr const char* JsonMatchTabletListName = "matchtablets";

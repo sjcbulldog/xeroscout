@@ -28,7 +28,6 @@ namespace xero
 	{
 		namespace usb
 		{
-
 			class XEROUSBTRANSPORT_API XeroPCCableTransfer
 			{
 			public:

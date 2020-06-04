@@ -29,7 +29,7 @@ void SyncManager::createTransports()
 	server = std::make_shared<USBServer>(this);
 	if (server->init())
 	{
-		(void)connect(server.get(), &ScoutServer::connected, this, &SyncManager::syncWithTablet);
+		(void)connect(server.get(), &ScoutServer::connected, this, &SyncManager::syncWithRemote);
 		transport_servers_.push_back(server);
 		emit logMessage("Synchronization transport '" + server->name() + "' initialized - " + server->hwinfo());
 	}
@@ -41,7 +41,7 @@ void SyncManager::createTransports()
 	server = std::make_shared<TcpServer>(this);
 	if (server->init())
 	{
-		(void)connect(server.get(), &ScoutServer::connected, this, &SyncManager::syncWithTablet);
+		(void)connect(server.get(), &ScoutServer::connected, this, &SyncManager::syncWithRemote);
 		transport_servers_.push_back(server);
 		emit logMessage("Synchronization transport '" + server->name() + "' initialized - " + server->hwinfo());
 	}
@@ -53,7 +53,7 @@ void SyncManager::createTransports()
 	server = std::make_shared<BluetoothServer>(team_number_, this);
 	if (server->init())
 	{
-		(void)connect(server.get(), &ScoutServer::connected, this, &SyncManager::syncWithTablet);
+		(void)connect(server.get(), &ScoutServer::connected, this, &SyncManager::syncWithRemote);
 		transport_servers_.push_back(server);
 		emit logMessage("Synchronization transport '" + server->name() + "' initialized - " + server->hwinfo());
 	}
@@ -73,7 +73,7 @@ void SyncManager::run()
 		trans->run();
 }
 
-void SyncManager::syncWithTablet(ScoutTransport* trans)
+void SyncManager::syncWithRemote(ScoutTransport* trans)
 {
 	if (client_ != nullptr)
 	{

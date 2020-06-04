@@ -97,6 +97,9 @@
     <ClCompile Include="SyncManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CoachSync.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="PCScouter.h">
@@ -121,6 +124,9 @@
       <Filter>AppControllers\Header Files</Filter>
     </QtMoc>
     <QtMoc Include="SyncManager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CoachSync.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
