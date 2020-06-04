@@ -407,9 +407,22 @@
           "scale": 0.75,
           "imageitems": [
             {
+              "imageitemtype": "count",
+              "tag": "number_assisted",
+              "minimum": 0,
+              "maximum": 2,
+              "position": [ "centersize", 324, 60, 120, 100 ],
+              "color" : "#000000"
+            },
+            {
               "imageitemtype": "onoff",
               "tag": "level",
-              "position": [ "centersize", 900, 60, 100, 100 ]
+              "position": [ "centersize", 960, 60, 100, 100 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "was_assisted",
+              "position": [ "centersize", 960, 180, 100, 100 ]
             },
             {
               "imageitemtype": "choice",
@@ -420,7 +433,7 @@
             {
               "imageitemtype": "choice",
               "tag": "position",
-              "value": "noclimb",
+              "value": "nothing",
               "position": [ "centersize", 90, 60, 100, 100 ]
             },
             {

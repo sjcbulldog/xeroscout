@@ -12,16 +12,17 @@ namespace xero
 			class ImageFormCountSubItem : public ImageFormSubItem
 			{
 			public:
-				ImageFormCountSubItem(const QString &subname, const QRect &bounds, int minv, int maxv) : ImageFormSubItem(subname, bounds) {
+				ImageFormCountSubItem(const QString &subname, QString color, const QRect &bounds, int minv, int maxv) : ImageFormSubItem(subname, bounds) {
 					minv_ = minv;
 					maxv_ = maxv;
 					limits_ = false;
+					color_ = color ;
 				}
 
-				ImageFormCountSubItem(const QString& subname, const QRect& bounds, int minv, int maxv, int minlimit, int maxlimit) : ImageFormSubItem(subname, bounds) {
+				ImageFormCountSubItem(const QString& subname, QString color, const QRect& bounds, int minv, int maxv, int minlimit, int maxlimit) : ImageFormSubItem(subname, bounds) {
 					minv_ = minv;
 					maxv_ = maxv;
-
+					color_ = color;
 					limits_ = true;
 					minlimit_ = minlimit;
 					maxlimit_ = maxlimit;
@@ -50,12 +51,21 @@ namespace xero
 					return maxv_;
 				}
 
+				bool hasColor() const {
+					return color_.length() > 0;
+				}
+
+				const QString& color() const {
+					return color_;
+				}
+
 			private:
 				int minv_;
 				int maxv_;
 				bool limits_;
 				double minlimit_;
 				double maxlimit_;
+				QString color_;
 			};
 		}
 	}

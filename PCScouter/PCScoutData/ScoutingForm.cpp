@@ -658,6 +658,8 @@ namespace xero
 					}
 					else if (type == "count")
 					{
+						QString color;
+
 						if (!parseSubitemBounds(sectname, entry, iobj, r))
 							return nullptr;
 
@@ -678,19 +680,19 @@ namespace xero
 						minv = iobj.value("minimum").toInt();
 						maxv = iobj.value("maximum").toInt();
 
-						if (keys.size() != 5)
-							qDebug() << keys;
+						if (iobj.contains("color") && iobj.value("color").isString())
+							color = iobj.value("color").toString();
 
 						if (iobj.contains("minlimit") && iobj.value("minlimit").isDouble() && iobj.contains("maxlimit") && iobj.value("maxlimit").isDouble())
 						{
 							int minlim = iobj.value("minlimit").toInt();
 							int maxlim = iobj.value("maxlimit").toInt();
-							auto subitem = std::make_shared<ImageFormCountSubItem>(iobj.value("tag").toString(), r, minv, maxv, minlim, maxlim);
+							auto subitem = std::make_shared<ImageFormCountSubItem>(iobj.value("tag").toString(), color, r, minv, maxv, minlim, maxlim);
 							image->addSubItem(subitem);
 						}
 						else
 						{
-							auto subitem = std::make_shared<ImageFormCountSubItem>(iobj.value("tag").toString(), r, minv, maxv);
+							auto subitem = std::make_shared<ImageFormCountSubItem>(iobj.value("tag").toString(), color, r, minv, maxv);
 							image->addSubItem(subitem);
 						}
 

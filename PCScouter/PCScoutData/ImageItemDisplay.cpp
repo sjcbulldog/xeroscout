@@ -266,7 +266,17 @@ namespace xero
 				p.setFont(f);
 				QFontMetrics fm(f);
 
-				QPen pentxt(QColor(255, 255, 0));
+				QColor color(255, 255, 0);
+				if (item->hasColor())
+				{
+					const QString& cstr = item->color();
+					if (QColor::isValidColor(cstr))
+					{
+						color = QColor(item->color());
+					}
+				}
+				QPen pentxt(color);
+
 				p.setPen(pentxt);
 				pt = QPoint(r.x() - fm.horizontalAdvance(num + "AA") / 2, r.center().y() + fm.height() / 2);
 				if (pt.x() < 0)
