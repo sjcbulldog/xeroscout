@@ -106,6 +106,7 @@
     <ClCompile Include="MatchViewWidget.cpp" />
     <ClCompile Include="MathUtils.cpp" />
     <ClCompile Include="PathFieldView.cpp" />
+    <ClCompile Include="PickListView.cpp" />
     <ClCompile Include="Pose2d.cpp" />
     <ClCompile Include="PreMatchGraphView.cpp" />
     <ClCompile Include="TimeBoundWidget.cpp" />
@@ -135,6 +136,7 @@
     <ClInclude Include="GraphView.h" />
     <ClInclude Include="ManagerBase.h" />
     <ClInclude Include="MathUtils.h" />
+    <ClInclude Include="PickListView.h" />
     <ClInclude Include="PreMatchGraphView.h" />
     <QtMoc Include="TimeBoundWidget.h" />
     <ClInclude Include="RobotTrack.h" />

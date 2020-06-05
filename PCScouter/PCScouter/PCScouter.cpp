@@ -33,6 +33,7 @@
 #include "PreMatchGraphView.h"
 #include "AllianceGraphView.h"
 #include "TeamSummaryWidget.h"
+#include "PickListView.h"
 
 #include "USBServer.h"
 #include "TcpServer.h"
@@ -44,6 +45,7 @@
 #include "ImportZebraDataController.h"
 #include "AllTeamSummaryController.h"
 #include "ImportMatchScheduleController.h"
+#include "PickListController.h"
 
 #include "OPRCalculator.h"
 #include "TestDataInjector.h"
@@ -308,6 +310,10 @@ void PCScouter::createWindows()
 
 	item = new QListWidgetItem(loadIcon("history.png"), "Merge List", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MergeListView)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem(loadIcon("history.png"), "Pick List", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PickListView)));
 	view_selector_->addItem(item);
 
 	view_selector_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
@@ -911,6 +917,19 @@ void PCScouter::teamSummaryCompleted(bool err)
 	ds->clearNeedRefresh();
 }
 
+void PCScouter::pickListComplete(bool err)
+{
+	PickListView* ds = dynamic_cast<PickListView*>(view_frame_->getWidget(DocumentView::ViewType::PickListView));
+	assert(ds != nullptr);
+
+	PickListController* ctrl = dynamic_cast<PickListController*>(app_controller_);
+	if (ctrl != nullptr)
+	{
+		ds->updateHtml(ctrl->html());
+		ds->clearNeedRefresh();
+	}
+}
+
 void PCScouter::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* olditem)
 {
 	if (newitem == nullptr)
@@ -1127,6 +1146,19 @@ void PCScouter::updateCurrentView()
 				ds->refreshView();
 				ds->refreshCharts();
 				ds->clearNeedRefresh();
+			}
+		}
+		break;
+
+		case DocumentView::ViewType::PickListView:
+		{
+			PickListView* ds = dynamic_cast<PickListView*>(view_frame_->getWidget(view));
+			assert(ds != nullptr);
+			if (ds->needsRefresh())
+			{
+				app_controller_ = new PickListController(blue_alliance_, team_number_, year_, data_model_, ds);
+				connect(app_controller_, &ApplicationController::logMessage, this, &PCScouter::logMessage);
+				(void)connect(app_controller_, &ApplicationController::complete, this, &PCScouter::pickListComplete);
 			}
 		}
 		break;

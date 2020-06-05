@@ -125,6 +125,7 @@ private:
 	void printProfileError(const QString& err);
 
 	void teamSummaryCompleted(bool err);
+	void pickListComplete(bool err);
 
 	void processAppController();
 

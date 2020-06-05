@@ -136,6 +136,8 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NewEventAppController.cpp" />
     <ClCompile Include="PCScouter.cpp" />
+    <ClCompile Include="PickListController.cpp" />
+    <ClCompile Include="PickListGenerator.cpp" />
     <ClCompile Include="SelectEventWizardPage.cpp" />
     <ClCompile Include="SelectScoutingFormsWizardPage.cpp" />
     <ClCompile Include="NewEventBlueAllianceWizard.cpp" />
@@ -156,6 +158,8 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
     <QtMoc Include="CoachSync.h" />
     <ClInclude Include="ImportMatchScheduleController.h" />
     <QtMoc Include="SyncManager.h" />
+    <ClInclude Include="PickListController.h" />
+    <QtMoc Include="PickListGenerator.h" />
     <ClInclude Include="TestDataInjector.h" />
     <QtMoc Include="AboutDialog.h" />
     <ClInclude Include="AdvListWidget.h" />

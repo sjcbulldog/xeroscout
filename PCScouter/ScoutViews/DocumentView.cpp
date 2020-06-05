@@ -26,6 +26,7 @@
 #include "PreMatchGraphView.h"
 #include "AllianceGraphView.h"
 #include "TeamSummaryWidget.h"
+#include "PickListView.h"
 #include <QLabel>
 #include <QDebug>
 #include <QFont>
@@ -81,6 +82,8 @@ namespace xero
 				gview = new AllianceGraphView(this);
 				gview->create();
 				addWidget(gview);																				// 15
+
+				addWidget(new PickListView("picklist", this));
 
 				if (gamemgr)
 				{

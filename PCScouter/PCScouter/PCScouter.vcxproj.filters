@@ -100,6 +100,12 @@
     <ClCompile Include="CoachSync.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PickListController.cpp">
+      <Filter>AppControllers\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PickListGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="PCScouter.h">
@@ -127,6 +133,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="CoachSync.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="PickListGenerator.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -176,6 +185,9 @@
       <Filter>AppControllers\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImportMatchScheduleController.h">
+      <Filter>AppControllers\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PickListController.h">
       <Filter>AppControllers\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
