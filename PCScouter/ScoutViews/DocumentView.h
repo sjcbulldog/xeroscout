@@ -55,7 +55,8 @@ namespace xero
 					ZebraDataView = 13,
 					MatchGraphView = 14,
 					AllianceGraphView = 15,
-					FirstFormView = 16
+					PickListView = 16,
+					FirstFormView = 17
 				};
 
 			public:

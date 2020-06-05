@@ -120,6 +120,9 @@
     <ClCompile Include="EditName.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PickListView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MatchViewWidget.h">
@@ -198,6 +201,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataSetItemDelegate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PickListView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
