@@ -49,6 +49,7 @@ private:
 	void handleZebraDataRequest(const QJsonDocument& doc);
 	void handleMatchDetailDataRequest(const QJsonDocument& doc);
 	void handleError(const QJsonDocument& doc);
+	void handleSyncDone(const QJsonDocument& doc);
 
 private:
 	QStringList needed_images_;

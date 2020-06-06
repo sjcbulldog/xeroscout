@@ -27,6 +27,7 @@ CoachSync::CoachSync(ScoutTransport* transport, ImageManager &images, bool debug
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestZebraData, std::bind(&CoachSync::handleZebraDataRequest, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestMatchDetailData, std::bind(&CoachSync::handleMatchDetailDataRequest, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::ErrorReply, std::bind(&CoachSync::handleError, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::SyncDone, std::bind(&CoachSync::handleSyncDone, this, std::placeholders::_1)));
 
 	protocol_->start();
 }
@@ -88,6 +89,13 @@ void CoachSync::requestImage()
 		doc.setObject(obj);
 		protocol_->sendJson(ClientServerProtocol::RequestScoutingData, doc, comp_type_);
 	}
+}
+
+void CoachSync::handleSyncDone(const QJsonDocument& doc)
+{
+	emit displayLogMessage("received sync done message");
+
+	emit syncComplete();
 }
 
 void CoachSync::handleError(const QJsonDocument& doc)
@@ -425,10 +433,8 @@ void CoachSync::handleMatchDetailDataRequest(const QJsonDocument& doc)
 
 	reply = dm_->generateMatchDetailData(keys);
 	protocol_->sendJson(ClientServerProtocol::ProvideMatchDetailData, reply, comp_type_);
-
-	dm_->blockSignals(false);
-	emit syncComplete();
 }
+
 
 void CoachSync::receivedJSON(uint32_t ptype, const QJsonDocument& doc)
 {

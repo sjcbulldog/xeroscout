@@ -593,7 +593,7 @@ void ClientProtocolHandler::requestMatchDetail()
 
 	while (matches.size() < 10 && !needed_match_detail_.isEmpty())
 	{
-		QString one = needed_zebra_.front();
+		QString one = needed_match_detail_.front();
 		needed_match_detail_.pop_front();
 
 		if (msg.length() > 0)
@@ -603,7 +603,7 @@ void ClientProtocolHandler::requestMatchDetail()
 		matches.push_back(one);
 	}
 
-	emit displayLogMessage("Central Requested Zebra: " + msg);
+	emit displayLogMessage("Central Requested MatchDetail: " + msg);
 
 	replyobj[JsonMatchesDataName] = matches;
 	reply.setObject(replyobj);
@@ -612,6 +612,12 @@ void ClientProtocolHandler::requestMatchDetail()
 
 void ClientProtocolHandler::coachComplete()
 {
+	QJsonObject replyobj;
+	QJsonDocument reply;
+
+	reply.setObject(replyobj);
+	client_->sendJson(ClientServerProtocol::SyncDone, reply, comp_type_);
+
 	emit complete();
 }
 
@@ -648,6 +654,7 @@ void ClientProtocolHandler::handleProvideMatchDetailData(const QJsonDocument& do
 		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
 	}
+
 	if (needed_zebra_.size() > 0)
 		requestZebraData();
 	else if (needed_match_detail_.size() > 0)
