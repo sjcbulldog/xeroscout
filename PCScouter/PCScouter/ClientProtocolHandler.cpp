@@ -470,14 +470,14 @@ void ClientProtocolHandler::handleMatchDetailDataRequest(const QJsonDocument& do
 
 	if (!doc.isObject())
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, top level was not an object";
+		replyobj[JsonMessageName] = "match detail requeset, top level was not an object";
 		reply.setObject(replyobj);
 		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
 	}
 
 	QJsonObject obj = doc.object();
-	if (!obj.contains(JsonZebraDataName) || !obj.value(JsonZebraDataName).isArray())
+	if (!obj.contains(JsonMatchDetailName) || !obj.value(JsonMatchDetailName).isArray())
 	{
 		replyobj[JsonMessageName] = "image data json was invalid, json was invalid";
 		reply.setObject(replyobj);
@@ -485,7 +485,7 @@ void ClientProtocolHandler::handleMatchDetailDataRequest(const QJsonDocument& do
 		return;
 	}
 
-	QJsonArray array = obj.value(JsonZebraDataName).toArray();
+	QJsonArray array = obj.value(JsonMatchDetailName).toArray();
 	QStringList keys;
 	for (int i = 0; i < array.size(); i++)
 	{
