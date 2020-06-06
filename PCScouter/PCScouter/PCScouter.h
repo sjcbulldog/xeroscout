@@ -132,6 +132,8 @@ private:
 
 	void logMessage(const QString& msg);
 	void errorMessage(const QString& msg);
+	void coachSyncError(const QString& msg);
+	void coachSyncComplete();
 
 	void teamRowChanged(int row, int col);
 	void matchRowChanged(int row, int col);
@@ -145,6 +147,7 @@ private:
 	QTimer* ping_timer_;
 	QProgressBar* summary_progress_;
 	CoachSync *coach_sync_;
+	bool shutdown_coach_sync_;
 
 	//
 	// Window related items

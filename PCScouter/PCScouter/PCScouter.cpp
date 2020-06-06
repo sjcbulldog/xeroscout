@@ -447,6 +447,20 @@ void PCScouter::createMenus()
 // Synchronization ....
 /////////////////////////////////////////////////////////////
 
+void PCScouter::coachSyncError(const QString& err)
+{
+	QMessageBox::critical(this, "Sync Error", err);
+	logwin_->append("Sync Error: " + err);
+	enableApp();
+	shutdown_coach_sync_ = true;
+}
+
+void PCScouter::coachSyncComplete()
+{
+	enableApp();
+	shutdown_coach_sync_ = true;
+}
+
 void PCScouter::syncWithCentral()
 {
 	if (coach_sync_ != nullptr || sync_mgr_->isBusy())
@@ -460,9 +474,11 @@ void PCScouter::syncWithCentral()
 	}
 
 	disableApp();
+	shutdown_coach_sync_ = false;
 	coach_sync_ = new CoachSync(trans, data_model_, images_, debug_act_->isChecked());
 	connect(coach_sync_, &CoachSync::displayLogMessage, this, &PCScouter::logMessage);
-	connect(coach_sync_, &CoachSync::syncComplete, this, &PCScouter::enableApp);
+	connect(coach_sync_, &CoachSync::syncComplete, this, &PCScouter::coachSyncComplete);
+	connect(coach_sync_, &CoachSync::syncError, this, &PCScouter::coachSyncError);
 	coach_sync_->start();
 }
 
@@ -515,7 +531,17 @@ void PCScouter::processAppController()
 
 	app_controller_->run();
 	if (coach_sync_ != nullptr)
-		coach_sync_->run();
+	{
+		if (shutdown_coach_sync_)
+		{
+			delete coach_sync_;
+			coach_sync_ = nullptr;
+		}
+		else
+		{
+			coach_sync_->run();
+		}
+	}
 
 	if (app_controller_->shouldDisableApp() && !app_disabled_)
 		disableApp();
