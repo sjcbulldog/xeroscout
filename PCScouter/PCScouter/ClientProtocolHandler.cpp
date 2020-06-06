@@ -477,7 +477,7 @@ void ClientProtocolHandler::handleMatchDetailDataRequest(const QJsonDocument& do
 	}
 
 	QJsonObject obj = doc.object();
-	if (!obj.contains(JsonMatchDetailName) || !obj.value(JsonMatchDetailName).isArray())
+	if (!obj.contains(JsonMatchesDataName) || !obj.value(JsonMatchesDataName).isArray())
 	{
 		replyobj[JsonMessageName] = "image data json was invalid, json was invalid";
 		reply.setObject(replyobj);
@@ -485,7 +485,7 @@ void ClientProtocolHandler::handleMatchDetailDataRequest(const QJsonDocument& do
 		return;
 	}
 
-	QJsonArray array = obj.value(JsonMatchDetailName).toArray();
+	QJsonArray array = obj.value(JsonMatchesDataName).toArray();
 	QStringList keys;
 	for (int i = 0; i < array.size(); i++)
 	{
