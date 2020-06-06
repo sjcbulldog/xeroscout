@@ -479,7 +479,7 @@ void ClientProtocolHandler::handleMatchDetailDataRequest(const QJsonDocument& do
 	QJsonObject obj = doc.object();
 	if (!obj.contains(JsonMatchesDataName) || !obj.value(JsonMatchesDataName).isArray())
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, json was invalid";
+		replyobj[JsonMessageName] = "match detail data json was invalid, json was invalid";
 		reply.setObject(replyobj);
 		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
@@ -504,7 +504,7 @@ void ClientProtocolHandler::handleZebraDataRequest(const QJsonDocument& doc)
 
 	if (!doc.isObject())
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, top level was not an object";
+		replyobj[JsonMessageName] = "zebra data json was invalid, top level was not an object";
 		reply.setObject(replyobj);
 		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
@@ -513,7 +513,7 @@ void ClientProtocolHandler::handleZebraDataRequest(const QJsonDocument& doc)
 	QJsonObject obj = doc.object();
 	if (!obj.contains(JsonZebraDataName) || !obj.value(JsonZebraDataName).isArray())
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, json was invalid";
+		replyobj[JsonMessageName] = "zebra data json was invalid, json was invalid";
 		reply.setObject(replyobj);
 		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
@@ -581,6 +581,7 @@ void ClientProtocolHandler::handleProvideZebraData(const QJsonDocument& doc)
 
 void ClientProtocolHandler::handleProvideMatchDetailData(const QJsonDocument& doc)
 {
+	emit complete();
 }
 
 void ClientProtocolHandler::receivedJSON(uint32_t ptype, const QJsonDocument& doc)

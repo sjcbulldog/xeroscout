@@ -234,7 +234,7 @@ void CoachSync::handleZebraData(const QJsonDocument &doc)
 	//
 	if (!dm_->loadZebraData(doc))
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, could not load zebra data";
+		replyobj[JsonMessageName] = "zebra data json was invalid, could not load zebra data";
 		reply.setObject(replyobj);
 		protocol_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
@@ -263,7 +263,7 @@ void CoachSync::handMatchDetailData(const QJsonDocument& doc)
 	//
 	if (!dm_->loadMatchDetailData(doc))
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, could not load match detail data";
+		replyobj[JsonMessageName] = "match detail data json was invalid, could not load match detail data";
 		reply.setObject(replyobj);
 		protocol_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
@@ -284,7 +284,7 @@ void CoachSync::handleZebraDataRequest(const QJsonDocument& doc)
 
 	if (!doc.isObject())
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, top level was not an object";
+		replyobj[JsonMessageName] = "zebra data json was invalid, top level was not an object";
 		reply.setObject(replyobj);
 		protocol_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
@@ -293,7 +293,7 @@ void CoachSync::handleZebraDataRequest(const QJsonDocument& doc)
 	QJsonObject obj = doc.object();
 	if (!obj.contains(JsonZebraDataName) || !obj.value(JsonZebraDataName).isArray())
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, json was invalid";
+		replyobj[JsonMessageName] = "zebra data json was invalid, json was invalid";
 		reply.setObject(replyobj);
 		protocol_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
@@ -318,22 +318,23 @@ void CoachSync::handleMatchDetailDataRequest(const QJsonDocument& doc)
 
 	if (!doc.isObject())
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, top level was not an object";
+		replyobj[JsonMessageName] = "match detail data json was invalid, top level was not an object";
 		reply.setObject(replyobj);
 		protocol_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
 	}
 
 	QJsonObject obj = doc.object();
-	if (!obj.contains(JsonZebraDataName) || !obj.value(JsonZebraDataName).isArray())
+	QStringList keys2 = obj.keys();
+	if (!obj.contains(JsonMatchesName) || !obj.value(JsonMatchesName).isArray())
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, json was invalid";
+		replyobj[JsonMessageName] = "match detail data json was invalid, json was invalid";
 		reply.setObject(replyobj);
 		protocol_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
 	}
 
-	QJsonArray array = obj.value(JsonZebraDataName).toArray();
+	QJsonArray array = obj.value(JsonMatchesName).toArray();
 	QStringList keys;
 	for (int i = 0; i < array.size(); i++)
 	{
@@ -343,6 +344,8 @@ void CoachSync::handleMatchDetailDataRequest(const QJsonDocument& doc)
 
 	reply = dm_->generateMatchDetailData(keys);
 	protocol_->sendJson(ClientServerProtocol::ProvideMatchDetailData, reply, comp_type_);
+
+	emit syncComplete();
 }
 
 void CoachSync::receivedJSON(uint32_t ptype, const QJsonDocument& doc)
