@@ -558,7 +558,7 @@ void ClientProtocolHandler::handleProvideZebraData(const QJsonDocument& doc)
 
 	if (!data_model_->loadZebraData(doc))
 	{
-		replyobj[JsonMessageName] = "image data json was invalid, could not load zebra data";
+		replyobj[JsonMessageName] = "zebra list was invalid, could not load zebra data";
 		reply.setObject(replyobj);
 		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
@@ -574,9 +574,9 @@ void ClientProtocolHandler::handleProvideZebraData(const QJsonDocument& doc)
 			badata.push_back(m->key());
 	}
 
-	replyobj[JsonZebraDataName] = badata;
+	replyobj[JsonMatchesName] = badata;
 	reply.setObject(replyobj);
-	client_->sendJson(ClientServerProtocol::RequestZebraData, reply, comp_type_);
+	client_->sendJson(ClientServerProtocol::RequestMatchDetailData, reply, comp_type_);
 }
 
 void ClientProtocolHandler::handleProvideMatchDetailData(const QJsonDocument& doc)
