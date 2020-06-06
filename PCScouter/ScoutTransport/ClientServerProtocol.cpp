@@ -328,7 +328,7 @@ namespace xero
 					}
 				}
 
-				logJsonPacket("jsonReceived", type, doc);
+				// logJsonPacket("jsonReceived", type, doc);
 				emit jsonReceived(type, doc);
 			}
 		}
