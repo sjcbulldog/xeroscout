@@ -512,6 +512,8 @@ void PCScouter::processAppController()
 	}
 
 	app_controller_->run();
+	if (coach_sync_ != nullptr)
+		coach_sync_->run();
 
 	if (app_controller_->shouldDisableApp() && !app_disabled_)
 		disableApp();

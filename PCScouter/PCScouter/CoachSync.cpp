@@ -34,6 +34,11 @@ CoachSync::~CoachSync()
 {
 }
 
+void CoachSync::run()
+{
+	protocol_->run();
+}
+
 void CoachSync::protocolAbort(const QString& errmsg)
 {
 	emit syncError("protocol aborted - " + errmsg);
@@ -55,6 +60,7 @@ void CoachSync::start()
 	QJsonObject obj;
 
 	obj[JsonCompressionName] = comp_type_;
+	doc.setObject(obj);
 	protocol_->sendJson(ClientServerProtocol::CoachIDPacket, doc, comp_type_);
 }
 

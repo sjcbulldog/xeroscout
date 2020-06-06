@@ -16,6 +16,7 @@ public:
 	virtual ~CoachSync();
 
 	void start();
+	void run();
 
 signals:
 	void syncComplete();
