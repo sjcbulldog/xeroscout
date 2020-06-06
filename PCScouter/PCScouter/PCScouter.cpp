@@ -461,6 +461,8 @@ void PCScouter::syncWithCentral()
 
 	disableApp();
 	coach_sync_ = new CoachSync(trans, data_model_, images_, debug_act_->isChecked());
+	connect(coach_sync_, &CoachSync::displayLogMessage, this, &PCScouter::logMessage);
+	connect(coach_sync_, &CoachSync::syncComplete, this, &PCScouter::enableApp);
 	coach_sync_->start();
 }
 

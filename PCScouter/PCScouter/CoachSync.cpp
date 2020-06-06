@@ -28,6 +28,7 @@ CoachSync::CoachSync(ScoutTransport* transport, std::shared_ptr<xero::scouting::
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestMatchDetailData, std::bind(&CoachSync::handleMatchDetailDataRequest, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::ErrorReply, std::bind(&CoachSync::handleError, this, std::placeholders::_1)));
 
+	protocol_->start();
 }
 
 CoachSync::~CoachSync()
