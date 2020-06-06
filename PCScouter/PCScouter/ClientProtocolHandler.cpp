@@ -581,6 +581,17 @@ void ClientProtocolHandler::handleProvideZebraData(const QJsonDocument& doc)
 
 void ClientProtocolHandler::handleProvideMatchDetailData(const QJsonDocument& doc)
 {
+	QJsonObject replyobj;
+	QJsonDocument reply;
+
+	if (!data_model_->loadMatchDetailData(doc))
+	{
+		replyobj[JsonMessageName] = "match detail list was invalid, could not load match detail data";
+		reply.setObject(replyobj);
+		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+		return;
+	}
+
 	emit complete();
 }
 

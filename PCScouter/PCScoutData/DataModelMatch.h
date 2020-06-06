@@ -285,7 +285,7 @@ namespace xero
 				}
 
 				bool hasZebra() const {
-					return zebra_.isEmpty();
+					return !zebra_.isEmpty();
 				}
 
 				const QJsonObject& zebra() const {

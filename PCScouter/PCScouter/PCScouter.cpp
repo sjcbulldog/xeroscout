@@ -459,7 +459,9 @@ void PCScouter::coachSyncComplete()
 {
 	enableApp();
 	shutdown_coach_sync_ = true;
-	data_model_ = coach_sync_->dataModel();
+
+	setDataModel(coach_sync_->dataModel());
+	setupViews();
 }
 
 void PCScouter::syncWithCentral()

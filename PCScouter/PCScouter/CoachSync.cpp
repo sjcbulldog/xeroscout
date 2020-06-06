@@ -192,10 +192,7 @@ void CoachSync::handleCoreData(const QJsonDocument& doc)
 
 void CoachSync::handleScoutingData(const QJsonDocument& doc)
 {
-	QJsonDocument reply;
-	QJsonObject replyobj;
 	QJsonObject obj;
-	QJsonArray zebra;
 
 	//
 	// This will come back when we reset a tablet.  This is the core data and any scouting data
@@ -212,15 +209,86 @@ void CoachSync::handleScoutingData(const QJsonDocument& doc)
 	//
 	// Ask for missing zebra data, tell the central what matches are missing data
 	//
+	needed_zebra_.clear();
+	needed_match_detail_.clear();
 	for (auto m : dm_->matches())
 	{
-		if (m->hasZebra())
-			zebra.push_back(m->key());
+		if (!m->hasZebra())
+			needed_zebra_.push_back(m->key());
+
+		if (!m->hasBlueAllianceData())
+			needed_match_detail_.push_back(m->key());
 	}
 
+	if (needed_zebra_.size() > 0)
+		requestZebra();
+	else if (needed_match_detail_.size() > 0)
+		requestMatchDetail();
+	else
+		doneAndWaiting();
+}
+
+void CoachSync::requestZebra()
+{
+	QJsonDocument reply;
+	QJsonObject replyobj;
+	QJsonArray zebra;
+	QString req;
+
+	assert(needed_zebra_.count() > 0);
+
+	while (zebra.count() < 10 && !needed_zebra_.isEmpty())
+	{
+		QString one = needed_zebra_.front();
+		if (req.length() > 0)
+			req += ", ";
+		req += one;
+		zebra.push_back(one);
+		needed_zebra_.pop_front();
+	}
+
+	emit displayLogMessage("Requested 'zebra' data for matches: " + req);
 	replyobj[JsonZebraDataName] = zebra;
 	reply.setObject(replyobj);
 	protocol_->sendJson(ClientServerProtocol::RequestZebraData, reply, comp_type_);
+}
+
+void CoachSync::requestMatchDetail()
+{
+	QJsonDocument reply;
+	QJsonObject replyobj;
+	QJsonArray matches;
+	QString req;
+
+	assert(needed_match_detail_.count() > 0);
+
+	while (matches.count() < 10 && !needed_match_detail_.isEmpty())
+	{
+		QString one = needed_zebra_.front();
+		if (req.length() > 0)
+			req += ", ";
+		req += one;
+		matches.push_back(one);
+		needed_zebra_.pop_front();
+	}
+
+	emit displayLogMessage("Requested 'blue alliance' data for matches: " + req);
+	replyobj[JsonMatchesName] = matches;
+	reply.setObject(replyobj);
+	protocol_->sendJson(ClientServerProtocol::RequestMatchDetailData, reply, comp_type_);
+}
+
+void CoachSync::doneAndWaiting()
+{
+	QJsonDocument reply;
+	QJsonObject replyobj;
+
+	//
+	// Now tell the other end, we are complete but listening.  We will get a request for
+	// zebra data, match detail data, or a complete message indicating we are done.
+	//
+	reply.setObject(replyobj);
+	protocol_->sendJson(ClientServerProtocol::CompleteButListening, reply, comp_type_);
 }
 
 void CoachSync::handleZebraData(const QJsonDocument &doc)
@@ -240,17 +308,12 @@ void CoachSync::handleZebraData(const QJsonDocument &doc)
 		return;
 	}
 
-	//
-	// Ask for missing match detail, tell the central what matches are missing data
-	//
-	for (auto m : dm_->matches())
-	{
-		if (m->hasBlueAllianceData())
-			badata.push_back(m->key());
-	}
-	replyobj[JsonMatchesName] = badata;
-	reply.setObject(replyobj);
-	protocol_->sendJson(ClientServerProtocol::RequestMatchDetailData, reply, comp_type_);
+	if (needed_zebra_.size() > 0)
+		requestZebra();
+	else if (needed_match_detail_.size() > 0)
+		requestMatchDetail();
+	else
+		doneAndWaiting();
 }
 
 void CoachSync::handMatchDetailData(const QJsonDocument& doc)
@@ -269,12 +332,12 @@ void CoachSync::handMatchDetailData(const QJsonDocument& doc)
 		return;
 	}
 
-	//
-	// Now tell the other end, we are complete but listening.  We will get a request for
-	// zebra data, match detail data, or a complete message indicating we are done.
-	//
-	reply.setObject(replyobj);
-	protocol_->sendJson(ClientServerProtocol::CompleteButListening, reply, comp_type_);
+	if (needed_zebra_.size() > 0)
+		requestZebra();
+	else if (needed_match_detail_.size() > 0)
+		requestMatchDetail();
+	else
+		doneAndWaiting();
 }
 
 void CoachSync::handleZebraDataRequest(const QJsonDocument& doc)

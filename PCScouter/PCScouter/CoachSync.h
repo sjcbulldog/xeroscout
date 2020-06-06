@@ -33,6 +33,10 @@ private:
 	void displayProtocolLogMessage(const QString& msg);
 
 	void requestImage();
+	void requestZebra();
+	void requestMatchDetail();
+	void doneAndWaiting();
+
 	void handleCoreData(const QJsonDocument& doc);
 	void handleImage(const QJsonDocument& doc);
 	void handleScoutingData(const QJsonDocument& doc);
@@ -44,11 +48,16 @@ private:
 
 private:
 	QStringList needed_images_;
+	QStringList needed_zebra_;
+	QStringList needed_match_detail_;
+
 	xero::scouting::transport::ClientServerProtocol* protocol_;
 	std::map<uint32_t, std::function<void(const QJsonDocument& doc)>> handlers_;
 	xero::scouting::datamodel::ImageManager& images_;
 	bool comp_type_;
 	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	bool debug_;
+
+
 };
 
