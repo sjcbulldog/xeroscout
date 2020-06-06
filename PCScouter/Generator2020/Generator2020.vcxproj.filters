@@ -23,12 +23,11 @@
     <ClInclude Include="generator2020_global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <QtMoc Include="Generator2020.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <ClCompile Include="Generator2020.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-
+    <ClInclude Include="Generator2020.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

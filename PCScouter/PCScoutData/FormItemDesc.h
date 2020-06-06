@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "GameRandomProfile.h"
 #include "DataCollection.h"
 #include "FieldDesc.h"
 #include <QString>
@@ -87,7 +86,6 @@ namespace xero
 					return false;
 				}
 
-				virtual DataCollection random(GameRandomProfile &profile) const = 0;
 				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const = 0;
 
 				static QString genComplexName(const QString& tag, const QString& field) {

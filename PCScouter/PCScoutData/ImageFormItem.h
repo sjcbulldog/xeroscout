@@ -22,8 +22,6 @@ namespace xero
 					return image_;
 				}
 
-				virtual DataCollection random(GameRandomProfile& profile) const;
-
 				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const {
 					return new ImageItemDisplay(images, this, parent);
 				}

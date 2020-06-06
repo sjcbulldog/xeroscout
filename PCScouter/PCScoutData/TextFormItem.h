@@ -48,15 +48,6 @@ namespace xero
 					return maxlen_;
 				}
 
-
-				virtual DataCollection random(GameRandomProfile& profile) const
-				{
-					DataCollection d;
-					QVariant v = profile.generateRandomText(tag());
-					d.add(tag(), v);
-					return d;
-				}
-
 				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const
 				{
 					return new TextItemDisplay(images, this, parent);

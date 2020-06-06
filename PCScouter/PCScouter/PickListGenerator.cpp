@@ -37,13 +37,13 @@ PickListGenerator::~PickListGenerator()
 bool PickListGenerator::didClimb(ConstScoutingDataMapPtr data)
 {
 	static char* pos[] = {
-		"pneg3",
-		"pneg2",
-		"pneg1",
-		"pzero",
-		"ppos1",
-		"ppos2",
-		"ppos3"
+		"endgame__pneg3",
+		"endgame__pneg2",
+		"endgame__pneg1",
+		"endgame__pzero",
+		"endgame__ppos1",
+		"endgame__ppos2",
+		"endgame__ppos3"
 	};
 
 	auto it = data->find("endgame__position");
@@ -125,6 +125,9 @@ QString PickListGenerator::genInputFile()
 
 	for (auto m : dm_->matches())
 	{
+		if (m->compType() != "qm")
+			continue;
+
 		Alliance c = Alliance::Red;
 		for (int slot = 1; slot <= 3; slot++)
 		{
@@ -230,6 +233,11 @@ void PickListGenerator::start()
 	QString filename = genInputFile();
 	if (done_ == true)
 		return;
+
+#ifdef _DEBUG
+	QString dest = "C:/cygwin64/home/ButchGriffin/projects/scouting/input.csv";
+	QFile::copy(filename, dest);
+#endif
 
 	emit logMessage("Generated Input File: " + filename);
 	emit logMessage("Directory: " + dir_->path());

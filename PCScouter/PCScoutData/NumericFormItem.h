@@ -57,14 +57,6 @@ namespace xero
 					return maxv_;
 				}
 
-				virtual DataCollection random(GameRandomProfile& profile) const
-				{
-					DataCollection d;
-					QVariant v = profile.generateRandomInteger(tag(), minv_, maxv_);
-					d.add(tag(), v);
-					return d;
-				}
-
 				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const
 				{
 					return new NumericItemDisplay(images, this, parent);

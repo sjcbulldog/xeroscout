@@ -23,7 +23,6 @@
 #include "ScoutServer.h"
 #include "ClientProtocolHandler.h"
 #include "SpecialListWidget.h"
-#include "GameRandomProfile.h"
 #include "ApplicationController.h"
 #include "KPIController.h"
 #include "SyncManager.h"
@@ -185,14 +184,10 @@ private:
 	QString query_;
 	int year_;
 
-
-
 	QLabel* data_model_status_;
 	QLabel* ip_addr_label_;
 
 	int team_number_;
-
-	xero::scouting::datamodel::GameRandomProfile random_profile_;
 
 	ApplicationController* app_controller_;
 	bool app_disabled_;

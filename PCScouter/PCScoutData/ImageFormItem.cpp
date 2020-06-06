@@ -91,55 +91,6 @@ namespace xero
 					}
 				}
 			}
-
-			DataCollection ImageFormItem::random(GameRandomProfile& profile) const
-			{
-				QVariant v;
-				DataCollection d;
-				std::map<QString, QStringList> choices;
-
-				for (auto item : sub_items_)
-				{
-					QString longname = FormItemDesc::genComplexName(tag(), item->subname());
-
-					auto on_off = std::dynamic_pointer_cast<ImageFormOnOffSubitem>(item);
-					if (on_off != nullptr)
-					{
-						if (on_off->isChoice())
-						{
-							QStringList list;
-							auto it = choices.find(longname);
-							if (it != choices.end())
-								list = it->second;
-
-							list.push_back(on_off->value());
-							choices.insert_or_assign(longname, list);
-						}
-						else
-						{
-							v = profile.generateRandomBool(longname);
-							d.add(longname, v);
-						}
-					}
-
-					auto count = std::dynamic_pointer_cast<ImageFormCountSubItem>(item);
-					if (count != nullptr)
-					{
-						v = profile.generateRandomInteger(longname, count->minimum(), count->maximum());
-						d.add(longname, v);
-					}
-				}
-
-				for (auto pair : choices)
-				{
-					v = profile.generateRandomChoice(pair.first, pair.second);
-					d.add(pair.first, v);
-				}
-
-				addPublishedItems(d);
-
-				return d;
-			}
 		}
 	}
 }

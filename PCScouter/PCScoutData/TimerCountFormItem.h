@@ -31,25 +31,6 @@ namespace xero
 				{
 				}
 
-				virtual DataCollection random(GameRandomProfile& profile) const
-				{
-					DataCollection d;
-
-					QVariant v = profile.generateRandomInteger(tag() + FormItemDesc::FieldSeperator + CompletedCountField, minv_, maxv_);
-					d.add(genComplexName(tag(), CompletedCountField), v);
-
-					v = profile.generateRandomReal(genComplexName(tag(), CompletedTimeField), 0.0, 180.0);
-					d.add(genComplexName(tag(), CompletedTimeField), v);
-
-					v = profile.generateRandomInteger(genComplexName(tag(), AbandonedCountField), minv_, maxv_);
-					d.add(genComplexName(tag(), AbandonedCountField), v);
-
-					v = profile.generateRandomReal(genComplexName(tag(), AbandonedTimeField), 0.0, 180.0);
-					d.add(genComplexName(tag(), AbandonedTimeField), v);
-
-					return d;
-				}
-
 				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const
 				{
 					return new TimerCountItemDisplay(images, this, parent);

@@ -94,6 +94,7 @@
     <ClInclude Include="ChoiceFormItem.h" />
     <ClInclude Include="ChoiceItemDisplay.h" />
     <ClInclude Include="DataCollection.h" />
+    <QtMoc Include="DataGenerator.h" />
     <ClInclude Include="DataModelMatch.h" />
     <ClInclude Include="DataModelTeam.h" />
     <ClInclude Include="FieldDesc.h" />
@@ -101,7 +102,6 @@
     <ClInclude Include="FormItemDesc.h" />
     <ClInclude Include="FormItemDisplay.h" />
     <ClInclude Include="FormSection.h" />
-    <QtMoc Include="GameRandomProfile.h" />
     <ClInclude Include="GraphDescriptor.h" />
     <ClInclude Include="GraphDescriptorCollection.h" />
     <ClInclude Include="ImageFormCountSubItem.h" />
@@ -138,9 +138,9 @@
   <ItemGroup>
     <ClCompile Include="BooleanItemDisplay.cpp" />
     <ClCompile Include="ChoiceItemDisplay.cpp" />
+    <ClCompile Include="DataGenerator.cpp" />
     <ClCompile Include="FormInstance.cpp" />
     <ClCompile Include="FormItemDisplay.cpp" />
-    <ClCompile Include="GameRandomProfile.cpp" />
     <ClCompile Include="GraphDescriptor.cpp" />
     <ClCompile Include="GraphDescriptorCollection.cpp" />
     <ClCompile Include="ImageFormItem.cpp" />

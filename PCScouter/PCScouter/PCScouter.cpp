@@ -34,6 +34,7 @@
 #include "AllianceGraphView.h"
 #include "TeamSummaryWidget.h"
 #include "PickListView.h"
+#include "DataGenerator.h"
 
 #include "USBServer.h"
 #include "TcpServer.h"
@@ -1277,21 +1278,16 @@ void PCScouter::saveAndBackup()
 
 void PCScouter::magicWordTyped(SpecialListWidget::Word w)
 {
-	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
-	path += "profile" + QString::number(year_) + ".json";
-
-	auto c = connect(&random_profile_, &GameRandomProfile::error, this, &PCScouter::printProfileError);
-	random_profile_.load(path);
-	disconnect(c);
-
 	if (w == SpecialListWidget::Word::XYZZY)
 	{
 		const char* redpropname = "redrandmaxmatch";
 		const char* bluepropname = "bluerandmaxmatch";
+		const char* teampropname = "randmaxteam";
 
 		TestDataInjector& injector = TestDataInjector::getInstance();
 		int redmaxmatch = std::numeric_limits<int>::max();
 		int bluemaxmatch = std::numeric_limits<int>::max();
+		int teammax = std::numeric_limits<int>::max();
 
 		if (injector.hasData(redpropname) && injector.data(redpropname).type() == QVariant::Int)
 			redmaxmatch = injector.data(redpropname).toInt();
@@ -1299,12 +1295,16 @@ void PCScouter::magicWordTyped(SpecialListWidget::Word w)
 		if (injector.hasData(bluepropname) && injector.data(bluepropname).type() == QVariant::Int)
 			bluemaxmatch = injector.data(bluepropname).toInt();
 
-		data_model_->generateRandomScoutingData(random_profile_, redmaxmatch, bluemaxmatch);
-	}
+		if (injector.hasData(teampropname) && injector.data(teampropname).type() == QVariant::Int)
+			teammax = injector.data(teampropname).toInt();
 
-	QMessageBox::information(this, "DataSet", "The dataset has been populated");
-	saveAndBackup();
-	setMainView(view_frame_->viewType());
+		DataGenerator gen(data_model_, year_, redmaxmatch, bluemaxmatch, teammax);
+		connect(&gen, &DataGenerator::logMessage, this, &PCScouter::logMessage);
+		gen.run();
+
+		QMessageBox::information(this, "DataSet", "The dataset has been populated");
+		saveAndBackup();
+	}
 }
 
 void PCScouter::printProfileError(const QString& err)

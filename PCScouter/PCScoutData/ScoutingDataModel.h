@@ -860,7 +860,7 @@ namespace xero
 				/// \param profile the data profile for generating random data
 				/// \param redmax the maximum match number that will get random data
 				/// \param bluemax the maximum match number that will get random data
-				void generateRandomScoutingData(GameRandomProfile& profile, int redmax, int bluemax);
+				void generateRandomScoutingData(int redmax, int bluemax);
 
 				/// \brief remove any scouting data associated with the given tablet
 				/// \param tablet the tablet we want to remove data for
@@ -939,8 +939,6 @@ namespace xero
 				}
 
 				std::shared_ptr<DataModelMatch> findMatch(const QString& comp, int set, int match);
-
-				std::shared_ptr<ScoutingDataMap> generateRandomData(GameRandomProfile& gen, std::shared_ptr<ScoutingForm> form);
 
 				void processDataSetAlliance(ScoutingDataSet& set, std::shared_ptr<DataModelMatch> m, Alliance c) const;
 

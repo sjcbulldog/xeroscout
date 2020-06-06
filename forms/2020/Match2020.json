@@ -294,11 +294,6 @@
           "name": "AutoMode",
           "scale": 0.80,
           "publishitems": [
-            {
-              "tag": "gathered",
-              "type": "sum",
-              "imageitems": [ "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12" ]
-            }
           ],
           "imageitems": [
             {
@@ -348,11 +343,6 @@
           "name": "AutoMode",
           "scale": 0.80,
           "publishitems": [
-            {
-              "tag": "gathered",
-              "type": "sum",
-              "imageitems": [ "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "b11", "b12" ]
-            }
           ],
           "imageitems": [
             {
@@ -487,12 +477,12 @@
       "items": [
         {
           "type": "boolean",
-          "tag": "general_brownout",
+          "tag": "brownout",
           "name": "Brownout"
         },
         {
           "type": "boolean",
-          "tag": "general_breakdown",
+          "tag": "breakdown",
           "name": "Breakdown"
         }
       ]

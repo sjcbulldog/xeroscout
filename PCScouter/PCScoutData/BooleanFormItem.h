@@ -38,14 +38,6 @@ namespace xero
 				{
 				}
 
-				virtual DataCollection random(GameRandomProfile& profile) const
-				{
-					DataCollection d;
-					QVariant v = profile.generateRandomBool(tag());
-					d.add(tag(), v);
-					return d;
-				}
-
 				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget *parent) const
 				{
 					return new BooleanItemDisplay(images, this, parent);

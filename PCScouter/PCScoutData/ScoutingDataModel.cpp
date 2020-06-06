@@ -459,52 +459,6 @@ namespace xero
 				return true;
 			}
 
-			ScoutingDataMapPtr ScoutingDataModel::generateRandomData(GameRandomProfile& gen, std::shared_ptr<ScoutingForm> form)
-			{
-				std::shared_ptr<ScoutingDataMap> data = std::make_shared<ScoutingDataMap>();
-
-				for (auto section : form->sections())
-				{
-					for (auto item : section->items())
-					{
-						DataCollection coll = item->random(gen);
-						for (int i = 0; i < coll.count(); i++)
-						{
-							data->insert_or_assign(coll.tag(i), coll.data(i));
-						}
-					}
-				}
-
-				return data;
-			}
-
-			void ScoutingDataModel::generateRandomScoutingData(GameRandomProfile& profile, int redmax, int bluemax)
-			{
-				for (auto team : teams_)
-				{
-					team->setTeamScoutingData(generateRandomData(profile, team_scouting_form_), true);
-				}
-
-				for (auto match : matches_)
-				{
-					if (match->match() <= redmax)
-					{
-						for (int i = 1; i <= 3; i++)
-							match->setScoutingData(Alliance::Red, i, generateRandomData(profile, match_scouting_form_), true);
-					}
-
-					if (match->match() <= bluemax)
-					{
-						for(int i = 1 ; i <= 3 ; i++)
-							match->setScoutingData(Alliance::Blue, i, generateRandomData(profile, match_scouting_form_), true);
-					}
-				}
-
-				emitChangedSignal(ChangeType::PitScoutingDataAdded);
-				emitChangedSignal(ChangeType::MatchScoutingDataAdded);
-			}
-
-
 			void ScoutingDataModel::removeScoutingData(const QString& tablet)
 			{
 				for (auto m : matches_)

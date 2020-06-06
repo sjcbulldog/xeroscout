@@ -45,14 +45,6 @@ namespace xero
 					return choices_;
 				}
 
-				virtual DataCollection random(GameRandomProfile& profile) const
-				{
-					DataCollection d;
-					QVariant v = profile.generateRandomChoice(tag(), choices_);
-					d.add(tag(), v);
-					return d;
-				}
-
 				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const
 				{
 					return new ChoiceItemDisplay(images, this, parent);
