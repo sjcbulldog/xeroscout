@@ -84,6 +84,7 @@ PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_
 {
 	coach_ = coach;
 	sync_mgr_ = nullptr;
+	coach_sync_ = nullptr;
 
 	TestDataInjector& injector = TestDataInjector::getInstance();
 	summary_progress_ = new QProgressBar();
