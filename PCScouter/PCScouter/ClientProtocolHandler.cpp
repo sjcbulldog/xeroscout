@@ -533,22 +533,86 @@ void ClientProtocolHandler::handleZebraDataRequest(const QJsonDocument& doc)
 
 void ClientProtocolHandler::handleCompleteButListening(const QJsonDocument& doc)
 {
-	QJsonObject replyobj;
-	QJsonDocument reply;
+
 	QJsonArray zebra;
 
 	//
 	// Ask for missing zebra data, tell the central what matches are missing data
 	//
+	needed_match_detail_.clear();
+	needed_zebra_.clear();
 	for (auto m : data_model_->matches())
 	{
 		if (!m->hasZebra())
-			zebra.push_back(m->key());
+			needed_zebra_.push_back(m->key());
+
+		if (!m->hasBlueAllianceData())
+			needed_match_detail_.push_back(m->key());
 	}
+
+	if (needed_zebra_.size() > 0)
+		requestZebraData();
+	else if (needed_match_detail_.size() > 0)
+		requestMatchDetail();
+	else
+		coachComplete();
+}
+
+void ClientProtocolHandler::requestZebraData()
+{
+	QJsonObject replyobj;
+	QJsonDocument reply;
+	QJsonArray zebra;
+	QString msg;
+
+	while (zebra.size() < 10 && !needed_zebra_.isEmpty())
+	{
+		QString one = needed_zebra_.front();
+		needed_zebra_.pop_front();
+
+		if (msg.length() > 0)
+			msg += ",";
+		msg += one;
+
+		zebra.push_back(one);
+	}
+
+	emit displayLogMessage("Central Requested Zebra: " + msg);
 
 	replyobj[JsonZebraDataName] = zebra;
 	reply.setObject(replyobj);
 	client_->sendJson(ClientServerProtocol::RequestZebraData, reply, comp_type_);
+}
+
+void ClientProtocolHandler::requestMatchDetail()
+{
+	QJsonObject replyobj;
+	QJsonDocument reply;
+	QJsonArray matches;
+	QString msg;
+
+	while (matches.size() < 10 && !needed_match_detail_.isEmpty())
+	{
+		QString one = needed_zebra_.front();
+		needed_match_detail_.pop_front();
+
+		if (msg.length() > 0)
+			msg += ",";
+		msg += one;
+
+		matches.push_back(one);
+	}
+
+	emit displayLogMessage("Central Requested Zebra: " + msg);
+
+	replyobj[JsonMatchesDataName] = matches;
+	reply.setObject(replyobj);
+	client_->sendJson(ClientServerProtocol::RequestMatchDetailData, reply, comp_type_);
+}
+
+void ClientProtocolHandler::coachComplete()
+{
+	emit complete();
 }
 
 void ClientProtocolHandler::handleProvideZebraData(const QJsonDocument& doc)
@@ -564,19 +628,12 @@ void ClientProtocolHandler::handleProvideZebraData(const QJsonDocument& doc)
 		return;
 	}
 
-	//
-	// Ask for missing match detail data, tell the central what matches are missing data
-	//
-	QJsonArray badata;
-	for (auto m : data_model_->matches())
-	{
-		if (!m->hasBlueAllianceData())
-			badata.push_back(m->key());
-	}
-
-	replyobj[JsonMatchesName] = badata;
-	reply.setObject(replyobj);
-	client_->sendJson(ClientServerProtocol::RequestMatchDetailData, reply, comp_type_);
+	if (needed_zebra_.size() > 0)
+		requestZebraData();
+	else if (needed_match_detail_.size() > 0)
+		requestMatchDetail();
+	else
+		coachComplete();
 }
 
 void ClientProtocolHandler::handleProvideMatchDetailData(const QJsonDocument& doc)
@@ -591,8 +648,12 @@ void ClientProtocolHandler::handleProvideMatchDetailData(const QJsonDocument& do
 		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 		return;
 	}
-
-	emit complete();
+	if (needed_zebra_.size() > 0)
+		requestZebraData();
+	else if (needed_match_detail_.size() > 0)
+		requestMatchDetail();
+	else
+		coachComplete();
 }
 
 void ClientProtocolHandler::receivedJSON(uint32_t ptype, const QJsonDocument& doc)

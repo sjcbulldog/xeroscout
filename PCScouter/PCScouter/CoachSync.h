@@ -17,6 +17,10 @@ public:
 	void start();
 	void run();
 
+	void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm) {
+		dm_ = dm;
+	}
+
 	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dataModel() {
 		return dm_;
 	}

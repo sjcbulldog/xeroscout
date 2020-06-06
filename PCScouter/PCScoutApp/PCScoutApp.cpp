@@ -871,7 +871,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 		saveForm(index);
 
 		MatchViewWidget* w = dynamic_cast<MatchViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchView));
-		w->setScoutingField(key, c, slot, true);
+		w->setScoutingField(key, c, slot);
 	}
 
 	for (int i = 0; i < view_selector_->count(); i++) {

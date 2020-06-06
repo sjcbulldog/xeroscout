@@ -198,6 +198,7 @@ void PCScouter::setDataModel(std::shared_ptr<xero::scouting::datamodel::Scouting
 	if (data_model_ != nullptr)
 	{
 		connect(data_model_.get(), &ScoutingDataModel::modelChanged, this, &PCScouter::dataModelChanged);
+		data_model_->blockSignals(false);
 	}
 }
 
@@ -462,6 +463,18 @@ void PCScouter::coachSyncComplete()
 
 	setDataModel(coach_sync_->dataModel());
 	setupViews();
+
+	if (data_model_->filename().length() > 0)
+	{
+		saveAndBackup();
+	}
+	else
+	{
+		QMessageBox::information(this, "Save File", "The event has been created, please save the data to a file");
+		saveEventAs();
+	}
+
+	setDataModelStatus();
 }
 
 void PCScouter::syncWithCentral()
@@ -482,6 +495,10 @@ void PCScouter::syncWithCentral()
 	connect(coach_sync_, &CoachSync::displayLogMessage, this, &PCScouter::logMessage);
 	connect(coach_sync_, &CoachSync::syncComplete, this, &PCScouter::coachSyncComplete);
 	connect(coach_sync_, &CoachSync::syncError, this, &PCScouter::coachSyncError);
+
+	if (data_model_ != nullptr)
+		coach_sync_->setDataModel(data_model_);
+
 	coach_sync_->start();
 }
 
@@ -855,9 +872,7 @@ void PCScouter::newEventComplete(bool err)
 	{
 		settings_.setValue(TabletPoolSetting, ctrl->tablets());
 		setDataModel(ctrl->dataModel());
-		view_frame_->setDataModel(data_model_);
-
-		setMainView(DocumentView::ViewType::MatchView);
+		setupViews();
 
 		QMessageBox::information(this, "Save File", "The event has been created, please save the data to a file");
 		saveEventAs();
@@ -891,7 +906,12 @@ void PCScouter::newEventBA()
 
 void PCScouter::loadPicklist()
 {
-	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
+	QString path;
+	if (settings_.contains("FormsDir"))
+		path = settings_.value("FormsDir").toString();
+	else
+		path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
+
 	QString filename = QFileDialog::getOpenFileName(this, "Open Picklist File", path, "JSON Files (*.json);;All Files (*.*)");
 	if (filename.length() == 0)
 		return;

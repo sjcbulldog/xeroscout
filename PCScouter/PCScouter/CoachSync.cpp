@@ -47,6 +47,7 @@ void CoachSync::protocolAbort(const QString& errmsg)
 
 void CoachSync::disconnected()
 {
+	dm_->blockSignals(false);
 	emit syncComplete();
 }
 
@@ -59,6 +60,8 @@ void CoachSync::start()
 {
 	QJsonDocument doc;
 	QJsonObject obj;
+
+	dm_->blockSignals(true);
 
 	obj[JsonCompressionName] = comp_type_;
 	doc.setObject(obj);
@@ -423,6 +426,7 @@ void CoachSync::handleMatchDetailDataRequest(const QJsonDocument& doc)
 	reply = dm_->generateMatchDetailData(keys);
 	protocol_->sendJson(ClientServerProtocol::ProvideMatchDetailData, reply, comp_type_);
 
+	dm_->blockSignals(false);
 	emit syncComplete();
 }
 

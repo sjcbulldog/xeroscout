@@ -88,11 +88,32 @@ namespace xero
 			{
 			}
 
-			void MatchViewWidget::setScoutingField(const QString& key, Alliance c, int slot, bool value)
+			QString MatchViewWidget::genStatusText(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> match, xero::scouting::datamodel::Alliance a, int slot)
+			{
+				QString ret;
+
+				if (match->hasScoutingData(a, slot))
+					ret = "Y";
+				else
+					ret = "N";
+
+				if (match->hasBlueAllianceData())
+					ret += "-B";
+
+				if (match->hasZebra())
+					ret += "-Z";
+
+				return ret;
+			}
+
+			void MatchViewWidget::setScoutingField(const QString& key, Alliance c, int slot)
 			{
 				int alloff = (c == Alliance::Red ? 5 : 14);
 				int col;
-				
+
+				auto m = dataModel()->findMatchByKey(key);
+				QString txt = genStatusText(m, c, slot);
+
 				if (tablet_.length() == 0)
 				{
 					col = alloff + 3 * (slot - 1);
@@ -110,14 +131,14 @@ namespace xero
 					if (itemkey == key)
 					{
 						item->setTextAlignment(col, Qt::AlignHCenter);
-						if (value)
+						if (txt.at(0) == "Y")
 						{
-							item->setText(col, "Y");
+							item->setText(col, txt);
 							item->setBackgroundColor(col, QColor(0, 255, 0, 255));
 						}
 						else
 						{
-							item->setText(col, "N");
+							item->setText(col, txt);
 							item->setBackgroundColor(col, QColor(255, 0, 0, 255));
 						}
 					}
@@ -127,6 +148,7 @@ namespace xero
 			int MatchViewWidget::putAllianceData(std::shared_ptr<const DataModelMatch> m, QTreeWidgetItem* i, Alliance a, int index)
 			{
 				for (int slot = 1; slot <= 3; slot++) {
+					QString txt = genStatusText(m, a, slot);
 					QString key = m->team(a, slot);
 					i->setText(index++, key);
 
@@ -138,12 +160,12 @@ namespace xero
 						i->setTextAlignment(index, Qt::AlignHCenter);
 						if (m->hasScoutingData(a, slot))
 						{
-							i->setText(index, "Y");
+							i->setText(index, txt);
 							i->setBackgroundColor(index, QColor(0, 255, 0, 255));
 						}
 						else
 						{
-							i->setText(index, "N");
+							i->setText(index, txt);
 							i->setBackgroundColor(index, QColor(255, 0, 0, 255));
 						}
 					}

@@ -60,6 +60,10 @@ private:
 	void disconnected();
 	void displayProtocolLogMessage(const QString& msg);
 
+	void requestZebraData();
+	void requestMatchDetail();
+	void coachComplete();
+
 private:
 	void handleUnxpectedPacket(const QJsonDocument& doc);
 	void handleTabletID(const QJsonDocument& doc);
@@ -94,5 +98,8 @@ private:
 
 	bool requested_zebra_;
 	bool requested_match_detail_;
+
+	QStringList needed_zebra_;
+	QStringList needed_match_detail_;
 };
 
