@@ -87,6 +87,42 @@ namespace xero
 					ret = "RequestScoutingData";
 					break;
 
+				case RequestImageData:
+					ret = "RequestScoutingData";
+					break;
+
+				case ProvideImageData:
+					ret = "ProvideImageData";
+					break;
+
+				case ServerIDPacket:
+					ret = "ServerIDPacket";
+					break;
+
+				case CoachIDPacket:
+					ret = "CoachIDPacket";
+					break;
+
+				case RequestZebraData:
+					ret = "RequestZebraData";
+					break;
+
+				case RequestMatchDetailData:
+					ret = "RequestMatchDetailData";
+					break;
+
+				case CompleteButListening:
+					ret = "CompleteButListening";
+					break;
+
+				case ProvideZebraData:
+					ret = "ProvideZebraData";
+					break;
+
+				case ProvideMatchDetailData:
+					ret = "ProvideMatchDetailData";
+					break;
+
 				case SyncDone:
 					ret = "SyncDone";
 					break;
