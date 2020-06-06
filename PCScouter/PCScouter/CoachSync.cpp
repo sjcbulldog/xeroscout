@@ -264,12 +264,12 @@ void CoachSync::requestMatchDetail()
 
 	while (matches.count() < 10 && !needed_match_detail_.isEmpty())
 	{
-		QString one = needed_zebra_.front();
+		QString one = needed_match_detail_.front();
 		if (req.length() > 0)
 			req += ", ";
 		req += one;
 		matches.push_back(one);
-		needed_zebra_.pop_front();
+		needed_match_detail_.pop_front();
 	}
 
 	emit displayLogMessage("Requested 'blue alliance' data for matches: " + req);
@@ -364,11 +364,19 @@ void CoachSync::handleZebraDataRequest(const QJsonDocument& doc)
 
 	QJsonArray array = obj.value(JsonZebraDataName).toArray();
 	QStringList keys;
+	QString msg;
 	for (int i = 0; i < array.size(); i++)
 	{
+		QString one = array[i].toString();
 		if (array[i].isString())
-			keys.push_back(array[i].toString());
+			keys.push_back(one);
+
+		if (msg.length() > 0)
+			msg += ", ";
+		msg += one;
 	}
+
+	emit displayLogMessage("Central requested zebra data: " + msg);
 
 	reply = dm_->generateZebraData(keys);
 	protocol_->sendJson(ClientServerProtocol::ProvideZebraData, reply, comp_type_);
@@ -388,7 +396,6 @@ void CoachSync::handleMatchDetailDataRequest(const QJsonDocument& doc)
 	}
 
 	QJsonObject obj = doc.object();
-	QStringList keys2 = obj.keys();
 	if (!obj.contains(JsonMatchesName) || !obj.value(JsonMatchesName).isArray())
 	{
 		replyobj[JsonMessageName] = "match detail data json was invalid, json was invalid";
@@ -399,11 +406,19 @@ void CoachSync::handleMatchDetailDataRequest(const QJsonDocument& doc)
 
 	QJsonArray array = obj.value(JsonMatchesName).toArray();
 	QStringList keys;
+	QString msg;
 	for (int i = 0; i < array.size(); i++)
 	{
+		QString one = array[i].toString();
 		if (array[i].isString())
-			keys.push_back(array[i].toString());
+			keys.push_back(one);
+
+		if (msg.length() > 0)
+			msg += ", ";
+		msg += one;
 	}
+
+	emit displayLogMessage("Central requested blue alliance data: " + msg);
 
 	reply = dm_->generateMatchDetailData(keys);
 	protocol_->sendJson(ClientServerProtocol::ProvideMatchDetailData, reply, comp_type_);

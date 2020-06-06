@@ -542,7 +542,7 @@ void ClientProtocolHandler::handleCompleteButListening(const QJsonDocument& doc)
 	//
 	for (auto m : data_model_->matches())
 	{
-		if (m->hasZebra())
+		if (!m->hasZebra())
 			zebra.push_back(m->key());
 	}
 
@@ -570,7 +570,7 @@ void ClientProtocolHandler::handleProvideZebraData(const QJsonDocument& doc)
 	QJsonArray badata;
 	for (auto m : data_model_->matches())
 	{
-		if (m->hasBlueAllianceData())
+		if (!m->hasBlueAllianceData())
 			badata.push_back(m->key());
 	}
 
