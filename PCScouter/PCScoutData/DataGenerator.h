@@ -20,6 +20,9 @@ namespace xero
 				virtual ~DataGenerator();
 
 				void run();
+				bool isValid() {
+					return match_ptr_ != nullptr && team_ptr_ != nullptr;
+				}
 
 			signals:
 				void logMessage(const QString& msg);

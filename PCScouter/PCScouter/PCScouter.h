@@ -84,6 +84,8 @@ private:
 	void saveEventAs();
 	void closeEventHandler();
 
+	void loadPicklist();
+
 	void importMatchSchedule();
 	void importMatchScheduleComplete(bool err);
 

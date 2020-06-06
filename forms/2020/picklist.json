@@ -1,0 +1,63 @@
+[
+    {
+        "output" : "team",
+        "data":"TeamNumber"
+    },
+    {
+        "output" : "match",
+        "data" : "MatchNum"
+    },
+    {
+        "output" : "alliance",
+        "data" : "Alliance"
+    },
+    {
+        "output" : "auto_line",
+        "data": "auto__line"
+    },
+    {
+        "output" : "auto_low",
+        "data" : "auto__lowgoal"
+    },
+    {
+        "output" : "auto_high",
+        "data" : "auto__highgoal"
+    },
+    {
+        "output" : "tele_low",
+        "data" : "teleop__lowgoal"
+    },
+    {
+        "output" : "tele_high",
+        "data" : "teleop__highgoal"
+    },
+    {
+        "output" : "wheel_spin",
+        "data" : "teleop__spin"
+    },
+    {
+        "output" : "wheel_color",
+        "data" : "teleop__position"
+    },
+    {
+        "output" : "climbed",
+        "data" : "endgame__position='endgame__pneg3' or endgame__position='endgame__pneg2' or endgame__position='endgame__pneg1' or endgame__position='endgame__pzero' or endgame__position='endgame__ppos1' or endgame__position='endgame__ppos2' or endgame__position='endgame__ppos3'"
+    },
+    {
+        "output" : "climb_assists",
+        "data" : "endgame__number_assisted"
+    },
+    {
+        "output" : "climb_was_assisted",
+        "data" : "endgame__was_assisted"
+    },
+    {
+        "output" : "park",
+        "data" : "endgame__position='endgame__parked'"
+    },
+    {
+        "output" : "balanced",
+        "data" : "endgame__level"
+    }
+]
+

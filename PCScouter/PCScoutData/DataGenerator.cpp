@@ -14,6 +14,8 @@ namespace xero
 				maxred_ = maxred;
 				maxblue_ = maxblue;
 				maxteam_ = maxteam;
+				match_ptr_ = nullptr;
+				team_ptr_ = nullptr;
 
 				loadGenerator();
 			}
@@ -84,8 +86,29 @@ namespace xero
 				return (*match_ptr_)(match, form);
 			}
 
+#ifdef _MSC_VER
+			//
+			// Windows, MSVC
+			//
 			const char *match = "?generateMatch@@YA?AV?$vector@V?$shared_ptr@V?$map@VQString@@VQVariant@@U?$less@VQString@@@std@@V?$allocator@U?$pair@$$CBVQString@@VQVariant@@@std@@@4@@std@@@std@@V?$allocator@V?$shared_ptr@V?$map@VQString@@VQVariant@@U?$less@VQString@@@std@@V?$allocator@U?$pair@$$CBVQString@@VQVariant@@@std@@@4@@std@@@std@@@2@@std@@V?$shared_ptr@$$CBVDataModelMatch@datamodel@scouting@xero@@@2@V?$shared_ptr@$$CBVScoutingForm@datamodel@scouting@xero@@@2@@Z";
 			const char* team = "?generateTeam@@YA?AV?$shared_ptr@V?$map@VQString@@VQVariant@@U?$less@VQString@@@std@@V?$allocator@U?$pair@$$CBVQString@@VQVariant@@@std@@@4@@std@@@std@@V?$shared_ptr@$$CBVDataModelTeam@datamodel@scouting@xero@@@2@V?$shared_ptr@$$CBVScoutingForm@datamodel@scouting@xero@@@2@@Z";
+#endif
+
+#ifdef __GNUC__
+			//
+			// Linux
+			//
+			const char* match = "TODO";
+			const char* team = "TODO";
+#endif
+
+#ifdef __clang__
+			//
+			// MacOS
+			//
+			const char* match = "TODO";
+			const char* team = "TODO";
+#endif
 
 			void DataGenerator::loadGenerator()
 			{

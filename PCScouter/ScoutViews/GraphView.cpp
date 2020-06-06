@@ -17,6 +17,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QKeyEvent>
+#include <list>
 
 using namespace QtCharts;
 using namespace xero::expr;
@@ -28,11 +29,24 @@ namespace xero
 	{
 		namespace views
 		{
+			std::list<std::pair<QString, QChart::ChartTheme>> GraphView::themes_ =
+			{
+				{ "Light", QChart::ChartTheme::ChartThemeLight },
+				{ "Blue Cerulean", QChart::ChartThemeBlueCerulean },
+				{ "Dark", QChart::ChartThemeDark },
+				{ "Brown Sand", QChart::ChartThemeBrownSand },
+				{ "Blue Ncs", QChart::ChartThemeBlueNcs },
+				{ "High Contrast", QChart::ChartThemeHighContrast },
+				{ "Blue Icy", QChart::ChartThemeBlueIcy },
+				{ "Qt", QChart::ChartThemeQt },
+			};
+
 			GraphView::GraphView(QWidget *parent) : QWidget(parent), ViewBase("GraphView")
 			{
 				bottom_ = nullptr;
 				grid_ = nullptr;
 				top_ = nullptr;
+				theme_ = QChart::ChartTheme::ChartThemeQt;
 
 				setMouseTracking(true);
 				setFocusPolicy(Qt::StrongFocus);
@@ -287,7 +301,27 @@ namespace xero
 					auto cb = std::bind(&GraphView::deletePane, this, pane);
 					connect(act, &QAction::triggered, cb);
 
+					QMenu* th = new QMenu("Theme");
+					for (auto pair : themes_)
+					{
+						auto cb = std::bind(&GraphView::setTheme, this, pair.second);
+						act = th->addAction(pair.first);
+						connect(act, &QAction::triggered, cb);
+					}
+
+					menu->addMenu(th);
+
 					menu->exec(ev->globalPos());
+				}
+			}
+
+			void GraphView::setTheme(QChart::ChartTheme th)
+			{
+				theme_ = th;
+
+				for (auto chart : charts_)
+				{
+					chart->chart()->setTheme(th);
 				}
 			}
 
@@ -685,7 +719,7 @@ namespace xero
 
 				chart->chart()->legend()->setVisible(true);
 				chart->chart()->legend()->setAlignment(Qt::AlignBottom);
-				chart->chart()->setTheme(QChart::ChartTheme::ChartThemeBlueCerulean);
+				chart->chart()->setTheme(theme_);
 
 				return true;
 			}

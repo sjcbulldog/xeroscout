@@ -116,6 +116,7 @@
     <ClInclude Include="NumericItemDisplay.h" />
     <QtMoc Include="StartStopWidget.h" />
     <ClInclude Include="OPRCalculator.h" />
+    <ClInclude Include="PickListTranslator.h" />
     <ClInclude Include="ScoutDataExprContext.h" />
     <ClInclude Include="NumericFormItem.h" />
     <ClInclude Include="pcscoutdata_global.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="JSonDataModelConverter.cpp" />
     <ClCompile Include="NumericItemDisplay.cpp" />
     <ClCompile Include="OPRCalculator.cpp" />
+    <ClCompile Include="PickListTranslator.cpp" />
     <ClCompile Include="StartStopWidget.cpp" />
     <ClCompile Include="ScoutingDatabase.cpp" />
     <ClCompile Include="ScoutingDataModel.cpp" />

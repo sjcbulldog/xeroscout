@@ -200,7 +200,9 @@ namespace xero
 						for (int col = 0; col < rec.count(); col++) {
 							QSqlField f = rec.field(col);
 							auto hdr = dm.getFieldByName(f.name());
-							assert(hdr != nullptr);
+							if (hdr == nullptr)
+								hdr = std::make_shared<FieldDesc>(f.name(), FieldDesc::Type::Integer, false);
+
 							set.addHeader(hdr);
 						}
 						headers = true;

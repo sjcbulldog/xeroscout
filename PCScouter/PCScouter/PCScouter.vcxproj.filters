@@ -195,6 +195,9 @@
     <QtUic Include="AboutDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="Preferences.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <None Include="PitScouting.json" />

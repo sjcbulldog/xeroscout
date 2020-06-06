@@ -487,6 +487,8 @@ namespace xero
 				obj[JsonCoreName] = coreToJson(true);
 				obj[JsonScoutingName] = scoutingToJsonFull();
 				obj[JsonHistoryName] = historyToJson();
+				if (dm_->pickListTranslator() != nullptr)
+					obj[JsonPickListName] = dm_->pickListTranslator()->toJSON();
 				obj[JsonGraphViewsName] = dm_->graphDescriptors().generateJSON();
 				obj[JsonTeamSummaryFieldsName] = encodeStringList(dm_->teamSummaryFields());
 				obj[JsonDatasetColumnOrdersName] = encodeColumnOrders();
@@ -1364,6 +1366,19 @@ namespace xero
 				if (!isTablet) {
 					if (!extractHistory(obj.value(JsonHistoryName).toObject()))
 						return false;
+
+					if (obj.contains(JsonPickListName) && obj.value(JsonPickListName).isArray())
+					{
+						std::shared_ptr<PickListTranslator> pl = std::make_shared<PickListTranslator>();
+						if (!pl->load(obj.value(JsonPickListName).toArray()))
+						{
+							errors_.push_back(pl->error());
+						}
+						else
+						{
+							dm_->setPickListTranslator(pl);
+						}
+					}
 				}
 
 				if (!scoutingFromJsonFull(obj.value(JsonScoutingName).toObject()))

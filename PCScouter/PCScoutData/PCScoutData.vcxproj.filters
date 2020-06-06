@@ -150,7 +150,7 @@
     <ClInclude Include="ImageManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DataGenerator.h">
+    <ClInclude Include="PickListTranslator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -221,12 +221,18 @@
     <ClCompile Include="DataGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PickListTranslator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ScoutingDataModel.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="StartStopWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="DataGenerator.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

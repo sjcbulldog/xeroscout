@@ -32,7 +32,9 @@ signals:
 private:
 	bool didClimb(xero::scouting::datamodel::ConstScoutingDataMapPtr data);
 	void oneTeam(QTextStream& strm, std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> m, xero::scouting::datamodel::Alliance c, int slot);
+
 	QString genInputFile();
+	QString genQuery();
 
 	void started();
 	void finished(int exitcode, QProcess::ExitStatus status);

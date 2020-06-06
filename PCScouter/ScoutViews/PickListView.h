@@ -17,7 +17,7 @@ namespace xero
 				PickListView(const QString& name, QWidget* parent);
 				virtual ~PickListView();
 
-				void updateHtml(const QString& picks, const QString &robots) {
+				void setHTML(const QString& picks, const QString &robots) {
 					picks_ = picks;
 					picks_win_->setHtml(picks_);
 

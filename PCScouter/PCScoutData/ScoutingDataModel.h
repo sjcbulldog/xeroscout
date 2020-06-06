@@ -29,6 +29,7 @@
 #include "DataModelMatch.h"
 #include "TabletIdentity.h"
 #include "SyncHistoryRecord.h"
+#include "PickListTranslator.h"
 #include "GraphDescriptorCollection.h"
 #include "GraphDescriptor.h"
 #include <QString>
@@ -72,6 +73,7 @@ namespace xero
 					TeamSummaryFieldList,			///< the list of fields in the team summary changed
 					DataSetColumnOrder,				///< the column order for a dataset
 					MatchVideoAdded,				///< added match video links
+					PickListTranslatorAdded,		///< added the pick list translator
 				};
 
 			public:
@@ -312,6 +314,11 @@ namespace xero
 					return list;
 				}
 
+				/// \brief return the pick list translator
+				std::shared_ptr<const PickListTranslator> pickListTranslator() const {
+					return pick_list_trans_;
+				}
+
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
 				// These methods generate data sets.  The are a special case of the query methods in that they synthesis sets of data
@@ -352,6 +359,14 @@ namespace xero
 				/// \param dups a list of duplicate fields found between the two forms
 				bool setScoutingForms(std::shared_ptr<ScoutingForm> teamform, std::shared_ptr<ScoutingForm> matchform, QStringList& dups);
 
+				/// \brief set the pick list tranlator data
+				/// \param trans the pick list translator object
+				void setPickListTranslator(std::shared_ptr<PickListTranslator> trans) {
+					dirty_ = true;
+					pick_list_trans_ = trans;
+					emitChangedSignal(ChangeType::PickListTranslatorAdded);
+				}
+
 				/// \brief sets the extra field descriptors that are team specific
 				/// \param fields the fields to add to the extra fields list
 				void addTeamExtraFields(std::list<std::shared_ptr<FieldDesc>> fields) {
@@ -367,6 +382,9 @@ namespace xero
 							assert(oldf->type() == f->type());
 						}
 					}
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::TeamDataChanged);
 				}
 
 				/// \brief sets the extra field descriptors that are match specific
@@ -383,6 +401,9 @@ namespace xero
 							assert(oldf->type() == f->type());
 						}
 					}
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::MatchDataChanged);
 				}
 
 				void addMatchExtraData(const QString& key, Alliance c, int slot, ScoutingDataMapPtr data) {
@@ -977,6 +998,8 @@ namespace xero
 				QDate end_date_;
 
 				Role role_;
+
+				std::shared_ptr<PickListTranslator> pick_list_trans_;
 			};
 
 		}

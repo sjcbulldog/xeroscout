@@ -377,6 +377,10 @@ void PCScouter::createMenus()
 	(void)connect(act, &QAction::triggered, this, &PCScouter::saveEventAs);
 
 	file_menu_->addSeparator();
+	act = file_menu_->addAction(tr("Load Picklist JSON"));
+	(void)connect(act, &QAction::triggered, this, &PCScouter::loadPicklist);
+
+	file_menu_->addSeparator();
 
 	act = file_menu_->addAction(tr("Close Event"));
 	(void)connect(act, &QAction::triggered, this, &PCScouter::closeEventHandler);
@@ -845,6 +849,25 @@ void PCScouter::newEventBA()
 	(void)connect(app_controller_, &ApplicationController::errorMessage, this, &PCScouter::errorMessage);
 }
 
+void PCScouter::loadPicklist()
+{
+	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
+	QString filename = QFileDialog::getOpenFileName(this, "Open Picklist File", path, "JSON Files (*.json);;All Files (*.*)");
+	if (filename.length() == 0)
+		return;
+
+	std::shared_ptr<PickListTranslator> pl = std::make_shared<PickListTranslator>();
+	if (!pl->load(filename))
+	{
+		QMessageBox::critical(this, "Error", pl->error());
+		logwin_->append(pl->error());
+	}
+	else
+	{
+		data_model_->setPickListTranslator(pl);
+	}
+}
+
 void PCScouter::openEvent()
 {
 	if (data_model_ != nullptr && data_model_->isDirty())
@@ -931,7 +954,7 @@ void PCScouter::pickListComplete(bool err)
 	PickListController* ctrl = dynamic_cast<PickListController*>(app_controller_);
 	if (ctrl != nullptr)
 	{
-		ds->updateHtml(ctrl->htmlPicklist(), ctrl->htmlRobotCapabilities());
+		ds->setHTML(ctrl->htmlPicklist(), ctrl->htmlRobotCapabilities());
 		ds->clearNeedRefresh();
 	}
 }
@@ -1162,9 +1185,18 @@ void PCScouter::updateCurrentView()
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
 			{
-				app_controller_ = new PickListController(blue_alliance_, team_number_, year_, data_model_, ds);
-				connect(app_controller_, &ApplicationController::logMessage, this, &PCScouter::logMessage);
-				(void)connect(app_controller_, &ApplicationController::complete, this, &PCScouter::pickListComplete);
+				if (data_model_->pickListTranslator() == nullptr)
+				{
+					QString html = "<b>No Picklist Configuration Loaded</b>";
+					ds->setHTML(html, html);
+					ds->clearNeedRefresh();
+				}
+				else
+				{
+					app_controller_ = new PickListController(blue_alliance_, team_number_, year_, data_model_, ds);
+					connect(app_controller_, &ApplicationController::logMessage, this, &PCScouter::logMessage);
+					(void)connect(app_controller_, &ApplicationController::complete, this, &PCScouter::pickListComplete);
+				}
 			}
 		}
 		break;
@@ -1304,11 +1336,18 @@ void PCScouter::magicWordTyped(SpecialListWidget::Word w)
 			teammax = injector.data(teampropname).toInt();
 
 		DataGenerator gen(data_model_, year_, redmaxmatch, bluemaxmatch, teammax);
-		connect(&gen, &DataGenerator::logMessage, this, &PCScouter::logMessage);
-		gen.run();
+		if (gen.isValid())
+		{
+			connect(&gen, &DataGenerator::logMessage, this, &PCScouter::logMessage);
+			gen.run();
 
-		QMessageBox::information(this, "DataSet", "The dataset has been populated");
-		saveAndBackup();
+			QMessageBox::information(this, "DataSet", "The dataset has been populated");
+			saveAndBackup();
+		}
+		else
+		{
+			QMessageBox::warning(this, "No Generator", "There is no data generator for the year '" + QString::number(year_) + "'");
+		}
 	}
 }
 

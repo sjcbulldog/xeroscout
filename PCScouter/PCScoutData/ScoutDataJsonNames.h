@@ -80,6 +80,7 @@ namespace xero
 			constexpr const char* JsonDoubleName = "double";
 			constexpr const char* JsonTabletIdentityName = "tabletid";
 			constexpr const char* JsonHistoryName = "history";
+			constexpr const char* JsonPickListName = "picklist";
 			constexpr const char* JsonHistoryWhenName = "when";
 			constexpr const char* JsonHistoryPitListName = "pits";
 			constexpr const char* JsonHistoryMatchListName = "matches";

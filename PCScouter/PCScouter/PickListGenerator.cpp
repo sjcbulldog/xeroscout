@@ -26,88 +26,22 @@ PickListGenerator::~PickListGenerator()
 		delete dir_;
 }
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-//
-// This is year specific, fix this
-//
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-
-bool PickListGenerator::didClimb(ConstScoutingDataMapPtr data)
+QString PickListGenerator::genQuery()
 {
-	static char* pos[] = {
-		"endgame__pneg3",
-		"endgame__pneg2",
-		"endgame__pneg1",
-		"endgame__pzero",
-		"endgame__ppos1",
-		"endgame__ppos2",
-		"endgame__ppos3"
-	};
+	QString query = "select ";
+	bool first = true;
 
-	auto it = data->find("endgame__position");
-	for (const char* name : pos)
+	for (auto field : dm_->pickListTranslator()->fields())
 	{
-		if (it->second.toString() == name)
-			return true;
+		if (!first)
+			query += ",";
+
+		query += field.second;
+		first = false;
 	}
+	query += " from matches where Type='qm'";
 
-	return false;
-}
-
-void PickListGenerator::oneTeam(QTextStream& strm, std::shared_ptr<const DataModelMatch> m, Alliance c, int slot)
-{
-	auto tkey = m->team(c, slot);
-	auto team = dm_->findTeamByKey(tkey);
-	auto data = m->scoutingData(c, slot);
-
-	strm << team->number();
-	strm << "," << m->match();
-	strm << "," << toString(c);
-
-	auto it = data->find("auto__line");
-	strm << "," << it->second.toInt();
-
-	it = data->find("auto__lowgoal");
-	strm << "," << it->second.toInt();
-
-	it = data->find("auto__highgoal");
-	strm << "," << it->second.toInt();
-
-	it = data->find("teleop__lowgoal");
-	strm << "," << it->second.toInt();
-
-	it = data->find("teleop__highgoal");
-	strm << "," << it->second.toInt();
-
-	it = data->find("teleop__spin");
-	strm << "," << it->second.toInt();
-
-	it = data->find("teleop__position");
-	strm << "," << it->second.toInt();
-
-	if (didClimb(data))
-		strm << ",1";
-	else
-		strm << ",0";
-
-	it = data->find("endgame__number_assisted");
-	strm << "," << it->second.toInt();
-
-	it = data->find("endgame__was_assisted");
-	strm << "," << it->second.toInt();
-
-	it = data->find("endgame__position");
-	if (it->second.toString() == "parked")
-		strm << ",1";
-	else
-		strm << ",0";
-
-	it = data->find("endgame__level");
-	strm << "," << it->second.toInt();
-
-	strm << "\n";
+	return query;
 }
 
 QString PickListGenerator::genInputFile()
@@ -116,29 +50,52 @@ QString PickListGenerator::genInputFile()
 	if (!file.open(QIODevice::WriteOnly))
 	{
 		picks_ = "<p>cannot open temporary file '" + file.fileName() + "' for the event information";
+		caps_ = picks_;
 		done_ = true;
 		return "";
 	}
 
-	QTextStream strm(&file);
-	strm << "team,match,alliance,auto_line,auto_low,auto_high,tele_low,tele_high,wheel_spin,wheel_color,climbed,climb_assists,climb_was_assisted,park,balanced\n";
-
-	for (auto m : dm_->matches())
+	QString query = genQuery();
+	ScoutingDataSet ds;
+	QString error;
+	if (!dm_->createCustomDataSet(ds, query, error))
 	{
-		if (m->compType() != "qm")
-			continue;
+		emit logMessage("Query Error: " + error);
+		return "";
+	}
 
-		Alliance c = Alliance::Red;
-		for (int slot = 1; slot <= 3; slot++)
-		{
-			oneTeam(strm, m, c, slot);
-		}
+	QTextStream strm(&file);
+	bool first = true;
+	for (auto field : dm_->pickListTranslator()->fields())
+	{
+		if (!first)
+			strm << ",";
 
-		c = Alliance::Blue;
-		for (int slot = 1; slot <= 3; slot++)
+		strm << field.first;
+		first = false;
+	}
+	strm << "\n";
+
+	for (int row = 0; row < ds.rowCount(); row++)
+	{
+		first = true;
+		for (int col = 0; col < ds.columnCount(); col++)
 		{
-			oneTeam(strm, m, c, slot);
+			if (!first)
+				strm << ",";
+
+			auto hdr = ds.colHeader(col);
+			if (hdr->type() == FieldDesc::Type::String)
+			{
+				strm << ds.get(row, col).toString();
+			}
+			else
+			{
+				strm << ds.get(row, col).toInt();
+			}
+			first = false;
 		}
+		strm << "\n";
 	}
 
 	strm.flush();
