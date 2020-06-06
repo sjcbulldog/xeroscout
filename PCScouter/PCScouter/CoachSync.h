@@ -11,12 +11,15 @@ class CoachSync : public QObject
 	Q_OBJECT
 
 public:
-	CoachSync(xero::scouting::transport::ScoutTransport* transport, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm,
-		xero::scouting::datamodel::ImageManager& images, bool debug);
+	CoachSync(xero::scouting::transport::ScoutTransport* transport, xero::scouting::datamodel::ImageManager& images, bool debug);
 	virtual ~CoachSync();
 
 	void start();
 	void run();
+
+	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dataModel() {
+		return dm_;
+	}
 
 signals:
 	void syncComplete();

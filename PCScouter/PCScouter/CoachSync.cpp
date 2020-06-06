@@ -6,10 +6,10 @@
 using namespace xero::scouting::transport;
 using namespace xero::scouting::datamodel;
 
-CoachSync::CoachSync(ScoutTransport* transport, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, ImageManager &images, bool debug) : images_(images)
+CoachSync::CoachSync(ScoutTransport* transport, ImageManager &images, bool debug) : images_(images)
 {
 	comp_type_ = true;
-	dm_ = dm;
+	dm_ = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::CoachMachine);
 	debug_ = debug;
 
 	protocol_ = new ClientServerProtocol(transport, false, true, false);
@@ -21,7 +21,7 @@ CoachSync::CoachSync(ScoutTransport* transport, std::shared_ptr<xero::scouting::
 
 	handlers_.insert(std::make_pair(ClientServerProtocol::DataModelCorePacket, std::bind(&CoachSync::handleCoreData, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::ProvideImageData, std::bind(&CoachSync::handleImage, this, std::placeholders::_1)));
-	handlers_.insert(std::make_pair(ClientServerProtocol::ScoutingDataReply, std::bind(&CoachSync::handleScoutingData, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::DataModelScoutingPacket, std::bind(&CoachSync::handleScoutingData, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::ProvideZebraData, std::bind(&CoachSync::handleZebraData, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::ProvideMatchDetailData, std::bind(&CoachSync::handMatchDetailData, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestZebraData, std::bind(&CoachSync::handleZebraDataRequest, this, std::placeholders::_1)));
@@ -81,8 +81,8 @@ void CoachSync::requestImage()
 	}
 	else
 	{
-		doc.setObject(obj);
 		obj[JsonNameName] = "*";
+		doc.setObject(obj);
 		protocol_->sendJson(ClientServerProtocol::RequestScoutingData, doc, comp_type_);
 	}
 }

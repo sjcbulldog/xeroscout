@@ -45,6 +45,8 @@ public:
 		return id_;
 	}
 
+	void start();
+
 signals:
 	void complete();
 	void clientDisconnected();

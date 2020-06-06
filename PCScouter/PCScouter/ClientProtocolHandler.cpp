@@ -56,13 +56,16 @@ ClientProtocolHandler::ClientProtocolHandler(ScoutTransport* s, xero::scouting::
 
 	requested_match_detail_ = false;
 	requested_zebra_ = false;
-
-	client_->start();
 }
 
 ClientProtocolHandler::~ClientProtocolHandler()
 {
 	delete client_;
+}
+
+void ClientProtocolHandler::start()
+{
+	client_->start();
 }
 
 void ClientProtocolHandler::displayProtocolLogMessage(const QString& msg)
@@ -353,6 +356,7 @@ void ClientProtocolHandler::handleTabletIDSync(const QJsonObject&obj)
 void ClientProtocolHandler::handleScoutingRequest(const QJsonDocument& doc)
 {
 	QJsonObject obj = doc.object();
+	auto keys = obj.keys();
 
 	if (!obj.contains(JsonNameName))
 	{
@@ -440,7 +444,7 @@ void ClientProtocolHandler::handleCoachID(const QJsonDocument& doc)
 		reply.setObject(replyobj);
 		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
 
-		emit errorMessage("Tablet tried to sync with no data loaded on the central machine");
+		emit errorMessage("Central tried to sync with no data loaded on the central machine");
 		return;
 	}
 

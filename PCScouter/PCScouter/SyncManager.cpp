@@ -94,6 +94,8 @@ void SyncManager::syncWithRemote(ScoutTransport* trans)
 
 	// These two signals convey information to the central about what is happening
 	connect(client_, &ClientProtocolHandler::displayLogMessage, this, &SyncManager::displayMessage);
+
+	client_->start();
 }
 
 void SyncManager::displayMessage(const QString& msg)

@@ -251,7 +251,9 @@ namespace xero
 				QByteArray data = transport_->readAll();
 				data_.append(data);
 
+#ifdef _TRANSPORT_DEBUG_
 				emit displayLogMessage("read " + QString::number(data.size()) + " bytes from transport '" + transport_->type() + "'");
+#endif
 
 				// Reading a new packet
 				if (data_.size() < 8)
