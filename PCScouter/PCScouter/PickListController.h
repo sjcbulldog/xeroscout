@@ -24,8 +24,12 @@ public:
 		return pcnt_;
 	}
 
-	QString html() const {
-		return gen_->html();
+	QString htmlPicklist() const {
+		return gen_->picklist();
+	}
+
+	QString htmlRobotCapabilities() const {
+		return gen_->robotCapabilities();
 	}
 
 private:

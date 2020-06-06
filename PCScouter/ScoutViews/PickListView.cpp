@@ -9,11 +9,16 @@ namespace xero
 		{
 			PickListView::PickListView(const QString& name, QWidget* parent) : QWidget(parent), ViewBase(name)
 			{
+				tabs_ = new QTabWidget();
 				QVBoxLayout* lay = new QVBoxLayout();
 				setLayout(lay);
+				lay->addWidget(tabs_);
 
-				browser_ = new QTextBrowser(this);
-				lay->addWidget(browser_);
+				picks_win_ = new QTextBrowser(tabs_);
+				tabs_->addTab(picks_win_, "PickList");
+
+				robot_win_ = new QTextBrowser(tabs_);
+				tabs_->addTab(robot_win_, "Robot Capabilities");
 			}
 
 			PickListView::~PickListView()
@@ -22,12 +27,14 @@ namespace xero
 
 			void PickListView::clearView()
 			{
-				browser_->setHtml("");
+				picks_win_->setHtml("");
+				robot_win_->setHtml("");
 			}
 
 			void PickListView::refreshView()
 			{
-				browser_->setHtml(html_);
+				picks_win_->setHtml(picks_);
+				robot_win_->setHtml(robots_);
 			}
 		}
 	}

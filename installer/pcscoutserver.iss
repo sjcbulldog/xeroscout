@@ -4,7 +4,7 @@
 #define MyAppName "XeroScouter"
 #define MyCoachName "XeroCoach"
 #define MySecondName "XeroScout"
-#define MyAppVersion "0.2.1"
+#define MyAppVersion "0.2.2"
 #define MyAppPublisher "ErrorCodeXero"
 #define MyAppURL "http://www.wilsonvillerobotics.com/"
 #define MyAppExeName "PCScouter.exe"

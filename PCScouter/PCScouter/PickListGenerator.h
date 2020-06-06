@@ -18,8 +18,12 @@ public:
 	bool isDone() {
 		return done_;
 	}
-	QString html() {
-		return html_;
+	QString picklist() {
+		return picks_;
+	}
+
+	QString robotCapabilities() const {
+		return caps_;
 	}
 
 signals:
@@ -41,7 +45,8 @@ private:
 	int team_;
 	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	QProcess* process_;
-	QString html_;
+	QString picks_;
+	QString caps_;
 	bool done_;
 	QTemporaryDir* dir_;
 };

@@ -115,7 +115,7 @@ QString PickListGenerator::genInputFile()
 	QFile file(dir_->filePath("input.csv"));
 	if (!file.open(QIODevice::WriteOnly))
 	{
-		html_ = "<p>cannot open temporary file '" + file.fileName() + "' for the event information";
+		picks_ = "<p>cannot open temporary file '" + file.fileName() + "' for the event information";
 		done_ = true;
 		return "";
 	}
@@ -173,16 +173,22 @@ void PickListGenerator::finished(int exitcode, QProcess::ExitStatus status)
 			QFile read(htmlfile);
 			read.open(QIODevice::ReadOnly);
 			QTextStream strm(&read);
-			html_ = strm.readAll();
+			picks_ = strm.readAll();
+
+			htmlfile = dir_->path() + "/robot_capabilities.html";
+			QFile read2(htmlfile);
+			read2.open(QIODevice::ReadOnly);
+			QTextStream strm2(&read2);
+			caps_ = strm2.readAll();
 		}
 		else
 		{
-			html_ = "<p>analysis program exited with non-zero exit code, " + QString::number(exitcode) + "</p>";
+			picks_ = "<p>analysis program exited with non-zero exit code, " + QString::number(exitcode) + "</p>";
 		}
 	}
 	else
 	{
-		html_ = "<p>analysis program crashed</p>";
+		picks_ = "<p>analysis program crashed</p>";
 	}
 
 	done_ = true;
@@ -214,7 +220,7 @@ void PickListGenerator::start()
 	QString binfile = QCoreApplication::applicationDirPath() + "/analysis" + QString::number(year_) + ".exe";
 	if (!QFile::exists(binfile))
 	{
-		html_ = "<p>The executable file '" + binfile + "' is not present";
+		picks_ = "<p>The executable file '" + binfile + "' is not present";
 		done_ = true;
 		return;
 	}
@@ -222,7 +228,7 @@ void PickListGenerator::start()
 	dir_ = new QTemporaryDir();
 	if (!dir_->isValid())
 	{
-		html_ = "<p>cannot create a temporary directory to run the application";
+		picks_ = "<p>cannot create a temporary directory to run the application";
 		done_ = true;
 		return;
 	}

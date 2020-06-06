@@ -99,6 +99,11 @@ PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_
 	createWindows();
 	createMenus();
 
+	if (coach_)
+		this->setWindowTitle("PC Coach View");
+	else
+		this->setWindowTitle("PC Scout Central");
+
 	if (settings_.contains("teamnumber"))
 		team_number_ = settings_.value("teamnumber").toInt();
 	else
@@ -926,7 +931,7 @@ void PCScouter::pickListComplete(bool err)
 	PickListController* ctrl = dynamic_cast<PickListController*>(app_controller_);
 	if (ctrl != nullptr)
 	{
-		ds->updateHtml(ctrl->html());
+		ds->updateHtml(ctrl->htmlPicklist(), ctrl->htmlRobotCapabilities());
 		ds->clearNeedRefresh();
 	}
 }
