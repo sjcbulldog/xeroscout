@@ -453,6 +453,11 @@ void PCScouter::syncWithCentral()
 		return;
 
 	USBTransport* trans = new USBTransport();
+	if (!trans->init())
+	{
+		QMessageBox::critical(this, "Error", "Could not initialize transport");
+		return;
+	}
 
 	disableApp();
 	coach_sync_ = new CoachSync(trans, data_model_, images_, debug_act_->isChecked());

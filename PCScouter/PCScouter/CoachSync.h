@@ -36,6 +36,7 @@ private:
 	void handMatchDetailData(const QJsonDocument& doc);
 	void handleZebraDataRequest(const QJsonDocument& doc);
 	void handleMatchDetailDataRequest(const QJsonDocument& doc);
+	void handleError(const QJsonDocument& doc);
 
 private:
 	QStringList needed_images_;

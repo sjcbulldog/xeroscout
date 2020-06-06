@@ -20,6 +20,13 @@ CoachSync::CoachSync(ScoutTransport* transport, std::shared_ptr<xero::scouting::
 	connect(protocol_, &ClientServerProtocol::displayLogMessage, this, &CoachSync::displayProtocolLogMessage);
 
 	handlers_.insert(std::make_pair(ClientServerProtocol::DataModelCorePacket, std::bind(&CoachSync::handleCoreData, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::ProvideImageData, std::bind(&CoachSync::handleImage, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::ScoutingDataReply, std::bind(&CoachSync::handleScoutingData, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::ProvideZebraData, std::bind(&CoachSync::handleZebraData, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::ProvideMatchDetailData, std::bind(&CoachSync::handMatchDetailData, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::RequestZebraData, std::bind(&CoachSync::handleZebraDataRequest, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::RequestMatchDetailData, std::bind(&CoachSync::handleMatchDetailDataRequest, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::ErrorReply, std::bind(&CoachSync::handleError, this, std::placeholders::_1)));
 
 }
 
@@ -71,6 +78,30 @@ void CoachSync::requestImage()
 		obj[JsonNameName] = "*";
 		protocol_->sendJson(ClientServerProtocol::RequestScoutingData, doc, comp_type_);
 	}
+}
+
+void CoachSync::handleError(const QJsonDocument& doc)
+{
+	if (!doc.isObject())
+	{
+		emit displayLogMessage("protocol error - ErrorReply packet should have contained JSON object");
+		return;
+	}
+
+	QJsonObject obj = doc.object();
+	if (!obj.contains(JsonMessageName))
+	{
+		emit displayLogMessage("protocol error - ErrorReply missing '" + QString(JsonMessageName) + "' field");
+		return;
+	}
+
+	if (!obj.value(JsonMessageName).isString())
+	{
+		emit displayLogMessage("protocol error - ErrorReply field '" + QString(JsonMessageName) + "' is not a string");
+		return;
+	}
+
+	emit displayLogMessage("error returned from coach laptop - " + obj.value(JsonMessageName).toString());
 }
 
 void CoachSync::handleImage(const QJsonDocument& doc)

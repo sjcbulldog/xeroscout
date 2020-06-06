@@ -434,6 +434,16 @@ void ClientProtocolHandler::handleCoachID(const QJsonDocument& doc)
 	QJsonObject replyobj;
 	QJsonDocument reply;
 
+	if (data_model_ == nullptr) {
+
+		replyobj[JsonMessageName] = "the Central Scouting Machine does not have data loaded";
+		reply.setObject(replyobj);
+		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+
+		emit errorMessage("Tablet tried to sync with no data loaded on the central machine");
+		return;
+	}
+
 	if (obj.contains(JsonCompressionName) && obj.value(JsonCompressionName).isDouble())
 	{
 		comp_type_ = obj.value(JsonCompressionName).toInt();

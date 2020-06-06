@@ -86,8 +86,7 @@ void SyncManager::syncWithRemote(ScoutTransport* trans)
 	emit disableApp();
 
 	client_ = new ClientProtocolHandler(trans, images_, dm_, true);
-	qDebug() << "SyncManager: requested from '" << trans->description() << "' - created client protocol id = " << client_->id();
-
+	
 	// These three signals end the session with the client
 	connect(client_, &ClientProtocolHandler::errorMessage, this, &SyncManager::clientError);
 	connect(client_, &ClientProtocolHandler::complete, this, &SyncManager::complete);
