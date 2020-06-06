@@ -101,7 +101,7 @@ void CoachSync::handleError(const QJsonDocument& doc)
 		return;
 	}
 
-	emit displayLogMessage("error returned from coach laptop - " + obj.value(JsonMessageName).toString());
+	emit displayLogMessage("error returned from central laptop - " + obj.value(JsonMessageName).toString());
 }
 
 void CoachSync::handleImage(const QJsonDocument& doc)

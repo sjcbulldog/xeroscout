@@ -149,6 +149,7 @@ namespace xero
 				if (!usb_->send(d))
 					return -1;
 
+				qDebug() << "Sent " << d.size() << " bytes";
 				return remaining;
 			}
 
@@ -178,6 +179,8 @@ namespace xero
 						if (data.size() == 0)
 							break;
 
+
+						qDebug() << "received " << data.size() << " bytes";
 						appendReadData(data);
 					}
 				}
