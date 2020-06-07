@@ -170,6 +170,8 @@ private:
 	// Menu related items
 	//
 	QMenu *file_menu_;
+	QAction* file_new_event_;
+	QAction* file_open_event_;
 	QAction* file_save_;
 	QAction* file_save_as_;
 	QAction* file_load_picklist_;
@@ -181,13 +183,17 @@ private:
 	QAction* import_zebra_data_;
 	QAction* import_match_schedule_;
 	QAction* import_kpi_;
+	QAction* sync_with_central_;
 
 	QMenu* export_menu_;
 	QAction* export_csv_;
 
 	QMenu* settings_menu_;
 	QAction* debug_act_;
+	QAction* set_team_number_;
+
 	QMenu* help_menu_;
+	QAction* about_;
 
 	//
 	// Application settings

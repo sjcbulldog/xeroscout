@@ -356,22 +356,20 @@ void PCScouter::createWindows()
 
 void PCScouter::createMenus()
 {
-	QAction* act;
-
 	file_menu_ = new QMenu(tr("&File"));
 	menuBar()->addMenu(file_menu_);
 	(void)connect(file_menu_, &QMenu::aboutToShow, this, &PCScouter::showingFileMenu);
 
 	if (!coach_)
 	{
-		act = file_menu_->addAction(tr("New Event"));
-		(void)connect(act, &QAction::triggered, this, &PCScouter::newEventBA);
+		file_new_event_ = file_menu_->addAction(tr("New Event"));
+		(void)connect(file_new_event_, &QAction::triggered, this, &PCScouter::newEventBA);
 
 		file_menu_->addSeparator();
 	}
 
-	act = file_menu_->addAction(tr("Open Event"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::openEvent);
+	file_open_event_ = file_menu_->addAction(tr("Open Event"));
+	(void)connect(file_open_event_, &QAction::triggered, this, &PCScouter::openEvent);
 
 	file_menu_->addSeparator();
 
@@ -384,12 +382,12 @@ void PCScouter::createMenus()
 	file_menu_->addSeparator();
 
 	file_load_picklist_ = file_menu_->addAction(tr("Load Picklist JSON"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::loadPicklist);
+	(void)connect(file_load_picklist_, &QAction::triggered, this, &PCScouter::loadPicklist);
 
 	file_menu_->addSeparator();
 
 	file_close_ = file_menu_->addAction(tr("Close Event"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::closeEventHandler);
+	(void)connect(file_close_, &QAction::triggered, this, &PCScouter::closeEventHandler);
 
 	import_menu_ = new QMenu(tr("&Data"));
 	menuBar()->addMenu(import_menu_);
@@ -409,12 +407,12 @@ void PCScouter::createMenus()
 
 	if (coach_)
 	{
-		act = import_menu_->addAction(tr("Sync With Central"));
-		(void)connect(act, &QAction::triggered, this, &PCScouter::syncWithCentral);
+		sync_with_central_ = import_menu_->addAction(tr("Sync With Central"));
+		(void)connect(sync_with_central_, &QAction::triggered, this, &PCScouter::syncWithCentral);
 	}
 
 	import_kpi_ = import_menu_->addAction(tr("Import Historical Team Performance"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::importKPIData);
+	(void)connect(import_kpi_, &QAction::triggered, this, &PCScouter::importKPIData);
 
 	import_menu_->addSeparator();
 
@@ -432,8 +430,8 @@ void PCScouter::createMenus()
 	settings_menu_ = new QMenu(tr("&Settings"));
 	menuBar()->addMenu(settings_menu_);
 
-	act = settings_menu_->addAction(tr("Set Team Number"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::setTeamNumber);
+	set_team_number_ = settings_menu_->addAction(tr("Set Team Number"));
+	(void)connect(set_team_number_, &QAction::triggered, this, &PCScouter::setTeamNumber);
 
 	debug_act_ = settings_menu_->addAction(tr("Debug"));
 	debug_act_->setCheckable(true);
@@ -444,8 +442,8 @@ void PCScouter::createMenus()
 	help_menu_ = new QMenu(tr("Help"));
 	menuBar()->addMenu(help_menu_);
 
-	act = help_menu_->addAction(tr("About"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::about);
+	about_ = help_menu_->addAction(tr("About"));
+	(void)connect(about_, &QAction::triggered, this, &PCScouter::about);
 }
 
 /////////////////////////////////////////////////////////////
