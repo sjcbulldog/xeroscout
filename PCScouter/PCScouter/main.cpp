@@ -16,8 +16,6 @@
 // limitations under the License.
 // 
 
-
-
 #include "PCScouter.h"
 #include "TestDataInjector.h"
 #include <QApplication>

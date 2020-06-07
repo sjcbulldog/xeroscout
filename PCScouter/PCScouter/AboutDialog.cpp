@@ -28,7 +28,7 @@
 
 #define BUILDVERSION STR(XERO_MAJOR_VERSION) "." STR(XERO_MINOR_VERSION) "." STR(XERO_MICRO_VERSION) "." STR(XERO_BUILD_VERSION)
 
-AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent)
+AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 {
 	QString exedir = QCoreApplication::applicationDirPath();
 	QString imagepath = exedir + "/ErrorCodeXero.png";
@@ -64,37 +64,41 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent)
 	font.setUnderline(true);
 	fmt.setFont(font);
 	ui.text_->setCurrentCharFormat(fmt);
-	ui.text_->append("Icons From the Noun Project");
+	ui.text_->append("Icons from https://icons8.com");
 
 	font.setPointSize(6);
 	font.setUnderline(false);
 	fmt.setFont(font);
 	ui.text_->setCurrentCharFormat(fmt);
-	ui.text_->append("Summary Report by DailyPM from the Noun Project");
-	ui.text_->append("customize by Adrien Coquet from the Noun Project");
-	ui.text_->append("database by Nancy  from the Noun Project");
-	ui.text_->append("database by IcoMoon from the Noun Project");
-	ui.text_->append("team by AdbA Icons from the Noun Project");
-	ui.text_->append("form by Adrien Coquet from the Noun Project");
-	ui.text_->append("schedule by Larea from the Noun Project");
-	ui.text_->append("Robotics by Mohamed Mbarki from the Noun Project");
-	ui.text_->append("inspection pit by Andrei Yushchenko from the Noun Project");
-	ui.text_->append("History by Vectors Point from the Noun Project");
-	ui.text_->append("team by joe pictos from the Noun Project");
+	ui.text_->append("Form icon icon by Icons8");
+	ui.text_->append("Form icon icon by Icons8");
+	ui.text_->append("Low Connection icon icon by Icons8");
+	ui.text_->append("Low Connection icon icon by Icons8");
+	ui.text_->append("Data Sheet icon icon by Icons8");
+	ui.text_->append("Data Sheet icon icon by Icons8");
+	ui.text_->append("People icon icon by Icons8");
+	ui.text_->append("R2-D2 icon icon by Icons8");
+	ui.text_->append("Brief icon icon by Icons8");
+	ui.text_->append("SQL icon icon by Icons8");
+	ui.text_->append("Time Machine icon icon by Icons8");
+	ui.text_->append("Map Pinpoint icon icon by Icons8");
+	ui.text_->append("Tick Box icon icon by Icons8");
+	ui.text_->append("Plus Math icon icon by Icons8");
+	ui.text_->append("");
+
 
 	font.setPointSize(8);
 	font.setUnderline(true);
 	fmt.setFont(font);
 	ui.text_->setCurrentCharFormat(fmt);
-	ui.text_->append("Icons From the FlatIcon");
+	ui.text_->append("Icons from https://www.flaticon.com");
 
 	font.setPointSize(6);
 	font.setUnderline(false);
 	fmt.setFont(font);
 	ui.text_->setCurrentCharFormat(fmt);
-	ui.text_->append("Icon made by mangsaabguru from www.flaticon.com mangsaabguru");
-	ui.text_->append("Icon made by Prosymbols from www.flaticon.com mangsaabguru");
-
+	ui.text_->append("Icon made by mangsaabguru");
+	ui.text_->append("Icon made by Prosymbols");
 
 	(void)connect(ui.buttons_, &QDialogButtonBox::accepted, this, &AboutDialog::accept);
 }
