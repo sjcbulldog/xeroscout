@@ -1,6 +1,7 @@
 //
-//
 // Copyright 2020 by Jack W. (Butch) Griffin
+//
+// Courtesy of Error Code Xero
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
 // See the License for the specific language governing permissionsand
 // limitations under the License.
 // 
+
 
 #include "PCScouter.h"
 #include "FormView.h"
@@ -260,11 +262,11 @@ void PCScouter::createWindows()
 	(void)connect(view_selector_, &SpecialListWidget::magicWord, this, &PCScouter::magicWordTyped);
 	left_right_splitter_->addWidget(view_selector_);
 
-	item = new QListWidgetItem(loadIcon("teams.png"), "Team Scouting Form", view_selector_);
+	item = new QListWidgetItem(loadIcon("teamform.png"), "Team Scouting Form", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamScoutingFormView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("teams.png"), "Team Scouting Status", view_selector_);
+	item = new QListWidgetItem(loadIcon("teamstatus.png"), "Team Scouting Status", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamView)));
 	view_selector_->addItem(item);
 
@@ -272,15 +274,15 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamDataSet)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("match.png"), "Match Scouting Form - Red", view_selector_);
+	item = new QListWidgetItem(loadIcon("matchform.png"), "Match Scouting Form - Red", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewRed)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("match.png"), "Match Scouting Form - Blue", view_selector_);
+	item = new QListWidgetItem(loadIcon("matchform.png"), "Match Scouting Form - Blue", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewBlue)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("schedule.png"), "Match Scouting Status", view_selector_);
+	item = new QListWidgetItem(loadIcon("matchstatus.png"), "Match Scouting Status", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchView)));
 	view_selector_->addItem(item);
 
@@ -288,19 +290,19 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchDataSet)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("matchdata.png"), "Pre-Match Graphs", view_selector_);
+	item = new QListWidgetItem(loadIcon("matchgraphs.png"), "Pre-Match Graphs", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchGraphView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("summary.png"), "Single Team Summary", view_selector_);
+	item = new QListWidgetItem(loadIcon("teamsummary.png"), "Single Team Summary", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamReport)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("summary.png"), "All Team Summary", view_selector_);
+	item = new QListWidgetItem(loadIcon("allteamsummary.png"), "All Team Summary", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::AllTeamReport)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("matchdata.png"), "Alliance Graphs", view_selector_);
+	item = new QListWidgetItem(loadIcon("alliancegraphs.png"), "Alliance Graphs", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::AllianceGraphView)));
 	view_selector_->addItem(item);
 
@@ -308,7 +310,7 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::CustomDataSet)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("customdata.png"), "Zebra Data", view_selector_);
+	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Data", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraDataView)));
 	view_selector_->addItem(item);
 
@@ -316,11 +318,11 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::HistoryView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("history.png"), "Merge List", view_selector_);
+	item = new QListWidgetItem(loadIcon("merge.png"), "Merge List", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MergeListView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("history.png"), "Pick List", view_selector_);
+	item = new QListWidgetItem(loadIcon("picklist.png"), "Pick List", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PickListView)));
 	view_selector_->addItem(item);
 

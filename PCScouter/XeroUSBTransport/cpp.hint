@@ -1,2 +1,0 @@
-#define XEROUSBTRANSPORT_API __declspec(dllexport)
-#define XEROUSBTRANSPORT_API __declspec(dllimport)

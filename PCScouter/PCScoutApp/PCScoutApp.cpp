@@ -1,6 +1,7 @@
 //
-//
 // Copyright 2020 by Jack W. (Butch) Griffin
+//
+// Courtesy of Error Code Xero
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +15,8 @@
 // See the License for the specific language governing permissionsand
 // limitations under the License.
 // 
+
+
 
 #include "PCScoutApp.h"
 #include "FormView.h"
@@ -385,11 +388,11 @@ void PCScoutApp::createWindows()
 	f.setPointSizeF(18.0);
 	view_selector_->setFont(f);
 
-	item = new QListWidgetItem(loadIcon("teams"), "Team Scouting", view_selector_);
+	item = new QListWidgetItem(loadIcon("teamstatus"), "Team Scouting", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("schedule"), "Match Scouting", view_selector_);
+	item = new QListWidgetItem(loadIcon("matchstatus"), "Match Scouting", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchView)));
 	view_selector_->addItem(item);
 
@@ -928,6 +931,7 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 	if (view_frame_->createFetchFormView(key, title, color, index))
 	{
 		QString title;
+		QString icon;
 
 		//
 		// Put the view into the view selector
@@ -935,10 +939,12 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 		if (type == "team") {
 			auto team = data_model_->findTeamByKey(key);
 			title = "Team:" + QString::number(team->number());
+			icon = "teamform";
 		}
 		else if (type == "match") {
 			auto match = data_model_->findMatchByKey(key);
-			title = "Match:" + match->compType() + ":" + QString::number(match->set()) + ":" + QString::number(match->match());
+			title = match->title();
+			icon = "matchform";
 		}
 		else {
 			assert(false);
@@ -946,7 +952,7 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 
 		if (!viewExists(index))
 		{
-			item = new QListWidgetItem(loadIcon("form"), title, view_selector_);
+			item = new QListWidgetItem(loadIcon(icon), title, view_selector_);
 			item->setData(Qt::UserRole, QVariant(index));
 			view_selector_->addItem(item);
 		}

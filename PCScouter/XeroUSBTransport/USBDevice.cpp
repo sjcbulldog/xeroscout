@@ -14,7 +14,7 @@
 // limitations under the License.
 // 
 
-#include "pch.h"
+#include <Windows.h>
 #include "USBDevice.h"
 #include <stdio.h>
 #include <iostream>

@@ -1,3 +1,21 @@
+//
+// Copyright 2020 by Jack W. (Butch) Griffin
+//
+// Courtesy of Error Code Xero
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http ://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissionsand
+// limitations under the License.
+// 
+
 #include "PCFormViewer.h"
 #include "ScoutingForm.h"
 #include "FormView.h"
@@ -132,11 +150,11 @@ void PCFormViewer::createWindows()
 
 	view_selector_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 
-	item = new QListWidgetItem(loadIcon("teamscout"), "Red Scouting Form", view_selector_);
+	item = new QListWidgetItem(loadIcon("matchform"), "Red Scouting Form", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewRed)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("teamscout"), "Blue Scouting Form", view_selector_);
+	item = new QListWidgetItem(loadIcon("matchform"), "Blue Scouting Form", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewBlue)));
 	view_selector_->addItem(item);
 
@@ -165,90 +183,4 @@ void PCFormViewer::createMenus()
 
 	act = file_menu_->addAction(tr("Exit"));
 	(void)connect(act, &QAction::triggered, this, &PCFormViewer::close);
-
-	edit_menu_ = new QMenu(tr("Edit"));
-	menuBar()->addMenu(edit_menu_);
-
-	act = edit_menu_->addAction(tr("Add Section"));
-	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addSection);
-
-	edit_menu_->addSeparator();
-
-	act = edit_menu_->addSection(tr("Add Boolean"));
-	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addBoolean);
-
-	act = edit_menu_->addSection(tr("Add Up/Down"));
-	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addUpDown);
-
-	act = edit_menu_->addSection(tr("Add Numeric"));
-	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addNumeric);
-
-	act = edit_menu_->addSection(tr("Add Choice"));
-	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addChoice);
-
-	act = edit_menu_->addSection(tr("Add Text"));
-	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addText);
-
-	act = edit_menu_->addSection(tr("Add Images"));
-	(void)connect(act, &QAction::triggered, this, &PCFormViewer::addImage);
-}
-
-void PCFormViewer::addBoolean()
-{
-	bool ok;
-
-	QString name = QInputDialog::getText(this, "Boolean Title", "Boolean Title", QLineEdit::Normal, "", &ok);
-	if (!ok)
-		return;
-
-	QString tag = QInputDialog::getText(this, "Boolean Tag", "Boolean Tag", QLineEdit::Normal, "", &ok);
-	if (!ok)
-		return;
-}
-
-void PCFormViewer::addUpDown()
-{
-
-}
-
-void PCFormViewer::addNumeric()
-{
-
-}
-
-void PCFormViewer::addChoice()
-{
-
-}
-
-void PCFormViewer::addText()
-{
-
-}
-
-void PCFormViewer::addImage()
-{
-
-}
-
-void PCFormViewer::addTimerCount()
-{
-
-}
-
-void PCFormViewer::addSection()
-{
-	bool ok;
-
-	QString name = QInputDialog::getText(this, "Section Title", "Section Title", QLineEdit::Normal, "", &ok);
-	if (!ok)
-		return;
-
-	if (!form_->addSection(name))
-	{
-		QMessageBox::critical(this, "Error", "Invalid section added");
-		return;
-	}
-
-	updateWindow();
 }
