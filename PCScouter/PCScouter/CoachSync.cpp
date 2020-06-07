@@ -34,6 +34,7 @@ CoachSync::CoachSync(ScoutTransport* transport, ImageManager &images, bool debug
 
 CoachSync::~CoachSync()
 {
+	delete protocol_;
 }
 
 void CoachSync::run()
