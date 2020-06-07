@@ -86,6 +86,12 @@ namespace xero
 					f.setPointSizeF(18.0);
 					setFont(f);
 				}
+				else
+				{
+					QFont f = font();
+					f.setPointSizeF(7.0);
+					setFont(f);
+				}
 			}
 
 			MatchViewWidget::~MatchViewWidget()

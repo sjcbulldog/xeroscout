@@ -52,6 +52,7 @@ private:
 		WaitingOnTeamEvents,
 		WaitingOnMatches,
 		WaitingOnMatchDetail,
+		Error,
 	};
 
 private:

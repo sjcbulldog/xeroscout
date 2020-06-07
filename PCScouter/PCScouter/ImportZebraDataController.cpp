@@ -43,12 +43,12 @@ void ImportZebraDataController::run()
 {
 	if (blueAlliance()->state() == BlueAlliance::EngineState::Down)
 	{
-		emit errorMessage("cannot create a new event, cannot reach the blue alliance");
-		emit logMessage("cannot create a new event, cannot reach the blue alliance");
-
-		emit complete(true);
+		emit errorMessage("cannot get zebra data, cannot reach the blue alliance");
+		emit logMessage("cannot get zebra data, cannot reach the blue alliance");
 
 		state_ = State::Error;
+
+		emit complete(true);
 	}
 	else if (blueAlliance()->state() == BlueAlliance::EngineState::Initializing)
 	{
@@ -56,6 +56,16 @@ void ImportZebraDataController::run()
 		// Wait for the blue alliance engine to either be up or down.  There is a timeout
 		// in the blue alliance
 		//
+	}
+	else if (blueAlliance()->state() == BlueAlliance::EngineState::Down)
+	{
+		//
+		// The network went down in the middle
+		//
+		emit errorMessage("The BlueAlliance failed during the operation");
+		emit logMessage("The BlueAlliance failed during the operation");
+		state_ = State::Error;
+		emit complete(true);
 	}
 	else if (blueAlliance()->isIdle())
 	{

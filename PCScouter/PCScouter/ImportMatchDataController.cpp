@@ -59,6 +59,16 @@ void ImportMatchDataController::run()
 		// in the blue alliance
 		//
 	}
+	else if (blueAlliance()->state() == BlueAlliance::EngineState::Down)
+	{
+		//
+		// The network went down in the middle
+		//
+		emit errorMessage("The BlueAlliance failed during the operation");
+		emit logMessage("The BlueAlliance failed during the operation");
+		state_ = State::Error;
+		emit complete(true);
+	}
 	else if (blueAlliance()->isIdle())
 	{
 		//

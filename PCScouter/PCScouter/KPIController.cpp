@@ -77,7 +77,35 @@ void KPIController::computeKPI()
 
 void KPIController::run()
 {
-	if (blueAlliance()->isIdle())
+	if (blueAlliance()->state() == BlueAlliance::EngineState::Down)
+	{
+		emit errorMessage("cannot get KPI data, cannot reach the blue alliance");
+		emit logMessage("cannot get KPI data, cannot reach the blue alliance");
+
+		state_ = State::Error;
+
+		emit complete(true);
+	}
+	else if (blueAlliance()->state() == BlueAlliance::EngineState::Initializing)
+	{
+		//
+		// Wait for the blue alliance engine to either be up or down.  There is a timeout
+		// in the blue alliance
+		//
+	}
+	else if (blueAlliance()->state() == BlueAlliance::EngineState::Down)
+	{
+		//
+		// The network went down in the middle
+		//
+		state_ = State::Error;
+
+		emit errorMessage("The BlueAlliance failed during the operation");
+		emit logMessage("The BlueAlliance failed during the operation");
+		emit complete(true);
+
+	}
+	else if (blueAlliance()->isIdle())
 	{
 		switch (state_)
 		{

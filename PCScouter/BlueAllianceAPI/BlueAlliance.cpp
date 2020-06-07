@@ -40,6 +40,7 @@ namespace xero
 
 		void BlueAlliance::bringUp()
 		{
+			engine_state_ = EngineState::Initializing;
 			init();
 		}
 
@@ -233,6 +234,7 @@ namespace xero
 				case EngineState::Up:
 					if (result->status() != BlueAllianceResult::Status::Success) 
 					{
+						engine_state_ = EngineState::Down;
 						busy_ = false;
 					}
 					else 
