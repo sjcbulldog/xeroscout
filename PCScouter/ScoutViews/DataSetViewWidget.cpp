@@ -274,6 +274,12 @@ namespace xero
 							str = data_.get(row, col).toString();
 						}
 						DataSetViewWidgetItem* item = new DataSetViewWidgetItem(str);
+						if (colhdr->name() == DataModelTeam::TeamKeyName || colhdr->name() == DataModelMatch::MatchTeamKeyName)
+						{
+							auto t = dataModel()->findTeamByKey(str);
+							QString txt = QString::number(t->number()) + " - " + t->name();
+							item->setToolTip(txt);
+						}
 
 						if (colhdr->hasLimits() && colhdr->type() == FieldDesc::Type::Integer && v.isValid())
 						{

@@ -111,7 +111,6 @@
     <ClCompile Include="PreMatchGraphView.cpp" />
     <ClCompile Include="TimeBoundWidget.cpp" />
     <ClCompile Include="QueryViewWidget.cpp" />
-    <ClCompile Include="RobotTrack.cpp" />
     <ClCompile Include="Rotation2d.cpp" />
     <ClCompile Include="ScoutDataMergeDialog.cpp" />
     <ClCompile Include="SelectTeamsDialog.cpp" />

@@ -75,32 +75,35 @@ private:
 	QIcon loadIcon(const QString& filename);
 	void listItemChanged(QListWidgetItem* olditem, QListWidgetItem* newitem);
 
-	// Menu actions
+	// File Menu
+	void showingFileMenu();
 	void newEventBA();
 	void newEventComplete(bool err);
-
 	void openEvent();
 	void saveEvent();
 	void saveEventAs();
 	void closeEventHandler();
 
+	// Import Menu
+	void showingImportMenu();
 	void loadPicklist();
-
 	void importMatchSchedule();
 	void importMatchScheduleComplete(bool err);
-
 	void importMatchData();
 	void importMatchDataComplete(bool err);
-
 	void importZebraData();
 	void importZebraDataComplete(bool err);
-
 	void calcOPR();
-
 	void importKPIData();
-	void exportScoutingData();
-	void showingImportMenu();
+
+	// Export menu
+	void showingExportMenu();
+	void exportDataSet();
+
+	// Settings menu
 	void setTeamNumber();
+
+	// Help menu
 	void about();
 
 	void saveAndBackup();
@@ -163,10 +166,20 @@ private:
 	// Menu related items
 	//
 	QMenu *file_menu_;
+	QAction* file_save_;
+	QAction* file_save_as_;
+	QAction* file_load_picklist_;
+	QAction* file_close_;
+
 	QMenu* import_menu_;
+	QAction *import_calc_opr_;
 	QAction* import_match_data_;
 	QAction* import_zebra_data_;
+	QAction* import_match_schedule_;
+
 	QMenu* export_menu_;
+	QAction* export_csv_;
+
 	QMenu* settings_menu_;
 	QAction* debug_act_;
 	QMenu* help_menu_;

@@ -48,7 +48,7 @@ namespace xero
 				DataSetViewWidget(const QString &name, bool editable, QWidget* parent);
 				virtual ~DataSetViewWidget();
 
-				xero::scouting::datamodel::ScoutingDataSet& dataset() {
+				xero::scouting::datamodel::ScoutingDataSet& dataset() override {
 					return data_;
 				}
 
@@ -64,6 +64,10 @@ namespace xero
 				void clearView() {
 					data_.clear();
 					refreshView();
+				}
+
+				bool hasDataSet() override {
+					return true;
 				}
 
 			signals:

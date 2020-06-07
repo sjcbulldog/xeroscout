@@ -221,14 +221,14 @@ namespace xero
 				Alliance c = Alliance::Red;
 				for (int i = 1; i <= 3; i++)
 				{
-					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i));
+					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i), m->title());
 					t->setRange(slider_->rangeStart(), slider_->rangeEnd());
 					tracks.push_back(t);
 				}
 				c = Alliance::Blue;
 				for (int i = 1; i <= 3; i++)
 				{
-					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i));
+					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i), m->title());
 					t->setRange(slider_->rangeStart(), slider_->rangeEnd());
 					tracks.push_back(t);
 				}
@@ -326,7 +326,7 @@ namespace xero
 					if (!m->teamToAllianceSlot(key, c, slot))
 						continue;
 
-					auto track = std::make_shared<RobotTrack>(key, matchRobotColor(c, 1));
+					auto track = std::make_shared<RobotTrack>(key, matchRobotColor(c, 1), m->title());
 					track->setRange(slider_->rangeStart(), slider_->rangeEnd());
 					tracks.push_back(track);
 

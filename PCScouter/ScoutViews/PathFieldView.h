@@ -67,12 +67,13 @@ namespace xero
 				void mouseMoved(xero::paths::Translation2d pos);
 
 			protected:
-				virtual void paintEvent(QPaintEvent* event) override;
-				virtual void resizeEvent(QResizeEvent* event) override;
-				virtual void mouseMoveEvent(QMouseEvent* event) override;
-				virtual void mousePressEvent(QMouseEvent* event) override;
-				virtual void mouseReleaseEvent(QMouseEvent* event) override;
-				virtual void keyPressEvent(QKeyEvent* event) override;
+				void paintEvent(QPaintEvent* event) override;
+				void resizeEvent(QResizeEvent* event) override;
+				void mouseMoveEvent(QMouseEvent* event) override;
+				void mousePressEvent(QMouseEvent* event) override;
+				void mouseReleaseEvent(QMouseEvent* event) override;
+				void keyPressEvent(QKeyEvent* event) override;
+				bool event(QEvent* ev);
 
 				QSize minimumSizeHint() const override;
 				QSize sizeHint() const override;

@@ -44,6 +44,14 @@ namespace xero
 
 				void madeActive();
 
+				bool hasDataSet() override {
+					return true;
+				}
+
+				xero::scouting::datamodel::ScoutingDataSet& dataset() {
+					return data_view_->dataset();
+				}
+
 			private:
 				void executeQuery();
 

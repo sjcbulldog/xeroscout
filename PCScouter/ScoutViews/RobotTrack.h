@@ -14,9 +14,14 @@ namespace xero
             class RobotTrack
             {
             public:
-                RobotTrack(const QString& team, QColor c) {
+                RobotTrack(const QString& team, QColor c, const QString &match) {
                     team_ = team;
                     color_ = c;
+                    match_ = match;
+                }
+
+                const QString& match() const {
+                    return match_;
                 }
 
                 void setRange(double minv, double maxv) {
@@ -71,9 +76,20 @@ namespace xero
                     }
                 }
 
+                xero::paths::Translation2d beginning() {
+                    for (int i = 0; i < time_.size() - 1; i++)
+                    {
+                        if (time_[i] < range_start_ && time_[i + 1] >= range_start_)
+                            return points_[i];
+                    }
+
+                    return xero::paths::Translation2d(0, 0);
+                }
+
             private:
                 QString team_;
                 QColor color_;
+                QString match_;
                 std::vector<double> time_;
                 std::vector<xero::paths::Translation2d> points_;
                 double range_start_;

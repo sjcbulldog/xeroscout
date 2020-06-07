@@ -172,12 +172,11 @@ namespace xero
 				/// \param key the Blue Alliance key for the desired team
 				/// \returns a shared DataModelTeam pointer given the key for the team
 				std::shared_ptr<const DataModelTeam> findTeamByKey(const QString& key) const {
-					for (auto t : teams_) {
-						if (t->key() == key)
-							return t;
-					}
+					auto it = teams_by_key_.find(key);
+					if (it == teams_by_key_.end())
+						return nullptr;
 
-					return nullptr;
+					return it->second;
 				}
 
 				/// \brief find a team given its team number
@@ -196,12 +195,11 @@ namespace xero
 				/// \param key the blue alliance key for the match
 				/// returns a shared pointer to the match if a match with the given key was found, otherwise nullptr
 				std::shared_ptr<const DataModelMatch> findMatchByKey(const QString& key) const {
-					for (auto m : matches_) {
-						if (m->key() == key)
-							return m;
-					}
+					auto it = matches_by_key_.find(key);
+					if (it == matches_by_key_.end())
+						return nullptr;
 
-					return nullptr;
+					return it->second;
 				}
 
 				/// \brief return a list of the matches in the data model
@@ -625,6 +623,7 @@ namespace xero
 
 					t = std::make_shared<DataModelTeam>(key, number, name);
 					teams_.push_back(t);
+					teams_by_key_.insert_or_assign(key, t);
 
 					dirty_ = true;
 					emitChangedSignal(ChangeType::TeamAdded);
@@ -660,6 +659,7 @@ namespace xero
 
 					m = std::make_shared<DataModelMatch>(key, comp, set, match, etime);
 					matches_.push_back(m);
+					matches_by_key_.insert_or_assign(key, m);
 
 					dirty_ = true;
 					emitChangedSignal(ChangeType::MatchAdded);
@@ -972,11 +972,13 @@ namespace xero
 
 				QStringList match_tablets_;
 				std::list<std::shared_ptr<DataModelMatch>> matches_;
+				std::map<QString, std::shared_ptr<DataModelMatch>> matches_by_key_;
 				std::shared_ptr<ScoutingForm> match_scouting_form_;
 				std::list<std::shared_ptr<FieldDesc>> match_extra_fields_;
 
 				QStringList team_tablets_;
 				std::list<std::shared_ptr<DataModelTeam>> teams_;
+				std::map<QString, std::shared_ptr<DataModelTeam>> teams_by_key_;
 				std::shared_ptr<ScoutingForm> team_scouting_form_;
 				std::list<std::shared_ptr<FieldDesc>> team_extra_fields_;
 

@@ -53,7 +53,7 @@ namespace xero
 				void putOneOne(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> match);
 				int putAllianceData(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> m, QTreeWidgetItem* i, xero::scouting::datamodel::Alliance a, int index);
 
-				QString genStatusText(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> match, xero::scouting::datamodel::Alliance a, int slot);
+				QString genStatusText(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> match, xero::scouting::datamodel::Alliance a, int slot, bool tt);
 
 			private:
 				QString tablet_;

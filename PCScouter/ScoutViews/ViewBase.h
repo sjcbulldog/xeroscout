@@ -58,7 +58,15 @@ namespace xero
 				}
 
 				virtual void madeActive() {
+				}
 
+				virtual bool hasDataSet() {
+					return false;
+				}
+
+				virtual xero::scouting::datamodel::ScoutingDataSet& dataset() {
+					assert(false);
+					return empty_;
 				}
 
 				virtual void clearView() = 0;
@@ -70,6 +78,7 @@ namespace xero
 				std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model_;
 				bool need_refresh_;
 				QString name_;
+				xero::scouting::datamodel::ScoutingDataSet empty_;
 			};
 		}
 	}

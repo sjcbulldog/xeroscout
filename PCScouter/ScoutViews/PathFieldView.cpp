@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QCoreApplication>
 #include <QFontMetricsF>
+#include <QToolTip>
 #include <cmath>
 
 using namespace xero::paths;
@@ -32,7 +33,6 @@ namespace xero
 	{
 		namespace views
 		{
-
 			PathFieldView::PathFieldView(QWidget* parent) : QWidget(parent)
 			{
 				units_ = "in";
@@ -43,6 +43,31 @@ namespace xero
 
 			PathFieldView::~PathFieldView()
 			{
+			}
+
+			bool PathFieldView::event(QEvent* ev)
+			{
+				if (ev->type() == QEvent::ToolTip)
+				{
+					QHelpEvent* help = static_cast<QHelpEvent*>(ev);
+					for (auto t : tracks_)
+					{
+						Translation2d pt = t->beginning();
+						QPointF cursor = windowToWorld(help->pos());
+						double dx = cursor.x() - pt.getX();
+						double dy = cursor.y() - pt.getY();
+						double dist = std::sqrt(dx * dx + dy * dy);
+						if (dist < 6.0)
+						{
+							QToolTip::showText(help->globalPos(), t->match());
+							return true;
+						}
+					}
+
+					QToolTip::hideText();
+					ev->ignore();
+				}
+				return QWidget::event(ev);
 			}
 
 			void PathFieldView::setUnits(const std::string& units)

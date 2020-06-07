@@ -88,20 +88,51 @@ namespace xero
 			{
 			}
 
-			QString MatchViewWidget::genStatusText(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> match, xero::scouting::datamodel::Alliance a, int slot)
+			QString MatchViewWidget::genStatusText(std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> match, xero::scouting::datamodel::Alliance a, int slot, bool tt)
 			{
 				QString ret;
 
-				if (match->hasScoutingData(a, slot))
-					ret = "Y";
+
+				if (tt)
+				{
+					if (match->hasScoutingData(a, slot))
+						ret = "Has Scouting Data";
+					else
+						ret = "No Scouting Data";
+				}
 				else
-					ret = "N";
+				{
+					if (match->hasScoutingData(a, slot))
+						ret = "Y";
+					else
+						ret = "N";
+				}
 
-				if (match->hasBlueAllianceData())
-					ret += "-B";
+				if (tt)
+				{
+					if (match->hasBlueAllianceData())
+						ret += "\nHas Blue Alliance Match Data";
+					else
+						ret += "\nNo Blue Alliance Match Data";
+				}
+				else
+				{
+					if (match->hasBlueAllianceData())
+						ret += "-B";
+				}
 
-				if (match->hasZebra())
-					ret += "-Z";
+				if (tt)
+				{
+					if (match->hasZebra())
+						ret += "\nHas Zebra Data";
+					else
+						ret += "\nNo Zebra Data";
+				}
+				else
+				{
+					if (match->hasZebra())
+						ret += "-Z";
+				}
 
 				return ret;
 			}
@@ -112,7 +143,8 @@ namespace xero
 				int col;
 
 				auto m = dataModel()->findMatchByKey(key);
-				QString txt = genStatusText(m, c, slot);
+				QString txt = genStatusText(m, c, slot, false);
+				QString tt = genStatusText(m, c, slot, true);
 
 				if (tablet_.length() == 0)
 				{
@@ -131,6 +163,8 @@ namespace xero
 					if (itemkey == key)
 					{
 						item->setTextAlignment(col, Qt::AlignHCenter);
+						item->setToolTip(col, tt);
+
 						if (txt.at(0) == "Y")
 						{
 							item->setText(col, txt);
@@ -148,9 +182,15 @@ namespace xero
 			int MatchViewWidget::putAllianceData(std::shared_ptr<const DataModelMatch> m, QTreeWidgetItem* i, Alliance a, int index)
 			{
 				for (int slot = 1; slot <= 3; slot++) {
-					QString txt = genStatusText(m, a, slot);
+					QString txt = genStatusText(m, a, slot, false);
+					QString tt = genStatusText(m, a, slot, true);
 					QString key = m->team(a, slot);
-					i->setText(index++, key);
+
+					auto t = dataModel()->findTeamByKey(key);
+
+					QString tmtt = QString::number(t->number()) + " - " + t->name();
+					i->setText(index, key);
+					i->setToolTip(index++, tmtt);
 
 					const QString& tablet = m->tablet(a, slot);
 					i->setText(index++, tablet);
@@ -158,6 +198,7 @@ namespace xero
 					if (tablet_.length() == 0 || tablet_ == tablet)
 					{
 						i->setTextAlignment(index, Qt::AlignHCenter);
+						i->setToolTip(index, tt);
 						if (m->hasScoutingData(a, slot))
 						{
 							i->setText(index, txt);

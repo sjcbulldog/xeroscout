@@ -358,6 +358,7 @@ void PCScouter::createMenus()
 
 	file_menu_ = new QMenu(tr("&File"));
 	menuBar()->addMenu(file_menu_);
+	(void)connect(file_menu_, &QMenu::aboutToShow, this, &PCScouter::showingFileMenu);
 
 	if (!coach_)
 	{
@@ -372,19 +373,20 @@ void PCScouter::createMenus()
 
 	file_menu_->addSeparator();
 
-	act = file_menu_->addAction(tr("Save Event"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::saveEvent);
+	file_save_ = file_menu_->addAction(tr("Save Event"));
+	(void)connect(file_save_, &QAction::triggered, this, &PCScouter::saveEvent);
 
-	act = file_menu_->addAction(tr("Save Event As"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::saveEventAs);
+	file_save_as_ = file_menu_->addAction(tr("Save Event As"));
+	(void)connect(file_save_as_, &QAction::triggered, this, &PCScouter::saveEventAs);
 
 	file_menu_->addSeparator();
-	act = file_menu_->addAction(tr("Load Picklist JSON"));
+
+	file_load_picklist_ = file_menu_->addAction(tr("Load Picklist JSON"));
 	(void)connect(act, &QAction::triggered, this, &PCScouter::loadPicklist);
 
 	file_menu_->addSeparator();
 
-	act = file_menu_->addAction(tr("Close Event"));
+	file_close_ = file_menu_->addAction(tr("Close Event"));
 	(void)connect(act, &QAction::triggered, this, &PCScouter::closeEventHandler);
 
 	import_menu_ = new QMenu(tr("&Data"));
@@ -393,8 +395,8 @@ void PCScouter::createMenus()
 
 	if (!coach_)
 	{
-		import_match_data_ = import_menu_->addAction(tr("Import Match Schedule"));
-		(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
+		import_match_schedule_ = import_menu_->addAction(tr("Import Match Schedule"));
+		(void)connect(import_match_schedule_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
 	}
 
 	import_match_data_ = import_menu_->addAction(tr("Import BlueAlliance Match Results"));
@@ -416,14 +418,16 @@ void PCScouter::createMenus()
 
 	import_menu_->addSeparator();
 
-	act = import_menu_->addAction(tr("Calculate OPR"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::calcOPR);
+	import_calc_opr_ = import_menu_->addAction(tr("Calculate OPR"));
+	(void)connect(import_calc_opr_, &QAction::triggered, this, &PCScouter::calcOPR);
 
 	export_menu_ = new QMenu(tr("&Export"));
-	menuBar()->addMenu(export_menu_);
 
-	act = export_menu_->addAction(tr("Current Dataset"));
-	(void)connect(act, &QAction::triggered, this, &PCScouter::exportScoutingData);
+	menuBar()->addMenu(export_menu_);
+	(void)connect(export_menu_, &QMenu::aboutToShow, this, &PCScouter::showingExportMenu);
+
+	export_csv_ = export_menu_->addAction(tr("Current Dataset"));
+	(void)connect(export_csv_, &QAction::triggered, this, &PCScouter::exportDataSet);
 
 	settings_menu_ = new QMenu(tr("&Settings"));
 	menuBar()->addMenu(settings_menu_);
@@ -755,18 +759,30 @@ void PCScouter::setTeamNumber()
 	}
 }
 
+void PCScouter::showingFileMenu()
+{
+	bool state = (data_model_ != nullptr);
+
+	file_save_->setEnabled(state);
+	file_save_as_->setEnabled(state);
+	file_load_picklist_->setEnabled(state);
+	file_close_->setEnabled(state);
+}
+
 void PCScouter::showingImportMenu()
 {
-	if (data_model_ == nullptr) 
-	{
-		import_match_data_->setEnabled(false);
-		import_zebra_data_->setEnabled(false);
-	}
-	else
-	{
-		import_match_data_->setEnabled(true);
-		import_zebra_data_->setEnabled(true);
-	}
+	bool state = (data_model_ != nullptr);
+
+	import_match_data_->setEnabled(state);
+	import_zebra_data_->setEnabled(state);
+	import_match_schedule_->setEnabled(state);
+	import_calc_opr_->setEnabled(state);
+}
+
+void PCScouter::showingExportMenu()
+{
+	ViewBase* vb = dynamic_cast<ViewBase*>(view_frame_->currentWidget());
+	export_csv_->setEnabled(vb != nullptr && vb->hasDataSet());
 }
 
 void PCScouter::importKPIData()
@@ -845,18 +861,21 @@ void PCScouter::importZebraData()
 	connect(app_controller_, &ApplicationController::complete, this, &PCScouter::importZebraDataComplete);
 }
 
-void PCScouter::exportScoutingData()
+void PCScouter::exportDataSet()
 {
 	DataSetViewWidget* vw = dynamic_cast<DataSetViewWidget*>(view_frame_->currentWidget());
 	if (vw != nullptr)
 	{
 		QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
 		QString filename = QFileDialog::getSaveFileName(this, "Export data file name", path, "Event Data Files (*.csv);;All Files (*.*)");
-		vw->dataset().writeCSV(filename);
+		if (!vw->dataset().writeCSV(filename))
+		{
+			QMessageBox::critical(this, "Error", "Cannot open file '" + filename + "' for writing");
+		}
 	}
 	else
 	{
-		QMessageBox::warning(this, "Export Error", "You can only export from one of the dataset views");
+		QMessageBox::warning(this, "Export Error", "You can only export from a view that provides a dataset");
 	}
 }
 
