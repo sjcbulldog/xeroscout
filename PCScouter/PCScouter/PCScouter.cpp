@@ -475,6 +475,7 @@ void PCScouter::coachSyncComplete()
 	}
 
 	setDataModelStatus();
+	view_frame_->needsRefreshAll();
 }
 
 void PCScouter::syncWithCentral()

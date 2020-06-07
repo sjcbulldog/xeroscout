@@ -352,6 +352,8 @@ namespace xero
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+				void addExtraDataFields(ScoutingDataMapPtr data);
+
 				/// \brief set the scouting forms for the data model
 				/// This can only be done once right after the data model is created.  Any subsequent call to this API will return false.
 				/// \param teamform the scouting form for team (pit) scouting
@@ -395,10 +397,6 @@ namespace xero
 						if (oldf == nullptr)
 						{
 							match_extra_fields_.push_back(f);
-						}
-						else
-						{
-							assert(oldf->type() == f->type());
 						}
 					}
 

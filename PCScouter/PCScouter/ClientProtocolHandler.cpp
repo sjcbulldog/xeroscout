@@ -626,13 +626,16 @@ void ClientProtocolHandler::handleProvideZebraData(const QJsonDocument& doc)
 	QJsonObject replyobj;
 	QJsonDocument reply;
 
+	data_model_->blockSignals(true);
 	if (!data_model_->loadZebraData(doc))
 	{
 		replyobj[JsonMessageName] = "zebra list was invalid, could not load zebra data";
 		reply.setObject(replyobj);
 		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+		data_model_->blockSignals(false);
 		return;
 	}
+	data_model_->blockSignals(false);
 
 	if (needed_zebra_.size() > 0)
 		requestZebraData();
@@ -647,13 +650,16 @@ void ClientProtocolHandler::handleProvideMatchDetailData(const QJsonDocument& do
 	QJsonObject replyobj;
 	QJsonDocument reply;
 
+	data_model_->blockSignals(true);
 	if (!data_model_->loadMatchDetailData(doc))
 	{
 		replyobj[JsonMessageName] = "match detail list was invalid, could not load match detail data";
 		reply.setObject(replyobj);
 		client_->sendJson(ClientServerProtocol::ErrorReply, reply, comp_type_);
+		data_model_->blockSignals(false);
 		return;
 	}
+	data_model_->blockSignals(false);
 
 	if (needed_zebra_.size() > 0)
 		requestZebraData();

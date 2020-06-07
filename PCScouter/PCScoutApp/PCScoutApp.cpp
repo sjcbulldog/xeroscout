@@ -172,11 +172,8 @@ void PCScoutApp::mergeDataFile()
 	QFile file(path);
 	if (file.exists())
 	{
-		auto m = data_model_->findMatchByKey("2020orore_qm1");
 		data_model_->loadScoutingDataJSON(path);
-		m = data_model_->findMatchByKey("2020orore_qm1");
 		data_model_->removeOldScoutingData();
-		m = data_model_->findMatchByKey("2020orore_qm1");
 	}
 }
 
@@ -356,8 +353,7 @@ void PCScoutApp::complete(bool reset)
 		settings_.setValue(CurrentEventKey, data_model_->evkey());
 	}
 
-	auto viewt = view_frame_->viewType();
-	setMainView(viewt);
+	setMainView(view_frame_->viewType());
 }
 
 void PCScoutApp::errorMessage(const QString& error)
@@ -603,6 +599,7 @@ void PCScoutApp::resetTablet()
 	settings_.setValue(TabletNameKey, "");
 
 	data_model_ = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::ScoutingTablet);
+	view_frame_->setDataModel(data_model_);
 
 	view_frame_->setTablet("[NONE]");
 	tablet_name_->setText("[NO NAME]");

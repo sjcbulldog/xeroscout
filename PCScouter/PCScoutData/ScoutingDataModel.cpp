@@ -64,6 +64,92 @@ namespace xero
 			{
 			}
 
+			void ScoutingDataModel::addExtraDataFields(ScoutingDataMapPtr data)
+			{
+				std::shared_ptr<FieldDesc> desc;
+				std::map<QString, std::shared_ptr<FieldDesc>> fields;
+				std::map<QString, QStringList> strings;
+
+				for (auto d : *data) {
+					auto it = fields.find(d.first);
+					if (it != fields.end())
+						continue;
+
+					if (d.second.type() == QVariant::Int)
+					{
+						if (desc == nullptr)
+						{
+							fields.insert_or_assign(d.first, std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Integer, false));
+						}
+						else
+						{
+							assert(desc->type() == FieldDesc::Type::Integer);
+						}
+					}
+					else if (d.second.type() == QVariant::Bool)
+					{
+						if (desc == nullptr)
+						{
+							fields.insert_or_assign(d.first, std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Boolean, false));
+						}
+						else
+						{
+							assert(desc->type() == FieldDesc::Type::Boolean);
+						}
+					}
+					else if (d.second.type() == QVariant::Double)
+					{
+						if (desc == nullptr)
+						{
+							fields.insert_or_assign(d.first, std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Double, false));
+						}
+						else
+						{
+							assert(desc->type() == FieldDesc::Type::Double);
+						}
+					}
+					else if (d.second.type() == QVariant::String)
+					{
+						QStringList list;
+						auto it = strings.find(d.first);
+						if (it != strings.end())
+							list = it->second;
+
+						if (!list.contains(d.second.toString()))
+							list.push_back(d.second.toString());
+
+						strings.insert_or_assign(d.first, list);
+					}
+				}
+
+				for (auto pair : strings)
+				{
+					if (pair.second.count() > 6) {
+						// 
+						// Treat as a normal string
+						//
+						std::shared_ptr<FieldDesc> desc = std::make_shared<FieldDesc>(pair.first, FieldDesc::Type::String, false);
+						fields.insert_or_assign(pair.first, desc);
+					}
+					else
+					{
+						//
+						// Treat as a choice
+						//
+						std::shared_ptr<FieldDesc> desc = std::make_shared<FieldDesc>(pair.first, pair.second, false);
+						fields.insert_or_assign(pair.first, desc);
+					}
+				}
+
+				std::list<std::shared_ptr<FieldDesc>> descs;
+				for (auto pair : fields)
+				{
+					descs.push_back(pair.second);
+				}
+
+				addMatchExtraFields(descs);
+			}
+
 			bool ScoutingDataModel::peekUUID(const QJsonDocument& doc, QUuid& uuid)
 			{
 				return JSonDataModelConverter::peekUUID(doc, uuid);

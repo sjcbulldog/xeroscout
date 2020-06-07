@@ -136,89 +136,12 @@ void ImportMatchDataController::breakOutBAData(std::shared_ptr<const DataModelMa
 	dm_->addMatchExtraData(m->key(), c, 2, newdata2);
 	dm_->addMatchExtraData(m->key(), c, 3, newdata3);
 
-	processFieldDesc(newdata1);
-	processFieldDesc(newdata2);
-	processFieldDesc(newdata3);
+	dm_->addExtraDataFields(newdata1);
+	dm_->addExtraDataFields(newdata2);
+	dm_->addExtraDataFields(newdata3);
 }
 
-void ImportMatchDataController::setExtraFields()
-{
-	for (auto pair : strings_)
-	{
-		if (pair.second.count() > 6) {
-			// 
-			// Treat as a normal string
-			//
-			std::shared_ptr<FieldDesc> desc = std::make_shared<FieldDesc>(pair.first, FieldDesc::Type::String, false);
-			fields_.push_back(desc);
-		}
-		else
-		{
-			//
-			// Treat as a choice
-			//
-			std::shared_ptr<FieldDesc> desc = std::make_shared<FieldDesc>(pair.first, pair.second, false);
-			fields_.push_back(desc);
-		}
-	}
 
-	dm_->addMatchExtraFields(fields_);
-}
-
-void ImportMatchDataController::processFieldDesc(ScoutingDataMapPtr data)
-{
-	std::shared_ptr<FieldDesc> desc;
-
-	for (auto d : *data) {
-		desc = findField(d.first);
-
-		if (d.second.type() == QVariant::Int)
-		{
-			if (desc == nullptr)
-			{
-				fields_.push_back(std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Integer, false));
-			}
-			else
-			{
-				assert(desc->type() == FieldDesc::Type::Integer);
-			}
-		}
-		else if (d.second.type() == QVariant::Bool)
-		{
-			if (desc == nullptr)
-			{
-				fields_.push_back(std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Boolean, false));
-			}
-			else
-			{
-				assert(desc->type() == FieldDesc::Type::Boolean);
-			}
-		}
-		else if (d.second.type() == QVariant::Double)
-		{
-			if (desc == nullptr)
-			{
-				fields_.push_back(std::make_shared<FieldDesc>(d.first, FieldDesc::Type::Double, false));
-			}
-			else
-			{
-				assert(desc->type() == FieldDesc::Type::Double);
-			}
-		}
-		else if (d.second.type() == QVariant::String)
-		{
-			QStringList list;
-			auto it = strings_.find(d.first);
-			if (it != strings_.end())
-				list = it->second;
-
-			if (!list.contains(d.second.toString()))
-				list.push_back(d.second.toString());
-
-			strings_.insert_or_assign(d.first, list);
-		}
-	}
-}
 
 void ImportMatchDataController::gotDetail()
 {
@@ -258,7 +181,6 @@ void ImportMatchDataController::gotDetail()
 	}
 
 	breakoutBlueAlliancePerRobotData(badata);
-	setExtraFields();
 
 	dm_->blockSignals(false);
 
