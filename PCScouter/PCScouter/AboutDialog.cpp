@@ -84,6 +84,7 @@ AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 	ui.text_->append("Map Pinpoint icon icon by Icons8");
 	ui.text_->append("Tick Box icon icon by Icons8");
 	ui.text_->append("Plus Math icon icon by Icons8");
+	ui.text_->append("Question Mark icon icon by Icons8");
 	ui.text_->append("");
 
 	font.setPointSize(8);
