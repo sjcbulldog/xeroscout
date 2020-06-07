@@ -70,11 +70,16 @@ namespace xero
 				void mousePressEvent(QMouseEvent* ev) override ;
 				void mouseReleaseEvent(QMouseEvent* ev) override;
 				void mouseMoveEvent(QMouseEvent* ev) override ;
+				void contextMenuEvent(QContextMenuEvent* ev) override;
 
 			private:
 				void drawNumbers(QPainter& p);
 				void drawIndicators(QPainter &p);
 				void drawTickRegionHeight(QPainter &p);
+
+				void autonomous();
+				void teleop();
+				void endgame();
 
 				int timeToPixel(double t) {
 					return static_cast<int>((t - minv_) / (maxv_ - minv_) * width());

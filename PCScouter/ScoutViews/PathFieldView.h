@@ -59,6 +59,10 @@ namespace xero
 					update();
 				}
 
+				std::vector<std::shared_ptr<RobotTrack>>& tracks() {
+					return tracks_;
+				}
+
 			signals:
 				void mouseMoved(xero::paths::Translation2d pos);
 

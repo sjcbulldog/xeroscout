@@ -52,8 +52,12 @@ namespace xero
 
 			void ZebraViewWidget::rangeChanged(double minv, double maxv)
 			{
-				setNeedRefresh();
-				createPlot();
+				for (auto t : field_->tracks())
+				{
+					t->setRange(slider_->rangeStart(), slider_->rangeEnd());
+				}
+
+				field_->update();
 			}
 
 			void ZebraViewWidget::clearView()
@@ -210,6 +214,8 @@ namespace xero
 				getTimes(zebra.value("times").toArray(), minv, maxv);
 				slider_->setMinimum(minv);
 				slider_->setMaximum(maxv);
+				slider_->setRangeStart(minv);
+				slider_->setRangeEnd(maxv);
 
 				std::vector<std::shared_ptr<RobotTrack>> tracks;
 				Alliance c = Alliance::Red;

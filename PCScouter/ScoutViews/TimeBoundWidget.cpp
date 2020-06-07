@@ -1,6 +1,9 @@
 #include "TimeBoundWidget.h"
 #include <QPainter>
 #include <QMouseEvent>
+#include <QDebug>
+#include <QMenu>
+#include <QAction>
 #include <cmath>
 
 namespace xero
@@ -17,7 +20,7 @@ namespace xero
 				range_end_ = maxv_;
 
 				QFontMetrics fm(font());
-				NumberHeight = fm.height() + 4;
+				NumberHeight = fm.height() + 8;
 
 				setMinimumHeight(NumberHeight + IndicatorHeight + TickRegionHeight);
 				setMaximumHeight(NumberHeight + IndicatorHeight + TickRegionHeight);
@@ -29,9 +32,51 @@ namespace xero
 			{
 			}
 
+			void TimeBoundWidget::contextMenuEvent(QContextMenuEvent* ev)
+			{
+				QAction *act;
+
+				QMenu menu(this);
+
+				act = menu.addAction("Autonomous");
+				connect(act, &QAction::triggered, this, &TimeBoundWidget::autonomous);
+
+				act = menu.addAction("Teleop");
+				connect(act, &QAction::triggered, this, &TimeBoundWidget::teleop);
+
+				act = menu.addAction("Endgame");
+				connect(act, &QAction::triggered, this, &TimeBoundWidget::endgame);
+
+				menu.exec(ev->globalPos());
+			}
+
+			void TimeBoundWidget::autonomous()
+			{
+				range_start_ = minv_;
+				range_end_ = 15.0;
+				update();
+				emit rangeChanged(range_start_, range_end_);
+			}
+
+			void TimeBoundWidget::teleop()
+			{
+				range_start_ = 15.0;
+				range_end_ = 120.0;
+				update();
+				emit rangeChanged(range_start_, range_end_);
+			}
+
+			void TimeBoundWidget::endgame()
+			{
+				range_start_ = 120.0;
+				range_end_ = maxv_;
+				update();
+				emit rangeChanged(range_start_, range_end_);
+			}
+
 			void TimeBoundWidget::mousePressEvent(QMouseEvent* ev)
 			{
-				int range = 4;
+				int range = 12;
 
 				if (ev->localPos().y() > IndicatorHeight)
 					return;
@@ -39,18 +84,23 @@ namespace xero
 				int rs = timeToPixel(range_start_);
 				int re = timeToPixel(range_end_);
 
+				qDebug() << "rspixel " << rs << " repixel " << re << " localpos " << ev->localPos().x() << " winpos " << ev->windowPos().x() << " range " << range << " delta " << std::abs(ev->localPos().x() - re);
+
 				if (std::abs(ev->localPos().x() - rs) < range)
 				{
+					qDebug() << "drag start position";
 					state_ = State::DraggingStart;
 				}
 				else if (std::abs(ev->localPos().x() - re) < range)
 				{
+					qDebug() << "drag end position";
 					state_ = State::DraggingEnd;
 				}
 			}
 
 			void TimeBoundWidget::mouseReleaseEvent(QMouseEvent* ev)
 			{
+				qDebug() << "release";
 				state_ = State::None;
 			}
 
@@ -71,6 +121,10 @@ namespace xero
 
 					range_end_ = v;
 					update();
+
+
+					qDebug() << "changes " << range_start_ << " " << range_end_;
+					emit rangeChanged(range_start_, range_end_);
 					break;
 
 				case State::DraggingStart:
@@ -83,10 +137,13 @@ namespace xero
 
 					range_start_ = v;
 					update();
+
+					qDebug() << "changes " << range_start_ << " " << range_end_;
+					emit rangeChanged(range_start_, range_end_);
+
 					break;
 				}
 
-				emit rangeChanged(range_start_, range_end_);
 			}
 
 			void TimeBoundWidget::paintEvent(QPaintEvent* ev)
@@ -145,6 +202,8 @@ namespace xero
 
 				int rs = timeToPixel(range_start_);
 				int re = timeToPixel(range_end_);
+
+				qDebug() << "draw indicators, rs " << this->range_start_ << ", re " << this->range_end_;
 
 				QBrush fill(QColor(128, 128, 128));
 				p.setBrush(fill);
