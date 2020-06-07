@@ -86,7 +86,6 @@ AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 	ui.text_->append("Plus Math icon icon by Icons8");
 	ui.text_->append("");
 
-
 	font.setPointSize(8);
 	font.setUnderline(true);
 	fmt.setFont(font);

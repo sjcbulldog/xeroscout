@@ -413,10 +413,8 @@ void PCScouter::createMenus()
 		(void)connect(act, &QAction::triggered, this, &PCScouter::syncWithCentral);
 	}
 
-#ifdef KNOWN_PERFORMANCE_INDICATORS
-	act = import_menu_->addAction(tr("Compute Known Performance Indicators"));
+	import_kpi_ = import_menu_->addAction(tr("Import Historical Team Performance"));
 	(void)connect(act, &QAction::triggered, this, &PCScouter::importKPIData);
-#endif
 
 	import_menu_->addSeparator();
 
@@ -775,9 +773,13 @@ void PCScouter::showingImportMenu()
 {
 	bool state = (data_model_ != nullptr);
 
+	if (blue_alliance_->state() == BlueAlliance::EngineState::Down)
+		state = false;
+
 	import_match_data_->setEnabled(state);
 	import_zebra_data_->setEnabled(state);
 	import_match_schedule_->setEnabled(state);
+	import_kpi_->setEnabled(state);
 	import_calc_opr_->setEnabled(state);
 }
 

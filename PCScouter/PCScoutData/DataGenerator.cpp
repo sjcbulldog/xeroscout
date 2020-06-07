@@ -56,6 +56,9 @@ namespace xero
 
 			void DataGenerator::generateMatches()
 			{
+				int redgen = 0;
+				int bluegen = 0;
+
 				for (auto m : dm_->matches())
 				{
 					auto data = generate(m, dm_->matchScoutingForm());
@@ -63,27 +66,38 @@ namespace xero
 						continue;
 
 					int index = 0;
-					Alliance c = Alliance::Red;
+					Alliance c;
+
+					c = Alliance::Red;
 					for (int slot = 1; slot <= 3; slot++)
 					{
-						dm_->setMatchScoutingData(m->key(), c, slot, data[index++]);
+						if (redgen < maxred_)
+							dm_->setMatchScoutingData(m->key(), c, slot, data[index++]);
 					}
+					redgen++;
 
 					c = Alliance::Blue;
 					for (int slot = 1; slot <= 3; slot++)
 					{
-						dm_->setMatchScoutingData(m->key(), c, slot, data[index++]);
+						if (bluegen < maxblue_)
+							dm_->setMatchScoutingData(m->key(), c, slot, data[index++]);
 					}
+					bluegen++;
 				}
 			}
 
 			void DataGenerator::generateTeams()
 			{
+				int cnt = 0;
+
 				for (auto t : dm_->teams())
 				{
 					auto data = generate(t, dm_->teamScoutingForm());
 					if (data != nullptr)
 						dm_->setTeamScoutingData(t->key(), data, true);
+
+					if (++cnt >= maxteam_)
+						break;
 				}
 			}
 

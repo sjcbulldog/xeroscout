@@ -180,6 +180,7 @@ private:
 	QAction* import_match_data_;
 	QAction* import_zebra_data_;
 	QAction* import_match_schedule_;
+	QAction* import_kpi_;
 
 	QMenu* export_menu_;
 	QAction* export_csv_;
