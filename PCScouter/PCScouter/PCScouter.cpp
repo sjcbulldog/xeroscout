@@ -761,6 +761,11 @@ void PCScouter::showingFileMenu()
 {
 	bool state = (data_model_ != nullptr);
 
+	if (blue_alliance_->state() == BlueAlliance::EngineState::Down)
+		file_new_event_->setEnabled(false);
+	else
+		file_new_event_->setEnabled(true);
+
 	file_save_->setEnabled(state);
 	file_save_as_->setEnabled(state);
 	file_load_picklist_->setEnabled(state);
