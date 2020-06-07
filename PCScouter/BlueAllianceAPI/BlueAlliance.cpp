@@ -38,11 +38,16 @@ namespace xero
 		{
 		}
 
+		void BlueAlliance::bringUp()
+		{
+			init();
+		}
+
 		bool BlueAlliance::requestEvents(int year)
 		{
 			std::vector<int> years;
 
-			if (busy_ || engine_state_ != EngineState::Up)
+			if (busy_ || engine_state_ != EngineState::Up || engine_ == nullptr)
 				return false;
 
 			years.push_back(year);
@@ -55,7 +60,7 @@ namespace xero
 
 		bool BlueAlliance::requestMatches(const QString& eventkey)
 		{
-			if (busy_ || engine_state_ != EngineState::Up)
+			if (busy_ || engine_state_ != EngineState::Up || engine_ == nullptr)
 				return false;
 
 			engine_->requestMatches(eventkey);
@@ -67,7 +72,7 @@ namespace xero
 
 		bool BlueAlliance::requestTeams(const QStringList& teams)
 		{
-			if (busy_ || engine_state_ != EngineState::Up)
+			if (busy_ || engine_state_ != EngineState::Up || engine_ == nullptr)
 				return false;
 
 			engine_->requestTeams(teams);
@@ -79,7 +84,7 @@ namespace xero
 
 		bool BlueAlliance::requestMatchesDetails(const QStringList& keys)
 		{
-			if (busy_ || engine_state_ != EngineState::Up)
+			if (busy_ || engine_state_ != EngineState::Up || engine_ == nullptr)
 				return false;
 
 			engine_->requestMatchesDetail(keys);
@@ -91,7 +96,7 @@ namespace xero
 
 		bool BlueAlliance::requestZebraData(const QStringList& keys)
 		{
-			if (busy_ || engine_state_ != EngineState::Up)
+			if (busy_ || engine_state_ != EngineState::Up || engine_ == nullptr)
 				return false;
 
 			engine_->requestZebra(keys);
@@ -103,7 +108,7 @@ namespace xero
 
 		bool BlueAlliance::requestTeamEvents(const QStringList& keys, int year)
 		{
-			if (busy_ || engine_state_ != EngineState::Up)
+			if (busy_ || engine_state_ != EngineState::Up || engine_ == nullptr)
 				return false;;
 
 			engine_->requestTeamEvents(keys, year);
@@ -115,7 +120,7 @@ namespace xero
 
 		bool BlueAlliance::requestRankings(const QString& evkey)
 		{
-			if (busy_ || engine_state_ != EngineState::Up)
+			if (busy_ || engine_state_ != EngineState::Up || engine_ == nullptr)
 				return false;;
 
 			engine_->requestRankings(evkey);
@@ -127,7 +132,7 @@ namespace xero
 
 		bool BlueAlliance::requestEventTeams(const QString& evkey)
 		{
-			if (busy_ || engine_state_ != EngineState::Up)
+			if (busy_ || engine_state_ != EngineState::Up || engine_ == nullptr)
 				return false;;
 
 			engine_->requestEventTeams(evkey);
@@ -151,29 +156,36 @@ namespace xero
 		{
 			QString result;
 
-			switch (engine_state_)
+			if (engine_ == nullptr)
 			{
-			case EngineState::Down:
-				result = QString("BlueAlliance is not reachable - ") + BlueAllianceResult::toString(status_);
-				break;
-
-			case EngineState::Initializing:
-				result = "Connecting to Blue Alliance ...";
-				break;
-
-			case EngineState::Up:
-				if (busy_)
+				result = QString("BlueAlliance is down: ") + BlueAllianceResult::toString(status_);
+			}
+			else
+			{
+				switch (engine_state_)
 				{
-					result = "BlueAlliance: loading '" + fetch_type_ + "' (" + QString::number(loaded_) + " of " + QString::number(total_) + ")";
+				case EngineState::Down:
+					result = QString("BlueAlliance is down: ") + BlueAllianceResult::toString(status_);
+					break;
+
+				case EngineState::Initializing:
+					result = "Connecting to Blue Alliance ...";
+					break;
+
+				case EngineState::Up:
+					if (busy_)
+					{
+						result = "BlueAlliance: loading '" + fetch_type_ + "' (" + QString::number(loaded_) + " of " + QString::number(total_) + ")";
+					}
+					else
+					{
+						result = "BlueAlliance: ";
+						result += QString::number(engine_->eventCount()) + " events";
+						result += ", " + QString::number(engine_->matchCount()) + " matches";
+						result += ", " + QString::number(engine_->teamCount()) + " teams";
+					}
+					break;
 				}
-				else
-				{
-					result = "BlueAlliance: ";
-					result += QString::number(engine_->eventCount()) + " events";
-					result += ", " + QString::number(engine_->matchCount()) + " matches";
-					result += ", " + QString::number(engine_->teamCount()) + " teams";
-				}
-				break;
 			}
 
 			return result;
@@ -184,6 +196,9 @@ namespace xero
 			std::shared_ptr<BlueAllianceResult> result;
 
 			while (1) {
+				if (engine_ == nullptr)
+					break;
+
 				result = engine_->getResult();
 				if (result == nullptr)
 					break;
@@ -200,6 +215,8 @@ namespace xero
 						// blue alliance data unavailable.
 						//
 						engine_state_ = EngineState::Down;
+						delete engine_;
+						engine_ = nullptr;
 					}
 					else 
 					{
@@ -216,10 +233,6 @@ namespace xero
 				case EngineState::Up:
 					if (result->status() != BlueAllianceResult::Status::Success) 
 					{
-						//
-						// TODO: this is rare but can happen.  How do we get this up to the
-						//       client????
-						//
 						busy_ = false;
 					}
 					else 

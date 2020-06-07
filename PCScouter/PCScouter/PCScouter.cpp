@@ -161,9 +161,14 @@ void PCScouter::showEvent(QShowEvent* ev)
 	timer_->start();
 
 	ping_timer_ = new QTimer(this);
-	ping_timer_->setInterval(std::chrono::seconds(2));
+	ping_timer_->setInterval(std::chrono::seconds(5));
 	(void)connect(ping_timer_, &QTimer::timeout, this, &PCScouter::processPingTimer);
 	ping_timer_->start();
+
+	blue_alliance_timer_ = new QTimer(this);
+	blue_alliance_timer_->setInterval(std::chrono::seconds(15));
+	(void)connect(blue_alliance_timer_, &QTimer::timeout, this, &PCScouter::processBlueAllianceTimer);
+	blue_alliance_timer_->start();
 
 	socket_ = new QUdpSocket(this);
 	tablet_client_ = nullptr;
@@ -531,6 +536,12 @@ void PCScouter::processPingTimer()
 
 		socket_->writeDatagram(block, QHostAddress::Broadcast, ClientServerProtocol::ScoutBroadcastPort);
 	}
+}
+
+void PCScouter::processBlueAllianceTimer()
+{
+	if (blue_alliance_->state() == BlueAlliance::EngineState::Down)
+		blue_alliance_->bringUp();
 }
 
 /////////////////////////////////////////////////////////////

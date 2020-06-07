@@ -76,6 +76,7 @@ private:
 
 	void processTimer();
 	void processPingTimer();
+	void processBlueAllianceTimer();
 	QIcon loadIcon(const QString& filename);
 	void listItemChanged(QListWidgetItem* olditem, QListWidgetItem* newitem);
 
@@ -152,6 +153,7 @@ private:
 	//
 	QTimer* timer_;
 	QTimer* ping_timer_;
+	QTimer* blue_alliance_timer_;
 	QProgressBar* summary_progress_;
 	CoachSync *coach_sync_;
 	bool shutdown_coach_sync_;

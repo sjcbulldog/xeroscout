@@ -49,6 +49,8 @@ namespace xero
 				return engine_state_;
 			}
 
+			void bringUp();
+
 			bool isIdle() {
 				return engine_state_ == EngineState::Up && !busy_;
 			}
