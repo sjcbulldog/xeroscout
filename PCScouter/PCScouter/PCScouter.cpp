@@ -816,7 +816,7 @@ void PCScouter::importKPIData()
 	for (auto team : data_model_->teams())
 		teams.push_back(team->key());
 
-	auto ctrl = new KPIController(blue_alliance_, data_model_->startDate(), teams, data_model_->evkey(), data_model_->teamScoutingForm(), data_model_->matchScoutingForm()));
+	auto ctrl = new KPIController(blue_alliance_, data_model_->startDate(), teams, data_model_->evkey(), data_model_->teamScoutingForm(), data_model_->matchScoutingForm());
 	setAppController(ctrl);
 }
 
