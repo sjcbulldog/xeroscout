@@ -65,6 +65,7 @@ private:
 
 private:
 	void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
+	void setAppController(ApplicationController* ctrl);
 
 	void enableApp();
 	void disableApp();

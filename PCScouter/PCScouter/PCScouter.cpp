@@ -548,6 +548,13 @@ void PCScouter::processBlueAllianceTimer()
 // Main timer loop 
 ////////////////////////////////////////////////////////////
 
+void PCScouter::setAppController(ApplicationController* ctrl)
+{
+	app_controller_ = ctrl;
+	connect(ctrl, &ApplicationController::logMessage, this, &PCScouter::logMessage);
+	connect(ctrl, &ApplicationController::errorMessage, this, &PCScouter::errorMessage);
+}
+
 void PCScouter::processAppController()
 {
 	if (!app_controller_->isDisplayInitialized())
@@ -564,7 +571,6 @@ void PCScouter::processAppController()
 	}
 
 	app_controller_->run();
-
 
 	if (app_controller_->shouldDisableApp() && !app_disabled_)
 		disableApp();
@@ -810,8 +816,8 @@ void PCScouter::importKPIData()
 	for (auto team : data_model_->teams())
 		teams.push_back(team->key());
 
-	setEnabled(false);
-	app_controller_ = new KPIController(blue_alliance_, data_model_->startDate(), teams, data_model_->evkey(), data_model_->teamScoutingForm(), data_model_->matchScoutingForm());
+	auto ctrl = new KPIController(blue_alliance_, data_model_->startDate(), teams, data_model_->evkey(), data_model_->teamScoutingForm(), data_model_->matchScoutingForm()));
+	setAppController(ctrl);
 }
 
 void PCScouter::importMatchDataComplete(bool err)
@@ -836,8 +842,9 @@ void PCScouter::importMatchData()
 	if (injector.hasData(maxmatchprop) && injector.data(maxmatchprop).type() == QVariant::Int)
 		maxmatch = injector.data(maxmatchprop).toInt();
 
-	app_controller_ = new ImportMatchDataController(blue_alliance_, data_model_, maxmatch);
-	connect(app_controller_, &ApplicationController::complete, this, &PCScouter::importMatchDataComplete);
+	auto ctrl = new ImportMatchDataController(blue_alliance_, data_model_, maxmatch);
+	setAppController(ctrl);
+	connect(ctrl, &ApplicationController::complete, this, &PCScouter::importMatchDataComplete);
 }
 
 void PCScouter::importMatchScheduleComplete(bool err)
@@ -856,8 +863,9 @@ void PCScouter::importMatchSchedule()
 		return;
 	}
 
-	app_controller_ = new ImportMatchScheduleController(blue_alliance_, data_model_);
-	connect(app_controller_, &ApplicationController::complete, this, &PCScouter::importMatchScheduleComplete);
+	auto ctrl = new ImportMatchScheduleController(blue_alliance_, data_model_);
+	setAppController(ctrl);
+	connect(ctrl, &ApplicationController::complete, this, &PCScouter::importMatchScheduleComplete);
 }
 
 void PCScouter::importZebraDataComplete(bool err)
@@ -875,8 +883,9 @@ void PCScouter::importZebraData()
 		return;
 	}
 
-	app_controller_ = new ImportZebraDataController(blue_alliance_, data_model_);
-	connect(app_controller_, &ApplicationController::complete, this, &PCScouter::importZebraDataComplete);
+	auto ctrl = new ImportZebraDataController(blue_alliance_, data_model_);
+	setAppController(ctrl);
+	connect(ctrl, &ApplicationController::complete, this, &PCScouter::importZebraDataComplete);
 }
 
 void PCScouter::exportDataSet()
@@ -1195,8 +1204,9 @@ void PCScouter::updateCurrentView()
 			assert(ds != nullptr);
 			if (ds->needsRefresh())
 			{
-				app_controller_ = new AllTeamSummaryController(blue_alliance_, data_model_, ds->dataset());
-				(void)connect(app_controller_, &ApplicationController::complete, this, &PCScouter::teamSummaryCompleted);
+				auto ctrl = new AllTeamSummaryController(blue_alliance_, data_model_, ds->dataset());
+				setAppController(ctrl);
+				(void)connect(ctrl, &ApplicationController::complete, this, &PCScouter::teamSummaryCompleted);
 			}
 		}
 		break;
@@ -1291,9 +1301,9 @@ void PCScouter::updateCurrentView()
 				}
 				else
 				{
-					app_controller_ = new PickListController(blue_alliance_, team_number_, year_, data_model_, ds);
-					connect(app_controller_, &ApplicationController::logMessage, this, &PCScouter::logMessage);
-					(void)connect(app_controller_, &ApplicationController::complete, this, &PCScouter::pickListComplete);
+					auto ctrl = new PickListController(blue_alliance_, team_number_, year_, data_model_, ds);
+					setAppController(ctrl);
+					(void)connect(ctrl, &ApplicationController::complete, this, &PCScouter::pickListComplete);
 				}
 			}
 		}
