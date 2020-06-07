@@ -22,12 +22,13 @@
 #include "ScoutingDataModel.h"
 #include "ScoutingDataSet.h"
 #include "DataModelBuilder.h"
+#include "OPRCalculator.h"
 #include <QDebug>
 
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
-KPIController::KPIController(std::shared_ptr<BlueAlliance> ba, const QDate &evdate, const QStringList& teams, 
+KPIController::KPIController(std::shared_ptr<BlueAlliance> ba, std::shared_ptr<ScoutingDataModel> dm, const QDate &evdate, const QStringList& teams, 
 	const QString& evkey, std::shared_ptr<const ScoutingForm> team, std::shared_ptr<const ScoutingForm> match) : ApplicationController(ba)
 {
 	evdate_ = evdate;
@@ -36,10 +37,55 @@ KPIController::KPIController(std::shared_ptr<BlueAlliance> ba, const QDate &evda
 	evkey_ = evkey;
 	team_ = team;
 	match_ = match;
+	dm_ = dm;
 }
 
 KPIController::~KPIController()
 {
+}
+
+ScoutingDataMapPtr KPIController::evToData(const QString& tkey, const QString& evkey)
+{
+	auto it = models_.find(evkey);
+	if (it == models_.end())
+		return nullptr;
+
+	ScoutingDataMapPtr ret = std::make_shared<ScoutingDataMap>();
+
+	auto model = it->second;
+
+	auto team = model->findTeamByKey(tkey);
+	if (team->hasExtraData())
+	{
+		auto data = team->extraData();
+		auto it = data->find(DataModelTeam::OPRName);
+		if (it != data->end())
+			ret->insert_or_assign(DataModelTeam::OPRName, it->second);
+	}
+
+	QString query, error;
+	ScoutingDataSet ds;
+
+	query = "select * from matches where MatchTeamKey='" + tkey + "'";
+	if (!model->createCustomDataSet(ds, query, error))
+	{
+		emit logMessage("Error runing SQL query '" + query + "' - " + error);
+	}
+
+	for (int i = 0; i < ds.columnCount(); i++)
+	{
+		auto hdr = ds.colHeader(i);
+		if (!hdr->name().startsWith("ba_"))
+			continue;
+
+		QVariant v = ds.columnSummary(i, false);
+		if (v.type() == QVariant::Type::String)
+			continue;
+
+		ret->insert_or_assign(hdr->name(), v);
+	}
+
+	return ret;
 }
 
 void KPIController::computeKPI()
@@ -60,17 +106,44 @@ void KPIController::computeKPI()
 		auto model = DataModelBuilder::buildModel(blueAlliance()->getEngine(), team_, match_, eit->second->key(), error);
 		assert(model != nullptr);
 
-		//
-		// Now find any teams that were at the event
-		//
-		for (auto team : model->teams())
+		DataModelBuilder::addBlueAllianceData(blueAlliance(), model, std::numeric_limits<int>::max());
+
+		models_.insert_or_assign(ev, model);
+		OPRCalculator calc(model);
+		if (!calc.calc())
 		{
-			if (teams_.contains(team->key()))
+			qDebug() << "Error calculating OPR for event '" << ev << "'";
+		}
+	}
+
+	//
+	// Now we have fetched everything and calculated everything so lets get it
+	// into the team data for each active team
+	//
+
+	for (auto pair : team_event_map_)
+	{
+		std::map<QString, std::pair<int, double>> calcs;
+		for (const QString& ev : pair.second)
+		{
+			auto data = evToData(pair.first, ev);
+			for (auto datapair : *data)
 			{
-				//
-				// We have a team and a previous event for the team, get the data we want
-				//
+				std::pair<int, double> data = std::make_pair(0, 0.0);
+				auto it = calcs.find(datapair.first);
+				if (it != calcs.end())
+					data = it->second;
+
+				data.first++;
+				data.second += datapair.second.toDouble();
+
+				calcs.insert_or_assign(datapair.first, data);
 			}
+		}
+
+		for (auto pairs : calcs)
+		{
+			dm_->addTeamExtraData(pair.first, "prev_" + pairs.first, (double)pairs.second.second / (double)pairs.second.first);
 		}
 	}
 }
@@ -110,30 +183,51 @@ void KPIController::run()
 		switch (state_)
 		{
 		case State::Start:
+			qDebug() << "KPI: starting";
 			if (blueAlliance()->getEngine().events().size() == 0)
+			{
+				qDebug() << "KPI: requesting events";
 				getEvents();
+			}
 			else if (blueAlliance()->getEngine().teams().size() == 0)
+			{
+				qDebug() << "KPI: requesting teams";
 				getTeams();
+			}
 			else
+			{
+				qDebug() << "KPI: requesting team events";
 				getTeamEvents();
+			}
 			break;
 
 		case State::WaitingOnEvents:
+			qDebug() << "KPI: got events";
 			if (blueAlliance()->getEngine().teams().size() == 0)
+			{
+				qDebug() << "KPI: requesting teams";
 				getTeams();
+			}
 			else
+			{
+				qDebug() << "KPI: requesting team events";
 				getTeamEvents();
+			}
 			break;
 
 		case State::WaitingOnTeams:
+			qDebug() << "KPI: got teams";
+			qDebug() << "KPI: requesting team events";
 			getTeamEvents();
 			break;
 
 		case State::WaitingOnTeamEvents:
+			qDebug() << "KPI: got team events";
 			gotTeamEvents();
 			break;
 
 		case State::WaitingOnMatches:
+			qDebug() << "KPI: got matches " << index_ << " or " << evlist_.size();
 			if (index_ != evlist_.size())
 				blueAlliance()->requestMatches(evlist_.at(index_++));
 			else
@@ -141,11 +235,50 @@ void KPIController::run()
 			break;
 
 		case State::WaitingOnMatchDetail:
+			gotMatchDetail();
+			break;
+
+		case State::WaitingOnTeamsPhase2:
+			qDebug() << "KPI: got teams phase 2";
 			computeKPI();
 			state_ = State::Done;
 			break;
 		}
 	}
+}
+
+void KPIController::gotMatchDetail()
+{
+	QStringList tmlist;
+
+	for (auto evpair : blueAlliance()->getEngine().events())
+	{
+		for (auto match : evpair.second->matches())
+		{
+			for (auto team : match->red()->getTeams())
+			{
+				auto it = blueAlliance()->getEngine().teams().find(team);
+				if (it != blueAlliance()->getEngine().teams().end())
+					continue;
+
+				if (!tmlist.contains(team))
+					tmlist.push_back(team);
+			}
+			for (auto team : match->blue()->getTeams())
+			{
+				auto it = blueAlliance()->getEngine().teams().find(team);
+				if (it != blueAlliance()->getEngine().teams().end())
+					continue;
+
+				if (!tmlist.contains(team))
+					tmlist.push_back(team);
+			}
+		}
+	}
+
+	state_ = State::WaitingOnTeamsPhase2;
+	qDebug() << "KPI: requesting teams (in events but not in target event)";
+	blueAlliance()->requestTeams(tmlist);
 }
 
 void KPIController::gotMatches()
@@ -161,9 +294,13 @@ void KPIController::gotMatches()
 
 		auto &mlist = it->second->matches();
 		for (auto& m : mlist)
-			matchkeys.push_back(m->key());
+		{
+			if (m->scoreBreakdown().isEmpty())
+				matchkeys.push_back(m->key());
+		}
 	}
 
+	qDebug() << "KPI: requesting match detail";
 	blueAlliance()->requestMatchesDetails(matchkeys);
 	state_ = State::WaitingOnMatchDetail;
 }
@@ -177,6 +314,7 @@ void KPIController::gotTeamEvents()
 
 	for (auto team : teams_)
 	{
+		QStringList evs;
 		auto it = bateams.find(team);
 		if (it != bateams.end())
 		{
@@ -193,15 +331,20 @@ void KPIController::gotTeamEvents()
 				if (evit->second->start() > evdate_)
 					continue;
 
+				if (!evs.contains(ev))
+					evs.push_back(ev);
+
 				if (evlist_.contains(ev))
 					continue;
 
-				QString st = evit->second->start().toString();
 				evlist_.push_back(ev);
 			}
 		}
+
+		team_event_map_.insert_or_assign(team, evs);
 	}
 
+	qDebug() << "KPI: requesting matches";
 	state_ = State::WaitingOnMatches;
 	index_ = 0;
 	blueAlliance()->requestMatches(evlist_.at(index_++));

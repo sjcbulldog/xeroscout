@@ -85,6 +85,22 @@ namespace xero
 				return true;
 			}
 
+			QString ScoutingDatabase::quoteString(const QString& str)
+			{
+				if (str.indexOf('\'') == -1)
+					return str;
+
+				QString result;
+				for (QChar ch : str)
+				{
+					result += ch;
+					if (ch == '\'')
+						result += ch;
+				}
+
+				return result;
+			}
+
 			bool ScoutingDatabase::addTable(const QString& name, const ScoutingDataSet& set)
 			{
 				if (set.rowCount() == 0)
@@ -156,7 +172,7 @@ namespace xero
 								break;
 							case FieldDesc::Type::String:
 								qstr += "'";
-								qstr += v.toString();
+								qstr += quoteString(v.toString());
 								qstr += "'";
 								break;
 							case FieldDesc::Type::StringChoice:
@@ -176,6 +192,9 @@ namespace xero
 					if (!query.exec(qstr))
 					{
 						QSqlError err = query.lastError();
+						qDebug() << "DriverText: " << err.driverText();
+						qDebug() << "DatabaseText: " << err.databaseText();
+						qDebug() << "NativeErrorCode: " << err.nativeErrorCode();
 						return false;
 					}
 				}

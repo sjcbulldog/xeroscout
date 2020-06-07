@@ -394,20 +394,20 @@ void PCScouter::createMenus()
 	file_close_ = file_menu_->addAction(tr("Close Event"));
 	(void)connect(file_close_, &QAction::triggered, this, &PCScouter::closeEventHandler);
 
-	import_menu_ = new QMenu(tr("&Data"));
+	import_menu_ = new QMenu(tr("&Import"));
 	menuBar()->addMenu(import_menu_);
 	(void)connect(import_menu_, &QMenu::aboutToShow, this, &PCScouter::showingImportMenu);
 
 	if (!coach_)
 	{
-		import_match_schedule_ = import_menu_->addAction(tr("Import Match Schedule"));
+		import_match_schedule_ = import_menu_->addAction(tr("Match Schedule"));
 		(void)connect(import_match_schedule_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
 	}
 
-	import_match_data_ = import_menu_->addAction(tr("Import BlueAlliance Match Results"));
+	import_match_data_ = import_menu_->addAction(tr("BlueAlliance Match Results"));
 	(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchData);
 
-	import_zebra_data_ = import_menu_->addAction(tr("Import BlueAlliance Zebra Data"));
+	import_zebra_data_ = import_menu_->addAction(tr("BlueAlliance Zebra Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importZebraData);
 
 	if (coach_)
@@ -416,13 +416,8 @@ void PCScouter::createMenus()
 		(void)connect(sync_with_central_, &QAction::triggered, this, &PCScouter::syncWithCentral);
 	}
 
-	import_kpi_ = import_menu_->addAction(tr("Import Historical Team Performance"));
+	import_kpi_ = import_menu_->addAction(tr("Historical Team Performance"));
 	(void)connect(import_kpi_, &QAction::triggered, this, &PCScouter::importKPIData);
-
-	import_menu_->addSeparator();
-
-	import_calc_opr_ = import_menu_->addAction(tr("Calculate OPR"));
-	(void)connect(import_calc_opr_, &QAction::triggered, this, &PCScouter::calcOPR);
 
 	export_menu_ = new QMenu(tr("&Export"));
 
@@ -746,12 +741,6 @@ void PCScouter::setDataModelStatus()
 // Menu Related
 ////////////////////////////////////////////////////////////
 
-void PCScouter::calcOPR()
-{
-	OPRCalculator calc(data_model_);
-	calc.calc();
-}
-
 void PCScouter::setDebug()
 {
 	settings_.setValue(DebugSetting, debug_act_->isChecked());
@@ -800,7 +789,6 @@ void PCScouter::showingImportMenu()
 	import_zebra_data_->setEnabled(state);
 	import_match_schedule_->setEnabled(state);
 	import_kpi_->setEnabled(state);
-	import_calc_opr_->setEnabled(state);
 }
 
 void PCScouter::showingExportMenu()
@@ -816,7 +804,7 @@ void PCScouter::importKPIData()
 	for (auto team : data_model_->teams())
 		teams.push_back(team->key());
 
-	auto ctrl = new KPIController(blue_alliance_, data_model_->startDate(), teams, data_model_->evkey(), data_model_->teamScoutingForm(), data_model_->matchScoutingForm());
+	auto ctrl = new KPIController(blue_alliance_, data_model_, data_model_->startDate(), teams, data_model_->evkey(), data_model_->teamScoutingForm(), data_model_->matchScoutingForm());
 	setAppController(ctrl);
 }
 

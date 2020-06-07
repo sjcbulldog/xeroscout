@@ -31,7 +31,7 @@
 class KPIController : public ApplicationController
 {
 public:
-	KPIController(std::shared_ptr<xero::ba::BlueAlliance> ba, const QDate &evdate, const QStringList& teams,
+	KPIController(std::shared_ptr<xero::ba::BlueAlliance> ba, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, const QDate &evdate, const QStringList& teams,
 		const QString& evkey, std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> team,
 		std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> match);
 	virtual ~KPIController();
@@ -52,6 +52,7 @@ private:
 		WaitingOnTeamEvents,
 		WaitingOnMatches,
 		WaitingOnMatchDetail,
+		WaitingOnTeamsPhase2,
 		Error,
 	};
 
@@ -62,8 +63,12 @@ private:
 
 	void gotTeamEvents();
 	void gotMatches();
+	void gotMatchDetail();
 
 	void computeKPI();
+
+	xero::scouting::datamodel::ScoutingDataMapPtr evToData(const QString& tkey, const QString& evkey);
+
 private:
 	QDate evdate_;
 	State state_;
@@ -73,5 +78,8 @@ private:
 	int index_ ;
 	std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> team_;
 	std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> match_;
+	std::map<QString, QStringList> team_event_map_;
+	std::map<QString, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>> models_;
+	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 };
 

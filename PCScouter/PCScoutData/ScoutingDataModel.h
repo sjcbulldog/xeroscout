@@ -350,7 +350,6 @@ namespace xero
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				void addExtraDataFields(ScoutingDataMapPtr data);
 
 				/// \brief set the scouting forms for the data model
 				/// This can only be done once right after the data model is created.  Any subsequent call to this API will return false.
@@ -387,6 +386,47 @@ namespace xero
 					emitChangedSignal(ChangeType::TeamDataChanged);
 				}
 
+				/// <summary>
+				/// Add a new data field to the team extra and add the field if it does not exist
+				/// </summary>
+				/// <param name="name"></param>
+				/// <param name="value"></param>
+				void addTeamExtraData(const QString &tkey, const QString& name, const QVariant& value);
+
+				/// \brief set the OPR value for a team
+				/// \param teamkey the key for the team to set OPR for
+				/// \param opr the OPR value for the team
+				void setTeamOPR(const QString& teamkey, double opr) {
+					auto team = findTeamByKeyInt(teamkey);
+					team->setOPR(opr);
+
+					if (getFieldByName(DataModelTeam::OPRName) == nullptr)
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::OPRName, FieldDesc::Type::Double, false, true));
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::TeamDataChanged);
+				}
+
+				/// \brief set the ranking data from the blue alliance.  
+				/// This data is stored as the JSON object received from the blue alliance
+				/// \param key the team key identifying the team of interest
+				/// \param obj the ranking object data as a JSON object
+				void setTeamRanking(const QString& key, const QJsonObject& obj) {
+					auto team = findTeamByKeyInt(key);
+					team->setRanking(obj);
+
+					if (getFieldByName(DataModelTeam::RankName) == nullptr)
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::RankName, FieldDesc::Type::Integer, false));
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::TeamDataChanged);
+				}
+
+				/// \brief add data field descriptors aligned with the extra match data in the record
+				/// This method takes the data values in the set and deduces the field types to add to the match field descriptors
+				/// \param the data
+				void addMatchExtraDataFields(ScoutingDataMapPtr data);
+
 				/// \brief sets the extra field descriptors that are match specific
 				void addMatchExtraFields(std::list<std::shared_ptr<FieldDesc>> fields) {
 					for (auto f : fields)
@@ -405,20 +445,6 @@ namespace xero
 				void addMatchExtraData(const QString& key, Alliance c, int slot, ScoutingDataMapPtr data) {
 					auto m = findMatchByKeyInt(key);
 					m->addExtraData(c, slot, data);
-
-					dirty_ = true;
-					emitChangedSignal(ChangeType::TeamDataChanged);
-				}
-
-				/// \brief set the OPR value for a team
-				/// \param teamkey the key for the team to set OPR for
-				/// \param opr the OPR value for the team
-				void setTeamOPR(const QString& teamkey, double opr) {
-					auto team = findTeamByKeyInt(teamkey);
-					team->setOPR(opr);
-
-					if (getFieldByName(DataModelTeam::OPRName) == nullptr)
-						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::OPRName, FieldDesc::Type::Double, false, true));
 
 					dirty_ = true;
 					emitChangedSignal(ChangeType::TeamDataChanged);
@@ -456,21 +482,6 @@ namespace xero
 					dirty_ = true;
 
 					emitChangedSignal(ChangeType::DataSetColumnOrder);
-				}
-
-				/// \brief set the ranking data from the blue alliance.  
-				/// This data is stored as the JSON object received from the blue alliance
-				/// \param key the team key identifying the team of interest
-				/// \param obj the ranking object data as a JSON object
-				void setTeamRanking(const QString& key, const QJsonObject &obj) {
-					auto team = findTeamByKeyInt(key);
-					team->setRanking(obj);
-
-					if (getFieldByName(DataModelTeam::RankName) == nullptr)
-						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::RankName, FieldDesc::Type::Integer, false));
-					
-					dirty_ = true;
-					emitChangedSignal(ChangeType::TeamDataChanged);
 				}
 
 				/// \brief add a team to a match.

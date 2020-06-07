@@ -68,7 +68,33 @@ namespace xero
 			{
 			}
 
-			void ScoutingDataModel::addExtraDataFields(ScoutingDataMapPtr data)
+			void ScoutingDataModel::addTeamExtraData(const QString &tkey, const QString& name, const QVariant& value)
+			{
+				if (getFieldByName(name) == nullptr)
+				{
+					if (value.type() == QVariant::Int)
+					{
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(name, FieldDesc::Type::Integer, false));
+					}
+					else if (value.type() == QVariant::Bool)
+					{
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(name, FieldDesc::Type::Boolean, false));
+					}
+					else if (value.type() == QVariant::Double)
+					{
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(name, FieldDesc::Type::Double, false));
+					}
+					else if (value.type() == QVariant::String)
+					{
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(name, FieldDesc::Type::String, false));
+					}
+				}
+
+				auto team = findTeamByKeyInt(tkey);
+				team->addExtraData(name, value);
+			}
+
+			void ScoutingDataModel::addMatchExtraDataFields(ScoutingDataMapPtr data)
 			{
 				std::shared_ptr<FieldDesc> desc;
 				std::map<QString, std::shared_ptr<FieldDesc>> fields;

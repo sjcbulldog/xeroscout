@@ -55,6 +55,9 @@ namespace xero
 				}
 
 			private:
+				static QString quoteString(const QString &str);
+
+			private:
 				static ScoutingDatabase theone_;
 
 			private:

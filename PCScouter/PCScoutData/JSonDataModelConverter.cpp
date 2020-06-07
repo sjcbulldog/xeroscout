@@ -1816,7 +1816,7 @@ namespace xero
 
 						auto data = decode(ex);
 						dm_->addMatchExtraData(key, c, slot, data);
-						dm_->addExtraDataFields(data);
+						dm_->addMatchExtraDataFields(data);
 					}
 				}
 

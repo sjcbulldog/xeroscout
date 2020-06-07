@@ -99,7 +99,6 @@ private:
 	void importMatchDataComplete(bool err);
 	void importZebraData();
 	void importZebraDataComplete(bool err);
-	void calcOPR();
 	void importKPIData();
 
 	// Export menu
