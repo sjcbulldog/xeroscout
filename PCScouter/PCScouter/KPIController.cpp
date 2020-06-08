@@ -24,6 +24,7 @@
 #include "DataModelBuilder.h"
 #include "OPRCalculator.h"
 #include <QDebug>
+#include <QStandardPaths>
 
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
@@ -46,12 +47,17 @@ KPIController::~KPIController()
 
 ScoutingDataMapPtr KPIController::evToData(const QString& tkey, const QString& evkey)
 {
+	qDebug() << "evToData: team key " << tkey << " event key " << evkey;
+	if (tkey == "frc1425" && evkey == "2019orore")
+		qDebug() << "Break";
+
 	auto it = models_.find(evkey);
 	if (it == models_.end())
+	{
+		qDebug() << "  no such event - returned null";
 		return nullptr;
-
+	}
 	ScoutingDataMapPtr ret = std::make_shared<ScoutingDataMap>();
-
 	auto model = it->second;
 
 	auto team = model->findTeamByKey(tkey);
@@ -63,13 +69,19 @@ ScoutingDataMapPtr KPIController::evToData(const QString& tkey, const QString& e
 			ret->insert_or_assign(DataModelTeam::OPRName, it->second);
 	}
 
+	model->clearDatabaseTables();
+
 	QString query, error;
 	ScoutingDataSet ds;
-
 	query = "select * from matches where MatchTeamKey='" + tkey + "'";
 	if (!model->createCustomDataSet(ds, query, error))
 	{
+		qDebug() << "  query failed ";
 		emit logMessage("Error runing SQL query '" + query + "' - " + error);
+	}
+	else
+	{
+		qDebug() << "  dataset generated " << ds.columnCount() << " columns " << ds.rowCount() << " rows";
 	}
 
 	for (int i = 0; i < ds.columnCount(); i++)
@@ -113,6 +125,21 @@ void KPIController::computeKPI()
 		if (!calc.calc())
 		{
 			qDebug() << "Error calculating OPR for event '" << ev << "'";
+		}
+	}
+
+	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
+	for (const QString& ev : evlist_)
+	{
+		auto model = models_.find(ev);
+		if (model != models_.end())
+		{
+			QString filename = path + "/events/" + ev + ".json";
+			model->second->save(filename);
+		}
+		else
+		{
+			qDebug() << "KPI: " << ev << " - no model found";
 		}
 	}
 
@@ -183,6 +210,7 @@ void KPIController::run()
 		switch (state_)
 		{
 		case State::Start:
+			timer_.start();
 			qDebug() << "KPI: starting";
 			if (blueAlliance()->getEngine().events().size() == 0)
 			{
@@ -241,6 +269,7 @@ void KPIController::run()
 		case State::WaitingOnTeamsPhase2:
 			qDebug() << "KPI: got teams phase 2";
 			computeKPI();
+			emit logMessage("KPI complete, " + QString::number(timer_.elapsed() / 1000) + " seconds");
 			state_ = State::Done;
 			break;
 		}

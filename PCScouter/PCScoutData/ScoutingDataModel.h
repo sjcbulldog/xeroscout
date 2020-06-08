@@ -928,6 +928,11 @@ namespace xero
 					}
 				}
 
+				void clearDatabaseTables() {
+					auto db = ScoutingDatabase::getInstance();
+					db->clearAllTables();
+				}
+
 			signals:
 				void modelChanged(ChangeType type);
 
