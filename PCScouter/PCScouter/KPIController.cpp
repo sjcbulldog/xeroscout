@@ -376,7 +376,18 @@ void KPIController::gotTeamEvents()
 	qDebug() << "KPI: requesting matches";
 	state_ = State::WaitingOnMatches;
 	index_ = 0;
-	blueAlliance()->requestMatches(evlist_.at(index_++));
+
+	if (evlist_.size() == 0)
+	{
+		//
+		// There are no previous matches, we are done
+		//
+		state_ = State::Done;
+	}
+	else
+	{
+		blueAlliance()->requestMatches(evlist_.at(index_++));
+	}
 }
 
 void KPIController::getEvents()
