@@ -154,8 +154,7 @@ namespace xero
 						if (dobj.contains("blue") && dobj.value("blue").isObject())
 							blue = parseAlliance(dobj.value("blue").toObject());
 					}
-
-					auto ev = engine().createMatch(evid_, key, comp_level, set_number, match_number, winning_alliance, etime, ptime, atime, red, blue);
+					engine().createMatch(evid_, key, comp_level, set_number, match_number, etime, ptime, atime, red, blue);
 				}
 
 				state_ = State::Complete;

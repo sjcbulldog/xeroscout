@@ -105,7 +105,7 @@ namespace xero
 					index++;
 
 					item->setText(index++, team->tablet());
-					item->setText(index++, team->name());
+					item->setText(index++, team->nick());
 
 					item->setData(0, Qt::UserRole, QVariant(team->key()));
 					addTopLevelItem(item);

@@ -198,7 +198,7 @@ namespace xero
 
 					auto t = dataModel()->findTeamByKey(key);
 
-					QString tmtt = QString::number(t->number()) + " - " + t->name();
+					QString tmtt = QString::number(t->number()) + " - " + t->nick();
 					i->setText(index, key);
 					i->setToolTip(index++, tmtt);
 
@@ -270,7 +270,7 @@ namespace xero
 				auto team = dataModel()->findTeamByKey(tkey);
 
 				i->setText(index++, QString::number(team->number()));
-				i->setText(index++, team->name());
+				i->setText(index++, team->nick());
 
 				addTopLevelItem(i);
 			}

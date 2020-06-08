@@ -223,6 +223,10 @@ namespace xero
 				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamName, FieldDesc::Type::String, false, true));
 				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamNumberName, FieldDesc::Type::Integer, false, true));
 				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamKeyName, FieldDesc::Type::String, false, true));
+				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamNickName, FieldDesc::Type::String, false, true));
+				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamCityName, FieldDesc::Type::String, false, true));
+				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamStateName, FieldDesc::Type::String, false, true));
+				team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::TeamCountryName, FieldDesc::Type::String, false, true));
 			}
 
 			bool ScoutingDataModel::load(const QString& filename)

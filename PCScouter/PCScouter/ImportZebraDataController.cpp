@@ -77,8 +77,24 @@ void ImportZebraDataController::run()
 		switch (state_)
 		{
 		case State::Start:
-			blueAlliance()->requestMatches(dataModel()->evkey());
-			state_ = State::WaitingForMatches;
+			if (blueAlliance()->getEngine().matchCount() == 0)
+			{
+				blueAlliance()->requestMatches(dataModel()->evkey());
+				state_ = State::WaitingForMatches;
+			}
+			else
+			{
+				QStringList keys;
+
+				for (auto m : dataModel()->matches())
+				{
+					if (!m->hasZebra())
+						keys.push_back(m->key());
+				}
+
+				blueAlliance()->requestZebraData(keys);
+				state_ = State::WaitingForZebra;
+			}
 			break;
 
 		case State::WaitingForMatches:
@@ -86,7 +102,10 @@ void ImportZebraDataController::run()
 			QStringList keys;
 
 			for (auto m : dataModel()->matches())
-				keys.push_back(m->key());
+			{
+				if (!m->hasZebra())
+					keys.push_back(m->key());
+			}
 
 			blueAlliance()->requestZebraData(keys);
 			state_ = State::WaitingForZebra;

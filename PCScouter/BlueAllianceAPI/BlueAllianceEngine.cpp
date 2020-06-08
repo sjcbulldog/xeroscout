@@ -131,7 +131,7 @@ namespace xero
 		}
 
 		std::shared_ptr<Match> BlueAllianceEngine::createMatch(const QString &evkey, const QString& key, const QString& comp_level, int set_number, int match_number,
-			const QString& winning_alliance, int etime, int ptime, int atime, std::shared_ptr<MatchAlliance> red, std::shared_ptr<MatchAlliance> blue)
+				int etime, int ptime, int atime, std::shared_ptr<MatchAlliance> red, std::shared_ptr<MatchAlliance> blue)
 		{
 			std::shared_ptr<Match> ret;
 

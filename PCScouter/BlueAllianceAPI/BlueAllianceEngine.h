@@ -68,7 +68,7 @@ namespace xero
 			const std::map<QString, std::shared_ptr<District>>& districts() { return districts_by_key_; }
 
 			std::shared_ptr<Match> createMatch(const QString&evkey, const QString& key, const QString& comp_level, int set_number, int match_number,
-				const QString& winning_alliance, int etime, int ptime, int atime, std::shared_ptr<MatchAlliance> red, std::shared_ptr<MatchAlliance> blue);
+				int etime, int ptime, int atime, std::shared_ptr<MatchAlliance> red, std::shared_ptr<MatchAlliance> blue);
 			size_t matchCount() const { return matches_by_key_.size(); }
 			const std::map<QString, std::shared_ptr<Match>>& matches() { return matches_by_key_; }
 

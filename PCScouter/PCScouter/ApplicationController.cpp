@@ -30,7 +30,7 @@ ApplicationController::ApplicationController(std::shared_ptr<BlueAlliance> ba, s
 
 	if (dm_ != nullptr)
 	{
-		restoreBlueAllianceData();
+		// restoreBlueAllianceData();
 	}
 }
 
@@ -44,5 +44,32 @@ void ApplicationController::restoreBlueAllianceData()
 	{
 		ba_->getEngine().createTeam(team->key(), team->number(), team->nick(), team->name(), 
 				team->city(), team->state(), team->country());
+	}
+
+	for (auto match : dm_->matches())
+	{
+		std::shared_ptr<MatchAlliance> red = std::make_shared<MatchAlliance>();
+		std::shared_ptr<MatchAlliance> blue = std::make_shared<MatchAlliance>();
+		int etime = match->eventTime();
+
+		Alliance c;
+
+		c = Alliance::Red;
+		for (int slot = 1; slot <= 3; slot++)
+		{
+			QString team = match->team(c, slot);
+			red->addTeam(team);
+		}
+
+		c = Alliance::Blue;
+		for (int slot = 1; slot <= 3; slot++)
+		{
+			QString team = match->team(c, slot);
+			blue->addTeam(team);
+		}
+		auto m = ba_->getEngine().createMatch(dm_->evkey(), match->key(), match->compType(), match->set(), match->match(), etime, 0, 0, red, blue);
+
+		if (match->hasZebra())
+			m->setZebraData(match->zebra());
 	}
 }

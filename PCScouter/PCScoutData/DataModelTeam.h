@@ -43,6 +43,10 @@ namespace xero
 				static constexpr const char* TeamName = "Team";
 				static constexpr const char* TeamKeyName = "TeamKey";
 				static constexpr const char* TeamNumberName = "TeamNumber";
+				static constexpr const char* TeamNickName = "NickName";
+				static constexpr const char* TeamCityName = "City";
+				static constexpr const char* TeamStateName = "State";
+				static constexpr const char* TeamCountryName = "Country";
 
 			public:
 				DataModelTeam(const QString& key, int number, const QString &nick, const QString& name, const QString &city, const QString &state, const QString &country) {
@@ -57,6 +61,10 @@ namespace xero
 					addExtraData(TeamName, name);
 					addExtraData(TeamNumberName, number);
 					addExtraData(TeamKeyName, key);
+					addExtraData(TeamNickName, nick);
+					addExtraData(TeamCityName, city);
+					addExtraData(TeamStateName, state);
+					addExtraData(TeamCountryName, country);
 				}
 
 				virtual ~DataModelTeam() {
