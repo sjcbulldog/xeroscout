@@ -45,10 +45,14 @@ namespace xero
 				static constexpr const char* TeamNumberName = "TeamNumber";
 
 			public:
-				DataModelTeam(const QString& key, int number, const QString& name) {
+				DataModelTeam(const QString& key, int number, const QString &nick, const QString& name, const QString &city, const QString &state, const QString &country) {
 					key_ = key;
 					number_ = number;
 					name_ = name;
+					nick_ = nick;
+					city_ = city;
+					state_ = state;
+					country_ = country;
 
 					addExtraData(TeamName, name);
 					addExtraData(TeamNumberName, number);
@@ -127,6 +131,22 @@ namespace xero
 
 				const QString& name() const {
 					return name_;
+				}
+
+				const QString& nick() const {
+					return nick_;
+				}
+
+				const QString& city() const {
+					return city_;
+				}
+
+				const QString& state() const {
+					return state_;
+				}
+
+				const QString& country() const {
+					return country_;
 				}
 
 				bool hasScoutingData() const {
@@ -237,6 +257,10 @@ namespace xero
 				QString key_;
 				int number_;
 				QString name_;
+				QString nick_;
+				QString city_;
+				QString state_;
+				QString country_;
 				QString tablet_;
 				std::list<ScoutingDataMapPtr> team_data_;
 				QJsonObject ranking_;

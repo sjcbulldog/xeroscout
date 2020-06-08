@@ -46,7 +46,6 @@ private:
 private:
 	xero::scouting::datamodel::ScoutingDataSet& ds_;
 	int pcnt_;
-	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	QStringList keys_;
 	int index_;
 	bool headers_;

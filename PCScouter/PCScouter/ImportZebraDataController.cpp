@@ -24,9 +24,8 @@ using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
 ImportZebraDataController::ImportZebraDataController(std::shared_ptr<xero::ba::BlueAlliance> ba,
-	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm) : ApplicationController(ba)
+	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm) : ApplicationController(ba, dm)
 {
-	dm_ = dm;
 	state_ = State::Start;
 }
 
@@ -78,7 +77,7 @@ void ImportZebraDataController::run()
 		switch (state_)
 		{
 		case State::Start:
-			blueAlliance()->requestMatches(dm_->evkey());
+			blueAlliance()->requestMatches(dataModel()->evkey());
 			state_ = State::WaitingForMatches;
 			break;
 
@@ -86,7 +85,7 @@ void ImportZebraDataController::run()
 		{
 			QStringList keys;
 
-			for (auto m : dm_->matches())
+			for (auto m : dataModel()->matches())
 				keys.push_back(m->key());
 
 			blueAlliance()->requestZebraData(keys);
@@ -103,7 +102,7 @@ void ImportZebraDataController::run()
 
 void ImportZebraDataController::gotZebra()
 {
-	dm_->blockSignals(true);
+	dataModel()->blockSignals(true);
 
 	//
 	// Move the zebra data from the blue alliance engine to the data model
@@ -112,18 +111,18 @@ void ImportZebraDataController::gotZebra()
 	for (auto pair : matches) {
 		if (!pair.second->zebraData().isEmpty())
 		{
-			auto m = dm_->findMatchByKey(pair.first);
+			auto m = dataModel()->findMatchByKey(pair.first);
 			if (m != nullptr)
 			{
-				dm_->assignZebraData(m->key(), pair.second->zebraData());
+				dataModel()->assignZebraData(m->key(), pair.second->zebraData());
 			}
 		}
 	}
 
-	dm_->blockSignals(false);
+	dataModel()->blockSignals(false);
 
 	emit complete(false);
 	state_ = State::Done;
 
-	dm_->emitChangedSignal(ScoutingDataModel::ChangeType::ZebraDataAdded);
+	dataModel()->emitChangedSignal(ScoutingDataModel::ChangeType::ZebraDataAdded);
 }

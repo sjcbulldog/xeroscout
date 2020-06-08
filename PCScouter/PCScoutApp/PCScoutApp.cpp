@@ -91,7 +91,7 @@ PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
 		identity_ = TabletIdentity(settings_.value(TabletNameKey).toString(), identity_.uid());
 	}
 
-	data_model_ = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::ScoutingTablet);
+	data_model_ = std::make_shared<ScoutingDataModel>();
 
 	createWindows();
 	createMenus();
@@ -601,7 +601,7 @@ void PCScoutApp::resetTablet()
 	identity_ = TabletIdentity(identity_.uid());
 	settings_.setValue(TabletNameKey, "");
 
-	data_model_ = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::ScoutingTablet);
+	data_model_ = std::make_shared<ScoutingDataModel>();
 	view_frame_->setDataModel(data_model_);
 
 	view_frame_->setTablet("[NONE]");

@@ -26,10 +26,10 @@
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
-ImportMatchScheduleController::ImportMatchScheduleController(std::shared_ptr<BlueAlliance> ba, std::shared_ptr<ScoutingDataModel> dm) : ApplicationController(ba)
+ImportMatchScheduleController::ImportMatchScheduleController(std::shared_ptr<BlueAlliance> ba, 
+				std::shared_ptr<ScoutingDataModel> dm) : ApplicationController(ba, dm)
 {
 	state_ = State::Start;
-	dm_ = dm;
 }
 
 ImportMatchScheduleController::~ImportMatchScheduleController()
@@ -82,7 +82,7 @@ void ImportMatchScheduleController::run()
 		case State::Start:
 			if (blueAlliance()->getEngine().eventCount() == 0)
 			{
-				const QDate& d = dm_->startDate();
+				const QDate& d = dataModel()->startDate();
 				qDebug() << "Year: " << d.year();
 				qDebug() << "Date: " << d;
 				blueAlliance()->requestEvents(d.year());
@@ -93,7 +93,7 @@ void ImportMatchScheduleController::run()
 
 		case State::WaitingForEvents:
 			state_ = State::WaitingForMatches;
-			blueAlliance()->requestMatches(dm_->evkey());
+			blueAlliance()->requestMatches(dataModel()->evkey());
 			break;
 
 		case State::WaitingForMatches:
@@ -116,7 +116,7 @@ void ImportMatchScheduleController::gotTeams()
 	//
 	// Create the teams and matches, and assign matchs and teams to tablets
 	//
-	DataModelBuilder::addTeamsMatches(blueAlliance()->getEngine(), dm_);
+	DataModelBuilder::addTeamsMatches(blueAlliance()->getEngine(), dataModel());
 
 	emit complete(false);
 	state_ = State::Done;

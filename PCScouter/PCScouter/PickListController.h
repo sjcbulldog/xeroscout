@@ -55,7 +55,6 @@ private:
 	void logGenMessage(const QString& msg);
 
 private:
-	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	int pcnt_;
 	PickListGenerator* gen_;
 	xero::scouting::views::PickListView* view_;

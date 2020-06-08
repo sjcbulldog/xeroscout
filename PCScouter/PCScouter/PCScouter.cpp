@@ -981,7 +981,7 @@ void PCScouter::openEvent()
 	if (filename.length() == 0)
 		return;
 
-	auto dm = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::CentralMachine);
+	auto dm = std::make_shared<ScoutingDataModel>();
 	if (!dm->load(filename)) {
 		QMessageBox::critical(this, "Error", "Could not load event data file");
 		return;

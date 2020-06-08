@@ -25,8 +25,6 @@ namespace xero
 {
 	namespace ba
 	{
-
-
 		class MatchAlliance
 		{
 		public:

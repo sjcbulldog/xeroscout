@@ -17,13 +17,32 @@
 // 
 
 #include "ApplicationController.h"
+#include "BlueAllianceEngine.h"
 
-ApplicationController::ApplicationController(std::shared_ptr<xero::ba::BlueAlliance> ba)
+using namespace xero::ba;
+using namespace xero::scouting::datamodel;
+
+ApplicationController::ApplicationController(std::shared_ptr<BlueAlliance> ba, std::shared_ptr<ScoutingDataModel> dm)
 {
 	ba_ = ba;
+	dm_ = dm;
 	display_initialized_ = false;
+
+	if (dm_ != nullptr)
+	{
+		restoreBlueAllianceData();
+	}
 }
 
 ApplicationController::~ApplicationController()
 {
+}
+
+void ApplicationController::restoreBlueAllianceData()
+{
+	for (auto team : dm_->teams())
+	{
+		ba_->getEngine().createTeam(team->key(), team->number(), team->nick(), team->name(), 
+				team->city(), team->state(), team->country());
+	}
 }

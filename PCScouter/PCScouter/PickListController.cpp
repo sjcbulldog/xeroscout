@@ -22,10 +22,9 @@ using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
 PickListController::PickListController(std::shared_ptr<BlueAlliance> ba, int team, int year,
-	std::shared_ptr<ScoutingDataModel> dm, xero::scouting::views::PickListView* view) : ApplicationController(ba)
+	std::shared_ptr<ScoutingDataModel> dm, xero::scouting::views::PickListView* view) : ApplicationController(ba, dm)
 {
 	view_ = view;
-	dm_ = dm;
 
 	gen_ = new PickListGenerator(team, dm, year);
 	connect(gen_, &PickListGenerator::logMessage, this, &PickListController::logMessage);

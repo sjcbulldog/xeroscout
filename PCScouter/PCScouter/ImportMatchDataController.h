@@ -54,7 +54,6 @@ private:
 
 private:
 	State state_;
-	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	std::map<QString, QStringList> strings_;
 	int maxmatch_;
 };

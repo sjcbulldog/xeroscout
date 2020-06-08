@@ -35,10 +35,6 @@ public:
 		return tablets_;
 	}
 
-	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dataModel() {
-		return dm_;
-	}
-
 	virtual bool shouldDisableApp();
 
 	void simNoMatches() {
@@ -72,7 +68,6 @@ private:
 	int year_;
 	State state_;
 	QStringList tablets_;
-	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	QStringList team_keys_;
 	bool sim_no_matches_;
 };

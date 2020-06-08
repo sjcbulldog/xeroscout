@@ -27,7 +27,7 @@ using namespace xero::scouting::datamodel;
 CoachSync::CoachSync(ScoutTransport* transport, ImageManager &images, bool debug) : images_(images)
 {
 	comp_type_ = true;
-	dm_ = std::make_shared<ScoutingDataModel>(ScoutingDataModel::Role::CoachMachine);
+	dm_ = std::make_shared<ScoutingDataModel>();
 	debug_ = debug;
 
 	protocol_ = new ClientServerProtocol(transport, false, true, false);

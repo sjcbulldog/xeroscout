@@ -77,14 +77,6 @@ namespace xero
 				};
 
 			public:
-				enum class Role
-				{
-					CentralMachine,					///< The central machine that contains the scouting data model
-					ScoutingTablet,					///< A table that contains part of the data model relevant to that tablet
-					CoachMachine,					///< A coaches machine that contains the entire scouting model, but pulls down match and team information from the centrals
-				};
-
-			public:
 				/// \brief create a new data model
 				/// \param evkey the event Blue Alliance key
 				/// \param evname the event name
@@ -93,7 +85,7 @@ namespace xero
 				ScoutingDataModel(const QString& evkey, const QString& evname, const QDate& start, const QDate& end);
 
 				/// \brief create a new data model
-				ScoutingDataModel(Role r);
+				ScoutingDataModel();
 
 				/// \brief destroy this data model
 				virtual ~ScoutingDataModel();
@@ -114,12 +106,6 @@ namespace xero
 				/// \return the starting data for the event
 				const QDate& endDate() const {
 					return end_date_;
-				}
-
-				/// \brief return the role for this data model
-				/// \returns the role for this data model
-				Role role() const {
-					return role_;
 				}
 
 				/// \brief return the Blue Alliance event key
@@ -619,7 +605,7 @@ namespace xero
 				/// \param number the team number for the team
 				/// \param the nickname for teh team
 				/// \returns a shared pointer to the team data model object that was added
-				std::shared_ptr<DataModelTeam> addTeam(const QString& key, int number, const QString& name) {
+				std::shared_ptr<DataModelTeam> addTeam(const QString& key, int number, const QString &nick, const QString& name, const QString &city, const QString &state, const QString &country) {
 					auto t = findTeamByKeyInt(key);
 					if (t != nullptr) {
 						if (t->name() != name || t->number() != number) {
@@ -632,7 +618,7 @@ namespace xero
 						return t;
 					}
 
-					t = std::make_shared<DataModelTeam>(key, number, name);
+					t = std::make_shared<DataModelTeam>(key, number, nick, name, city, state, country);
 					teams_.push_back(t);
 					teams_by_key_.insert_or_assign(key, t);
 
@@ -1012,8 +998,6 @@ namespace xero
 
 				QDate start_date_;
 				QDate end_date_;
-
-				Role role_;
 
 				std::shared_ptr<PickListTranslator> pick_list_trans_;
 			};

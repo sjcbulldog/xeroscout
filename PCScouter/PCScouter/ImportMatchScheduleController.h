@@ -51,6 +51,5 @@ private:
 
 private:
 	State state_;
-	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	QStringList team_keys_;
 };

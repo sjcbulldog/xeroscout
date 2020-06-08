@@ -186,7 +186,7 @@ bool DataModelBuilder::addTeamsMatches(xero::ba::BlueAllianceEngine& engine, std
 			if (it == teams.end())
 				return false;
 
-			dm->addTeam(it->second->key(), it->second->num(), it->second->nick());
+			dm->addTeam(it->second->key(), it->second->num(), it->second->nick(), it->second->name(), it->second->city(), it->second->state(), it->second->country());
 		}
 	}
 
@@ -240,7 +240,7 @@ bool DataModelBuilder::addTeams(xero::ba::BlueAllianceEngine& engine, std::share
 		if (it == teams.end())
 			return false;
 
-		dm->addTeam(it->second->key(), it->second->num(), it->second->nick());
+		dm->addTeam(it->second->key(), it->second->num(), it->second->nick(), it->second->name(), it->second->city(), it->second->state(), it->second->country());
 	}
 
 	// Assign tablets to team pits
@@ -313,7 +313,7 @@ std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
 		QString key = it->second->key();
 		int num = it->second->num();
 		QString name = it->second->name();
-		dm->addTeam(key, num, name);
+		dm->addTeam(key, num, name, it->second->name(), it->second->city(), it->second->state(), it->second->country());
 	}
 
 	for (auto m : ev->matches())

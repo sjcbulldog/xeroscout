@@ -31,14 +31,12 @@ namespace xero
 		class Match
 		{
 		public:
-			Match(const QString& key, const QString& comp_level, int set_number, int match_number,
-				const QString& winning_alliance, int etime, int ptime, int atime, std::shared_ptr<MatchAlliance> red, std::shared_ptr<MatchAlliance> blue)
+			Match(const QString& key, const QString& comp_level, int set_number, int match_number, int etime, int ptime, int atime, std::shared_ptr<MatchAlliance> red, std::shared_ptr<MatchAlliance> blue)
 			{
 				key_ = key;
 				comp_level_ = comp_level;
 				set_number_ = set_number;
 				match_number_ = match_number;
-				winner_ = winning_alliance;
 				etime_ = etime;
 				ptime_ = ptime;
 				atime_ = atime;
@@ -63,10 +61,6 @@ namespace xero
 
 			const int matchNumber() {
 				return match_number_;
-			}
-
-			const QString& winner() {
-				return winner_;
 			}
 
 			int eTime() {

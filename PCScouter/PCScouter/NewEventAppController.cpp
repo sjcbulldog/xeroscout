@@ -25,7 +25,7 @@
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
-NewEventAppController::NewEventAppController(std::shared_ptr<BlueAlliance> ba, const QStringList& tablets, int year) : ApplicationController(ba)
+NewEventAppController::NewEventAppController(std::shared_ptr<BlueAlliance> ba, const QStringList& tablets, int year) : ApplicationController(ba, nullptr)
 {
 	tablets_ = tablets;
 	state_ = State::Start;
@@ -120,7 +120,7 @@ void NewEventAppController::run()
 
 void NewEventAppController::gotTeamDetail()
 {
-	auto it = blueAlliance()->getEngine().events().find(dm_->evkey());
+	auto it = blueAlliance()->getEngine().events().find(dataModel()->evkey());
 	if (it == blueAlliance()->getEngine().events().end())
 	{
 		state_ = State::Done;
@@ -128,7 +128,7 @@ void NewEventAppController::gotTeamDetail()
 	}
 	else
 	{
-		DataModelBuilder::addTeams(blueAlliance()->getEngine(), dm_, it->second->teamKeys());
+		DataModelBuilder::addTeams(blueAlliance()->getEngine(), dataModel(), it->second->teamKeys());
 	}
 
 	state_ = State::Done;
@@ -137,7 +137,7 @@ void NewEventAppController::gotTeamDetail()
 
 void NewEventAppController::gotEventTeams()
 {
-	auto it = blueAlliance()->getEngine().events().find(dm_->evkey());
+	auto it = blueAlliance()->getEngine().events().find(dataModel()->evkey());
 	if (it == blueAlliance()->getEngine().events().end())
 	{
 		state_ = State::Done;
@@ -155,7 +155,7 @@ void NewEventAppController::gotTeams()
 	//
 	// Create the teams and matches, and assign matchs and teams to tablets
 	//
-	DataModelBuilder::addTeamsMatches(blueAlliance()->getEngine(), dm_);
+	DataModelBuilder::addTeamsMatches(blueAlliance()->getEngine(), dataModel());
 
 	emit complete(false);
 	state_ = State::Done;
@@ -164,7 +164,7 @@ void NewEventAppController::gotTeams()
 void NewEventAppController::noMatches()
 {
 	state_ = State::WaitingForEventTeams;
-	blueAlliance()->requestEventTeams(dm_->evkey());
+	blueAlliance()->requestEventTeams(dataModel()->evkey());
 }
 
 void NewEventAppController::gotMatches()
@@ -218,10 +218,11 @@ void NewEventAppController::promptUser()
 		bool good = true;
 		QString error;
 
-		dm_ = DataModelBuilder::buildModel(blueAlliance()->getEngine(), wizard.getPitScoutingForm(), wizard.getMatchScoutingForm(), wizard.getEventKey(), error);
-		if (dm_ == nullptr)
+		auto dm = DataModelBuilder::buildModel(blueAlliance()->getEngine(), wizard.getPitScoutingForm(), wizard.getMatchScoutingForm(), wizard.getEventKey(), error);
+		setDataModel(dm);
+		if (dataModel() == nullptr)
 		{
-			dm_ = nullptr;
+			dataModel() = nullptr;
 
 			emit logMessage("cannot create event data model - " + error);
 			emit errorMessage(error);
@@ -231,50 +232,49 @@ void NewEventAppController::promptUser()
 			return;
 		}
 
-		if (!dm_->matchScoutingForm()->isOK()) {
+		if (!dataModel()->matchScoutingForm()->isOK()) {
 			QString line(wizard.getMatchScoutingForm());
 			line += ": cannot parse match scouting form";
 			emit logMessage(line);
 
-			for (const QString& err : dm_->matchScoutingForm()->errors())
+			for (const QString& err : dataModel()->matchScoutingForm()->errors())
 				emit logMessage(err);
 
 			good = false;
 		}
 
-		if (dm_->matchScoutingForm()->formType() != "match")
+		if (dataModel()->matchScoutingForm()->formType() != "match")
 		{
 			QString line(wizard.getMatchScoutingForm());
 			line += ": wrong type of form, expected 'match', got '";
-			line += dm_->matchScoutingForm()->formType() + "'";
+			line += dataModel()->matchScoutingForm()->formType() + "'";
 			emit logMessage(line);
 
 			good = false;
 		}
 
-		if (!dm_->teamScoutingForm()->isOK()) {
+		if (!dataModel()->teamScoutingForm()->isOK()) {
 			QString line(wizard.getPitScoutingForm());
 			line += ": cannot parse team scouting form, ";
 			emit logMessage(line);
 
-			for (const QString& err : dm_->teamScoutingForm()->errors())
+			for (const QString& err : dataModel()->teamScoutingForm()->errors())
 				emit logMessage(err);
 
 			good = false;
 		}
 
-		if (dm_->teamScoutingForm()->formType() != "team")
+		if (dataModel()->teamScoutingForm()->formType() != "team")
 		{
 			QString line(wizard.getMatchScoutingForm());
 			line += ": wrong type of form, expected 'team', got '";
-			line += dm_->matchScoutingForm()->formType() + "'";
+			line += dataModel()->matchScoutingForm()->formType() + "'";
 			emit logMessage(line);
 			good = false;
 		}
 
 		if (!good) {
-			dm_ = nullptr;
-
+			setDataModel(nullptr);
 			emit errorMessage("Invalid scouting forms loaded - see log window");
 			emit complete(true);
 
@@ -282,7 +282,7 @@ void NewEventAppController::promptUser()
 		}
 		else {
 
-			dm_->setTabletLists(wizard.getPitTabletList(), wizard.getMatchTabletList());
+			dataModel()->setTabletLists(wizard.getPitTabletList(), wizard.getMatchTabletList());
 
 			state_ = State::WaitingForMatches;
 			blueAlliance()->requestMatches(wizard.getEventKey());
@@ -290,6 +290,6 @@ void NewEventAppController::promptUser()
 	}
 	else {
 		state_ = State::Done;
-		dm_ = nullptr;
+		setDataModel(nullptr);
 	}
 }

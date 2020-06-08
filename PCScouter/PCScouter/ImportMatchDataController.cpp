@@ -25,9 +25,8 @@ using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
 ImportMatchDataController::ImportMatchDataController(std::shared_ptr<xero::ba::BlueAlliance> ba,
-	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, int maxmatch) : ApplicationController(ba)
+	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, int maxmatch) : ApplicationController(ba, dm)
 {
-	dm_ = dm;
 	state_ = State::Start;
 	maxmatch_ = maxmatch;
 }
@@ -80,7 +79,7 @@ void ImportMatchDataController::run()
 		switch (state_)
 		{
 		case State::Start:
-			blueAlliance()->requestMatches(dm_->evkey());
+			blueAlliance()->requestMatches(dataModel()->evkey());
 			state_ = State::WaitingForMatches;
 			break;
 
@@ -88,7 +87,7 @@ void ImportMatchDataController::run()
 			{
 				QStringList keys;
 
-				for (auto m : dm_->matches())
+				for (auto m : dataModel()->matches())
 				{
 					if (m->match() <= maxmatch_)
 						keys.push_back(m->key());
@@ -101,7 +100,7 @@ void ImportMatchDataController::run()
 
 		case State::WaitingForTeams:
 			state_ = State::WaitingForRankings;
-			blueAlliance()->requestRankings(dm_->evkey());
+			blueAlliance()->requestRankings(dataModel()->evkey());
 			break;
 
 		case State::WaitingForDetail:
@@ -119,14 +118,14 @@ void ImportMatchDataController::gotDetail()
 {
 	bool baFieldsAdded = false;
 
-	dm_->blockSignals(true);
-	DataModelBuilder::addBlueAllianceData(blueAlliance(), dm_, maxmatch_);
-	dm_->blockSignals(false);
+	dataModel()->blockSignals(true);
+	DataModelBuilder::addBlueAllianceData(blueAlliance(), dataModel(), maxmatch_);
+	dataModel()->blockSignals(false);
 
 	QStringList teams;
 	auto& bateams = blueAlliance()->getEngine().teams();
 
-	for (auto team : dm_->teams())
+	for (auto team : dataModel()->teams())
 	{
 		auto it = bateams.find(team->key());
 		if (it == bateams.end())
@@ -141,13 +140,13 @@ void ImportMatchDataController::gotDetail()
 	else
 	{
 		state_ = State::WaitingForRankings;
-		blueAlliance()->requestRankings(dm_->evkey());
+		blueAlliance()->requestRankings(dataModel()->evkey());
 	}
 }
 
 void ImportMatchDataController::gotRankings()
 {
-	dm_->blockSignals(true);
+	dataModel()->blockSignals(true);
 
 	auto teams = blueAlliance()->getEngine().teams();
 	for (auto team : teams)
@@ -155,14 +154,14 @@ void ImportMatchDataController::gotRankings()
 		QString key = team.second->key();
 
 		if (!team.second->ranking().isEmpty())
-			dm_->setTeamRanking(key, team.second->ranking());
+			dataModel()->setTeamRanking(key, team.second->ranking());
 	}
 
-	dm_->blockSignals(false);
+	dataModel()->blockSignals(false);
 
 	state_ = State::Done;
 	emit complete(false);
 
-	dm_->emitChangedSignal(ScoutingDataModel::ChangeType::MatchDataChanged);
-	dm_->emitChangedSignal(ScoutingDataModel::ChangeType::TeamDataChanged);
+	dataModel()->emitChangedSignal(ScoutingDataModel::ChangeType::MatchDataChanged);
+	dataModel()->emitChangedSignal(ScoutingDataModel::ChangeType::TeamDataChanged);
 }

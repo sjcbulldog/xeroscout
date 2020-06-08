@@ -22,11 +22,9 @@ using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
 AllTeamSummaryController::AllTeamSummaryController(std::shared_ptr<BlueAlliance> ba, 
-	std::shared_ptr<ScoutingDataModel> dm, ScoutingDataSet &ds) : ApplicationController(ba), ds_(ds)
+	std::shared_ptr<ScoutingDataModel> dm, ScoutingDataSet &ds) : ApplicationController(ba, dm), ds_(ds)
 {
-	dm_ = dm;
-
-	for (auto t : dm_->teams())
+	for (auto t : dataModel()->teams())
 		keys_.push_back(t->key());
 	index_ = 0;
 	headers_ = false;
@@ -62,13 +60,13 @@ void AllTeamSummaryController::computeOneTeam(const QString& key)
 	QString query, error;
 	ScoutingDataSet teamds;
 
-	auto t = dm_->findTeamByKey(key);
+	auto t = dataModel()->findTeamByKey(key);
 	if (t == nullptr)
 		return;
 
 	query = "select ";
 	bool first = true;
-	for (auto f : dm_->getMatchFields())
+	for (auto f : dataModel()->getMatchFields())
 	{
 		if (f->type() != FieldDesc::Type::String)
 		{
@@ -81,12 +79,12 @@ void AllTeamSummaryController::computeOneTeam(const QString& key)
 	}	
 	query += " from matches where MatchTeamKey = '" + key + "'";
 
-	if (!dm_->createCustomDataSet(teamds, query, error))
+	if (!dataModel()->createCustomDataSet(teamds, query, error))
 		return;
 
 	if (!headers_)
 	{
-		for (auto f : dm_->getTeamFields())
+		for (auto f : dataModel()->getTeamFields())
 			ds_.addHeader(f);
 
 		for (int col = 0; col < teamds.columnCount(); col++)
@@ -96,7 +94,7 @@ void AllTeamSummaryController::computeOneTeam(const QString& key)
 	}
 
 	ds_.newRow();
-	for (auto f : dm_->getTeamFields())
+	for (auto f : dataModel()->getTeamFields())
 	{
 		QVariant v = t->value(f->name());
 		ds_.addData(v);

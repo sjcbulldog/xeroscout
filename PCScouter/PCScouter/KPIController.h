@@ -81,7 +81,6 @@ private:
 	std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> match_;
 	std::map<QString, QStringList> team_event_map_;
 	std::map<QString, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>> models_;
-	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	QElapsedTimer timer_;
 };
 

@@ -137,7 +137,7 @@ namespace xero
 
 			auto it = matches_by_key_.find(key);
 			if (it == matches_by_key_.end()) {
-				ret = std::make_shared<Match>(key, comp_level, set_number, match_number, winning_alliance, etime, ptime, atime, red, blue);
+				ret = std::make_shared<Match>(key, comp_level, set_number, match_number, etime, ptime, atime, red, blue);
 				matches_by_key_.insert(std::make_pair(key, ret));
 			}
 			else {

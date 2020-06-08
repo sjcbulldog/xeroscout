@@ -47,7 +47,6 @@ namespace xero
 				uuid_ = QUuid::createUuid();
 
 				filename_ = QStandardPaths::locate(QStandardPaths::DocumentsLocation, ev_key_);
-				role_ = Role::CentralMachine;
 				dirty_ = false;
 
 				emit_changes_ = true;
@@ -55,9 +54,8 @@ namespace xero
 				addTemporaryFieldDesc();
 			}
 
-			ScoutingDataModel::ScoutingDataModel(ScoutingDataModel::Role r)
+			ScoutingDataModel::ScoutingDataModel()
 			{
-				role_ = r;
 				dirty_ = false;
 				emit_changes_ = true;
 

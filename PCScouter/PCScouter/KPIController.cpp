@@ -30,7 +30,7 @@ using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
 KPIController::KPIController(std::shared_ptr<BlueAlliance> ba, std::shared_ptr<ScoutingDataModel> dm, const QDate &evdate, const QStringList& teams, 
-	const QString& evkey, std::shared_ptr<const ScoutingForm> team, std::shared_ptr<const ScoutingForm> match) : ApplicationController(ba)
+	const QString& evkey, std::shared_ptr<const ScoutingForm> team, std::shared_ptr<const ScoutingForm> match) : ApplicationController(ba, dm)
 {
 	evdate_ = evdate;
 	state_ = State::Start;
@@ -38,7 +38,6 @@ KPIController::KPIController(std::shared_ptr<BlueAlliance> ba, std::shared_ptr<S
 	evkey_ = evkey;
 	team_ = team;
 	match_ = match;
-	dm_ = dm;
 }
 
 KPIController::~KPIController()
@@ -170,7 +169,7 @@ void KPIController::computeKPI()
 
 		for (auto pairs : calcs)
 		{
-			dm_->addTeamExtraData(pair.first, "prev_" + pairs.first, (double)pairs.second.second / (double)pairs.second.first);
+			dataModel()->addTeamExtraData(pair.first, "prev_" + pairs.first, (double)pairs.second.second / (double)pairs.second.first);
 		}
 	}
 }

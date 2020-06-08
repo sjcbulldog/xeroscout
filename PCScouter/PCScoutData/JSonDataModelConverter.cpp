@@ -240,7 +240,11 @@ namespace xero
 					QJsonObject obj;
 					obj[JsonKeyName] = team->key();
 					obj[JsonNumberName] = team->number();
+					obj[JsonNickName] = team->nick();
 					obj[JsonNameName] = team->name();
+					obj[JsonCityName] = team->city();
+					obj[JsonStateName] = team->state();
+					obj[JsonCountryName] = team->country();
 					obj[JsonAssignName] = team->tablet();
 					obj[JsonExtraTeamData] = encode(team->extraData());
 
@@ -728,8 +732,12 @@ namespace xero
 					QString key = tobj[JsonKeyName].toString();
 					int number = tobj[JsonNumberName].toInt();
 					QString name = tobj[JsonNameName].toString();
+					QString nick = tobj[JsonNickName].toString();
+					QString city = tobj[JsonCityName].toString();
+					QString state = tobj[JsonStateName].toString();
+					QString country = tobj[JsonCountryName].toString();
 
-					auto t = dm_->addTeam(key, number, name);
+					auto t = dm_->addTeam(key, number, nick, name, city, state, country);
 					dm_->assignTeamTablet(key, tobj[JsonAssignName].toString());
 					t->addExtraData(decode(tobj[JsonExtraTeamData].toArray()));
 

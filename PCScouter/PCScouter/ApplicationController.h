@@ -18,16 +18,19 @@
 
 #pragma once
 
+#include "ScoutingDataModel.h"
 #include "BlueAlliance.h"
 #include <QObject>
 #include <memory>
 
 class ApplicationController : public QObject
 {
+	friend class PCScouter;
+
 	Q_OBJECT
 
 public:
-	ApplicationController(std::shared_ptr<xero::ba::BlueAlliance> ba);
+	ApplicationController(std::shared_ptr<xero::ba::BlueAlliance> ba, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
 	virtual ~ApplicationController();
 
 	bool isDisplayInitialized() { return display_initialized_; }
@@ -51,7 +54,19 @@ protected:
 		return ba_;
 	}
 
+	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dataModel() {
+		return dm_;
+	}
+
+	void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm) {
+		dm_ = dm;
+	}
+
 private:
+	void restoreBlueAllianceData();
+
+private:
+	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	std::shared_ptr<xero::ba::BlueAlliance> ba_;
 	bool display_initialized_;
 };
