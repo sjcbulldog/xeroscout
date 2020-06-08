@@ -65,9 +65,6 @@ namespace xero
 
 			std::shared_ptr<MatchAlliance> alliance = std::make_shared<MatchAlliance>();
 
-			if (obj.contains("score") && obj.value("score").isDouble())
-				alliance->setScore(obj.value("score").toInt());
-
 			QJsonArray arr = obj.value("team_keys").toArray();
 			for (int i = 0; i < arr.size(); i++) {
 				if (!arr[i].isString())

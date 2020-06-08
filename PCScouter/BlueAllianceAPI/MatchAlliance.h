@@ -29,14 +29,9 @@ namespace xero
 		{
 		public:
 			MatchAlliance() {
-				score_ = -1;
 			}
 
 			virtual ~MatchAlliance() {
-			}
-
-			void setScore(int score) {
-				score_ = score;
 			}
 
 			void addTeam(const QString& team) {
@@ -67,7 +62,6 @@ namespace xero
 			QStringList teams_;
 			QStringList surrogates_;
 			QStringList dqs_;
-			int score_;
 		};
 
 	}
