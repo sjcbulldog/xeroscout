@@ -1,20 +1,24 @@
 //
-// Copyright 2020 by Jack W. (Butch) Griffin
+// Copyright(C) 2020 by Jack (Butch) Griffin
 //
-// Courtesy of Error Code Xero
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http ://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissionsand
-// limitations under the License.
-// 
+//	This program is free software : you can redistribute it and /or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, either version 3 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.If not, see < https://www.gnu.org/licenses/>.
+//
+//
+//
+// This work we create by the named individual(s) above in support of the
+// FRC robotics team Error Code Xero.
+//
 
 #include "ImageItemDisplay.h"
 #include "ImageFormItem.h"
@@ -25,6 +29,7 @@
 #include <QSize>
 #include <QFontMetrics>
 #include <QMouseEvent>
+#include <QKeyEvent>
 #include <QDebug>
 
 namespace xero
@@ -38,12 +43,12 @@ namespace xero
 				const ImageFormItem* fdesc = dynamic_cast<const ImageFormItem*>(desc);
 				assert(fdesc != nullptr);
 
-				scale_ = fdesc->scale();
+				FormItemDisplay::setScale(fdesc->scale());
 				image_ = images.get(fdesc->imageTag());
 				if (image_ != nullptr)
 				{
 					QSize s = image_->size();
-					size_ = QSize(s.width() * scale_, s.height() * scale_);
+					size_ = QSize(s.width() * scale(), s.height() * scale());
 					setMinimumSize(size_);
 					setMaximumSize(size_);
 
@@ -56,13 +61,31 @@ namespace xero
 			{
 			}
 
+			void ImageItemDisplay::setScale(double sc) 
+			{
+				double current = scale();
+				FormItemDisplay::setScale(sc * current);
+
+				if (image_ != nullptr)
+				{
+					QSize s = image_->size();
+					size_ = QSize(s.width() * scale(), s.height() * scale());
+					setMinimumSize(size_);
+					setMaximumSize(size_);
+				}
+			}
+
+			void ImageItemDisplay::keyPressEvent(QKeyEvent *ev)
+			{
+			}
+
 			QRect ImageItemDisplay::realBounds(std::shared_ptr<ImageFormSubItem> item)
 			{
 				const ImageFormItem* fdesc = dynamic_cast<const ImageFormItem*>(desc());
 				assert(fdesc != nullptr);
 
 				QRect r = item->bounds();
-				r = QRect(QPoint(r.x() * scale_, r.y() * scale_), QSize(r.width() * scale_, r.height() * scale_));
+				r = QRect(QPoint(r.x() * scale(), r.y() * scale()), QSize(r.width() * scale(), r.height() * scale()));
 
 				return r;
 			}

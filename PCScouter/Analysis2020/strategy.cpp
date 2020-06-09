@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2020 by Eric Rippey
+// Copyright(C) 2020 by  Eric Rippey
 //
 //	This program is free software : you can redistribute it and /or modify
 //	it under the terms of the GNU General Public License as published by
@@ -13,6 +13,11 @@
 //
 //	You should have received a copy of the GNU General Public License
 //	along with this program.If not, see < https://www.gnu.org/licenses/>.
+//
+//
+//
+// This work we create by the named individual(s) above in support of the
+// FRC robotics team Error Code Xero.
 //
 
 //

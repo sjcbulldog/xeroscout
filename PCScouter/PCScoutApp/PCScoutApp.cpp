@@ -1,22 +1,24 @@
 //
-// Copyright 2020 by Jack W. (Butch) Griffin
+// Copyright(C) 2020 by Jack (Butch) Griffin
 //
-// Courtesy of Error Code Xero
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http ://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissionsand
-// limitations under the License.
-// 
-
-
+//	This program is free software : you can redistribute it and /or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, either version 3 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.If not, see < https://www.gnu.org/licenses/>.
+//
+//
+//
+// This work we create by the named individual(s) above in support of the
+// FRC robotics team Error Code Xero.
+//
 
 #include "PCScoutApp.h"
 #include "FormView.h"
@@ -522,16 +524,12 @@ void PCScoutApp::setMainView(DocumentView::ViewType type)
 	}
 }
 
-void PCScoutApp::extractDataFromForm(int view, const QString &label)
+void PCScoutApp::extractDataFromForm(int view, bool team, const QString &key)
 {
 	if (view_frame_->isForm(view)) {
-
-		QStringList pieces = label.split(':');
-
-		if (pieces.size() == 2 && pieces.front() == "Team") {
-			// Pit form
-			int tnum = pieces[1].toInt();
-			auto t = data_model_->findTeamByNumber(tnum);
+		if (team)
+		{
+			auto t = data_model_->findTeamByKey(key);
 			FormView* fv = dynamic_cast<FormView*>(view_frame_->getWidget(view));
 
 			ScoutingDataMapPtr p = std::make_shared<ScoutingDataMap>();
@@ -541,13 +539,9 @@ void PCScoutApp::extractDataFromForm(int view, const QString &label)
 			p->insert_or_assign("TimeStamp", QDateTime::currentDateTime().toString());
 			data_model_->setTeamScoutingData(t->key(), p, true);
 		}
-		else if (pieces.size() == 4 && pieces.front() == "Match") {
-			// Match form
-			QString type = pieces[1];
-			int set = pieces[2].toInt();
-			int match = pieces[3].toInt();
-
-			auto m = data_model_->findMatchByTriple(type, set, match);
+		else
+		{
+			auto m = data_model_->findMatchByKey(key);
 			FormView* fv = dynamic_cast<FormView*>(view_frame_->getWidget(view));
 			ScoutingDataMapPtr p = std::make_shared<ScoutingDataMap>();
 			fv->extractData(p);
@@ -570,8 +564,12 @@ void PCScoutApp::listItemChanged(QListWidgetItem* newitem, QListWidgetItem* oldi
 
 	if (olditem != nullptr) {
 		int view = olditem->data(Qt::UserRole).toInt();
-		QString label = olditem->text();
-		extractDataFromForm(view, label);
+		if (view >= static_cast<int>(DocumentView::ViewType::FirstFormView))
+		{
+			auto it = index_to_formtype_.find(view);
+			assert(it != index_to_formtype_.end());
+			extractDataFromForm(view, it->second.first, it->second.second);
+		}
 	}
 
 	if (data_model_ == nullptr)
@@ -917,6 +915,7 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 	QListWidgetItem* item;
 	int index;
 	QColor color;
+	bool teamstate;
 
 	if (type == "team")
 		color = QColor(0, 128, 0);
@@ -940,11 +939,13 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 			auto team = data_model_->findTeamByKey(key);
 			title = "Team:" + QString::number(team->number());
 			icon = "teamform";
+			teamstate = true;
 		}
 		else if (type == "match") {
 			auto match = data_model_->findMatchByKey(key);
 			title = match->title();
 			icon = "matchform";
+			teamstate = false;
 		}
 		else {
 			assert(false);
@@ -955,6 +956,7 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 			item = new QListWidgetItem(loadIcon(icon), title, view_selector_);
 			item->setData(Qt::UserRole, QVariant(index));
 			view_selector_->addItem(item);
+			index_to_formtype_.insert_or_assign(index, std::make_pair(teamstate, key));
 		}
 	}
 
@@ -1050,7 +1052,9 @@ void PCScoutApp::saveForm(int viewindex)
 	}
 	assert(found == true);
 
-	extractDataFromForm(viewindex, label);
+	auto it = index_to_formtype_.find(viewindex);
+	assert(it != index_to_formtype_.end());
+	extractDataFromForm(viewindex, it->second.first, it->second.second);
 }
 
 void PCScoutApp::saveAllForms()
@@ -1063,13 +1067,14 @@ void PCScoutApp::saveAllForms()
 
 QString PCScoutApp::generateTeamTitle(std::shared_ptr<const DataModelTeam> t)
 {
-	return "Team Scouting: " + QString::number(t->number()) + " - " + t->name();
+	return "Team Scouting: " + QString::number(t->number()) + " - " + t->nick();
 }
 
 QString PCScoutApp::generateMatchTitle(std::shared_ptr<const DataModelMatch> m, std::shared_ptr<const DataModelTeam> t)
 {
 	QString qmtxt;
 
+#ifdef NOTYET
 	qmtxt = m->compType() + " ";
 	if (m->compType() != "qm")
 	{
@@ -1077,6 +1082,9 @@ QString PCScoutApp::generateMatchTitle(std::shared_ptr<const DataModelMatch> m, 
 		qmtxt += ", match " + QString::number(m->match());
 	}
 	return qmtxt + ", Team " + QString::number(t->number());
+#endif
+
+	return m->title();
 }
 
 void PCScoutApp::chooseTabletName(const QString &evkey, const QStringList& list, const QStringList &registered, QString& choice)

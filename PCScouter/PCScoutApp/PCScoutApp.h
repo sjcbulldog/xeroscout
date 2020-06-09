@@ -1,22 +1,24 @@
 //
-// Copyright 2020 by Jack W. (Butch) Griffin
+// Copyright(C) 2020 by Jack (Butch) Griffin
 //
-// Courtesy of Error Code Xero
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http ://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissionsand
-// limitations under the License.
-// 
-
-
+//	This program is free software : you can redistribute it and /or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, either version 3 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.If not, see < https://www.gnu.org/licenses/>.
+//
+//
+//
+// This work we create by the named individual(s) above in support of the
+// FRC robotics team Error Code Xero.
+//
 
 #pragma once
 
@@ -84,7 +86,7 @@ private:
 	void viewItemDoubleClicked(xero::scouting::views::DocumentView::ViewType type, const QString& key);
 	int startScouting(const QString &key, const QString &type, const QString &title, xero::scouting::datamodel::Alliance c, std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form);
 
-	void extractDataFromForm(int formindex, const QString &label);
+	void extractDataFromForm(int formindex, bool team, const QString &label);
 
 	void createTeamScoutingForms();
 	void createMatchScoutingForms();
@@ -115,9 +117,6 @@ private:
 	void addTeam();
 	void addMatch();
 
-	void foundService(const QBluetoothServiceInfo& info);
-	void discoveryFinished();
-	void serverSelected(const QString& name);
 	void serverConnected(xero::scouting::transport::BluetoothTransport* trans);
 	void serverConnectionError(const QString& err);
 
@@ -198,4 +197,6 @@ private:
 
 	bool host_addr_valid_;
 	QHostAddress host_addr_;
+
+	std::map<int, std::pair<bool, QString>> index_to_formtype_;
 };

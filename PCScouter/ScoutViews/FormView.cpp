@@ -1,22 +1,24 @@
 //
-// Copyright 2020 by Jack W. (Butch) Griffin
+// Copyright(C) 2020 by Jack (Butch) Griffin
 //
-// Courtesy of Error Code Xero
-// 
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// 
-// http ://www.apache.org/licenses/LICENSE-2.0
-// 
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissionsand
-// limitations under the License.
-// 
-
-
+//	This program is free software : you can redistribute it and /or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, either version 3 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.If not, see < https://www.gnu.org/licenses/>.
+//
+//
+//
+// This work we create by the named individual(s) above in support of the
+// FRC robotics team Error Code Xero.
+//
 
 #include "FormView.h"
 #include "FlowLayout.h"
@@ -41,13 +43,31 @@ namespace xero
 				QVBoxLayout* lay = new QVBoxLayout();
 				setLayout(lay);
 
-				titles_ = new QLabel(title, this);
+				QWidget* titlestrip = new QWidget();
+				QHBoxLayout* hlay = new QHBoxLayout();
+				titlestrip->setLayout(hlay);
+
+				smaller_ = new QPushButton("-", titlestrip);
+				QFont bf = smaller_->font();
+				bf.setPointSizeF(22);
+				bf.setBold(true);
+				smaller_->setFont(bf);
+				hlay->addWidget(smaller_);
+
+				titles_ = new QLabel(title, titlestrip);
 				titles_->setAlignment(Qt::AlignCenter);
 				QPalette pal = titles_->palette();
 				pal.setColor(titles_->foregroundRole(), titlec);
 				titles_->setPalette(pal);
+				hlay->addWidget(titles_);
+				QSizePolicy p(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+				titles_->setSizePolicy(p);
 
-				lay->addWidget(titles_);
+				bigger_ = new QPushButton("+", titlestrip);
+				bigger_->setFont(bf);
+				hlay->addWidget(bigger_);
+
+				lay->addWidget(titlestrip);
 
 				QFont f = titles_->font();
 				f.setUnderline(true);
@@ -61,10 +81,35 @@ namespace xero
 				f = tabs_->font();
 				f.setPointSizeF(18.0);
 				tabs_->setFont(f);
+
+				connect(bigger_, &QPushButton::pressed, this, &FormView::plus);
+				connect(smaller_, &QPushButton::pressed, this, &FormView::minus);
 			}
 
 			FormView::~FormView()
 			{
+			}
+
+			void FormView::plus()
+			{
+				setScale(1.1);
+			}
+
+			void FormView::minus()
+			{
+				setScale(0.9);
+			}
+
+			void FormView::setScale(double s)
+			{
+				auto& sections = form_->sections();
+				for (auto section : sections) {
+					for (auto item : section->items()) {
+						auto disp = instance_->displayItem(item->tag());
+						if (disp != nullptr)
+							disp->setScale(s);
+					}
+				}
 			}
 
 			void FormView::createSection(std::shared_ptr<const FormSection> section)
