@@ -23,6 +23,8 @@
 #include "ZebraViewWidget.h"
 #include "RobotTrack.h"
 #include <QBoxLayout>
+#include <QTableWidget>
+#include <QHeaderView>
 
 using namespace xero::scouting::datamodel;
 
@@ -54,9 +56,15 @@ namespace xero
 				box_ = new QComboBox(top);
 				hlay->addWidget(box_);
 				(void)connect(box_, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged), this, &ZebraViewWidget::comboxChanged);
+				QSizePolicy p(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+				box_->setSizePolicy(p);
+
+				detail_ = new QPushButton("Select", top);
+				hlay->addWidget(detail_);
+				(void)connect(detail_, &QPushButton::pressed, this, &ZebraViewWidget::showDetail);
 
 				field_ = new PathFieldView(this);
-				QSizePolicy p(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+				p = QSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 				field_->setSizePolicy(p);
 				vlay->addWidget(field_);
 
@@ -66,10 +74,166 @@ namespace xero
 
 				matches_->setChecked(true);
 				matchesSelected(true);
+
+				toolbox_ = nullptr;
 			}
 
 			ZebraViewWidget::~ZebraViewWidget()
 			{
+			}
+
+			void ZebraViewWidget::showDetail()
+			{
+				if (toolbox_ != nullptr)
+				{
+					toolbox_->close();
+					toolbox_ = nullptr;
+				}
+				else
+				{
+					toolbox_ = new QWidget(this, Qt::Tool);
+					connect(toolbox_, &QWidget::destroyed, this, &ZebraViewWidget::detailWinClosed);
+					QVBoxLayout* lay = new QVBoxLayout();
+					toolbox_->setLayout(lay);
+					table_ = new QTableWidget(toolbox_);
+					lay->addWidget(table_);
+					table_->setColumnCount(1) ;
+					toolbox_->show();
+
+					if (matches_->isChecked())
+					{
+						QVariant v = box_->itemData(box_->currentIndex());
+						if (v.type() == QVariant::String)
+							showDetailMatch(v.toString());
+					}
+					else
+					{
+						QVariant v = box_->itemData(box_->currentIndex());
+						if (v.type() == QVariant::String)
+							showDetailTeam(v.toString());
+					}
+				}
+			}
+
+			void ZebraViewWidget::detailWinClosed()
+			{
+				toolbox_ = nullptr;
+			}
+
+			void ZebraViewWidget::showDetailMatch(const QString& key)
+			{
+				table_->clear();
+
+				auto m = dataModel()->findMatchByKey(key);
+				int row = 0;
+				table_->setRowCount(6);
+
+				Alliance c;
+				c = Alliance::Red;
+				for (int i = 1; i <= 3; i++)
+				{
+					QString tkey = m->team(c, i);
+					auto team = dataModel()->findTeamByKey(tkey);
+					QTableWidgetItem* item = new QTableWidgetItem(QString::number(team->number()) + " - " + team->nick());
+					item->setData(Qt::UserRole, tkey);
+					Qt::ItemFlags f = Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled;
+					item->setFlags(f);
+
+					if (keys_.contains(tkey))
+						item->setCheckState(Qt::CheckState::Checked);
+					else
+						item->setCheckState(Qt::CheckState::Unchecked);
+
+					table_->setItem(row++, 0, item);
+				}
+
+				c = Alliance::Blue;
+				for (int i = 1; i <= 3; i++)
+				{
+					QString tkey = m->team(c, i);
+					auto team = dataModel()->findTeamByKey(tkey);
+					QTableWidgetItem* item = new QTableWidgetItem(QString::number(team->number()) + " - " + team->nick());
+					item->setData(Qt::UserRole, tkey);
+					Qt::ItemFlags f = Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled;
+					item->setFlags(f);
+
+					if (keys_.contains(tkey))
+						item->setCheckState(Qt::CheckState::Checked);
+					else
+						item->setCheckState(Qt::CheckState::Unchecked);
+					table_->setItem(row++, 0, item);
+				}
+
+				connect(table_, &QTableWidget::itemChanged, this, &ZebraViewWidget::detailItemChanged);
+
+				table_->resizeColumnsToContents();
+				table_->horizontalHeader()->hide();
+				table_->verticalHeader()->hide();
+				table_->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
+				toolbox_->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
+			}
+
+			void ZebraViewWidget::showDetailTeam(const QString& key)
+			{
+				int row = 0;
+
+				table_->clear();
+				for (auto m : dataModel()->matches())
+				{
+					if (m->hasZebra())
+					{
+						Alliance c;
+						int slot;
+
+						if (m->teamToAllianceSlot(key, c, slot))
+						{
+							QString mkey = m->key();
+							QTableWidgetItem* item = new QTableWidgetItem(m->title());
+							item->setData(Qt::UserRole, mkey);
+							Qt::ItemFlags f = Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled;
+							item->setFlags(f);
+
+							if (keys_.contains(mkey))
+								item->setCheckState(Qt::CheckState::Checked);
+							else
+								item->setCheckState(Qt::CheckState::Unchecked);
+
+							table_->setRowCount(row + 1);
+							table_->setItem(row++, 0, item);
+						}
+					}
+				}
+
+				connect(table_, &QTableWidget::itemChanged, this, &ZebraViewWidget::detailItemChanged);
+
+				table_->resizeColumnsToContents();
+				table_->horizontalHeader()->hide();
+				table_->verticalHeader()->hide();
+				table_->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
+				toolbox_->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
+			}
+
+			void ZebraViewWidget::detailItemChanged(QTableWidgetItem* item)
+			{
+				QVariant v = box_->itemData(box_->currentIndex());
+
+				QString key = item->data(Qt::UserRole).toString();
+				if (item->checkState() == Qt::CheckState::Checked && !keys_.contains(key))
+				{
+					keys_.push_back(key);
+					if (matches_->isChecked())
+						createPlotMatchWithKeys(v.toString());
+					else
+						createPlotTeamWithKeys(v.toString());
+				}
+				else if (item->checkState() == Qt::CheckState::Unchecked && keys_.contains(key))
+				{
+					keys_.removeOne(key);
+					if (matches_->isChecked())
+						createPlotMatchWithKeys(v.toString());
+					else
+						createPlotTeamWithKeys(v.toString());
+				}
 			}
 
 			void ZebraViewWidget::rangeChanged(double minv, double maxv)
@@ -96,6 +260,9 @@ namespace xero
 
 			void ZebraViewWidget::matchesSelected(bool checked)
 			{
+				if (!checked)
+					return;
+
 				setNeedRefresh();
 				box_->clear();
 				if (dataModel() != nullptr)
@@ -112,6 +279,9 @@ namespace xero
 
 			void ZebraViewWidget::robotSelected(bool checked)
 			{
+				if (!checked)
+					return;
+
 				setNeedRefresh();
 				box_->clear();
 				if (dataModel() != nullptr)
@@ -125,7 +295,7 @@ namespace xero
 							});
 
 						for (auto t : teams)
-							box_->addItem(QString::number(t->number()) + " - " + t->name(), t->key());
+							box_->addItem(QString::number(t->number()) + " - " + t->nick(), t->key());
 					}
 					box_->setCurrentIndex(0);
 					createPlot();
@@ -141,20 +311,24 @@ namespace xero
 
 			void ZebraViewWidget::createPlot()
 			{
-				if (matches_->isChecked())
+				QVariant v = box_->itemData(box_->currentIndex());
+				
+				if (v.type() == QVariant::String)
 				{
-					QVariant v = box_->itemData(box_->currentIndex());
-					if (v.type() == QVariant::String)
+					if (matches_->isChecked())
+					{
 						createPlotMatch(v.toString());
-				}
-				else
-				{
-					QVariant v = box_->itemData(box_->currentIndex());
-					if (v.type() == QVariant::String)
+						if (toolbox_ != nullptr)
+							showDetailMatch(v.toString());
+					}
+					else
+					{
 						createPlotTeam(v.toString());
+						if (toolbox_ != nullptr)
+							showDetailTeam(v.toString());
+					}
 				}
 			}
-
 
 			QColor ZebraViewWidget::matchRobotColor(xero::scouting::datamodel::Alliance c, int slot)
 			{
@@ -212,11 +386,33 @@ namespace xero
 				}
 			}
 
-			void ZebraViewWidget::createPlotMatch(const QString &key)
+			void ZebraViewWidget::createPlotMatch(const QString& key)
 			{
 				if (!needsRefresh())
 					return;
 
+				keys_.clear();
+
+				auto m = dataModel()->findMatchByKey(key);
+				if (m == nullptr)
+					return;
+
+				Alliance c = Alliance::Red;
+				for (int i = 1; i <= 3; i++)
+				{
+					keys_.push_back(m->team(c, i));
+				}
+				c = Alliance::Blue;
+				for (int i = 1; i <= 3; i++)
+				{
+					keys_.push_back(m->team(c, i));
+				}
+
+				createPlotMatchWithKeys(key);
+			}
+
+			void ZebraViewWidget::createPlotMatchWithKeys(const QString &key)
+			{
 				field_->clearTracks();
 
 				auto m = dataModel()->findMatchByKey(key);
@@ -243,16 +439,32 @@ namespace xero
 				Alliance c = Alliance::Red;
 				for (int i = 1; i <= 3; i++)
 				{
-					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i), m->title());
-					t->setRange(slider_->rangeStart(), slider_->rangeEnd());
-					tracks.push_back(t);
+					QString tmkey = m->team(c, i);
+					if (keys_.contains(tmkey))
+					{
+						auto t = std::make_shared<RobotTrack>(tmkey, matchRobotColor(c, i), m->title());
+						t->setRange(slider_->rangeStart(), slider_->rangeEnd());
+						tracks.push_back(t);
+					}
+					else
+					{
+						tracks.push_back(nullptr);
+					}
 				}
 				c = Alliance::Blue;
 				for (int i = 1; i <= 3; i++)
 				{
-					auto t = std::make_shared<RobotTrack>(m->team(c, i), matchRobotColor(c, i), m->title());
-					t->setRange(slider_->rangeStart(), slider_->rangeEnd());
-					tracks.push_back(t);
+					QString tmkey = m->team(c, i);
+					if (keys_.contains(tmkey))
+					{
+						auto t = std::make_shared<RobotTrack>(tmkey, matchRobotColor(c, i), m->title());
+						t->setRange(slider_->rangeStart(), slider_->rangeEnd());
+						tracks.push_back(t);
+					}
+					else
+					{
+						tracks.push_back(nullptr);
+					}
 				}
 
 				QJsonArray times = zebra.value("times").toArray();
@@ -261,7 +473,10 @@ namespace xero
 						return;
 
 					for (int j = 0; j < tracks.size(); j++)
-						tracks[j]->addTime(times[i].toDouble());
+					{
+						if (tracks[j] != nullptr)
+							tracks[j]->addTime(times[i].toDouble());
+					}
 				}
 
 				const QJsonObject& aobj = zebra.value("alliances").toObject();
@@ -277,9 +492,10 @@ namespace xero
 
 				for (auto t : tracks)
 				{
-					if (t->locSize() > 1)
+					if (t != nullptr && t->locSize() > 1)
 						field_->addTrack(t);
 				}
+				field_->update();
 			}
 
 			bool ZebraViewWidget::extractOneAlliance(const QJsonArray& arr, Alliance c, int slot, std::shared_ptr<RobotTrack> track)
@@ -329,7 +545,8 @@ namespace xero
 					if (c == Alliance::Blue)
 						which += 3;
 
-					extractOneAlliance(arr, c, slot, tracks[which]);
+					if (tracks[which] != nullptr)
+						extractOneAlliance(arr, c, slot, tracks[which]);
 				}
 			}
 
@@ -338,10 +555,29 @@ namespace xero
 				if (!needsRefresh())
 					return;
 
-				std::list<std::shared_ptr<RobotTrack>> tracks;
-
+				keys_.clear();
 				for (auto m : dataModel()->matches())
 				{
+					Alliance c;
+					int slot;
+
+					if (!m->teamToAllianceSlot(key, c, slot))
+						continue;
+
+					keys_.push_back(m->key());
+				}
+
+				createPlotTeamWithKeys(key);
+			}
+
+			void ZebraViewWidget::createPlotTeamWithKeys(const QString &key)
+			{
+				std::list<std::shared_ptr<RobotTrack>> tracks;
+
+				for (auto mkey: keys_)
+				{
+					auto m = dataModel()->findMatchByKey(mkey);
+
 					Alliance c;
 					int slot;
 
@@ -386,6 +622,8 @@ namespace xero
 					if (t->locSize() > 1)
 						field_->addTrack(t);
 				}
+
+				field_->update();
 			}
 		}
 	}

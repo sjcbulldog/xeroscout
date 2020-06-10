@@ -58,6 +58,12 @@ namespace xero
 					return data_view_->dataset();
 				}
 
+				void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model) {
+					ViewBase::setDataModel(model);
+					if (data_view_ != nullptr)
+						data_view_->setDataModel(model);
+				}
+
 			private:
 				void executeQuery();
 

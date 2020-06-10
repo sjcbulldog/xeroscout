@@ -30,6 +30,8 @@
 #include <QWidget>
 #include <QComboBox>
 #include <QRadioButton>
+#include <QPushButton>
+#include <QTableWidget>
 
 namespace xero
 {
@@ -56,6 +58,12 @@ namespace xero
 				}
 
 			private:
+				void showDetail();
+				void showDetailMatch(const QString& key);
+				void showDetailTeam(const QString& key);
+				void detailItemChanged(QTableWidgetItem* item);
+				void detailWinClosed();
+
 				void matchesSelected(bool checked);
 				void robotSelected(bool checked);
 				void comboxChanged(int index);
@@ -63,6 +71,9 @@ namespace xero
 				void createPlot();
 				void createPlotMatch(const QString& key);
 				void createPlotTeam(const QString& key);
+
+				void createPlotMatchWithKeys(const QString& key);
+				void createPlotTeamWithKeys(const QString& key);
 
 				void rangeChanged(double minv, double maxv);
 
@@ -78,6 +89,11 @@ namespace xero
 				QRadioButton* robot_;
 				PathFieldView* field_;
 				TimeBoundWidget* slider_;
+				QStringList keys_;
+				QPushButton* detail_;
+
+				QTableWidget* table_;
+				QWidget* toolbox_;
 			};
 		}
 	}

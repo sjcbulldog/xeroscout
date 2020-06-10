@@ -309,7 +309,29 @@ namespace xero
 
 				setDelegates();
 
+				computeHeaderTooltips(table);
+
 				table->blockSignals(false);
+			}
+
+			void DataSetViewWidget::computeHeaderTooltips(QTableWidget *table)
+			{
+				for (int col = 0; col < table->columnCount(); col++)
+				{
+					QString tt;
+
+					QVariant v = data_.columnSummary(col);
+					if (v.type() == QVariant::String)
+					{
+						tt = v.toString().replace(',', '\n');
+					}
+					else if (v.type() == QVariant::Double)
+					{
+						tt = "Average " + QString::number(v.toDouble(), 'f', 2);
+					}
+
+					table->horizontalHeaderItem(col)->setToolTip(tt);
+				}
 			}
 
 			void DataSetViewWidget::setDelegates()

@@ -391,7 +391,7 @@ namespace xero
 					team->setOPR(opr);
 
 					if (getFieldByName(DataModelTeam::OPRName) == nullptr)
-						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::OPRName, FieldDesc::Type::Double, false, true));
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::OPRName, FieldDesc::Type::Double, false));
 
 					dirty_ = true;
 					emitChangedSignal(ChangeType::TeamDataChanged);

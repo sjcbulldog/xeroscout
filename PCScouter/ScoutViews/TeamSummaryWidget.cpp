@@ -160,7 +160,7 @@ namespace xero
 							});
 
 						for (auto t : teams)
-							box_->addItem(QString::number(t->number()) + " - " + t->name(), t->key());
+							box_->addItem(QString::number(t->number()) + " - " + t->nick(), t->key());
 					}
 				}
 			}
@@ -191,7 +191,7 @@ namespace xero
 				}
 				else
 				{
-					html = "<center><h1>" + QString::number(t->number()) + " : " + t->name() + "</h1></center>";
+					html = "<center><h1>" + QString::number(t->number()) + " : " + t->nick() + "</h1></center>";
 				}
 
 				return html;
@@ -199,6 +199,7 @@ namespace xero
 
 			QString TeamSummaryWidget::generateMatchRecord()
 			{
+				QString rectoken = "$$$$RECORD$$$$";
 				QString html;
 				ScoutingDataSet ds;
 				QString query;
@@ -208,8 +209,10 @@ namespace xero
 				query = "select MatchKey from matches where MatchTeamKey = '" + current_team_ + "'";
 				if (dataModel()->createCustomDataSet(ds, query, err))
 				{
+					int won = 0, loss = 0, tie = 0;
+
 					html = "<center><table border=\"1\">";
-					html += "<tr><th colspan=\"10\">Matches</th></tr>";
+					html += "<tr><th colspan=\"10\">Matches " + rectoken + " </th></tr>";
 					for (int row = 0; row < ds.rowCount(); row++)
 					{
 						bool isred = true;
@@ -336,26 +339,51 @@ namespace xero
 						if (bluescore != -1 && redscore != -1)
 						{
 							if (bluescore == redscore)
+							{
 								status = "T";
+								tie++;
+							}
 							else if (isred)
 							{
 								if (redscore > bluescore)
+								{
+									won++;
 									status = "W";
+								}
 								else
+								{
 									status = "L";
+									loss++;
+								}
 							}
 							else
 							{
 								if (redscore < bluescore)
+								{
 									status = "W";
+									won++;
+								}
 								else
+								{
 									status = "L";
+									loss++;
+								}
 							}
 						}
 
 						html += "<td width=\"40\" style=\"text-align:center\"><b>" + status + "</b></td>";
 					}
 					html += "</table></center>";
+
+					if (won + loss + tie > 0)
+					{
+						QString record = QString::number(won) + " - " + QString::number(loss);
+						if (tie > 0)
+							record += " - " + QString::number(tie);
+
+						record = "( " + record + " )";
+						html = html.replace(rectoken, record);
+					}
 				}
 				else
 				{

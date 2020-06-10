@@ -93,6 +93,8 @@ namespace xero
 				void itemChanged(QTableWidgetItem* item);
 				void setDelegates();
 
+				void computeHeaderTooltips(QTableWidget* table);
+
 			private:
 				QString name_;
 				QPoint pt_;
