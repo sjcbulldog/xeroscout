@@ -140,7 +140,7 @@ PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_
 	}
 
 	QString exedir = QCoreApplication::applicationDirPath();
-	QString imagepath = exedir + "/customdata.png";
+	QString imagepath = exedir + "/teamsummary.png";
 	QPixmap image(imagepath);
 	QIcon icon(image);
 	setWindowIcon(icon);

@@ -4,7 +4,7 @@
 #define MyAppName "XeroScouter"
 #define MyCoachName "XeroCoach"
 #define MySecondName "XeroScout"
-#define MyAppVersion "0.3.6"
+#define MyAppVersion "0.3.7"
 #define MyAppPublisher "ErrorCodeXero"
 #define MyAppURL "http://www.wilsonvillerobotics.com/"
 #define MyAppExeName "PCScouter.exe"
@@ -24,7 +24,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=C:\cygwin64\home\{#MyUserName}\projects\scouting\license.txt
+LicenseFile=C:\cygwin64\home\{#MyUserName}\projects\scouting\LICENSE
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 OutputDir=C:\cygwin64\home\{#MyUserName}\projects\scouting\installer

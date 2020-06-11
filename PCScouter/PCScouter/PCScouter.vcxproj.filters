@@ -190,6 +190,9 @@
     <ClInclude Include="PickListController.h">
       <Filter>AppControllers\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="AboutDialog.ui">
@@ -204,9 +207,10 @@
     <None Include="MatchScouting.json" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="PCScouter.rc" />
+    <Image Include="MainIcon.png" />
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon1.ico" />
+    <ResourceCompile Include="PCScouter.rc" />
   </ItemGroup>
 </Project>

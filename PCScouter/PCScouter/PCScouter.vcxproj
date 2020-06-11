@@ -160,6 +160,7 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
     <QtMoc Include="SyncManager.h" />
     <ClInclude Include="PickListController.h" />
     <QtMoc Include="PickListGenerator.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="TestDataInjector.h" />
     <QtMoc Include="AboutDialog.h" />
     <ClInclude Include="AdvListWidget.h" />
@@ -188,10 +189,11 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
     <None Include="PitScouting.json" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="PCScouter.rc" />
+    <Image Include="icon1.ico" />
+    <Image Include="MainIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon1.ico" />
+    <ResourceCompile Include="PCScouter.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
