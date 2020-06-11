@@ -94,6 +94,7 @@
     <ClInclude Include="ChoiceFormItem.h" />
     <ClInclude Include="ChoiceItemDisplay.h" />
     <ClInclude Include="DataCollection.h" />
+    <ClInclude Include="RobotTrack.h" />
     <ClInclude Include="ZebraDataInfoExtractor.h" />
     <QtMoc Include="DataGenerator.h" />
     <ClInclude Include="DataModelMatch.h" />

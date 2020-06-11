@@ -21,7 +21,6 @@
 //
 
 #include "PathFieldView.h"
-#include "Pose2d.h"
 #include <QPainter>
 #include <QPointF>
 #include <QMouseEvent>
@@ -32,7 +31,7 @@
 #include <QToolTip>
 #include <cmath>
 
-using namespace xero::paths;
+using namespace xero::scouting::datamodel;
 
 namespace xero
 {
@@ -56,23 +55,6 @@ namespace xero
 			{
 				if (ev->type() == QEvent::ToolTip)
 				{
-					QHelpEvent* help = static_cast<QHelpEvent*>(ev);
-					for (auto t : tracks_)
-					{
-						Translation2d pt = t->beginning();
-						QPointF cursor = windowToWorld(help->pos());
-						double dx = cursor.x() - pt.getX();
-						double dy = cursor.y() - pt.getY();
-						double dist = std::sqrt(dx * dx + dy * dy);
-						if (dist < 6.0)
-						{
-							QToolTip::showText(help->globalPos(), t->match());
-							return true;
-						}
-					}
-
-					QToolTip::hideText();
-					ev->ignore();
 				}
 				return QWidget::event(ev);
 			}
@@ -114,7 +96,7 @@ namespace xero
 					paintTrack(paint, tracks_[i], i);
 			}
 
-			void PathFieldView::emitMouseMoved(Translation2d pos)
+			void PathFieldView::emitMouseMoved(QPointF pos)
 			{
 				emit mouseMoved(pos);
 			}
@@ -195,8 +177,8 @@ namespace xero
 				// Now, we know now to scale the image to window pixels, scale the top left and bottom
 				// right coordiantes from the image to the window
 				//
-				Translation2d tl = field_->getTopLeft().scale(image_scale_);
-				Translation2d br = field_->getBottomRight().scale(image_scale_);
+				QPointF tl = image_scale_ * field_->getTopLeft();
+				QPointF br = image_scale_ * field_->getBottomRight();
 
 				//
 				// Now we know two points on the field and how they coorespond to two points on the window.
@@ -207,8 +189,8 @@ namespace xero
 				//
 				world_to_window_ = QTransform();
 
-				world_to_window_.translate(tl.getX(), br.getY());
-				double scale = (br.getX() - tl.getX()) / field_->getSize().getX();
+				world_to_window_.translate(tl.x(), br.y());
+				double scale = (br.x() - tl.x()) / field_->getSize().x();
 				world_to_window_.scale(scale, -scale);
 
 				window_to_world_ = world_to_window_.inverted();
@@ -236,24 +218,27 @@ namespace xero
 
 			void PathFieldView::paintTrack(QPainter& paint, std::shared_ptr<RobotTrack> t, int index)
 			{
+				if (t->pointCount() == 0)
+					return;
+
 				QPen pen(t->color());
 				pen.setWidth(3);
 				paint.save();
 				paint.setPen(pen);
 				int stpt = -1, enpt = -1;
 
-				for (int i = 1; i < t->locSize(); i++) {
+				for (int i = 1; i < t->pointCount(); i++) {
 					if (t->time(i) < t->start())
 						continue;
 
 					if (stpt == -1)
 						stpt = i;
 
-					xero::paths::Translation2d p1 = t->loc(i - 1);
-					xero::paths::Translation2d p2 = t->loc(i);
+					QPointF p1 = t->point(i - 1);
+					QPointF p2 = t->point(i);
 
-					QPointF pf1 = worldToWindow(QPointF(p1.getX(), p1.getY()));
-					QPointF pf2 = worldToWindow(QPointF(p2.getX(), p2.getY()));
+					QPointF pf1 = worldToWindow(QPointF(p1.x(), p1.y()));
+					QPointF pf2 = worldToWindow(QPointF(p2.x(), p2.y()));
 
 					paint.drawLine(pf1, pf2);
 
@@ -265,17 +250,17 @@ namespace xero
 				}
 
 				if (enpt == -1)
-					enpt = t->locSize() - 1;
+					enpt = t->pointCount() - 1;
 
-				xero::paths::Translation2d pt = t->loc(enpt);
-				QPointF pf = worldToWindow(QPointF(pt.getX(), pt.getY()));
+				QPointF pt = t->point(enpt);
+				QPointF pf = worldToWindow(QPointF(pt.x(), pt.y()));
 				pen.setWidth(4.0);
 				paint.setPen(pen);
 				paint.drawLine(pf.x() - 12.0, pf.y() - 12.0, pf.x() + 12.0, pf.y() + 12.0);
 				paint.drawLine(pf.x() - 12.0, pf.y() + 12.0, pf.x() + 12.0, pf.y() - 12.0);
 
-				pt = t->loc(stpt);
-				pf = worldToWindow(QPointF(pt.getX(), pt.getY()));
+				pt = t->point(stpt);
+				pf = worldToWindow(QPointF(pt.x(), pt.y()));
 				pen.setWidth(4.0);
 				paint.setPen(pen);
 				QBrush br(QColor(255, 255, 255, 255));
@@ -286,7 +271,7 @@ namespace xero
 				pen = QPen(QColor(0, 0, 0, 255));
 				paint.setBrush(br);
 				paint.setPen(pen);
-				QString tm = t->team().mid(3);
+				QString tm = QString::number(t->teamNumber());
 				QFontMetricsF fm(paint.font());
 				QPointF p(pf.x() - fm.horizontalAdvance(tm) / 2, pf.y() + fm.height() / 2 - fm.descent());
 				paint.drawText(p, tm);

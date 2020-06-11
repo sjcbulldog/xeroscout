@@ -30,8 +30,6 @@
 #include <QCoreApplication>
 #include <stdexcept>
 
-using namespace xero::paths;
-
 ManagerBase::ManagerBase()
 {
 }
@@ -241,7 +239,7 @@ bool ManagerBase::getJSONIntegerValue(QFile& file, QJsonDocument& doc, const cha
 	return true;
 }
 
-bool ManagerBase::getJSONPointValue(QFile& file, QJsonDocument& doc, const char* name, Translation2d& t2d)
+bool ManagerBase::getJSONPointValue(QFile& file, QJsonDocument& doc, const char* name, QPointF& t2d)
 {
 	const QJsonValue point = doc[name];
 
@@ -255,7 +253,7 @@ bool ManagerBase::getJSONPointValue(QFile& file, QJsonDocument& doc, const char*
 	return getJSONPointValue(file, point, name, t2d);
 }
 
-bool ManagerBase::getJSONPointValue(QFile &file, const QJsonValue &point, const char *name, Translation2d &t2d)
+bool ManagerBase::getJSONPointValue(QFile &file, const QJsonValue &point, const char *name, QPointF&t2d)
 {
 	if (!point.isArray())
 	{
@@ -286,7 +284,7 @@ bool ManagerBase::getJSONPointValue(QFile &file, const QJsonValue &point, const 
 		return false;
 	}
 
-	t2d = Translation2d(arr[0].toDouble(), arr[1].toDouble());
+	t2d = QPointF(arr[0].toDouble(), arr[1].toDouble());
 
 	return true;
 }

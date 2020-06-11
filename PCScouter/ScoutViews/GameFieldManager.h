@@ -29,42 +29,51 @@
 #include <memory>
 
 
-class GameField;
-
-class GameFieldManager : public ManagerBase
+namespace xero
 {
-public:
-	GameFieldManager();
-	virtual ~GameFieldManager();
+	namespace scouting
+	{
+		namespace views
+		{
+			class GameField;
 
-	std::list<std::string> getNames();
-	std::list<std::shared_ptr<GameField>> getFields();
+			class GameFieldManager : public ManagerBase
+			{
+			public:
+				GameFieldManager();
+				virtual ~GameFieldManager();
 
-	bool exists(const std::string& name);
-	bool hasFile(QString filename);
+				std::list<std::string> getNames();
+				std::list<std::shared_ptr<GameField>> getFields();
 
-	std::shared_ptr<GameField> getFieldByName(const std::string& name);
-	std::shared_ptr<GameField> getDefaultField();
+				bool exists(const std::string& name);
+				bool hasFile(QString filename);
 
-	void convert(const std::string& units);
+				std::shared_ptr<GameField> getFieldByName(const std::string& name);
+				std::shared_ptr<GameField> getDefaultField();
 
-	static constexpr const char* gameTag = "game";
-	static constexpr const char* imageTag = "field-image";
-	static constexpr const char* cornersTag = "field-corners";
-	static constexpr const char* topLeftCornerTag = "top-left";
-	static constexpr const char* bottomRightCornerTag = "bottom-right";
-	static constexpr const char* sizeTag = "field-size";
-	static constexpr const char* unitsTag = "field-unit";
+				void convert(const std::string& units);
 
-protected:
-	virtual bool checkCount() {
-		return fields_.size() > 0;
+				static constexpr const char* gameTag = "game";
+				static constexpr const char* imageTag = "field-image";
+				static constexpr const char* cornersTag = "field-corners";
+				static constexpr const char* topLeftCornerTag = "top-left";
+				static constexpr const char* bottomRightCornerTag = "bottom-right";
+				static constexpr const char* sizeTag = "field-size";
+				static constexpr const char* unitsTag = "field-unit";
+
+			protected:
+				virtual bool checkCount() {
+					return fields_.size() > 0;
+				}
+
+			private:
+				bool processJSONFile(QFile& file);
+
+			private:
+				std::list<std::shared_ptr<GameField>> fields_;
+			};
+
+		}
 	}
-
-private:
-	bool processJSONFile(QFile& file);
-
-private:
-	std::list<std::shared_ptr<GameField>> fields_;
-};
-
+}

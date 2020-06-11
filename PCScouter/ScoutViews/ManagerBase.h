@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "Translation2d.h"
+#include <QPointF>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QFile>
@@ -76,8 +76,8 @@ protected:
 	bool getJSONDoubleValue(QFile& file, QJsonDocument& doc, const char* name, double& value);
 	bool getJSONDoubleValue(QFile& file, QJsonObject& doc, const char* name, double& value);
 	bool getJSONIntegerValue(QFile& file, QJsonDocument& doc, const char* name, int& value);
-	bool getJSONPointValue(QFile& file, const QJsonValue& value, const char *name, xero::paths::Translation2d& t2d);
-	bool getJSONPointValue(QFile& file, QJsonDocument& doc, const char* name, xero::paths::Translation2d& t2d);
+	bool getJSONPointValue(QFile& file, const QJsonValue& value, const char *name, QPointF& t2d);
+	bool getJSONPointValue(QFile& file, QJsonDocument& doc, const char* name, QPointF& t2d);
 
 private:
 	std::string default_dir_;

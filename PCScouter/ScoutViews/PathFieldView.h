@@ -23,7 +23,6 @@
 #pragma once
 
 #include "GameField.h"
-#include "Pose2d.h"
 #include "ViewBase.h"
 #include "RobotTrack.h"
 #include <QWidget>
@@ -61,17 +60,23 @@ namespace xero
 					tracks_.clear();
 				}
 
-				void addTrack(std::shared_ptr<RobotTrack> track) {
+				void addTrack(std::shared_ptr<xero::scouting::datamodel::RobotTrack> track) {
 					tracks_.push_back(track);
 					update();
 				}
 
-				std::vector<std::shared_ptr<RobotTrack>>& tracks() {
+				void removeTrack(std::shared_ptr<xero::scouting::datamodel::RobotTrack> track) {
+					auto it = std::find(tracks_.begin(), tracks_.end(), track);
+					if (it != tracks_.end())
+						tracks_.erase(it);
+				}
+
+				std::vector<std::shared_ptr<xero::scouting::datamodel::RobotTrack>>& tracks() {
 					return tracks_;
 				}
 
 			signals:
-				void mouseMoved(xero::paths::Translation2d pos);
+				void mouseMoved(QPointF pos);
 
 			protected:
 				void paintEvent(QPaintEvent* event) override;
@@ -86,10 +91,10 @@ namespace xero
 				QSize sizeHint() const override;
 
 			private:
-				void paintTrack(QPainter& paint, std::shared_ptr<RobotTrack> t, int index);
+				void paintTrack(QPainter& paint, std::shared_ptr<xero::scouting::datamodel::RobotTrack> t, int index);
 
 			private:
-				void emitMouseMoved(xero::paths::Translation2d pos);
+				void emitMouseMoved(QPointF pos);
 
 				std::vector<QPointF> transformPoints(QTransform& trans, const std::vector<QPointF>& points);
 				void createTransforms();
@@ -101,7 +106,7 @@ namespace xero
 				QTransform world_to_window_;
 				QTransform window_to_world_;
 				std::string units_;
-				std::vector<std::shared_ptr<RobotTrack>> tracks_;
+				std::vector<std::shared_ptr<xero::scouting::datamodel::RobotTrack>> tracks_;
 			};
 		}
 	}

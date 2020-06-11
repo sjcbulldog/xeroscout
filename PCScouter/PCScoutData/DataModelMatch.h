@@ -254,6 +254,15 @@ namespace xero
 					}
 					return false;
 				}
+				
+				bool teamIsInAlliance(const QString& teamkey) const {
+					for (auto robot : robots_)
+					{
+						if (robot->key() == teamkey)
+							return true;
+					}
+					return false;
+				}
 
 				bool teamToAllianceSlot(const QString& teamkey, Alliance& color, int& slot) const {
 					color = Alliance::Red;

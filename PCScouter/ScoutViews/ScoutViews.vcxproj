@@ -107,18 +107,14 @@
     <ClCompile Include="MathUtils.cpp" />
     <ClCompile Include="PathFieldView.cpp" />
     <ClCompile Include="PickListView.cpp" />
-    <ClCompile Include="Pose2d.cpp" />
     <ClCompile Include="PreMatchGraphView.cpp" />
     <ClCompile Include="TimeBoundWidget.cpp" />
     <ClCompile Include="QueryViewWidget.cpp" />
-    <ClCompile Include="Rotation2d.cpp" />
     <ClCompile Include="ScoutDataMergeDialog.cpp" />
     <ClCompile Include="SelectTeamsDialog.cpp" />
     <ClCompile Include="SingleInstanceGuard.cpp" />
     <ClCompile Include="TeamScheduleViewWidget.cpp" />
     <ClCompile Include="TeamSummaryWidget.cpp" />
-    <ClCompile Include="Translation2d.cpp" />
-    <ClCompile Include="Twist2d.cpp" />
     <ClCompile Include="UnitConverter.cpp" />
     <ClCompile Include="ZebraViewWidget.cpp" />
   </ItemGroup>
@@ -138,17 +134,12 @@
     <ClInclude Include="PickListView.h" />
     <ClInclude Include="PreMatchGraphView.h" />
     <QtMoc Include="TimeBoundWidget.h" />
-    <ClInclude Include="RobotTrack.h" />
     <ClInclude Include="SelectTeamsDialog.h" />
     <QtMoc Include="TeamSummaryWidget.h" />
     <ClInclude Include="ZebraViewWidget.h" />
     <QtMoc Include="PathFieldView.h" />
-    <ClInclude Include="Pose2d.h" />
-    <ClInclude Include="Rotation2d.h" />
     <ClInclude Include="ScoutDataMergeDialog.h" />
     <ClInclude Include="SingleInstanceGuard.h" />
-    <ClInclude Include="Translation2d.h" />
-    <ClInclude Include="Twist2d.h" />
     <ClInclude Include="UnitConverter.h" />
     <ClInclude Include="ViewBase.h" />
     <QtMoc Include="DataSetViewWidget.h" />

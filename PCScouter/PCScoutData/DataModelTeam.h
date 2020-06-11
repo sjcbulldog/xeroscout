@@ -72,6 +72,10 @@ namespace xero
 				virtual ~DataModelTeam() {
 				}
 
+				QString title() const {
+					return QString::number(number_) + " - " + nick_;
+				}
+
 				QVariant value(const QString& name) const {
 					QVariant ret;
 

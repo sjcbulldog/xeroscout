@@ -27,6 +27,8 @@
 #include "PathFieldView.h"
 #include "DataModelMatch.h"
 #include "TimeBoundWidget.h"
+#include "ZebraDataInfoExtractor.h"
+#include "RobotTrack.h"
 #include <QWidget>
 #include <QComboBox>
 #include <QRadioButton>
@@ -35,6 +37,7 @@
 #include <QTreeWidget>
 #include <QSplitter>
 #include <QListWidget>
+#include <QCheckBox>
 
 namespace xero
 {
@@ -61,8 +64,6 @@ namespace xero
 				}
 
 			private:
-				void showDetailMatch(const QString& key);
-				void showDetailTeam(const QString& key);
 				void detailItemChanged(QListWidgetItem* item);
 
 				void matchesSelected(bool checked);
@@ -73,16 +74,72 @@ namespace xero
 				void createPlotMatch(const QString& key);
 				void createPlotTeam(const QString& key);
 
-				void createPlotMatchWithKeys(const QString& key);
-				void createPlotTeamWithKeys(const QString& key);
-
 				void rangeChanged(double minv, double maxv);
 
-				void getTimes(const QJsonArray& array, double& minv, double& maxv);
+				void getTimes(const QJsonArray& array, std::shared_ptr<xero::scouting::datamodel::RobotTrack> track);
 
 				QColor matchRobotColor(xero::scouting::datamodel::Alliance c, int slot);
-				void processAlliance(const QJsonArray& arr, xero::scouting::datamodel::Alliance c, std::vector<std::shared_ptr<RobotTrack>>& tracks);
-				bool extractOneAlliance(const QJsonArray& arr, xero::scouting::datamodel::Alliance c, int slot, std::shared_ptr<RobotTrack> track);
+				bool extractOneAlliance(const QJsonArray& arr, int index, std::shared_ptr<xero::scouting::datamodel::RobotTrack> track);
+
+				void updateDisplay();
+				void updateDetail();
+				void updateSlider();
+				void updatePerformance(bool flush);
+				void checkChanged(int state);
+
+				std::shared_ptr<xero::scouting::datamodel::RobotTrack> createTrack(const QString& mkey, const QString& tkey);
+
+			private:
+				enum class Mode
+				{
+					SingleMatch,
+					SingleTeam
+				};
+				class TrackEntry
+				{
+				public:
+					TrackEntry(const QString& mkey, const QString& tkey, std::shared_ptr<xero::scouting::datamodel::RobotTrack> track) : zinfo_(track)
+					{
+						mkey_ = mkey;
+						tkey_ = tkey;
+						track_ = track;
+						enabled_ = true;
+					}
+
+					virtual ~TrackEntry() {
+					}
+					
+					bool enabled() const {
+						return enabled_;
+					}
+
+					void setEnabled(bool b) {
+						enabled_ = b;
+					}
+
+					const QString& matchKey() const {
+						return mkey_;
+					}
+
+					const QString& teamKey() const {
+						return tkey_;
+					}
+
+					std::shared_ptr<xero::scouting::datamodel::RobotTrack> track() const {
+						return track_;
+					}
+
+					xero::scouting::datamodel::ZebraDataInfoExtractor& info() {
+						return zinfo_;
+					}
+
+				private:
+					QString mkey_;
+					QString tkey_;
+					bool enabled_;
+					xero::scouting::datamodel::ZebraDataInfoExtractor zinfo_;
+					std::shared_ptr<xero::scouting::datamodel::RobotTrack> track_;
+				};
 
 			private:
 				QComboBox* box_;
@@ -90,13 +147,18 @@ namespace xero
 				QRadioButton* robot_;
 				PathFieldView* field_;
 				TimeBoundWidget* slider_;
-				QStringList keys_;
 				QPushButton* detail_;
 				QSplitter* vertical_;
 				QSplitter* horizontal_;
 				QWidget* hholder_;
 				QTreeWidget* info_;
 				QListWidget* list_;
+				QCheckBox* all_;
+
+				Mode mode_;
+				std::vector<TrackEntry> entries_;
+
+				bool dont_update_;
 			};
 		}
 	}

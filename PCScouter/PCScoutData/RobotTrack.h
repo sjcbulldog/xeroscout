@@ -22,7 +22,8 @@
 
 #pragma once
 
-#include "Translation2d.h"
+#include "pcscoutdata_global.h"
+#include <QPointF>
 #include <QString>
 #include <QColor>
 #include <vector>
@@ -31,19 +32,17 @@ namespace xero
 {
     namespace scouting
     {
-        namespace views
+        namespace datamodel
         {
-            class RobotTrack
+            class PCSCOUTDATA_EXPORT RobotTrack
             {
             public:
-                RobotTrack(const QString& team, QColor c, const QString &match) {
-                    team_ = team;
+                RobotTrack(int number, QColor c) {
+                    number_ = number;
                     color_ = c;
-                    match_ = match;
                 }
 
-                const QString& match() const {
-                    return match_;
+                virtual ~RobotTrack() {
                 }
 
                 void setRange(double minv, double maxv) {
@@ -59,8 +58,8 @@ namespace xero
                     return range_end_;
                 }
 
-                const QString& team() const {
-                    return team_;
+                int teamNumber() const {
+                    return number_;
                 }
 
                 QColor color() const {
@@ -71,7 +70,7 @@ namespace xero
                     time_.push_back(t);
                 }
 
-                int timeSize() {
+                int timeCount() {
                     return time_.size();
                 }
 
@@ -79,15 +78,15 @@ namespace xero
                     return time_[index];
                 }
 
-                void addPoint(const xero::paths::Translation2d& t) {
+                void addPoint(const QPointF& t) {
                     points_.push_back(t);
                 }
 
-                int locSize() {
+                int pointCount() {
                     return points_.size();
                 }
 
-                const xero::paths::Translation2d& loc(int index) {
+                const QPointF& point(int index) {
                     return points_[index];
                 }
 
@@ -98,22 +97,21 @@ namespace xero
                     }
                 }
 
-                xero::paths::Translation2d beginning() {
+                QPointF beginning() {
                     for (int i = 0; i < time_.size() - 1; i++)
                     {
                         if (time_[i] < range_start_ && time_[i + 1] >= range_start_)
                             return points_[i];
                     }
 
-                    return xero::paths::Translation2d(0, 0);
+                    return QPointF(0, 0);
                 }
 
             private:
-                QString team_;
+                int number_;
                 QColor color_;
-                QString match_;
                 std::vector<double> time_;
-                std::vector<xero::paths::Translation2d> points_;
+                std::vector<QPointF> points_;
                 double range_start_;
                 double range_end_;
             };

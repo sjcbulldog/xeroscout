@@ -70,10 +70,23 @@ namespace xero
 				horizontal_ = new QSplitter(Qt::Orientation::Vertical, vertical_);
 				vertical_->addWidget(horizontal_);
 
-				list_ = new QListWidget(horizontal_);
-				horizontal_->addWidget(list_);
+				QWidget* top_right = new QWidget(horizontal_);
+				QVBoxLayout *vlay2 = new QVBoxLayout();
+				top_right->setLayout(vlay2);
+				horizontal_->addWidget(top_right);
+
+				all_ = new QCheckBox(top_right);
+				vlay2->addWidget(all_);
+				connect(all_, &QCheckBox::stateChanged, this, &ZebraViewWidget::checkChanged);
+
+				list_ = new QListWidget(top_right);
+				vlay2->addWidget(list_);
+				list_->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+				connect(list_, &QListWidget::itemChanged, this, &ZebraViewWidget::detailItemChanged);
 
 				info_ = new QTreeWidget(horizontal_);
+				info_->setHeaderHidden(true);
+				info_->setColumnCount(1);
 				horizontal_->addWidget(info_);
 
 				slider_ = new TimeBoundWidget(0.0, 135.0, this);
@@ -82,111 +95,79 @@ namespace xero
 
 				matches_->setChecked(true);
 				matchesSelected(true);
+
+				dont_update_ = false;
 			}
 
 			ZebraViewWidget::~ZebraViewWidget()
 			{
 			}
 
-			void ZebraViewWidget::showDetailMatch(const QString& key)
+			void ZebraViewWidget::checkChanged(int state)
 			{
-				list_->clear();
+				Qt::CheckState st = static_cast<Qt::CheckState>(state);
+				if (st == Qt::CheckState::PartiallyChecked)
+					return;
 
-				auto m = dataModel()->findMatchByKey(key);
-
-				Alliance c;
-				c = Alliance::Red;
-				for (int i = 1; i <= 3; i++)
+				dont_update_ = true;
+				for (int i = 0; i < list_->count(); i++)
 				{
-					QString tkey = m->team(c, i);
-					auto team = dataModel()->findTeamByKey(tkey);
-					QListWidgetItem* item = new QListWidgetItem(QString::number(team->number()) + " - " + team->nick());
-					item->setData(Qt::UserRole, tkey);
-					Qt::ItemFlags f = Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled;
-					item->setFlags(f);
-
-					if (keys_.contains(tkey))
-						item->setCheckState(Qt::CheckState::Checked);
-					else
-						item->setCheckState(Qt::CheckState::Unchecked);
-
-					list_->addItem(item);
+					auto item = list_->item(i);
+					item->setCheckState(st);
 				}
-
-				c = Alliance::Blue;
-				for (int i = 1; i <= 3; i++)
-				{
-					QString tkey = m->team(c, i);
-					auto team = dataModel()->findTeamByKey(tkey);
-					QListWidgetItem* item = new QListWidgetItem(QString::number(team->number()) + " - " + team->nick());
-					item->setData(Qt::UserRole, tkey);
-					Qt::ItemFlags f = Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled;
-					item->setFlags(f);
-
-					if (keys_.contains(tkey))
-						item->setCheckState(Qt::CheckState::Checked);
-					else
-						item->setCheckState(Qt::CheckState::Unchecked);
-
-					list_->addItem(item);
-				}
-
-				connect(list_, &QListWidget::itemChanged, this, &ZebraViewWidget::detailItemChanged);
-			}
-
-			void ZebraViewWidget::showDetailTeam(const QString& key)
-			{
-				int row = 0;
-
-				list_->clear();
-				for (auto m : dataModel()->matches())
-				{
-					if (m->hasZebra())
-					{
-						Alliance c;
-						int slot;
-
-						if (m->teamToAllianceSlot(key, c, slot))
-						{
-							QString mkey = m->key();
-							QListWidgetItem* item = new QListWidgetItem(m->title());
-							item->setData(Qt::UserRole, mkey);
-							Qt::ItemFlags f = Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled;
-							item->setFlags(f);
-
-							if (keys_.contains(mkey))
-								item->setCheckState(Qt::CheckState::Checked);
-							else
-								item->setCheckState(Qt::CheckState::Unchecked);
-
-							list_->addItem(item);
-						}
-					}
-				}
-
-				connect(list_, &QListWidget::itemChanged, this, &ZebraViewWidget::detailItemChanged);
+				dont_update_ = false;
 			}
 
 			void ZebraViewWidget::detailItemChanged(QListWidgetItem* item)
 			{
-				QVariant v = box_->itemData(box_->currentIndex());
+				int entindex = item->data(Qt::UserRole).toInt();
+				assert(entindex >= 0 && entindex < entries_.size());
 
-				QString key = item->data(Qt::UserRole).toString();
-				if (item->checkState() == Qt::CheckState::Checked && !keys_.contains(key))
+
+				if (item->checkState() == Qt::CheckState::Checked)
 				{
-					keys_.push_back(key);
-					if (matches_->isChecked())
-						createPlotMatchWithKeys(v.toString());
-					else
-						createPlotTeamWithKeys(v.toString());
+					if (!entries_[entindex].enabled())
+					{
+						field_->addTrack(entries_[entindex].track());
+						entries_[entindex].setEnabled(true);
+					}
 				}
-				else if (item->checkState() == Qt::CheckState::Unchecked && keys_.contains(key))
+				else if (item->checkState() == Qt::CheckState::Unchecked)
 				{
-					keys_.removeOne(key);
-					if (matches_->isChecked())
-						createPlotMatchWithKeys(v.toString());
+					if (entries_[entindex].enabled())
+					{
+						field_->removeTrack(entries_[entindex].track());
+						entries_[entindex].setEnabled(false);
+					}
+				}
+				field_->update();
+
+				bool allon = true;
+				bool alloff = true;
+
+				for (int i = 0; i < list_->count(); i++)
+				{
+					Qt::CheckState st = list_->item(i)->checkState();
+					if (st == Qt::CheckState::Checked)
+						alloff = false;
+					else if (st == Qt::CheckState::Unchecked)
+						allon = false;
+				}
+
+				if (!dont_update_)
+				{
+					if (allon)
+					{
+						all_->setCheckState(Qt::CheckState::Checked);
+					}
+					else if (alloff)
+					{
+						all_->setCheckState(Qt::CheckState::Unchecked);
+					}
 					else
-						createPlotTeamWithKeys(v.toString());
+					{
+						all_->setCheckState(Qt::CheckState::PartiallyChecked);
+					}
 				}
 			}
 
@@ -197,6 +178,7 @@ namespace xero
 					t->setRange(slider_->rangeStart(), slider_->rangeEnd());
 				}
 
+				updatePerformance(true);
 				field_->update();
 			}
 
@@ -204,82 +186,13 @@ namespace xero
 			{
 				box_->clear();
 				field_->clearTracks();
+				entries_.clear();
 			}
 
 			void ZebraViewWidget::refreshView()
 			{
 				matches_->setChecked(true);
 				matchesSelected(true);
-			}
-
-			void ZebraViewWidget::matchesSelected(bool checked)
-			{
-				if (!checked)
-					return;
-
-				setNeedRefresh();
-				box_->clear();
-				if (dataModel() != nullptr)
-				{
-					for (auto m : dataModel()->matches())
-					{
-						if (!m->zebra().isEmpty())
-							box_->addItem(m->title(), m->key());
-					}
-					box_->setCurrentIndex(0);
-					createPlot();
-				}
-			}
-
-			void ZebraViewWidget::robotSelected(bool checked)
-			{
-				if (!checked)
-					return;
-
-				setNeedRefresh();
-				box_->clear();
-				if (dataModel() != nullptr)
-				{
-					auto dm = dataModel();
-					if (dm != nullptr) {
-						std::list<std::shared_ptr<const DataModelTeam>> teams = dm->teams();
-						teams.sort([](std::shared_ptr<const DataModelTeam> a, std::shared_ptr<const DataModelTeam> b) -> bool
-							{
-								return a->number() < b->number();
-							});
-
-						for (auto t : teams)
-							box_->addItem(QString::number(t->number()) + " - " + t->nick(), t->key());
-					}
-					box_->setCurrentIndex(0);
-					createPlot();
-				}
-			}
-
-			void ZebraViewWidget::comboxChanged(int which)
-			{
-				setNeedRefresh();
-				createPlot();
-				field_->update();
-			}
-
-			void ZebraViewWidget::createPlot()
-			{
-				QVariant v = box_->itemData(box_->currentIndex());
-				
-				if (v.type() == QVariant::String)
-				{
-					if (matches_->isChecked())
-					{
-						createPlotMatch(v.toString());
-						showDetailMatch(v.toString());
-					}
-					else
-					{
-						createPlotTeam(v.toString());
-						showDetailTeam(v.toString());
-					}
-				}
 			}
 
 			QColor ZebraViewWidget::matchRobotColor(xero::scouting::datamodel::Alliance c, int slot)
@@ -320,143 +233,83 @@ namespace xero
 				return ret;
 			}
 
-			void ZebraViewWidget::getTimes(const QJsonArray& array, double& minv, double& maxv)
+			//
+			// This is called when the matches radio button changes.  We only process the
+			// event when checked is true meaning the user has asked for matches
+			//
+			void ZebraViewWidget::matchesSelected(bool checked)
 			{
-				minv = std::numeric_limits<double>::max();
-				maxv = std::numeric_limits<double>::min();
+				if (!checked)
+					return;
 
+				setNeedRefresh();
+				box_->clear();
+				if (dataModel() != nullptr)
+				{
+					for (auto m : dataModel()->matches())
+					{
+						if (!m->zebra().isEmpty())
+							box_->addItem(m->title(), m->key());
+					}
+					box_->setCurrentIndex(0);
+					createPlot();
+				}
+			}
+
+			//
+			// This is called when the robot radio button changes.  We only process the
+			// event when checked is true meaning the user has asked for robots
+			//
+			void ZebraViewWidget::robotSelected(bool checked)
+			{
+				if (!checked)
+					return;
+
+				setNeedRefresh();
+				box_->clear();
+				if (dataModel() != nullptr)
+				{
+					auto dm = dataModel();
+					if (dm != nullptr) {
+						std::list<std::shared_ptr<const DataModelTeam>> teams = dm->teams();
+						teams.sort([](std::shared_ptr<const DataModelTeam> a, std::shared_ptr<const DataModelTeam> b) -> bool
+							{
+								return a->number() < b->number();
+							});
+
+						for (auto t : teams)
+							box_->addItem(QString::number(t->number()) + " - " + t->nick(), t->key());
+					}
+					box_->setCurrentIndex(0);
+					createPlot();
+				}
+			}
+
+			void ZebraViewWidget::comboxChanged(int which)
+			{
+				setNeedRefresh();
+				createPlot();
+				field_->update();
+			}
+
+			void ZebraViewWidget::getTimes(const QJsonArray& array, std::shared_ptr<RobotTrack> track)
+			{
 				for (int i = 0; i < array.size(); i++)
 				{
 					if (array[i].isDouble())
 					{
 						double d = array[i].toDouble();
-						if (d > maxv)
-							maxv = d;
-						if (d < minv)
-							minv = d;
+						track->addTime(d);
 					}
 				}
 			}
 
-			void ZebraViewWidget::createPlotMatch(const QString& key)
+			bool ZebraViewWidget::extractOneAlliance(const QJsonArray& arr, int index, std::shared_ptr<xero::scouting::datamodel::RobotTrack> track)
 			{
-				if (!needsRefresh())
-					return;
-
-				keys_.clear();
-
-				auto m = dataModel()->findMatchByKey(key);
-				if (m == nullptr)
-					return;
-
-				Alliance c = Alliance::Red;
-				for (int i = 1; i <= 3; i++)
-				{
-					keys_.push_back(m->team(c, i));
-				}
-				c = Alliance::Blue;
-				for (int i = 1; i <= 3; i++)
-				{
-					keys_.push_back(m->team(c, i));
-				}
-
-				createPlotMatchWithKeys(key);
-			}
-
-			void ZebraViewWidget::createPlotMatchWithKeys(const QString &key)
-			{
-				field_->clearTracks();
-
-				auto m = dataModel()->findMatchByKey(key);
-				if (m == nullptr)
-					return;
-
-				const QJsonObject& zebra = m->zebra();
-				QStringList keys = zebra.keys();
-
-				if (!zebra.contains("times") || !zebra.value("times").isArray())
-					return;
-
-				if (!zebra.contains("alliances") || !zebra.value("alliances").isObject())
-					return;
-
-				double minv, maxv;
-				getTimes(zebra.value("times").toArray(), minv, maxv);
-				slider_->setMinimum(minv);
-				slider_->setMaximum(maxv);
-				slider_->setRangeStart(minv);
-				slider_->setRangeEnd(maxv);
-
-				std::vector<std::shared_ptr<RobotTrack>> tracks;
-				Alliance c = Alliance::Red;
-				for (int i = 1; i <= 3; i++)
-				{
-					QString tmkey = m->team(c, i);
-					if (keys_.contains(tmkey))
-					{
-						auto t = std::make_shared<RobotTrack>(tmkey, matchRobotColor(c, i), m->title());
-						t->setRange(slider_->rangeStart(), slider_->rangeEnd());
-						tracks.push_back(t);
-					}
-					else
-					{
-						tracks.push_back(nullptr);
-					}
-				}
-				c = Alliance::Blue;
-				for (int i = 1; i <= 3; i++)
-				{
-					QString tmkey = m->team(c, i);
-					if (keys_.contains(tmkey))
-					{
-						auto t = std::make_shared<RobotTrack>(tmkey, matchRobotColor(c, i), m->title());
-						t->setRange(slider_->rangeStart(), slider_->rangeEnd());
-						tracks.push_back(t);
-					}
-					else
-					{
-						tracks.push_back(nullptr);
-					}
-				}
-
-				QJsonArray times = zebra.value("times").toArray();
-				for (int i = 0; i < times.size(); i++) {
-					if (!times[i].isDouble())
-						return;
-
-					for (int j = 0; j < tracks.size(); j++)
-					{
-						if (tracks[j] != nullptr)
-							tracks[j]->addTime(times[i].toDouble());
-					}
-				}
-
-				const QJsonObject& aobj = zebra.value("alliances").toObject();
-
-				if (!aobj.contains("blue") || !aobj.value("blue").isArray())
-					return;
-
-				if (!aobj.contains("red") || !aobj.value("red").isArray())
-					return;
-
-				processAlliance(aobj.value("red").toArray(), Alliance::Red, tracks);
-				processAlliance(aobj.value("blue").toArray(), Alliance::Blue, tracks);
-
-				for (auto t : tracks)
-				{
-					if (t != nullptr && t->locSize() > 1)
-						field_->addTrack(t);
-				}
-				field_->update();
-			}
-
-			bool ZebraViewWidget::extractOneAlliance(const QJsonArray& arr, Alliance c, int slot, std::shared_ptr<RobotTrack> track)
-			{
-				int which = slot - 1;
-				if (!arr[which].isObject())
+				if (!arr[index].isObject())
 					return false;
 
-				const QJsonObject& obj = arr[which].toObject();
+				const QJsonObject& obj = arr[index].toObject();
 
 				if (!obj.contains("xs") || !obj.value("xs").isArray())
 					return false;
@@ -484,98 +337,237 @@ namespace xero
 					double xv = xa[k].toDouble();
 					double yv = ya[k].toDouble();
 
-					track->addPoint(xero::paths::Translation2d(xv, yv));
+					track->addPoint(QPointF(xv, yv));
 				}
 				return true;
 			}
 
-			void ZebraViewWidget::processAlliance(const QJsonArray& arr, Alliance c, std::vector<std::shared_ptr<RobotTrack>>& tracks)
+			//
+			// Called to create a plot from the ground up with everything visible
+			//
+			void ZebraViewWidget::createPlot()
 			{
-				for (int slot = 1; slot <= 3; slot++)
+				QVariant v = box_->itemData(box_->currentIndex());
+				
+				if (v.type() == QVariant::String)
 				{
-					int which = slot - 1;
-					if (c == Alliance::Blue)
-						which += 3;
+					if (matches_->isChecked())
+					{
+						mode_ = Mode::SingleMatch;
+						createPlotMatch(v.toString());
+					}
+					else
+					{
+						mode_ = Mode::SingleTeam;
+						createPlotTeam(v.toString());
+					}
 
-					if (tracks[which] != nullptr)
-						extractOneAlliance(arr, c, slot, tracks[which]);
+					all_->setCheckState(Qt::CheckState::Checked);
 				}
 			}
 
-			void ZebraViewWidget::createPlotTeam(const QString& key)
+			//
+			// Create a new track object
+			//
+			std::shared_ptr<RobotTrack> ZebraViewWidget::createTrack(const QString& mkey, const QString& tkey)
+			{
+				Alliance c;
+				int slot;
+				QString color;
+
+				auto m = dataModel()->findMatchByKey(mkey);
+				if (!m->teamToAllianceSlot(tkey, c, slot))
+					return nullptr;
+
+				color = toString(c);
+
+				if (!m->hasZebra())
+					return nullptr;
+
+				const QJsonObject& obj = m->zebra();
+				if (!obj.contains("times") || !obj.value("times").isArray())
+					return nullptr;
+
+				if (!obj.contains("alliances") || !obj.value("alliances").isObject())
+					return nullptr;
+
+				QJsonObject aobj = obj.value("alliances").toObject();
+
+				if (!aobj.contains(color) || !aobj.value(color).isArray())
+					return nullptr;
+
+				QJsonArray array = aobj.value(color).toArray();
+				if (array.size() != 3)
+					return nullptr;
+
+				auto team = dataModel()->findTeamByKey(tkey);
+				auto t = std::make_shared<RobotTrack>(team->number(), matchRobotColor(c, slot));
+				t->setRange(slider_->rangeStart(), slider_->rangeEnd());
+
+				if (!extractOneAlliance(array, slot - 1, t))
+					return nullptr;
+
+				QJsonArray tarray = obj.value("times").toArray();
+				getTimes(tarray, t);
+				
+				TrackEntry te(mkey, tkey, t);
+				entries_.push_back(te);
+
+				field_->addTrack(t);
+
+				return t;
+			}
+
+			//
+			// Called when we want to create a new zebra plot based on the a given match
+			//
+			void ZebraViewWidget::createPlotMatch(const QString& mkey)
 			{
 				if (!needsRefresh())
 					return;
 
-				keys_.clear();
-				for (auto m : dataModel()->matches())
+				field_->clearTracks();
+				entries_.clear();
+
+				auto m = dataModel()->findMatchByKey(mkey);
+				if (m == nullptr)
+					return;
+
+				Alliance c = Alliance::Red;
+				for (int i = 1; i <= 3; i++)
 				{
-					Alliance c;
-					int slot;
-
-					if (!m->teamToAllianceSlot(key, c, slot))
-						continue;
-
-					keys_.push_back(m->key());
+					QString tkey = m->team(c, i);
+					createTrack(mkey, tkey);
+				}
+				c = Alliance::Blue;
+				for (int i = 1; i <= 3; i++)
+				{
+					QString tkey = m->team(c, i);
+					createTrack(mkey, tkey);
 				}
 
-				createPlotTeamWithKeys(key);
+				updateDisplay();
 			}
 
-			void ZebraViewWidget::createPlotTeamWithKeys(const QString &key)
+			void ZebraViewWidget::createPlotTeam(const QString& tkey)
 			{
-				std::list<std::shared_ptr<RobotTrack>> tracks;
+				if (!needsRefresh())
+					return;
 
-				for (auto mkey: keys_)
+				entries_.clear();
+				field_->clearTracks();
+
+				for (auto m : dataModel()->matches())
 				{
-					auto m = dataModel()->findMatchByKey(mkey);
-
-					Alliance c;
-					int slot;
-
-					if (!m->teamToAllianceSlot(key, c, slot))
+					if (!m->teamIsInAlliance(tkey))
 						continue;
 
-					auto track = std::make_shared<RobotTrack>(key, matchRobotColor(c, 1), m->title());
-					track->setRange(slider_->rangeStart(), slider_->rangeEnd());
-					tracks.push_back(track);
+					createTrack(m->key(), tkey);
+				}
 
-					const QJsonObject& zebra = m->zebra();
+				updateDisplay();
+			}
 
-					QJsonArray times = zebra.value("times").toArray();
-					for (int i = 0; i < times.size(); i++) {
-						if (!times[i].isDouble())
-							return;
+			void ZebraViewWidget::updateDisplay()
+			{
+				updateDetail();
+				updatePerformance(false);
+				updateSlider();
+			}
 
-						track->addTime(times[i].toDouble());
+			void ZebraViewWidget::updateDetail()
+			{
+				list_->clear();
+
+				for (int i = 0; i < entries_.size(); i++)
+				{
+					const TrackEntry& entry = entries_[i];
+					QListWidgetItem* item;
+
+					if (mode_ == Mode::SingleMatch)
+					{
+						auto team = dataModel()->findTeamByKey(entry.teamKey());
+						item = new QListWidgetItem(QString::number(team->number()) + " - " + team->nick());
+					}
+					else
+					{
+						auto m = dataModel()->findMatchByKey(entry.matchKey());
+						item = new QListWidgetItem(m->title());
+					}
+					item->setData(Qt::UserRole, QVariant(i));
+
+					if (entry.track() != nullptr)
+						item->setCheckState(Qt::CheckState::Checked);
+					else
+						item->setCheckState(Qt::CheckState::Unchecked);
+
+					list_->addItem(item);
+				}
+			}
+
+			void ZebraViewWidget::updatePerformance(bool flush)
+			{
+				info_->clear();
+				for (TrackEntry& te : entries_)
+				{
+					auto t = dataModel()->findTeamByKey(te.teamKey());
+					auto m = dataModel()->findMatchByKey(te.matchKey());
+
+					QTreeWidgetItem* item = new QTreeWidgetItem(info_);
+					if (mode_ == Mode::SingleMatch)
+					{
+						item->setText(0, t->title());
+					}
+					else
+					{
+						item->setText(0, m->title());
 					}
 
-					if (!zebra.contains("times") || !zebra.value("times").isArray())
-						continue;
+					if (flush)
+						te.info().flush();
 
-					if (!zebra.contains("alliances") || !zebra.value("alliances").isObject())
-						continue;
+					QString tt;
+					ScoutingDataMapPtr data = te.info().characterize();
+					QTreeWidgetItem* info;
+					for (auto pair : *data)
+					{
+						info = new QTreeWidgetItem(item);
+						QString value = QString::number(pair.second.toDouble(), 'f', 2);
+						QString entry = pair.first + " = " + value;
+						info->setText(0, entry);
 
-					const QJsonObject& aobj = zebra.value("alliances").toObject();
+						if (tt.length() > 0)
+							tt += "\n";
+						tt += entry;
+					}
 
-					if (!aobj.contains("blue") || !aobj.value("blue").isArray())
-						return;
-
-					if (!aobj.contains("red") || !aobj.value("red").isArray())
-						return;
-
-					const QJsonArray& arr = aobj.value(toString(c)).toArray();
-					extractOneAlliance(arr, c, slot, track);
+					item->setToolTip(0, tt);
 				}
 
-				field_->clearTracks();
-				for (auto t : tracks)
+				info_->resizeColumnToContents(0);
+				info_->resizeColumnToContents(1);
+			}
+
+			void ZebraViewWidget::updateSlider()
+			{
+				double minv = std::numeric_limits<double>::max();
+				double maxv = std::numeric_limits<double>::min();
+
+				for (const TrackEntry& te : entries_)
 				{
-					if (t->locSize() > 1)
-						field_->addTrack(t);
+					double mymin = te.track()->time(0);
+					if (mymin < minv)
+						minv = mymin;
+
+					double mymax = te.track()->time(te.track()->timeCount() - 1);
+					if (mymax > maxv)
+						maxv = mymax;
 				}
 
-				field_->update();
+				slider_->setMinimum(minv);
+				slider_->setMaximum(maxv);
+				slider_->setRangeStart(minv);
+				slider_->setRangeEnd(maxv);
 			}
 		}
 	}

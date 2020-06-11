@@ -63,18 +63,6 @@
     <ClCompile Include="PathFieldView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Pose2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Rotation2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Translation2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Twist2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="UnitConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -155,25 +143,10 @@
     <ClInclude Include="MathUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Pose2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Rotation2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Translation2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Twist2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UnitConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ZebraViewWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RobotTrack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GraphView.h">
