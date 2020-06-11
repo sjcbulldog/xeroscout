@@ -153,6 +153,9 @@
     <ClInclude Include="PickListTranslator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ZebraDataInfoExtractor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoutingDatabase.cpp">
@@ -222,6 +225,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PickListTranslator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ZebraDataInfoExtractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

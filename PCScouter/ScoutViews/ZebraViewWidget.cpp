@@ -59,14 +59,22 @@ namespace xero
 				QSizePolicy p(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 				box_->setSizePolicy(p);
 
-				detail_ = new QPushButton("Select", top);
-				hlay->addWidget(detail_);
-				(void)connect(detail_, &QPushButton::pressed, this, &ZebraViewWidget::showDetail);
-
-				field_ = new PathFieldView(this);
+				vertical_ = new QSplitter(Qt::Orientation::Horizontal, this);
+				vlay->addWidget(vertical_);
 				p = QSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
-				field_->setSizePolicy(p);
-				vlay->addWidget(field_);
+				vertical_->setSizePolicy(p);
+
+				field_ = new PathFieldView(vertical_);
+				vertical_->addWidget(field_);
+
+				horizontal_ = new QSplitter(Qt::Orientation::Vertical, vertical_);
+				vertical_->addWidget(horizontal_);
+
+				list_ = new QListWidget(horizontal_);
+				horizontal_->addWidget(list_);
+
+				info_ = new QTreeWidget(horizontal_);
+				horizontal_->addWidget(info_);
 
 				slider_ = new TimeBoundWidget(0.0, 135.0, this);
 				vlay->addWidget(slider_);
@@ -74,59 +82,17 @@ namespace xero
 
 				matches_->setChecked(true);
 				matchesSelected(true);
-
-				toolbox_ = nullptr;
 			}
 
 			ZebraViewWidget::~ZebraViewWidget()
 			{
 			}
 
-			void ZebraViewWidget::showDetail()
-			{
-				if (toolbox_ != nullptr)
-				{
-					toolbox_->close();
-					toolbox_ = nullptr;
-				}
-				else
-				{
-					toolbox_ = new QWidget(this, Qt::Tool);
-					connect(toolbox_, &QWidget::destroyed, this, &ZebraViewWidget::detailWinClosed);
-					QVBoxLayout* lay = new QVBoxLayout();
-					toolbox_->setLayout(lay);
-					table_ = new QTableWidget(toolbox_);
-					lay->addWidget(table_);
-					table_->setColumnCount(1) ;
-					toolbox_->show();
-
-					if (matches_->isChecked())
-					{
-						QVariant v = box_->itemData(box_->currentIndex());
-						if (v.type() == QVariant::String)
-							showDetailMatch(v.toString());
-					}
-					else
-					{
-						QVariant v = box_->itemData(box_->currentIndex());
-						if (v.type() == QVariant::String)
-							showDetailTeam(v.toString());
-					}
-				}
-			}
-
-			void ZebraViewWidget::detailWinClosed()
-			{
-				toolbox_ = nullptr;
-			}
-
 			void ZebraViewWidget::showDetailMatch(const QString& key)
 			{
-				table_->clear();
+				list_->clear();
 
 				auto m = dataModel()->findMatchByKey(key);
-				int row = 0;
-				table_->setRowCount(6);
 
 				Alliance c;
 				c = Alliance::Red;
@@ -134,7 +100,7 @@ namespace xero
 				{
 					QString tkey = m->team(c, i);
 					auto team = dataModel()->findTeamByKey(tkey);
-					QTableWidgetItem* item = new QTableWidgetItem(QString::number(team->number()) + " - " + team->nick());
+					QListWidgetItem* item = new QListWidgetItem(QString::number(team->number()) + " - " + team->nick());
 					item->setData(Qt::UserRole, tkey);
 					Qt::ItemFlags f = Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled;
 					item->setFlags(f);
@@ -144,7 +110,7 @@ namespace xero
 					else
 						item->setCheckState(Qt::CheckState::Unchecked);
 
-					table_->setItem(row++, 0, item);
+					list_->addItem(item);
 				}
 
 				c = Alliance::Blue;
@@ -152,7 +118,7 @@ namespace xero
 				{
 					QString tkey = m->team(c, i);
 					auto team = dataModel()->findTeamByKey(tkey);
-					QTableWidgetItem* item = new QTableWidgetItem(QString::number(team->number()) + " - " + team->nick());
+					QListWidgetItem* item = new QListWidgetItem(QString::number(team->number()) + " - " + team->nick());
 					item->setData(Qt::UserRole, tkey);
 					Qt::ItemFlags f = Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled;
 					item->setFlags(f);
@@ -161,23 +127,18 @@ namespace xero
 						item->setCheckState(Qt::CheckState::Checked);
 					else
 						item->setCheckState(Qt::CheckState::Unchecked);
-					table_->setItem(row++, 0, item);
+
+					list_->addItem(item);
 				}
 
-				connect(table_, &QTableWidget::itemChanged, this, &ZebraViewWidget::detailItemChanged);
-
-				table_->resizeColumnsToContents();
-				table_->horizontalHeader()->hide();
-				table_->verticalHeader()->hide();
-				table_->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
-				toolbox_->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
+				connect(list_, &QListWidget::itemChanged, this, &ZebraViewWidget::detailItemChanged);
 			}
 
 			void ZebraViewWidget::showDetailTeam(const QString& key)
 			{
 				int row = 0;
 
-				table_->clear();
+				list_->clear();
 				for (auto m : dataModel()->matches())
 				{
 					if (m->hasZebra())
@@ -188,7 +149,7 @@ namespace xero
 						if (m->teamToAllianceSlot(key, c, slot))
 						{
 							QString mkey = m->key();
-							QTableWidgetItem* item = new QTableWidgetItem(m->title());
+							QListWidgetItem* item = new QListWidgetItem(m->title());
 							item->setData(Qt::UserRole, mkey);
 							Qt::ItemFlags f = Qt::ItemFlag::ItemIsUserCheckable | Qt::ItemFlag::ItemIsEnabled;
 							item->setFlags(f);
@@ -198,22 +159,15 @@ namespace xero
 							else
 								item->setCheckState(Qt::CheckState::Unchecked);
 
-							table_->setRowCount(row + 1);
-							table_->setItem(row++, 0, item);
+							list_->addItem(item);
 						}
 					}
 				}
 
-				connect(table_, &QTableWidget::itemChanged, this, &ZebraViewWidget::detailItemChanged);
-
-				table_->resizeColumnsToContents();
-				table_->horizontalHeader()->hide();
-				table_->verticalHeader()->hide();
-				table_->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
-				toolbox_->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
+				connect(list_, &QListWidget::itemChanged, this, &ZebraViewWidget::detailItemChanged);
 			}
 
-			void ZebraViewWidget::detailItemChanged(QTableWidgetItem* item)
+			void ZebraViewWidget::detailItemChanged(QListWidgetItem* item)
 			{
 				QVariant v = box_->itemData(box_->currentIndex());
 
@@ -318,14 +272,12 @@ namespace xero
 					if (matches_->isChecked())
 					{
 						createPlotMatch(v.toString());
-						if (toolbox_ != nullptr)
-							showDetailMatch(v.toString());
+						showDetailMatch(v.toString());
 					}
 					else
 					{
 						createPlotTeam(v.toString());
-						if (toolbox_ != nullptr)
-							showDetailTeam(v.toString());
+						showDetailTeam(v.toString());
 					}
 				}
 			}

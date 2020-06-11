@@ -32,6 +32,9 @@
 #include <QRadioButton>
 #include <QPushButton>
 #include <QTableWidget>
+#include <QTreeWidget>
+#include <QSplitter>
+#include <QListWidget>
 
 namespace xero
 {
@@ -58,11 +61,9 @@ namespace xero
 				}
 
 			private:
-				void showDetail();
 				void showDetailMatch(const QString& key);
 				void showDetailTeam(const QString& key);
-				void detailItemChanged(QTableWidgetItem* item);
-				void detailWinClosed();
+				void detailItemChanged(QListWidgetItem* item);
 
 				void matchesSelected(bool checked);
 				void robotSelected(bool checked);
@@ -91,9 +92,11 @@ namespace xero
 				TimeBoundWidget* slider_;
 				QStringList keys_;
 				QPushButton* detail_;
-
-				QTableWidget* table_;
-				QWidget* toolbox_;
+				QSplitter* vertical_;
+				QSplitter* horizontal_;
+				QWidget* hholder_;
+				QTreeWidget* info_;
+				QListWidget* list_;
 			};
 		}
 	}
