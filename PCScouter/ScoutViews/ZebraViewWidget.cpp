@@ -19,6 +19,7 @@
 // This work we create by the named individual(s) above in support of the
 // FRC robotics team Error Code Xero.
 //
+//
 
 #include "ZebraViewWidget.h"
 #include "RobotTrack.h"
@@ -45,7 +46,15 @@ namespace xero
 				QHBoxLayout* hlay = new QHBoxLayout();
 				top->setLayout(hlay);
 
+				mode_select_ = new QComboBox(top);
+				hlay->addWidget(mode_select_);
+				mode_select_->addItem("Tracks", static_cast<int>(PathFieldView::ViewMode::Track));
+				mode_select_->addItem("Heatmap", static_cast<int>(PathFieldView::ViewMode::Heatmap));
+				mode_select_->addItem("Replay", static_cast<int>(PathFieldView::ViewMode::Robot));
+				(void)connect(mode_select_, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged), this, &ZebraViewWidget::modeChanged);
+
 				matches_ = new QRadioButton("Match", top);
+				matches_->setChecked(true);
 				hlay->addWidget(matches_);
 				(void)connect(matches_, &QRadioButton::toggled, this, &ZebraViewWidget::matchesSelected);
 
@@ -65,6 +74,7 @@ namespace xero
 				vertical_->setSizePolicy(p);
 
 				field_ = new PathFieldView(vertical_);
+				field_->setViewMode(PathFieldView::ViewMode::Track);
 				vertical_->addWidget(field_);
 
 				horizontal_ = new QSplitter(Qt::Orientation::Vertical, vertical_);
@@ -92,15 +102,81 @@ namespace xero
 				slider_ = new TimeBoundWidget(0.0, 135.0, this);
 				vlay->addWidget(slider_);
 				connect(slider_, &TimeBoundWidget::rangeChanged, this, &ZebraViewWidget::rangeChanged);
+				connect(slider_, &TimeBoundWidget::changeAnimationState, this, &ZebraViewWidget::sliderChangedAnimationState);
 
-				matches_->setChecked(true);
-				matchesSelected(true);
-
-				dont_update_ = false;
+				mode_ = Mode::Uninitialized;
+				animation_timer_ = nullptr;
 			}
 
 			ZebraViewWidget::~ZebraViewWidget()
 			{
+			}
+
+			void ZebraViewWidget::sliderChangedAnimationState(bool state, double mult)
+			{
+				animation_mult_ = mult;
+
+				if (state)
+				{
+					if (animation_timer_ == nullptr)
+					{
+						animationSetTime(slider_->rangeStart());
+
+						animation_timer_ = new QTimer(this);
+						animation_timer_->setInterval(std::chrono::milliseconds(static_cast<int>(AnimationTimeStep * 1000)));
+						(void)connect(animation_timer_, &QTimer::timeout, this, &ZebraViewWidget::animationProc);
+						animation_timer_->start();
+					}
+				}
+				else
+				{
+					if (animation_timer_ != nullptr)
+					{
+						animation_timer_->stop();
+						delete animation_timer_;
+						animation_timer_ = nullptr;
+					}
+				}
+			}
+
+			void ZebraViewWidget::animationSetTime(double t)
+			{
+				animation_time_ = t;
+				for (TrackEntry &te : entries_) {
+					te.track()->setCurrentTime(t);
+				}
+				slider_->setCurrentTime(t);
+
+				slider_->update();
+				field_->update();
+			}
+
+			void ZebraViewWidget::animationProc()
+			{
+				animation_time_ += animation_mult_ * AnimationTimeStep ;
+				if (animation_time_ > slider_->rangeEnd())
+					animation_time_ = slider_->rangeStart();
+
+				animationSetTime(animation_time_);
+			}
+
+			void ZebraViewWidget::showEvent(QShowEvent *ev)
+			{
+				if (mode_ == Mode::Uninitialized)
+				{
+					//
+					// Normally changing mode select current item would trigger a signal which would
+					// recreate the plot.  But when we check matches below, we will do the same.  So, to prevent
+					// going through the process of creating the plot twice during initialization, we block the 
+					// signals while we setup the view mode
+					//
+					mode_select_->blockSignals(true);
+					mode_select_->setCurrentIndex(0);
+					mode_select_->blockSignals(false);
+
+					matches_->setChecked(true);
+					matchesSelected(true);
+				}
 			}
 
 			void ZebraViewWidget::checkChanged(int state)
@@ -109,20 +185,19 @@ namespace xero
 				if (st == Qt::CheckState::PartiallyChecked)
 					return;
 
-				dont_update_ = true;
+				list_->blockSignals(true);
 				for (int i = 0; i < list_->count(); i++)
 				{
 					auto item = list_->item(i);
 					item->setCheckState(st);
 				}
-				dont_update_ = false;
+				list_->blockSignals(false);
 			}
 
 			void ZebraViewWidget::detailItemChanged(QListWidgetItem* item)
 			{
 				int entindex = item->data(Qt::UserRole).toInt();
 				assert(entindex >= 0 && entindex < entries_.size());
-
 
 				if (item->checkState() == Qt::CheckState::Checked)
 				{
@@ -154,20 +229,17 @@ namespace xero
 						allon = false;
 				}
 
-				if (!dont_update_)
+				if (allon)
 				{
-					if (allon)
-					{
-						all_->setCheckState(Qt::CheckState::Checked);
-					}
-					else if (alloff)
-					{
-						all_->setCheckState(Qt::CheckState::Unchecked);
-					}
-					else
-					{
-						all_->setCheckState(Qt::CheckState::PartiallyChecked);
-					}
+					all_->setCheckState(Qt::CheckState::Checked);
+				}
+				else if (alloff)
+				{
+					all_->setCheckState(Qt::CheckState::Unchecked);
+				}
+				else
+				{
+					all_->setCheckState(Qt::CheckState::PartiallyChecked);
 				}
 			}
 
@@ -191,8 +263,8 @@ namespace xero
 
 			void ZebraViewWidget::refreshView()
 			{
-				matches_->setChecked(true);
-				matchesSelected(true);
+				if (mode_ != Mode::Uninitialized)
+					createPlot();
 			}
 
 			QColor ZebraViewWidget::matchRobotColor(xero::scouting::datamodel::Alliance c, int slot)
@@ -233,42 +305,34 @@ namespace xero
 				return ret;
 			}
 
-			//
-			// This is called when the matches radio button changes.  We only process the
-			// event when checked is true meaning the user has asked for matches
-			//
-			void ZebraViewWidget::matchesSelected(bool checked)
+			void ZebraViewWidget::updateComboBoxMatch()
 			{
-				if (!checked)
-					return;
-
-				setNeedRefresh();
-				box_->clear();
 				if (dataModel() != nullptr)
 				{
+					box_->blockSignals(true);
+					box_->clear();
+
 					for (auto m : dataModel()->matches())
 					{
 						if (!m->zebra().isEmpty())
 							box_->addItem(m->title(), m->key());
 					}
+					box_->blockSignals(false);
 					box_->setCurrentIndex(0);
-					createPlot();
+				}
+				else
+				{
+					box_->clear();
 				}
 			}
 
-			//
-			// This is called when the robot radio button changes.  We only process the
-			// event when checked is true meaning the user has asked for robots
-			//
-			void ZebraViewWidget::robotSelected(bool checked)
+			void ZebraViewWidget::updateComboBoxTeam()
 			{
-				if (!checked)
-					return;
 
-				setNeedRefresh();
-				box_->clear();
 				if (dataModel() != nullptr)
 				{
+					box_->blockSignals(true);
+					box_->clear();
 					auto dm = dataModel();
 					if (dm != nullptr) {
 						std::list<std::shared_ptr<const DataModelTeam>> teams = dm->teams();
@@ -280,9 +344,44 @@ namespace xero
 						for (auto t : teams)
 							box_->addItem(QString::number(t->number()) + " - " + t->nick(), t->key());
 					}
+					box_->blockSignals(false);
 					box_->setCurrentIndex(0);
-					createPlot();
 				}
+				else
+				{
+					box_->clear();
+				}
+			}
+
+
+			//
+			// This is called when the matches radio button changes.  We only process the
+			// event when checked is true meaning the user has asked for matches
+			//
+			void ZebraViewWidget::matchesSelected(bool checked)
+			{
+				if (!checked)
+					return;
+
+				mode_ = Mode::SingleMatch;
+				setNeedRefresh();
+				updateComboBoxMatch();
+				createPlot();
+			}
+
+			//
+			// This is called when the robot radio button changes.  We only process the
+			// event when checked is true meaning the user has asked for robots
+			//
+			void ZebraViewWidget::robotSelected(bool checked)
+			{
+				if (!checked)
+					return;
+
+				mode_ = Mode::SingleTeam;
+				setNeedRefresh();
+				updateComboBoxTeam();
+				createPlot();
 			}
 
 			void ZebraViewWidget::comboxChanged(int which)
@@ -290,6 +389,18 @@ namespace xero
 				setNeedRefresh();
 				createPlot();
 				field_->update();
+			}
+
+			void ZebraViewWidget::modeChanged(int which)
+			{
+				auto m = static_cast<PathFieldView::ViewMode>(mode_select_->itemData(which).toInt());
+				field_->setViewMode(m);
+				field_->update();
+
+				if (m == PathFieldView::ViewMode::Robot)
+					slider_->setRangeMode(false);
+				else
+					slider_->setRangeMode(true);
 			}
 
 			void ZebraViewWidget::getTimes(const QJsonArray& array, std::shared_ptr<RobotTrack> track)
@@ -348,22 +459,18 @@ namespace xero
 			void ZebraViewWidget::createPlot()
 			{
 				QVariant v = box_->itemData(box_->currentIndex());
-				
-				if (v.type() == QVariant::String)
+				if (mode_ == Mode::SingleMatch)
 				{
-					if (matches_->isChecked())
-					{
-						mode_ = Mode::SingleMatch;
-						createPlotMatch(v.toString());
-					}
-					else
-					{
-						mode_ = Mode::SingleTeam;
-						createPlotTeam(v.toString());
-					}
-
-					all_->setCheckState(Qt::CheckState::Checked);
+					createPlotMatch(v.toString());
 				}
+				else
+				{
+					createPlotTeam(v.toString());
+				}
+
+				all_->blockSignals(true);
+				all_->setCheckState(Qt::CheckState::Checked);
+				all_->blockSignals(false);
 			}
 
 			//
@@ -412,6 +519,9 @@ namespace xero
 				
 				TrackEntry te(mkey, tkey, t);
 				entries_.push_back(te);
+
+				if (c == Alliance::Blue && mode_ == Mode::SingleTeam)
+					t->transform(54.0, 27.0);
 
 				field_->addTrack(t);
 
@@ -566,8 +676,6 @@ namespace xero
 
 				slider_->setMinimum(minv);
 				slider_->setMaximum(maxv);
-				slider_->setRangeStart(minv);
-				slider_->setRangeEnd(maxv);
 			}
 		}
 	}

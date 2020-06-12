@@ -38,6 +38,7 @@
 #include <QSplitter>
 #include <QListWidget>
 #include <QCheckBox>
+#include <QTimer>
 
 namespace xero
 {
@@ -60,8 +61,15 @@ namespace xero
 
 				void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model) {
 					ViewBase::setDataModel(model);
-					matchesSelected(true);
+					if (mode_ != Mode::Uninitialized)
+						createPlot();
 				}
+
+			protected:
+				void showEvent(QShowEvent*) override;
+
+			private:
+				static const constexpr double AnimationTimeStep = 0.1;
 
 			private:
 				void detailItemChanged(QListWidgetItem* item);
@@ -69,8 +77,15 @@ namespace xero
 				void matchesSelected(bool checked);
 				void robotSelected(bool checked);
 				void comboxChanged(int index);
+				void modeChanged(int index);
+
+				void updateComboBoxMatch();
+				void updateComboBoxTeam();
 
 				void createPlot();
+				void createPlotTracks();
+				void createPlotHeatmap();
+				void createPlotReplay();
 				void createPlotMatch(const QString& key);
 				void createPlotTeam(const QString& key);
 
@@ -87,14 +102,20 @@ namespace xero
 				void updatePerformance(bool flush);
 				void checkChanged(int state);
 
+				void sliderChangedAnimationState(bool state, double mult);
+				void animationProc();
+				void animationSetTime(double t);
+
 				std::shared_ptr<xero::scouting::datamodel::RobotTrack> createTrack(const QString& mkey, const QString& tkey);
 
 			private:
 				enum class Mode
 				{
+					Uninitialized,
 					SingleMatch,
-					SingleTeam
+					SingleTeam,
 				};
+
 				class TrackEntry
 				{
 				public:
@@ -154,11 +175,14 @@ namespace xero
 				QTreeWidget* info_;
 				QListWidget* list_;
 				QCheckBox* all_;
+				QComboBox* mode_select_;
+
+				QTimer* animation_timer_;
+				double animation_time_;
+				double animation_mult_;
 
 				Mode mode_;
 				std::vector<TrackEntry> entries_;
-
-				bool dont_update_;
 			};
 		}
 	}

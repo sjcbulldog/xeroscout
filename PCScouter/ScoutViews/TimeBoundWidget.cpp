@@ -23,7 +23,6 @@
 #include "TimeBoundWidget.h"
 #include <QPainter>
 #include <QMouseEvent>
-#include <QDebug>
 #include <QMenu>
 #include <QAction>
 #include <cmath>
@@ -48,6 +47,9 @@ namespace xero
 				setMaximumHeight(NumberHeight + IndicatorHeight + TickRegionHeight);
 
 				state_ = State::None;
+				range_mode_ = true;
+
+				current_time_ = std::numeric_limits<double>::max();
 			}
 
 			TimeBoundWidget::~TimeBoundWidget()
@@ -60,16 +62,53 @@ namespace xero
 
 				QMenu menu(this);
 
-				act = menu.addAction("Autonomous");
-				connect(act, &QAction::triggered, this, &TimeBoundWidget::autonomous);
+				if (range_mode_)
+				{
+					act = menu.addAction("Autonomous");
+					connect(act, &QAction::triggered, this, &TimeBoundWidget::autonomous);
 
-				act = menu.addAction("Teleop");
-				connect(act, &QAction::triggered, this, &TimeBoundWidget::teleop);
+					act = menu.addAction("Teleop");
+					connect(act, &QAction::triggered, this, &TimeBoundWidget::teleop);
 
-				act = menu.addAction("Endgame");
-				connect(act, &QAction::triggered, this, &TimeBoundWidget::endgame);
+					act = menu.addAction("Endgame");
+					connect(act, &QAction::triggered, this, &TimeBoundWidget::endgame);
+				}
+				else
+				{
+					act = menu.addAction("Stop");
+					connect(act, &QAction::triggered, this, &TimeBoundWidget::animateStop);
+
+					act = menu.addAction("1X");
+					connect(act, &QAction::triggered, this, &TimeBoundWidget::animate1X);
+
+					act = menu.addAction("2X");
+					connect(act, &QAction::triggered, this, &TimeBoundWidget::animate2X);
+
+					act = menu.addAction("4X");
+					connect(act, &QAction::triggered, this, &TimeBoundWidget::animate4X);
+				}
 
 				menu.exec(ev->globalPos());
+			}
+
+			void TimeBoundWidget::animateStop()
+			{
+				emit changeAnimationState(false, 0.0);
+			}
+
+			void TimeBoundWidget::animate1X()
+			{
+				emit changeAnimationState(true, 1.0);
+			}
+
+			void TimeBoundWidget::animate2X()
+			{
+				emit changeAnimationState(true, 2.0);
+			}
+
+			void TimeBoundWidget::animate4X()
+			{
+				emit changeAnimationState(true, 4.0);
 			}
 
 			void TimeBoundWidget::autonomous()
@@ -106,23 +145,18 @@ namespace xero
 				int rs = timeToPixel(range_start_);
 				int re = timeToPixel(range_end_);
 
-				qDebug() << "rspixel " << rs << " repixel " << re << " localpos " << ev->localPos().x() << " winpos " << ev->windowPos().x() << " range " << range << " delta " << std::abs(ev->localPos().x() - re);
-
 				if (std::abs(ev->localPos().x() - rs) < range)
 				{
-					qDebug() << "drag start position";
 					state_ = State::DraggingStart;
 				}
 				else if (std::abs(ev->localPos().x() - re) < range)
 				{
-					qDebug() << "drag end position";
 					state_ = State::DraggingEnd;
 				}
 			}
 
 			void TimeBoundWidget::mouseReleaseEvent(QMouseEvent* ev)
 			{
-				qDebug() << "release";
 				state_ = State::None;
 			}
 
@@ -145,7 +179,6 @@ namespace xero
 					update();
 
 
-					qDebug() << "changes " << range_start_ << " " << range_end_;
 					emit rangeChanged(range_start_, range_end_);
 					break;
 
@@ -160,7 +193,6 @@ namespace xero
 					range_start_ = v;
 					update();
 
-					qDebug() << "changes " << range_start_ << " " << range_end_;
 					emit rangeChanged(range_start_, range_end_);
 
 					break;
@@ -175,6 +207,24 @@ namespace xero
 				drawNumbers(p);
 				drawIndicators(p);
 				drawTickRegionHeight(p);
+				drawCurrent(p);
+			}
+
+			void TimeBoundWidget::drawCurrent(QPainter& p)
+			{
+				if (!range_mode_ && current_time_ >= minv_ && current_time_ <= maxv_)
+				{
+					int height = 0;
+
+					p.save();
+
+					int pc = timeToPixel(current_time_);
+
+					QBrush brush(QColor(0, 255, 0));
+					p.setBrush(brush);
+					p.drawRect(pc - IndicatorHeight / 2, height, IndicatorHeight, IndicatorHeight);
+					p.restore();
+				}
 			}
 
 			void TimeBoundWidget::drawNumbers(QPainter& p)
@@ -224,8 +274,6 @@ namespace xero
 
 				int rs = timeToPixel(range_start_);
 				int re = timeToPixel(range_end_);
-
-				qDebug() << "draw indicators, rs " << this->range_start_ << ", re " << this->range_end_;
 
 				QBrush fill(QColor(128, 128, 128));
 				p.setBrush(fill);

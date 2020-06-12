@@ -45,6 +45,7 @@ namespace xero
 				setMouseTracking(true);
 				setFocusPolicy(Qt::ClickFocus);
 				image_scale_ = 1.0;
+				heatmap_box_size_ = 0.5;
 			}
 
 			PathFieldView::~PathFieldView()
@@ -87,14 +88,98 @@ namespace xero
 				doPaint(paint);
 			}
 
-			void PathFieldView::doPaint(QPainter& paint, bool printing)
+			void PathFieldView::doPaint(QPainter& paint)
 			{
 				QRectF rect(0.0f, 0.0f, field_image_.width() * image_scale_, field_image_.height() * image_scale_);
 				paint.drawImage(rect, field_image_);
 
-				for(int i = 0 ; i < tracks_.size() ; i++)
-					paintTrack(paint, tracks_[i], i);
+				if (view_mode_ == ViewMode::Track)
+				{
+					for (int i = 0; i < tracks_.size(); i++)
+						paintTrack(paint, tracks_[i]);
+				}
+				else if (view_mode_ == ViewMode::Robot)
+				{
+					for (int i = 0; i < tracks_.size(); i++)
+						paintRobot(paint, tracks_[i]);
+				}
+				else
+				{
+					paintHeatmap(paint);
+				}
 			}
+
+			QPoint PathFieldView::pointToHeatmapBox(const QPointF& pt)
+			{
+				int x = static_cast<int>(pt.x() / heatmap_box_size_);
+				int y = static_cast<int>(pt.y() / heatmap_box_size_);
+
+				return QPoint(x, y);
+			}
+
+			void PathFieldView::paintHeatmap(QPainter& paint)
+			{
+				// 
+				// Initialize the heatmap
+				//
+				int xboxes = static_cast<int>(field_->getSize().x() / heatmap_box_size_) + 1;
+				int yboxes = static_cast<int>(field_->getSize().x() / heatmap_box_size_) + 1;
+				std::vector<std::vector<int>> heatmap;
+				for (int y = 0; y < yboxes; y++)
+				{
+					std::vector<int> row(xboxes);
+					std::fill(row.begin(), row.end(), 0);
+					heatmap.push_back(row);
+				}
+
+				//
+				// Calculate the heatmap
+				//
+				int maxv = 0;
+				for (auto tr : tracks_)
+				{
+					for (double tm = tr->start(); tm < tr->end(); tm += 0.5)
+					{
+						QPointF loc = tr->point(tm);
+						QPoint box = pointToHeatmapBox(loc);
+
+						int n = (heatmap[box.y()])[box.x()] + 1;
+						if (n > maxv)
+							maxv = n;
+
+						(heatmap[box.y()])[box.x()] = n;
+					}
+				}
+
+				//
+				// Draw the heatmap
+				//
+				paint.setPen(Qt::PenStyle::NoPen);
+				for (int x = 0; x < xboxes; x++)
+				{
+					for (int y = 0; y < yboxes; y++)
+					{
+						int n = (heatmap[x])[y];
+						double rel = (double)n / (double)maxv;
+
+						QRectF sq(x * heatmap_box_size_, y * heatmap_box_size_, heatmap_box_size_, heatmap_box_size_);
+						int red = static_cast<int>(rel / 2.0 + 0.5 * 255);
+						QColor c(red, 0, 0, 128);
+						QBrush br(c);
+						paint.setBrush(br);
+					}
+				}
+			}
+
+			void PathFieldView::paintRobot(QPainter& paint, std::shared_ptr<RobotTrack> track)
+			{
+				if (track->hasData())
+				{
+					QPointF pt = track->point(track->current());
+					paintRobotID(paint, pt, track);
+				}
+			}
+
 
 			void PathFieldView::emitMouseMoved(QPointF pos)
 			{
@@ -216,7 +301,27 @@ namespace xero
 				return transformPoints(window_to_world_, points);
 			}
 
-			void PathFieldView::paintTrack(QPainter& paint, std::shared_ptr<RobotTrack> t, int index)
+			void PathFieldView::paintRobotID(QPainter& paint, const QPointF& pt, std::shared_ptr<RobotTrack> t)
+			{
+				QPointF pf = worldToWindow(QPointF(pt.x(), pt.y()));
+				QPen pen(t->color());
+				pen.setWidth(4.0);
+				paint.setPen(pen);
+				QBrush br(QColor(255, 255, 255, 255));
+				paint.setBrush(br);
+				paint.drawEllipse(pf, 20.0, 20.0);
+
+				br = QBrush(QColor(0, 0, 0, 255));
+				pen = QPen(QColor(0, 0, 0, 255));
+				paint.setBrush(br);
+				paint.setPen(pen);
+				QString tm = QString::number(t->teamNumber());
+				QFontMetricsF fm(paint.font());
+				QPointF p(pf.x() - fm.horizontalAdvance(tm) / 2, pf.y() + fm.height() / 2 - fm.descent());
+				paint.drawText(p, tm);
+			}
+
+			void PathFieldView::paintTrack(QPainter& paint, std::shared_ptr<RobotTrack> t)
 			{
 				if (t->pointCount() == 0)
 					return;
@@ -259,22 +364,7 @@ namespace xero
 				paint.drawLine(pf.x() - 12.0, pf.y() - 12.0, pf.x() + 12.0, pf.y() + 12.0);
 				paint.drawLine(pf.x() - 12.0, pf.y() + 12.0, pf.x() + 12.0, pf.y() - 12.0);
 
-				pt = t->point(stpt);
-				pf = worldToWindow(QPointF(pt.x(), pt.y()));
-				pen.setWidth(4.0);
-				paint.setPen(pen);
-				QBrush br(QColor(255, 255, 255, 255));
-				paint.setBrush(br);
-				paint.drawEllipse(pf, 18.0, 18.0);
-
-				br = QBrush(QColor(0, 0, 0, 255));
-				pen = QPen(QColor(0, 0, 0, 255));
-				paint.setBrush(br);
-				paint.setPen(pen);
-				QString tm = QString::number(t->teamNumber());
-				QFontMetricsF fm(paint.font());
-				QPointF p(pf.x() - fm.horizontalAdvance(tm) / 2, pf.y() + fm.height() / 2 - fm.descent());
-				paint.drawText(p, tm);
+				paintRobotID(paint, t->point(stpt), t);
 
 				paint.restore();
 			}

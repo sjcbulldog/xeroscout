@@ -38,6 +38,22 @@ namespace xero
 				TimeBoundWidget(double min, double max, QWidget* parent);
 				virtual ~TimeBoundWidget();
 
+				void setCurrentTime(double t) {
+					current_time_ = t;
+				}
+
+				double currentTime() const {
+					return current_time_;
+				}
+
+				void setRangeMode(bool b) {
+					range_mode_ = b;
+				}
+
+				bool rangeMode() const {
+					return range_mode_;
+				}
+
 				double minimum() const {
 					return minv_;
 				}
@@ -86,6 +102,7 @@ namespace xero
 
 			signals:
 				void rangeChanged(double rangemin, double rangemax);
+				void changeAnimationState(bool state, double multi);
 
 			protected:
 				void paintEvent(QPaintEvent* ev) override ;
@@ -98,10 +115,16 @@ namespace xero
 				void drawNumbers(QPainter& p);
 				void drawIndicators(QPainter &p);
 				void drawTickRegionHeight(QPainter &p);
+				void drawCurrent(QPainter& p);
 
 				void autonomous();
 				void teleop();
 				void endgame();
+
+				void animateStop();
+				void animate1X();
+				void animate2X();
+				void animate4X();
 
 				int timeToPixel(double t) {
 					return static_cast<int>((t - minv_) / (maxv_ - minv_) * width());
@@ -128,9 +151,13 @@ namespace xero
 
 				double range_start_;
 				double range_end_;
+				double current_time_;
 
 				int NumberHeight;
 				State state_;
+
+				bool range_mode_;
+				bool animating_;
 			};
 		}
 	}

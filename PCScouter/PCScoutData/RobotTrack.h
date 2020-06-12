@@ -45,6 +45,10 @@ namespace xero
                 virtual ~RobotTrack() {
                 }
 
+                bool hasData() {
+                    return time_.size() > 0 && points_.size() > 0;
+                }
+
                 void setRange(double minv, double maxv) {
                     range_start_ = minv;
                     range_end_ = maxv;
@@ -56,6 +60,14 @@ namespace xero
 
                 double end() const {
                     return range_end_;
+                }
+
+                double current() const {
+                    return current_time_;
+                }
+
+                void setCurrentTime(double t) {
+                    current_time_ = t;
                 }
 
                 int teamNumber() const {
@@ -90,6 +102,29 @@ namespace xero
                     return points_[index];
                 }
 
+                QPointF point(double time) {
+                    if (time_.size() != 0 && points_.size() != 0)
+                    {
+                        if (time < time_[0])
+                            return points_[0];
+                        else if (time > time_[time_.size() - 1])
+                            return points_[time_.size() - 1];
+                        else
+                        {
+                            for (int i = 0; i < time_.size() - 1; i++)
+                            {
+                                if (i >= points_.size())
+                                    return points_[points_.size() - 1];
+
+                                if (time >= time_[i] && time < time_[i + 1])
+                                    return points_[i];
+                            }
+                        }
+                    }
+
+                    return QPointF(0.0, 0.0);
+                }
+
                 void removeLastPoint() {
                     if (time_.size() == points_.size()) {
                         time_.resize(time_.size() - 1);
@@ -107,6 +142,13 @@ namespace xero
                     return QPointF(0, 0);
                 }
 
+                void transform(double width, double height) {
+                    for (int i = 0; i < points_.size(); i++) {
+                        QPointF pt = QPointF(width - points_[i].x(), height - points_[i].y());
+                        points_[i] = pt;
+                    }
+                }
+
             private:
                 int number_;
                 QColor color_;
@@ -114,6 +156,7 @@ namespace xero
                 std::vector<QPointF> points_;
                 double range_start_;
                 double range_end_;
+                double current_time_;
             };
         }
     }

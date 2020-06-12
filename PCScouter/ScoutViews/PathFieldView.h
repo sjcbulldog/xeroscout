@@ -43,9 +43,18 @@ namespace xero
 				Q_OBJECT
 
 			public:
+				enum class ViewMode
+				{
+					Heatmap,
+					Track,
+					Robot
+				};
+
+			public:
 				PathFieldView(QWidget* parent = Q_NULLPTR);
 				virtual ~PathFieldView();
 
+				void setViewMode(ViewMode m) { view_mode_ = m; update(); }
 				void setField(std::shared_ptr<GameField> field);
 				void setUnits(const std::string& units);
 
@@ -54,7 +63,7 @@ namespace xero
 				std::vector<QPointF> worldToWindow(const std::vector<QPointF>& points);
 				std::vector<QPointF> windowToWorld(const std::vector<QPointF>& points);
 
-				void doPaint(QPainter& paint, bool printing = false);
+				void doPaint(QPainter& paint);
 
 				void clearTracks() {
 					tracks_.clear();
@@ -91,7 +100,12 @@ namespace xero
 				QSize sizeHint() const override;
 
 			private:
-				void paintTrack(QPainter& paint, std::shared_ptr<xero::scouting::datamodel::RobotTrack> t, int index);
+				void paintTrack(QPainter& paint, std::shared_ptr<xero::scouting::datamodel::RobotTrack> t);
+				void paintRobot(QPainter& paint, std::shared_ptr<xero::scouting::datamodel::RobotTrack> t);
+				void paintHeatmap(QPainter& paint);
+				void paintRobotID(QPainter& paint, const QPointF& loc, std::shared_ptr<xero::scouting::datamodel::RobotTrack> t);
+
+				QPoint pointToHeatmapBox(const QPointF& pt);
 
 			private:
 				void emitMouseMoved(QPointF pos);
@@ -100,6 +114,7 @@ namespace xero
 				void createTransforms();
 
 			private:
+				// Used only in the robot view mode
 				QImage field_image_;
 				std::shared_ptr<GameField> field_;
 				double image_scale_;
@@ -107,6 +122,9 @@ namespace xero
 				QTransform window_to_world_;
 				std::string units_;
 				std::vector<std::shared_ptr<xero::scouting::datamodel::RobotTrack>> tracks_;
+				ViewMode view_mode_;
+
+				double heatmap_box_size_;
 			};
 		}
 	}
