@@ -82,6 +82,7 @@ namespace xero
 			constexpr const char* JsonResultName = "result";
 			constexpr const char* JsonPitsName = "pits";
 			constexpr const char* JsonAllianceName = "alliance";
+			constexpr const char* JsonColorName = "color";
 			constexpr const char* JsonSlotName = "slot";
 			constexpr const char* JsonValueName = "value";
 			constexpr const char* JsonIntName = "int";
@@ -101,12 +102,20 @@ namespace xero
 			constexpr const char* JsonGraphViewsName = "graphs";
 			constexpr const char* JsonTeamSummaryFieldsName = "teamsummary";
 			constexpr const char* JsonDatasetColumnOrdersName = "columnorder";
+			constexpr const char* JsonFieldRegionsName = "fieldregions";
 			constexpr const char* JsonDatasetColumnsStateName = "state";
 			constexpr const char* JsonDatasetColumnsGeomName = "geom";
 			constexpr const char* JsonChoicesName = "choices";
 			constexpr const char* JsonEditableName = "editable";
 			constexpr const char* JsonImageName = "image";
 			constexpr const char* JsonImageDataName = "imagedata";
+			constexpr const char* JsonXName = "x";
+			constexpr const char* JsonYName = "y";
+			constexpr const char* JsonWidthName = "width";
+			constexpr const char* JsonHeightName = "height";
+			constexpr const char* JsonRadiusName = "radius";
+			constexpr const char* JsonCircleName = "circle";
+			constexpr const char* JsonBoundsName = "bounds";
 		}
 	}
 }

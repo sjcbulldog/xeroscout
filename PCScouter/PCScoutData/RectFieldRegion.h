@@ -7,31 +7,26 @@ namespace xero
 {
 	namespace scouting
 	{
-		namespace views
+		namespace datamodel
 		{
 			class RectFieldHighlight : public FieldHighlight
 			{
 			public:
-				RectFieldHighlight(QColor c, const QRectF& r) : FieldHighlight(c)
+				RectFieldHighlight(const QString &name, QColor c, const QRectF& r, Alliance a) : FieldHighlight(name, c, a)
 				{
 					rect_ = r;
 				}
 
-				RectFieldHighlight(QColor c, const QRectF& r, xero::scouting::datamodel::Alliance a) : FieldHighlight(c, a)
-				{
-					rect_ = r;
-				}
-
-				bool isWithin(const QPointF& pt) override
+				bool isWithin(const QPointF& pt) const override
 				{
 					return rect_.contains(pt);
 				}
 
-				virtual DrawType drawType() {
+				virtual DrawType drawType() const override {
 					return DrawType::Rect;
 				}
 
-				virtual const QRectF& drawBounds() {
+				virtual const QRectF& drawBounds() const override {
 					return rect_;
 				}
 

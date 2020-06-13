@@ -93,7 +93,10 @@
     <ClInclude Include="BooleanItemDisplay.h" />
     <ClInclude Include="ChoiceFormItem.h" />
     <ClInclude Include="ChoiceItemDisplay.h" />
+    <ClInclude Include="CircleFieldHighlight.h" />
     <ClInclude Include="DataCollection.h" />
+    <ClInclude Include="FieldHighlight.h" />
+    <ClInclude Include="RectFieldHighlight.h" />
     <ClInclude Include="RobotTrack.h" />
     <ClInclude Include="ZebraDataInfoExtractor.h" />
     <QtMoc Include="DataGenerator.h" />

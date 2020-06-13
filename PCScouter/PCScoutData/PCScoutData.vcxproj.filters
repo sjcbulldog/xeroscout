@@ -159,6 +159,15 @@
     <ClInclude Include="RobotTrack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CircleFieldHighlight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldHighlight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RectFieldHighlight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoutingDatabase.cpp">

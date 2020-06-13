@@ -23,6 +23,8 @@
 #include "JSonDataModelConverter.h"
 #include "ScoutDataJsonNames.h"
 #include "ScoutingDataModel.h"
+#include "CircleFieldHighlight.h"
+#include "RectFieldHighlight.h"
 #include <QJsonArray>
 #include <QTextCodec>
 
@@ -518,6 +520,7 @@ namespace xero
 				obj[JsonGraphViewsName] = dm_->graphDescriptors().generateJSON();
 				obj[JsonTeamSummaryFieldsName] = encodeStringList(dm_->teamSummaryFields());
 				obj[JsonDatasetColumnOrdersName] = encodeColumnOrders();
+				obj[JsonFieldRegionsName] = encodeFieldRegions();
 				doc.setObject(obj);
 				return doc;
 			}
@@ -1430,7 +1433,120 @@ namespace xero
 				if (obj.contains(JsonDatasetColumnOrdersName) && obj.value(JsonDatasetColumnOrdersName).isArray())
 					decodeColumnOrders(obj.value(JsonDatasetColumnOrdersName).toArray());
 
+				if (obj.contains(JsonFieldRegionsName) && obj.value(JsonFieldRegionsName).isArray())
+					decodeFieldRegions(obj.value(JsonFieldRegionsName).toArray());
+
 				return true;
+			}
+
+			QJsonArray JSonDataModelConverter::encodeFieldRegions()
+			{
+				QJsonArray result;
+
+				for (auto h : dm_->fieldRegions())
+				{
+					QJsonObject obj;
+
+					obj[JsonAllianceName] = toString(h->alliance());
+					obj[JsonNameName] = h->name();
+					obj[JsonColorName] = h->color().name(QColor::HexArgb);
+
+					auto rect = std::dynamic_pointer_cast<const RectFieldHighlight>(h);
+					if (rect != nullptr)
+					{
+						QJsonObject robj;
+						const QRectF& bounds = rect->drawBounds();
+						robj[JsonXName] = bounds.x();
+						robj[JsonYName] = bounds.y();
+						robj[JsonWidthName] = bounds.width();
+						robj[JsonHeightName] = bounds.height();
+						obj[JsonBoundsName] = robj;
+					}
+
+					auto circle = std::dynamic_pointer_cast<const CircleFieldHighlight>(h);
+					if (circle != nullptr)
+					{
+						QJsonObject robj;
+						robj[JsonXName] = circle->center().x();
+						robj[JsonYName] = circle->center().y();
+						robj[JsonRadiusName] = circle->radius();
+						obj[JsonCircleName] = robj;
+					}
+
+					result.push_back(obj);
+				}
+
+				return result;
+			}
+
+			void JSonDataModelConverter::decodeFieldRegions(const QJsonArray& array)
+			{
+				Alliance a;
+				QString name;
+				QColor color;
+
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (!array[i].isObject())
+						continue;
+
+					QJsonObject obj = array[i].toObject();
+
+					if (!obj.contains(JsonAllianceName) || !obj.value(JsonAllianceName).isString())
+						continue;
+
+					if (!obj.contains(JsonNameName) || !obj.value(JsonNameName).isString())
+						continue;
+
+					if (!obj.contains(JsonColorName) || !obj.value(JsonColorName).isString())
+						continue;
+
+					a = allianceFromString(obj.value(JsonAllianceName).toString());
+					name = obj.value(JsonNameName).toString();
+					color = QColor(obj.value(JsonColorName).toString());
+
+					if (obj.contains(JsonBoundsName) && obj.value(JsonBoundsName).isObject())
+					{
+						double x, y, width, height;
+						QJsonObject robj = obj.value(JsonBoundsName).toObject();
+
+						if (!robj.contains(JsonXName) || !robj.value(JsonXName).isDouble())
+							continue;
+
+						if (!robj.contains(JsonYName) || !robj.value(JsonYName).isDouble())
+							continue;
+
+						if (!robj.contains(JsonWidthName) || !robj.value(JsonWidthName).isDouble())
+							continue;
+
+						if (!robj.contains(JsonHeightName) || !robj.value(JsonHeightName).isDouble())
+							continue;
+
+						QRectF r(robj.value(JsonXName).toDouble(), robj.value(JsonYName).toDouble(),
+							robj.value(JsonWidthName).toDouble(), robj.value(JsonHeightName).toDouble());
+						auto h = std::make_shared<RectFieldHighlight>(name, color, r, a);
+						dm_->addFieldRegion(h);
+					}
+					else if (obj.contains(JsonCircleName))
+					{
+						double x, y, radius;
+						QJsonObject robj = obj.value(JsonCircleName).toObject();
+
+						if (!robj.contains(JsonXName) || !robj.value(JsonXName).isDouble())
+							continue;
+
+						if (!robj.contains(JsonYName) || !robj.value(JsonYName).isDouble())
+							continue;
+
+						if (!robj.contains(JsonRadiusName) || !robj.value(JsonRadiusName).isDouble())
+							continue;
+
+						QPointF pt(robj.value(JsonXName).toDouble(), robj.value(JsonYName).toDouble());
+						radius = robj.value(JsonRadiusName).toDouble();
+						auto h = std::make_shared<CircleFieldHighlight>(name, color, pt, radius, a);
+						dm_->addFieldRegion(h);
+					}
+				}
 			}
 
 			QJsonArray JSonDataModelConverter::encodeColumnOrders()

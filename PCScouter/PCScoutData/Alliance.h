@@ -30,7 +30,8 @@ namespace xero
 		{
 			enum class Alliance {
 				Red,
-				Blue
+				Blue,
+				Both
 			};
 
 			inline QString toString(Alliance c) {
@@ -38,18 +39,30 @@ namespace xero
 
 				if (c == Alliance::Red)
 					ret = "red";
-				else
+				else if (c == Alliance::Blue)
 					ret = "blue";
+				else if (c == Alliance::Both)
+					ret = "both";
+				else
+				{
+					assert(false);
+					ret = "both";
+				}
 
 				return ret;
 			}
 
 			inline Alliance allianceFromString(const QString& str) {
-				assert(str == "red" || str == "blue");
+				assert(str == "red" || str == "blue" || str == "both");
 
 				if (str == "red")
 					return Alliance::Red;
+				else if (str == "blue")
+					return Alliance::Blue;
+				else if (str == "both")
+					return Alliance::Both;
 
+				assert(false);
 				return Alliance::Blue;
 			}
 		}

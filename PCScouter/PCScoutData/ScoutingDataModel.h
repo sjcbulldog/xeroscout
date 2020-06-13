@@ -36,6 +36,7 @@
 #include "PickListTranslator.h"
 #include "GraphDescriptorCollection.h"
 #include "GraphDescriptor.h"
+#include "FieldHighlight.h"
 #include <QString>
 #include <QJsonDocument>
 #include <QFile>
@@ -78,6 +79,7 @@ namespace xero
 					DataSetColumnOrder,				///< the column order for a dataset
 					MatchVideoAdded,				///< added match video links
 					PickListTranslatorAdded,		///< added the pick list translator
+					FieldHighlightsChanged,			///< the field highlight list changed
 				};
 
 			public:
@@ -307,6 +309,15 @@ namespace xero
 					return pick_list_trans_;
 				}
 
+				std::list<std::shared_ptr<const FieldHighlight>> fieldRegions() const {
+					std::list<std::shared_ptr<const FieldHighlight>> list;
+
+					for (auto h : regions_)
+						list.push_back(h);
+
+					return list;
+				}
+
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
 				// These methods generate data sets.  The are a special case of the query methods in that they synthesis sets of data
@@ -339,6 +350,18 @@ namespace xero
 				// These method change the datamodel and will generate modelChanged signals
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				void addFieldRegion(std::shared_ptr<FieldHighlight> h) {
+					dirty_ = true;
+					regions_.push_back(h);
+					emitChangedSignal(ChangeType::FieldHighlightsChanged);
+				}
+
+				void removeFieldRegion(std::shared_ptr<const FieldHighlight> h) {
+					dirty_ = true;
+					regions_.remove(h);
+					emitChangedSignal(ChangeType::FieldHighlightsChanged);
+				}
 
 
 				/// \brief set the scouting forms for the data model
@@ -1004,6 +1027,8 @@ namespace xero
 				QDate end_date_;
 
 				std::shared_ptr<PickListTranslator> pick_list_trans_;
+
+				std::list<std::shared_ptr<const FieldHighlight>> regions_;
 			};
 
 		}

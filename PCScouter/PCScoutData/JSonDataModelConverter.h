@@ -112,6 +112,9 @@ namespace xero
 				QJsonArray encodeColumnOrders();
 				void decodeColumnOrders(const QJsonArray& array);
 
+				QJsonArray encodeFieldRegions();
+				void decodeFieldRegions(const QJsonArray& array);
+
 			private:
 				ScoutingDataModel* dm_;
 				QStringList errors_;

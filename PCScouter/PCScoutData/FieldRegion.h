@@ -8,31 +8,30 @@ namespace xero
 {
 	namespace scouting
 	{
-		namespace views
+		namespace datamodel
 		{
 			class FieldHighlight
 			{
 			public:
-				enum DrawType
+				enum class DrawType
 				{
 					Circle,
 					Rect,
 				};
 
 			public:
-				FieldHighlight(QColor color) {
+				FieldHighlight(const QString &name, QColor color, xero::scouting::datamodel::Alliance a) {
+					name_ = name;
 					color_ = color;
-					apply_alliance_ = false;
-				}
-
-				FieldHighlight(QColor color, xero::scouting::datamodel::Alliance a) {
-					color_ = color;
-					apply_alliance_ = true;
 					alliance_ = a;
 				}
+			
+				const QString& name() const {
+					return name_;
+				}
 
-				bool doesAllianceMatch(xero::scouting::datamodel::Alliance a) {
-					return !apply_alliance_ || a == alliance_;
+				bool doesAllianceMatch(xero::scouting::datamodel::Alliance a) const {
+					return alliance_ == xero::scouting::datamodel::Alliance::Both || a == alliance_;
 				}
 
 				QColor color() const {
@@ -43,10 +42,10 @@ namespace xero
 					return alliance_;
 				}
 
-				virtual bool isWithin(const QPointF& pt) = 0;
+				virtual bool isWithin(const QPointF& pt) const = 0;
 
-				virtual DrawType drawType() = 0;
-				virtual const QRectF& drawBounds() = 0;
+				virtual DrawType drawType() const = 0;
+				virtual const QRectF& drawBounds() const = 0;
 
 			protected:
 				static double distSquared(const QPointF& r1, const QPointF& r2)
@@ -58,8 +57,8 @@ namespace xero
 				}
 
 			private:
+				QString name_;
 				QColor color_;
-				bool apply_alliance_;
 				xero::scouting::datamodel::Alliance alliance_;
 			};
 		}

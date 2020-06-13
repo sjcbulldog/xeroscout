@@ -63,6 +63,11 @@ namespace xero
 					ViewBase::setDataModel(model);
 					if (mode_ != Mode::Uninitialized)
 						createPlot();
+
+					if (field_ != nullptr) {
+						for (auto h : model->fieldRegions())
+							field_->addHighlight(h);
+					}
 				}
 
 			protected:
@@ -70,6 +75,20 @@ namespace xero
 
 			private:
 				static const constexpr double AnimationTimeStep = 0.1;
+
+				enum class Mode
+				{
+					Uninitialized,
+					SingleMatch,
+					SingleTeam,
+				};
+
+				enum class HighlightType
+				{
+					Circle,
+					Rectangle,
+					Polygon
+				};
 
 			private:
 				void detailItemChanged(QListWidgetItem* item);
@@ -83,9 +102,6 @@ namespace xero
 				void updateComboBoxTeam();
 
 				void createPlot();
-				void createPlotTracks();
-				void createPlotHeatmap();
-				void createPlotReplay();
 				void createPlotMatch(const QString& key);
 				void createPlotTeam(const QString& key);
 
@@ -108,17 +124,14 @@ namespace xero
 
 				void fieldContextMenu(QPoint pt);
 				void defenseToggled();
-				void addHighlight();
+				void addHighlight(xero::scouting::datamodel::Alliance a, HighlightType ht);
+				void removeHighlight(const QString& name);
+				void areaSelected(const QRectF& area, xero::scouting::datamodel::Alliance a, HighlightType ht);
+				void polygonSelected(const std::vector<QPointF>& points, xero::scouting::datamodel::Alliance a);
 
 				std::shared_ptr<xero::scouting::datamodel::RobotTrack> createTrack(const QString& mkey, const QString& tkey);
 
 			private:
-				enum class Mode
-				{
-					Uninitialized,
-					SingleMatch,
-					SingleTeam,
-				};
 
 				class TrackEntry
 				{
@@ -189,6 +202,8 @@ namespace xero
 				std::vector<TrackEntry> entries_;
 
 				QPoint menu_point_;
+
+				QMetaObject::Connection field_connect_;
 			};
 		}
 	}

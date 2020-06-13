@@ -29,6 +29,8 @@
 #include <QTableWidget>
 #include <QHeaderView>
 #include <QMenu>
+#include <QInputDialog>
+#include <functional>
 
 using namespace xero::scouting::datamodel;
 
@@ -133,8 +135,69 @@ namespace xero
 						act->setChecked(false);
 					connect(act, &QAction::triggered, this, &ZebraViewWidget::defenseToggled);
 
-					act = menu->addAction("Add Highlight");
-					connect(act, &QAction::triggered, this, &ZebraViewWidget::addHighlight);
+					QMenu* all = new QMenu("Add Highlight");
+					menu->addMenu(all);
+
+					QMenu* both = new QMenu("Both Alliances");
+
+					auto cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Both, HighlightType::Circle);
+					act = both->addAction("Add Circular Area");
+					connect(act, &QAction::triggered, cb);
+					
+					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Both, HighlightType::Rectangle);
+					act = both->addAction("Add Rectangular Area");
+					connect(act, &QAction::triggered, cb);
+
+					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Both, HighlightType::Polygon);
+					act = both->addAction("Add Polygon Area");
+					connect(act, &QAction::triggered, cb);
+
+					all->addMenu(both);
+
+					QMenu* red = new QMenu("Red Alliance");
+
+					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Red, HighlightType::Circle);
+					act = red->addAction("Add Circular Area");
+					connect(act, &QAction::triggered, cb);
+
+					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Red, HighlightType::Rectangle);
+					act = red->addAction("Add Rectangular Area");
+					connect(act, &QAction::triggered, cb);
+
+					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Both, HighlightType::Polygon);
+					act = both->addAction("Add Polygon Area");
+					connect(act, &QAction::triggered, cb);
+
+					all->addMenu(red);
+
+					QMenu* blue = new QMenu("Blue Alliance");
+
+					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Blue, HighlightType::Circle);
+					act = blue->addAction("Add Circular Area");
+					connect(act, &QAction::triggered, cb);
+
+					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Blue, HighlightType::Rectangle);
+					act = blue->addAction("Add Rectangular Area");
+					connect(act, &QAction::triggered, cb);
+
+					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Both, HighlightType::Polygon);
+					act = both->addAction("Add Polygon Area");
+					connect(act, &QAction::triggered, cb);
+
+					all->addMenu(blue);
+
+					bool items = false;
+					QMenu* remove = new QMenu("Remove");
+					for (auto h : dataModel()->fieldRegions())
+					{
+						act = remove->addAction(h->name());
+						auto removedb = std::bind(&ZebraViewWidget::removeHighlight, this, h->name());
+						connect(act, &QAction::triggered, removedb);
+						items = true;
+					}
+
+					if (items)
+						menu->addMenu(remove);
 
 					menu->exec(pt);
 				}
@@ -145,12 +208,101 @@ namespace xero
 				field_->setShowDefense(!field_->showDefense());
 			}
 
-			void ZebraViewWidget::addHighlight()
+			void ZebraViewWidget::polygonSelected(const std::vector<QPointF>& points, Alliance a)
+			{
+				bool ok;
+
+				disconnect(field_connect_);
+
+				QString name = QInputDialog::getText(this, "Name", "Name", QLineEdit::Normal, "", &ok);
+				if (ok)
+				{
+					QColor c = QColor(242, 245, 66, 128);
+
+					if (a == Alliance::Red)
+						c = QColor(255, 0, 0, 128);
+					else if (a == Alliance::Blue)
+						c = QColor(0, 0, 255, 128);
+
+					auto h = std::make_shared<PolygonFieldRegion>(name, c, points, a);
+				}
+			}
+
+			void ZebraViewWidget::areaSelected(const QRectF& area, Alliance a, HighlightType ht)
+			{
+				bool ok;
+
+				disconnect(field_connect_);
+
+				QString name = QInputDialog::getText(this, "Name", "Name", QLineEdit::Normal, "", &ok);
+				if (ok)
+				{
+					QColor c = QColor(242, 245, 66, 128);
+
+					if (a == Alliance::Red)
+						c = QColor(255, 0, 0, 128);
+					else if (a == Alliance::Blue)
+						c = QColor(0, 0, 255, 128);
+
+					if (ht == HighlightType::Circle)
+					{
+						qDebug() << "ZebraViewWidget::areaSelected " << area;
+						auto h = std::make_shared<CircleFieldHighlight>(name, c, area.center(), area.width() / 2, a);
+						field_->addHighlight(h);
+						dataModel()->addFieldRegion(h);
+					}
+					else
+					{
+						qDebug() << "ZebraViewWidget::areaSelected " << area;
+						auto h = std::make_shared<RectFieldHighlight>(name, c, area, a);
+						field_->addHighlight(h);
+						dataModel()->addFieldRegion(h);
+					}
+				}
+			}
+
+			void ZebraViewWidget::removeHighlight(const QString& name)
+			{
+				std::shared_ptr<const FieldHighlight> region = nullptr;
+
+				for (auto h : dataModel()->fieldRegions())
+				{
+					if (h->name() == name)
+					{
+						region = h;
+						break;
+					}
+				}
+				
+				if (region != nullptr)
+				{
+					dataModel()->removeFieldRegion(region);
+					field_->removeHighlight(region);
+				}
+			}
+
+			void ZebraViewWidget::addHighlight(Alliance a, HighlightType ht)
 			{
 				QPointF fpt = field_->globalToWorld(menu_point_);
 
-				QRectF r(fpt.x(), fpt.y() - 2.0, 4.0, 4.0);
-				auto h = std::make_shared<RectFieldHighlight>(QColor(255, 0, 0, 254), r, Alliance::Red);
+				if (ht == HighlightType::Circle)
+				{
+					field_->selectCircularArea();
+					auto cb = std::bind(&ZebraViewWidget::areaSelected, this, std::placeholders::_1, a, ht);
+					field_connect_ = connect(field_, &PathFieldView::areaSelected, cb);
+				}
+				else if (ht == HighlightType::Rectangle)
+				{
+					field_->selectRectArea();
+					auto cb = std::bind(&ZebraViewWidget::areaSelected, this, std::placeholders::_1, a, ht);
+					field_connect_ = connect(field_, &PathFieldView::areaSelected, cb);
+				}
+				else if (ht == HighlightType::Polygon)
+				{
+					field_->selectPolygonArea();
+					auto cb = std::bind(&ZebraViewWidget::polygonSelected, this, std::placeholders::_1, a);
+					field_connect_ = connect(field_, &PathFieldView::polySelected, cb);
+				}
 			}
 
 			void ZebraViewWidget::sliderChangedAnimationState(bool state, double mult)
