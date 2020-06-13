@@ -122,9 +122,11 @@
     <ClInclude Include="AllianceGraphView.h" />
     <ClInclude Include="ChangeHistoryView.h" />
     <QtMoc Include="ChartViewWrapper.h" />
+    <ClInclude Include="CircleFieldHighlight.h" />
     <ClInclude Include="DataSetItemDelegate.h" />
     <QtMoc Include="EditName.h" />
     <ClInclude Include="ExpressionsEntryDialog.h" />
+    <ClInclude Include="FieldHighlight.h" />
     <ClInclude Include="GameField.h" />
     <ClInclude Include="GameFieldManager.h" />
     <ClInclude Include="GraphConfigurationDialog.h" />
@@ -134,6 +136,7 @@
     <ClInclude Include="PickListView.h" />
     <ClInclude Include="PreMatchGraphView.h" />
     <QtMoc Include="TimeBoundWidget.h" />
+    <ClInclude Include="RectFieldHighlight.h" />
     <ClInclude Include="SelectTeamsDialog.h" />
     <QtMoc Include="TeamSummaryWidget.h" />
     <ClInclude Include="ZebraViewWidget.h" />

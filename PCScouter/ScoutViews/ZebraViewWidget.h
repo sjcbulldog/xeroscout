@@ -106,6 +106,10 @@ namespace xero
 				void animationProc();
 				void animationSetTime(double t);
 
+				void fieldContextMenu(QPoint pt);
+				void defenseToggled();
+				void addHighlight();
+
 				std::shared_ptr<xero::scouting::datamodel::RobotTrack> createTrack(const QString& mkey, const QString& tkey);
 
 			private:
@@ -183,6 +187,8 @@ namespace xero
 
 				Mode mode_;
 				std::vector<TrackEntry> entries_;
+
+				QPoint menu_point_;
 			};
 		}
 	}

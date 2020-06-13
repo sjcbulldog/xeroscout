@@ -84,24 +84,35 @@ namespace xero
 					return true;
 				}
 
-				QString title() const {
+				QString title(bool shortitle = false) const {
 					QString ret;
 
-					if (comp_type_ == "qm")
-						ret = "Qual Match";
-					else if (comp_type_ == "qf")
-						ret = "Quarter Finals";
-					else if (comp_type_ == "sf")
-						ret = "Semi Finals";
-					else if (comp_type_ == "ef")
-						ret = "Einstein Finals";
+					if (shortitle)
+					{
+						ret = comp_type_;
+						if (comp_type_ != "qm")
+							ret += "-" + QString::number(set_number_);
+
+						ret += "-" + QString::number(match_number_);
+					}
 					else
-						ret = "Finals";
+					{
+						if (comp_type_ == "qm")
+							ret = "Qual Match";
+						else if (comp_type_ == "qf")
+							ret = "Quarter Finals";
+						else if (comp_type_ == "sf")
+							ret = "Semi Finals";
+						else if (comp_type_ == "ef")
+							ret = "Einstein Finals";
+						else
+							ret = "Finals";
 
-					if (comp_type_ != "qm")
-						ret += ", Set " + QString::number(set_number_);
+						if (comp_type_ != "qm")
+							ret += ", Set " + QString::number(set_number_);
 
-					ret += ", Match " + QString::number(match_number_);
+						ret += ", Match " + QString::number(match_number_);
+					}
 
 					return ret;
 				}

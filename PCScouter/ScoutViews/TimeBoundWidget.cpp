@@ -60,35 +60,40 @@ namespace xero
 			{
 				QAction *act;
 
-				QMenu menu(this);
+				QMenu* menu = new QMenu(this);
 
-				if (range_mode_)
+				act = menu->addAction("Autonomous");
+				connect(act, &QAction::triggered, this, &TimeBoundWidget::autonomous);
+
+				act = menu->addAction("Teleop");
+				connect(act, &QAction::triggered, this, &TimeBoundWidget::teleop);
+
+				act = menu->addAction("Endgame");
+				connect(act, &QAction::triggered, this, &TimeBoundWidget::endgame);
+
+				act = menu->addAction("Complete Match");
+				connect(act, &QAction::triggered, this, &TimeBoundWidget::completeMatch);
+
+				if (!range_mode_)
 				{
-					act = menu.addAction("Autonomous");
-					connect(act, &QAction::triggered, this, &TimeBoundWidget::autonomous);
+					QMenu* sub = new QMenu("Animation");
 
-					act = menu.addAction("Teleop");
-					connect(act, &QAction::triggered, this, &TimeBoundWidget::teleop);
-
-					act = menu.addAction("Endgame");
-					connect(act, &QAction::triggered, this, &TimeBoundWidget::endgame);
-				}
-				else
-				{
-					act = menu.addAction("Stop");
+					act = sub->addAction("Stop");
 					connect(act, &QAction::triggered, this, &TimeBoundWidget::animateStop);
 
-					act = menu.addAction("1X");
+					act = sub->addAction("1X");
 					connect(act, &QAction::triggered, this, &TimeBoundWidget::animate1X);
 
-					act = menu.addAction("2X");
+					act = sub->addAction("2X");
 					connect(act, &QAction::triggered, this, &TimeBoundWidget::animate2X);
 
-					act = menu.addAction("4X");
+					act = sub->addAction("4X");
 					connect(act, &QAction::triggered, this, &TimeBoundWidget::animate4X);
+
+					menu->addMenu(sub);
 				}
 
-				menu.exec(ev->globalPos());
+				menu->exec(ev->globalPos());
 			}
 
 			void TimeBoundWidget::animateStop()
@@ -109,6 +114,14 @@ namespace xero
 			void TimeBoundWidget::animate4X()
 			{
 				emit changeAnimationState(true, 4.0);
+			}
+
+			void TimeBoundWidget::completeMatch()
+			{
+				range_start_ = minv_;
+				range_end_ = maxv_;
+				update();
+				emit rangeChanged(range_start_, range_end_);
 			}
 
 			void TimeBoundWidget::autonomous()

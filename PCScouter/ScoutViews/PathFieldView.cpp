@@ -30,6 +30,7 @@
 #include <QFontMetricsF>
 #include <QToolTip>
 #include <cmath>
+#include <cstdlib>
 
 using namespace xero::scouting::datamodel;
 
@@ -45,19 +46,18 @@ namespace xero
 				setMouseTracking(true);
 				setFocusPolicy(Qt::ClickFocus);
 				image_scale_ = 1.0;
-				heatmap_box_size_ = 0.5;
+				heatmap_box_size_ = 1.0 / 12.0;
+				text_in_heatmap_ = false;
+				show_defense_ = true;
 			}
 
 			PathFieldView::~PathFieldView()
 			{
 			}
 
-			bool PathFieldView::event(QEvent* ev)
+			void PathFieldView::contextMenuEvent(QContextMenuEvent* ev)
 			{
-				if (ev->type() == QEvent::ToolTip)
-				{
-				}
-				return QWidget::event(ev);
+				emit showContextMenu(ev->globalPos());
 			}
 
 			void PathFieldView::setUnits(const std::string& units)
@@ -102,6 +102,8 @@ namespace xero
 				{
 					for (int i = 0; i < tracks_.size(); i++)
 						paintRobot(paint, tracks_[i]);
+
+					paintDefense(paint);
 				}
 				else
 				{
@@ -122,8 +124,9 @@ namespace xero
 				// 
 				// Initialize the heatmap
 				//
-				int xboxes = static_cast<int>(field_->getSize().x() / heatmap_box_size_) + 1;
-				int yboxes = static_cast<int>(field_->getSize().x() / heatmap_box_size_) + 1;
+				int incr = static_cast<int>(1.0 / heatmap_box_size_);
+				int xboxes = static_cast<int>((field_->getSize().x() + heatmap_box_size_) / heatmap_box_size_) + 1;
+				int yboxes = static_cast<int>((field_->getSize().y() + heatmap_box_size_) / heatmap_box_size_) + 1;
 				std::vector<std::vector<int>> heatmap;
 				for (int y = 0; y < yboxes; y++)
 				{
@@ -136,18 +139,32 @@ namespace xero
 				// Calculate the heatmap
 				//
 				int maxv = 0;
+				int px, py;
 				for (auto tr : tracks_)
 				{
-					for (double tm = tr->start(); tm < tr->end(); tm += 0.5)
+					if (tr->hasData())
 					{
-						QPointF loc = tr->point(tm);
-						QPoint box = pointToHeatmapBox(loc);
+						for (double tm = tr->start(); tm < tr->end(); tm += 0.1)
+						{
+							QPointF loc = tr->point(tm);
+							QPoint box = pointToHeatmapBox(loc);
 
-						int n = (heatmap[box.y()])[box.x()] + 1;
-						if (n > maxv)
-							maxv = n;
+							for (int x = box.x() - incr; x < box.x() + incr; x++)
+							{
+								for (int y = box.y() - incr; y < box.y() + incr; y++)
+								{
+									if (x >= 0 && y >= 0 && y < yboxes && x < xboxes)
+									{
+										int n = (heatmap[y])[x] + 1;
+										if (n > maxv)
+											maxv = n;
 
-						(heatmap[box.y()])[box.x()] = n;
+										(heatmap[y])[x] = n;
+									}
+								}
+							}
+
+						}
 					}
 				}
 
@@ -155,20 +172,64 @@ namespace xero
 				// Draw the heatmap
 				//
 				paint.setPen(Qt::PenStyle::NoPen);
+				QFont font = paint.font();
+				font.setPointSizeF(4.0);
+				QFontMetricsF fm(font);
+				paint.setFont(font);
+				QPen p(QColor(255, 255, 255));
 				for (int x = 0; x < xboxes; x++)
 				{
 					for (int y = 0; y < yboxes; y++)
 					{
-						int n = (heatmap[x])[y];
-						double rel = (double)n / (double)maxv;
+						int n = (heatmap[y])[x];
+						if (n != 0)
+						{
+							double rel = (double)n / (double)maxv;
 
-						QRectF sq(x * heatmap_box_size_, y * heatmap_box_size_, heatmap_box_size_, heatmap_box_size_);
-						int red = static_cast<int>(rel / 2.0 + 0.5 * 255);
-						QColor c(red, 0, 0, 128);
-						QBrush br(c);
-						paint.setBrush(br);
+							QPointF p1 = worldToWindow(QPointF(x * heatmap_box_size_, y * heatmap_box_size_));
+							QPointF p2 = worldToWindow(QPointF((x + 1) * heatmap_box_size_, (y + 1) * heatmap_box_size_));
+							QRectF r(std::min(p1.x(), p2.x()), std::min(p1.y(), p2.y()), std::abs(p1.x() - p2.x()), std::abs(p1.y() - p2.y()));
+
+							paint.setPen(Qt::PenStyle::NoPen);
+							QBrush br(heatmapColorGenerator(rel));
+							paint.setBrush(br);
+							paint.drawRect(r);
+
+							if (text_in_heatmap_)
+							{
+								paint.setPen(p);
+								QString str = QString::number(n);
+								QPoint pt = QPoint(r.center().x() - fm.horizontalAdvance(str) / 2, r.center().y() + fm.descent());
+								paint.drawText(pt, str);
+							}
+						}
 					}
 				}
+			}
+
+			QColor PathFieldView::heatmapColorGenerator(double rel)
+			{
+				static std::vector<QColor> colors =
+				{
+					QColor(0, 0, 255),
+					QColor(0, 255, 255),
+					QColor(0, 255, 0),
+					QColor(255, 255, 0),
+					QColor(255, 0, 0)
+				};
+
+				int index = (rel * colors.size() - 1);
+				if (index >= colors.size() - 1)
+					return colors[colors.size() - 1];
+
+				double step = 1.0 / (double)(colors.size() - 1);
+				double partial = rel - index * step;
+
+				double r = colors[index].red() + (colors[index + 1].red() - colors[index].red()) * partial;
+				double g = colors[index].green() + (colors[index + 1].green() - colors[index].green()) * partial;
+				double b = colors[index].blue() + (colors[index + 1].blue() - colors[index].blue()) * partial;
+
+				return QColor(r, g, b, 64);
 			}
 
 			void PathFieldView::paintRobot(QPainter& paint, std::shared_ptr<RobotTrack> track)
@@ -180,26 +241,84 @@ namespace xero
 				}
 			}
 
-
-			void PathFieldView::emitMouseMoved(QPointF pos)
+			void PathFieldView::paintRectHighlight(QPainter& paint, QColor c, const QRectF& r)
 			{
-				emit mouseMoved(pos);
+				paint.save();
+				QPen pen(QColor(0, 0, 0, 255));
+				paint.setPen(pen);
+				QBrush brush(c, Qt::BrushStyle::Dense6Pattern);
+				paint.setBrush(brush);
+
+				QRectF rp = worldToWindow(r);
+				paint.drawRect(rp);
+
+				paint.restore();
 			}
 
-			void PathFieldView::mouseMoveEvent(QMouseEvent* ev)
+			void PathFieldView::paintCircleHighlight(QPainter& paint, QColor c, const QRectF &r)
 			{
+				paint.save();
+				QPen pen(QColor(0, 0, 0, 255));
+				paint.setPen(pen);
+				QBrush brush(c, Qt::BrushStyle::Dense6Pattern);
+				paint.setBrush(brush);
+
+				QRectF rp = worldToWindow(r);
+				paint.drawEllipse(rp);
+
+				paint.restore();
 			}
 
-			void PathFieldView::mousePressEvent(QMouseEvent* ev)
+			double PathFieldView::distSquared(const QPointF& r1, const QPointF& r2)
 			{
+				double dx = r1.x() - r2.x();
+				double dy = r1.y() - r2.y();
+
+				return dx * dx + dy * dy;
 			}
 
-			void PathFieldView::mouseReleaseEvent(QMouseEvent* ev)
+			void PathFieldView::paintDefense(QPainter& paint)
 			{
-			}
+				QRectF bounds;
 
-			void PathFieldView::keyPressEvent(QKeyEvent* ev)
-			{
+				for (int i = 0; i < tracks_.size(); i++)
+				{
+					QPointF r1 = tracks_[i]->point(tracks_[i]->current());
+
+					for (auto h : highlights_)
+					{
+						if (h->doesAllianceMatch(tracks_[i]->alliance()) && h->isWithin(r1))
+						{
+							if (h->drawType() == FieldHighlight::DrawType::Rect)
+								paintRectHighlight(paint, h->color(), h->drawBounds());
+							else
+								paintCircleHighlight(paint, h->color(), h->drawBounds());
+						}
+					}
+
+					if (show_defense_)
+					{
+						for (int j = 0; j < tracks_.size(); j++)
+						{
+							if (i != j)
+							{
+								QPointF r2 = tracks_[j]->point(tracks_[j]->current());
+
+								if (distSquared(r1, r2) < 24)
+								{
+									if (tracks_[i]->alliance() != tracks_[j]->alliance())
+									{
+										bounds = QRectF(r1.x() - 2.0, r1.y() - 2.0, 4.0, 4.0);
+										paintCircleHighlight(paint, QColor(0, 255, 0, 128), bounds);
+
+										bounds = QRectF(r2.x() - 2.0, r2.y() - 2.0, 4.0, 4.0);
+										paintCircleHighlight(paint, QColor(0, 255, 0, 128), bounds);
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 
 			std::vector<QPointF> PathFieldView::transformPoints(QTransform& trans, const std::vector<QPointF>& points)
@@ -291,6 +410,44 @@ namespace xero
 				return window_to_world_.map(pt);
 			}
 
+			QRectF PathFieldView::worldToWindow(const QRectF& r)
+			{
+				QPointF p1 = worldToWindow(r.topLeft());
+				QPointF p2 = worldToWindow(r.bottomRight());
+
+				double x = std::min(p1.x(), p2.x());
+				double y = std::min(p1.y(), p2.y());
+
+				double width = p2.x() - p1.x();
+				if (width < 0)
+					width = -width;
+
+				double height = p2.y() - p1.y();
+				if (height < 0)
+					height = -height;
+
+				return QRectF(x, y, width, height);
+			}
+
+			QRectF PathFieldView::windowToWorld(const QRectF& r)
+			{
+				QPointF p1 = windowToWorld(r.topLeft());
+				QPointF p2 = windowToWorld(r.bottomRight());
+
+				double x = std::min(p1.x(), p2.x());
+				double y = std::min(p1.y(), p2.y());
+
+				double width = p2.x() - p1.x();
+				if (width < 0)
+					width = -width;
+
+				double height = p2.y() - p1.y();
+				if (height < 0)
+					height = -height;
+
+				return QRectF(x, y, width, height);
+			}
+
 			std::vector<QPointF> PathFieldView::worldToWindow(const std::vector<QPointF>& points)
 			{
 				return transformPoints(world_to_window_, points);
@@ -315,10 +472,9 @@ namespace xero
 				pen = QPen(QColor(0, 0, 0, 255));
 				paint.setBrush(br);
 				paint.setPen(pen);
-				QString tm = QString::number(t->teamNumber());
 				QFontMetricsF fm(paint.font());
-				QPointF p(pf.x() - fm.horizontalAdvance(tm) / 2, pf.y() + fm.height() / 2 - fm.descent());
-				paint.drawText(p, tm);
+				QPointF p(pf.x() - fm.horizontalAdvance(t->title()) / 2, pf.y() + fm.height() / 2 - fm.descent());
+				paint.drawText(p, t->title());
 			}
 
 			void PathFieldView::paintTrack(QPainter& paint, std::shared_ptr<RobotTrack> t)

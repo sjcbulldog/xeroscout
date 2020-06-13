@@ -23,9 +23,12 @@
 
 #include "ZebraViewWidget.h"
 #include "RobotTrack.h"
+#include "CircleFieldHighlight.h"
+#include "RectFieldHighlight.h"
 #include <QBoxLayout>
 #include <QTableWidget>
 #include <QHeaderView>
+#include <QMenu>
 
 using namespace xero::scouting::datamodel;
 
@@ -74,6 +77,7 @@ namespace xero
 				vertical_->setSizePolicy(p);
 
 				field_ = new PathFieldView(vertical_);
+				connect(field_, &PathFieldView::showContextMenu, this, &ZebraViewWidget::fieldContextMenu);
 				field_->setViewMode(PathFieldView::ViewMode::Track);
 				vertical_->addWidget(field_);
 
@@ -110,6 +114,43 @@ namespace xero
 
 			ZebraViewWidget::~ZebraViewWidget()
 			{
+			}
+
+			void ZebraViewWidget::fieldContextMenu(QPoint pt)
+			{
+				menu_point_ = pt;
+
+				if (field_->viewMode() == PathFieldView::ViewMode::Robot)
+				{
+					QAction* act;
+					QMenu* menu = new QMenu("Field");
+
+					act = menu->addAction("Show Defense");
+					act->setCheckable(true);
+					if (field_->showDefense())
+						act->setChecked(true);
+					else
+						act->setChecked(false);
+					connect(act, &QAction::triggered, this, &ZebraViewWidget::defenseToggled);
+
+					act = menu->addAction("Add Highlight");
+					connect(act, &QAction::triggered, this, &ZebraViewWidget::addHighlight);
+
+					menu->exec(pt);
+				}
+			}
+
+			void ZebraViewWidget::defenseToggled()
+			{
+				field_->setShowDefense(!field_->showDefense());
+			}
+
+			void ZebraViewWidget::addHighlight()
+			{
+				QPointF fpt = field_->globalToWorld(menu_point_);
+
+				QRectF r(fpt.x(), fpt.y() - 2.0, 4.0, 4.0);
+				auto h = std::make_shared<RectFieldHighlight>(QColor(255, 0, 0, 254), r, Alliance::Red);
 			}
 
 			void ZebraViewWidget::sliderChangedAnimationState(bool state, double mult)
@@ -181,17 +222,22 @@ namespace xero
 
 			void ZebraViewWidget::checkChanged(int state)
 			{
-				Qt::CheckState st = static_cast<Qt::CheckState>(state);
-				if (st == Qt::CheckState::PartiallyChecked)
+				static bool inside = false;
+
+				if (inside)
 					return;
 
-				list_->blockSignals(true);
-				for (int i = 0; i < list_->count(); i++)
+				inside = true;
+				Qt::CheckState st = static_cast<Qt::CheckState>(state);
+				if (st != Qt::CheckState::PartiallyChecked)
 				{
-					auto item = list_->item(i);
-					item->setCheckState(st);
+					for (int i = 0; i < list_->count(); i++)
+					{
+						auto item = list_->item(i);
+						item->setCheckState(st);
+					}
 				}
-				list_->blockSignals(false);
+				inside = false;
 			}
 
 			void ZebraViewWidget::detailItemChanged(QListWidgetItem* item)
@@ -229,6 +275,7 @@ namespace xero
 						allon = false;
 				}
 
+				all_->blockSignals(true);
 				if (allon)
 				{
 					all_->setCheckState(Qt::CheckState::Checked);
@@ -241,6 +288,7 @@ namespace xero
 				{
 					all_->setCheckState(Qt::CheckState::PartiallyChecked);
 				}
+				all_->blockSignals(false);
 			}
 
 			void ZebraViewWidget::rangeChanged(double minv, double maxv)
@@ -386,6 +434,10 @@ namespace xero
 
 			void ZebraViewWidget::comboxChanged(int which)
 			{
+				if (animation_timer_ != nullptr)
+				{
+					animationSetTime(slider_->rangeStart());
+				}
 				setNeedRefresh();
 				createPlot();
 				field_->update();
@@ -483,7 +535,14 @@ namespace xero
 				QString color;
 
 				auto m = dataModel()->findMatchByKey(mkey);
+				if (m == nullptr)
+					return nullptr;
+
 				if (!m->teamToAllianceSlot(tkey, c, slot))
+					return nullptr;
+
+				auto team = dataModel()->findTeamByKey(tkey);
+				if (team == nullptr)
 					return nullptr;
 
 				color = toString(c);
@@ -507,8 +566,18 @@ namespace xero
 				if (array.size() != 3)
 					return nullptr;
 
-				auto team = dataModel()->findTeamByKey(tkey);
-				auto t = std::make_shared<RobotTrack>(team->number(), matchRobotColor(c, slot));
+				QString title;
+				if (mode_ == Mode::SingleMatch)
+				{
+					title = QString::number(team->number());
+				}
+				else
+				{
+					c = Alliance::Red;
+					title = m->title(true);
+				}
+
+				auto t = std::make_shared<RobotTrack>(title, matchRobotColor(c, slot), c);
 				t->setRange(slider_->rangeStart(), slider_->rangeEnd());
 
 				if (!extractOneAlliance(array, slot - 1, t))

@@ -120,6 +120,7 @@ namespace xero
 				void autonomous();
 				void teleop();
 				void endgame();
+				void completeMatch();
 
 				void animateStop();
 				void animate1X();

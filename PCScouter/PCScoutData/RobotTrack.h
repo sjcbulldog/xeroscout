@@ -23,6 +23,7 @@
 #pragma once
 
 #include "pcscoutdata_global.h"
+#include "Alliance.h"
 #include <QPointF>
 #include <QString>
 #include <QColor>
@@ -37,12 +38,17 @@ namespace xero
             class PCSCOUTDATA_EXPORT RobotTrack
             {
             public:
-                RobotTrack(int number, QColor c) {
-                    number_ = number;
+                RobotTrack(const QString &title, QColor c, Alliance a) {
+                    title_ = title;
                     color_ = c;
+                    all_ = a;
                 }
 
                 virtual ~RobotTrack() {
+                }
+
+                Alliance alliance() const {
+                    return all_;
                 }
 
                 bool hasData() {
@@ -70,8 +76,8 @@ namespace xero
                     current_time_ = t;
                 }
 
-                int teamNumber() const {
-                    return number_;
+                const QString &title() const {
+                    return title_;
                 }
 
                 QColor color() const {
@@ -108,7 +114,7 @@ namespace xero
                         if (time < time_[0])
                             return points_[0];
                         else if (time > time_[time_.size() - 1])
-                            return points_[time_.size() - 1];
+                            return points_[points_.size() - 1];
                         else
                         {
                             for (int i = 0; i < time_.size() - 1; i++)
@@ -150,16 +156,16 @@ namespace xero
                 }
 
             private:
-                int number_;
+                QString title_;
                 QColor color_;
                 std::vector<double> time_;
                 std::vector<QPointF> points_;
                 double range_start_;
                 double range_end_;
                 double current_time_;
+                Alliance all_;
             };
         }
     }
 }
-
 

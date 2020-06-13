@@ -25,6 +25,8 @@
 #include "GameField.h"
 #include "ViewBase.h"
 #include "RobotTrack.h"
+#include "FieldHighlight.h"
+#include <QColor>
 #include <QWidget>
 #include <QPixmap>
 #include <QTransform>
@@ -55,15 +57,39 @@ namespace xero
 				virtual ~PathFieldView();
 
 				void setViewMode(ViewMode m) { view_mode_ = m; update(); }
+				ViewMode viewMode() const { return view_mode_;  }
+
 				void setField(std::shared_ptr<GameField> field);
 				void setUnits(const std::string& units);
 
+				void setShowDefense(bool b) {
+					show_defense_ = b;
+				}
+
+				bool showDefense() const {
+					return show_defense_;
+				}
+
 				QPointF worldToWindow(const QPointF& pt);
 				QPointF windowToWorld(const QPointF& pt);
+				QRectF worldToWindow(const QRectF& pt);
+				QRectF windowToWorld(const QRectF& pt);
 				std::vector<QPointF> worldToWindow(const std::vector<QPointF>& points);
 				std::vector<QPointF> windowToWorld(const std::vector<QPointF>& points);
 
+				QPointF globalToWorld(const QPoint& pt) {
+					return windowToWorld(mapFromGlobal(pt));
+				}
+
 				void doPaint(QPainter& paint);
+
+				void setTextInHeatmap(bool b) {
+					text_in_heatmap_ = b;
+				}
+
+				void addHighlight(std::shared_ptr<FieldHighlight> h) {
+					highlights_.push_back(h);
+				}
 
 				void clearTracks() {
 					tracks_.clear();
@@ -85,16 +111,12 @@ namespace xero
 				}
 
 			signals:
-				void mouseMoved(QPointF pos);
+				void showContextMenu(QPoint pt);
 
 			protected:
 				void paintEvent(QPaintEvent* event) override;
 				void resizeEvent(QResizeEvent* event) override;
-				void mouseMoveEvent(QMouseEvent* event) override;
-				void mousePressEvent(QMouseEvent* event) override;
-				void mouseReleaseEvent(QMouseEvent* event) override;
-				void keyPressEvent(QKeyEvent* event) override;
-				bool event(QEvent* ev);
+				void contextMenuEvent(QContextMenuEvent* ev) override;
 
 				QSize minimumSizeHint() const override;
 				QSize sizeHint() const override;
@@ -104,14 +126,21 @@ namespace xero
 				void paintRobot(QPainter& paint, std::shared_ptr<xero::scouting::datamodel::RobotTrack> t);
 				void paintHeatmap(QPainter& paint);
 				void paintRobotID(QPainter& paint, const QPointF& loc, std::shared_ptr<xero::scouting::datamodel::RobotTrack> t);
+				void paintDefense(QPainter& paint);
 
+				void paintRectHighlight(QPainter& paint, QColor c, const QRectF& bounds);
+				void paintCircleHighlight(QPainter& paint, QColor c, const QRectF& bounds);
+
+				QColor heatmapColorGenerator(double rel);
 				QPoint pointToHeatmapBox(const QPointF& pt);
 
-			private:
-				void emitMouseMoved(QPointF pos);
+				double distSquared(const QPointF& p1, const QPointF& p2);
 
+			private:
 				std::vector<QPointF> transformPoints(QTransform& trans, const std::vector<QPointF>& points);
 				void createTransforms();
+
+				std::list<std::shared_ptr<FieldHighlight>> highlights_;
 
 			private:
 				// Used only in the robot view mode
@@ -123,6 +152,9 @@ namespace xero
 				std::string units_;
 				std::vector<std::shared_ptr<xero::scouting::datamodel::RobotTrack>> tracks_;
 				ViewMode view_mode_;
+
+				bool text_in_heatmap_;
+				bool show_defense_;
 
 				double heatmap_box_size_;
 			};
