@@ -25,7 +25,7 @@
 #include "GameField.h"
 #include "ViewBase.h"
 #include "RobotTrack.h"
-#include "FieldHighlight.h"
+#include "FieldRegion.h"
 #include <QColor>
 #include <QWidget>
 #include <QPixmap>
@@ -91,11 +91,11 @@ namespace xero
 					text_in_heatmap_ = b;
 				}
 
-				void addHighlight(std::shared_ptr<const xero::scouting::datamodel::FieldHighlight> h) {
+				void addHighlight(std::shared_ptr<const xero::scouting::datamodel::FieldRegion> h) {
 					highlights_.push_back(h);
 				}
 
-				void removeHighlight(std::shared_ptr<const xero::scouting::datamodel::FieldHighlight> h) {
+				void removeHighlight(std::shared_ptr<const xero::scouting::datamodel::FieldRegion> h) {
 					highlights_.remove(h);
 				}
 
@@ -160,6 +160,7 @@ namespace xero
 
 				void paintRectHighlight(QPainter& paint, QColor c, const QRectF& bounds, const QString& title);
 				void paintCircleHighlight(QPainter& paint, QColor c, const QRectF& bounds, const QString& title);
+				void paintPolygonHighlight(QPainter& paint, QColor c, const QPolygonF &polygon, const QString& title);
 
 				QColor heatmapColorGenerator(double rel);
 				QPoint pointToHeatmapBox(const QPointF& pt);
@@ -170,7 +171,7 @@ namespace xero
 				std::vector<QPointF> transformPoints(QTransform& trans, const std::vector<QPointF>& points);
 				void createTransforms();
 
-				std::list<std::shared_ptr<const xero::scouting::datamodel::FieldHighlight>> highlights_;
+				std::list<std::shared_ptr<const xero::scouting::datamodel::FieldRegion>> highlights_;
 
 			private:
 				// Used only in the robot view mode

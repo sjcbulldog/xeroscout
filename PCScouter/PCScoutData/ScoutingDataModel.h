@@ -36,7 +36,7 @@
 #include "PickListTranslator.h"
 #include "GraphDescriptorCollection.h"
 #include "GraphDescriptor.h"
-#include "FieldHighlight.h"
+#include "FieldRegion.h"
 #include <QString>
 #include <QJsonDocument>
 #include <QFile>
@@ -79,7 +79,7 @@ namespace xero
 					DataSetColumnOrder,				///< the column order for a dataset
 					MatchVideoAdded,				///< added match video links
 					PickListTranslatorAdded,		///< added the pick list translator
-					FieldHighlightsChanged,			///< the field highlight list changed
+					FieldRegionsChanged,			///< the field highlight list changed
 				};
 
 			public:
@@ -309,8 +309,8 @@ namespace xero
 					return pick_list_trans_;
 				}
 
-				std::list<std::shared_ptr<const FieldHighlight>> fieldRegions() const {
-					std::list<std::shared_ptr<const FieldHighlight>> list;
+				std::list<std::shared_ptr<const FieldRegion>> fieldRegions() const {
+					std::list<std::shared_ptr<const FieldRegion>> list;
 
 					for (auto h : regions_)
 						list.push_back(h);
@@ -351,16 +351,16 @@ namespace xero
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				void addFieldRegion(std::shared_ptr<FieldHighlight> h) {
+				void addFieldRegion(std::shared_ptr<FieldRegion> h) {
 					dirty_ = true;
 					regions_.push_back(h);
-					emitChangedSignal(ChangeType::FieldHighlightsChanged);
+					emitChangedSignal(ChangeType::FieldRegionsChanged);
 				}
 
-				void removeFieldRegion(std::shared_ptr<const FieldHighlight> h) {
+				void removeFieldRegion(std::shared_ptr<const FieldRegion> h) {
 					dirty_ = true;
 					regions_.remove(h);
-					emitChangedSignal(ChangeType::FieldHighlightsChanged);
+					emitChangedSignal(ChangeType::FieldRegionsChanged);
 				}
 
 
@@ -1028,7 +1028,7 @@ namespace xero
 
 				std::shared_ptr<PickListTranslator> pick_list_trans_;
 
-				std::list<std::shared_ptr<const FieldHighlight>> regions_;
+				std::list<std::shared_ptr<const FieldRegion>> regions_;
 			};
 
 		}

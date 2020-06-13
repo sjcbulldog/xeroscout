@@ -159,13 +159,16 @@
     <ClInclude Include="RobotTrack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CircleFieldHighlight.h">
+    <ClInclude Include="CircleFieldRegion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FieldHighlight.h">
+    <ClInclude Include="RectFieldRegion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RectFieldHighlight.h">
+    <ClInclude Include="FieldRegion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PolygonFieldRegion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

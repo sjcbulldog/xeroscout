@@ -23,8 +23,9 @@
 #include "JSonDataModelConverter.h"
 #include "ScoutDataJsonNames.h"
 #include "ScoutingDataModel.h"
-#include "CircleFieldHighlight.h"
-#include "RectFieldHighlight.h"
+#include "CircleFieldRegion.h"
+#include "PolygonFieldRegion.h"
+#include "RectFieldRegion.h"
 #include <QJsonArray>
 #include <QTextCodec>
 
@@ -1445,13 +1446,14 @@ namespace xero
 
 				for (auto h : dm_->fieldRegions())
 				{
+					bool processed = false;
 					QJsonObject obj;
 
 					obj[JsonAllianceName] = toString(h->alliance());
 					obj[JsonNameName] = h->name();
 					obj[JsonColorName] = h->color().name(QColor::HexArgb);
 
-					auto rect = std::dynamic_pointer_cast<const RectFieldHighlight>(h);
+					auto rect = std::dynamic_pointer_cast<const RectFieldRegion>(h);
 					if (rect != nullptr)
 					{
 						QJsonObject robj;
@@ -1461,9 +1463,10 @@ namespace xero
 						robj[JsonWidthName] = bounds.width();
 						robj[JsonHeightName] = bounds.height();
 						obj[JsonBoundsName] = robj;
+						processed = true;
 					}
 
-					auto circle = std::dynamic_pointer_cast<const CircleFieldHighlight>(h);
+					auto circle = std::dynamic_pointer_cast<const CircleFieldRegion>(h);
 					if (circle != nullptr)
 					{
 						QJsonObject robj;
@@ -1471,6 +1474,24 @@ namespace xero
 						robj[JsonYName] = circle->center().y();
 						robj[JsonRadiusName] = circle->radius();
 						obj[JsonCircleName] = robj;
+						processed = true;
+					}
+
+					auto polygon = std::dynamic_pointer_cast<const PolygonFieldRegion>(h);
+					if (polygon != nullptr)
+					{
+						QJsonArray ptarray;
+
+						for (const QPointF pt : polygon->points())
+						{
+							QJsonObject ptobj;
+							ptobj[JsonXName] = pt.x();
+							ptobj[JsonYName] = pt.y();
+							ptarray.push_back(ptobj);
+						}
+
+						obj[JsonPointsName] = ptarray;
+						processed = true;
 					}
 
 					result.push_back(obj);
@@ -1524,7 +1545,7 @@ namespace xero
 
 						QRectF r(robj.value(JsonXName).toDouble(), robj.value(JsonYName).toDouble(),
 							robj.value(JsonWidthName).toDouble(), robj.value(JsonHeightName).toDouble());
-						auto h = std::make_shared<RectFieldHighlight>(name, color, r, a);
+						auto h = std::make_shared<RectFieldRegion>(name, color, r, a);
 						dm_->addFieldRegion(h);
 					}
 					else if (obj.contains(JsonCircleName))
@@ -1543,7 +1564,31 @@ namespace xero
 
 						QPointF pt(robj.value(JsonXName).toDouble(), robj.value(JsonYName).toDouble());
 						radius = robj.value(JsonRadiusName).toDouble();
-						auto h = std::make_shared<CircleFieldHighlight>(name, color, pt, radius, a);
+						auto h = std::make_shared<CircleFieldRegion>(name, color, pt, radius, a);
+						dm_->addFieldRegion(h);
+					}
+					else if (obj.contains(JsonPointsName) || obj.value(JsonPointsName).isArray())
+					{
+						QJsonArray ptarray = obj.value(JsonPointsName).toArray();
+						std::vector<QPointF> points;
+
+						for (int i = 0; i < ptarray.size(); i++)
+						{
+							if (!ptarray[i].isObject())
+								continue;
+
+							QJsonObject ptobj = ptarray[i].toObject();
+							if (!ptobj.contains(JsonXName) || !ptobj.value(JsonXName).isDouble())
+								continue;
+
+							if (!ptobj.contains(JsonYName) || !ptobj.value(JsonYName).isDouble())
+								continue;
+
+							QPointF pt(ptobj.value(JsonXName).toDouble(), ptobj.value(JsonYName).toDouble());
+							points.push_back(pt);
+						}
+
+						auto h = std::make_shared<PolygonFieldRegion>(name, color, points, a);
 						dm_->addFieldRegion(h);
 					}
 				}

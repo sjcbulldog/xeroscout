@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FieldHighlight.h"
+#include "FieldRegion.h"
 #include <QRectF>
 
 namespace xero
@@ -9,10 +9,10 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			class RectFieldHighlight : public FieldHighlight
+			class RectFieldRegion : public FieldRegion
 			{
 			public:
-				RectFieldHighlight(const QString &name, QColor c, const QRectF& r, Alliance a) : FieldHighlight(name, c, a)
+				RectFieldRegion(const QString &name, QColor c, const QRectF& r, Alliance a) : FieldRegion(name, c, a)
 				{
 					rect_ = r;
 				}
@@ -22,11 +22,7 @@ namespace xero
 					return rect_.contains(pt);
 				}
 
-				virtual DrawType drawType() const override {
-					return DrawType::Rect;
-				}
-
-				virtual const QRectF& drawBounds() const override {
+				virtual QRectF drawBounds() const override {
 					return rect_;
 				}
 

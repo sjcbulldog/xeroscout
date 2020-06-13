@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FieldHighlight.h"
+#include "FieldRegion.h"
 
 namespace xero
 {
@@ -8,10 +8,10 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			class CircleFieldHighlight : public FieldHighlight
+			class CircleFieldRegion : public FieldRegion
 			{
 			public:
-				CircleFieldHighlight(const QString &name, QColor c, const QPointF& loc, double radius, xero::scouting::datamodel::Alliance a) : FieldHighlight(name, c, a)
+				CircleFieldRegion(const QString &name, QColor c, const QPointF& loc, double radius, xero::scouting::datamodel::Alliance a) : FieldRegion(name, c, a)
 				{
 					loc_ = loc;
 					radius_ = radius;
@@ -23,11 +23,7 @@ namespace xero
 					return distSquared(pt, loc_) < radius_ * radius_;
 				}
 
-				virtual DrawType drawType() const {
-					return DrawType::Circle;
-				}
-
-				virtual const QRectF& drawBounds() const {
+				virtual QRectF drawBounds() const {
 					return bounds_;
 				}
 

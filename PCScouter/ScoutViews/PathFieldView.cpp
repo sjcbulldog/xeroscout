@@ -21,6 +21,9 @@
 //
 
 #include "PathFieldView.h"
+#include "RectFieldRegion.h"
+#include "CircleFieldRegion.h"
+#include "PolygonFieldRegion.h"
 #include <QPainter>
 #include <QPointF>
 #include <QMouseEvent>
@@ -49,6 +52,7 @@ namespace xero
 				heatmap_box_size_ = 1.0 / 12.0;
 				text_in_heatmap_ = false;
 				show_defense_ = true;
+				mode_ = SelectMode::None;
 			}
 
 			PathFieldView::~PathFieldView()
@@ -252,14 +256,23 @@ namespace xero
 
 				for (auto h : highlights_)
 				{
-					QPoint c;
-					if (h->drawType() == FieldHighlight::DrawType::Circle)
-					{
-						paint.drawEllipse(worldToWindow(h->drawBounds()));
-					}
-					else
+					std::shared_ptr<const RectFieldRegion> rregion = std::dynamic_pointer_cast<const RectFieldRegion>(h);
+					if (rregion != nullptr)
 					{
 						paint.drawRect(worldToWindow(h->drawBounds()));
+						continue;
+					}
+
+					std::shared_ptr<const CircleFieldRegion> cregion = std::dynamic_pointer_cast<const CircleFieldRegion>(h);
+					if (cregion != nullptr)
+					{
+						paint.drawEllipse(worldToWindow(h->drawBounds()));
+						continue;
+					}
+
+					std::shared_ptr<const PolygonFieldRegion> pregion = std::dynamic_pointer_cast<const PolygonFieldRegion>(h);
+					{
+						paint.drawPolygon(pregion->polygon(), Qt::FillRule::OddEvenFill);
 					}
 				}
 				paint.restore();
@@ -447,6 +460,30 @@ namespace xero
 				paint.restore();
 			}
 
+			void PathFieldView::paintPolygonHighlight(QPainter& paint, QColor c, const QPolygonF& polygon, const QString& title)
+			{
+				paint.save();
+				QPen pen(QColor(0, 0, 0, 255));
+				paint.setPen(pen);
+				QBrush brush(c, Qt::BrushStyle::Dense6Pattern);
+				paint.setBrush(brush);
+
+				QRectF rp = worldToWindow(polygon.boundingRect());
+
+				paint.drawPolygon(polygon, Qt::FillRule::OddEvenFill);
+
+				if (title.length() > 0)
+				{
+					QPen pen(QColor(242, 245, 66));
+					paint.setPen(pen);
+					QFontMetricsF fm(paint.font());
+					QPointF pt(rp.center().x() - fm.horizontalAdvance(title) / 2, rp.center().y() + fm.descent());
+					paint.drawText(pt, title);
+				}
+
+				paint.restore();
+			}
+
 			void PathFieldView::paintCircleHighlight(QPainter& paint, QColor c, const QRectF &r, const QString &title)
 			{
 				paint.save();
@@ -490,10 +527,28 @@ namespace xero
 					{
 						if (h->doesAllianceMatch(tracks_[i]->alliance()) && h->isWithin(r1))
 						{
-							if (h->drawType() == FieldHighlight::DrawType::Rect)
+							std::shared_ptr<const RectFieldRegion> rregion = std::dynamic_pointer_cast<const RectFieldRegion>(h);
+							if (rregion != nullptr)
+							{
 								paintRectHighlight(paint, h->color(), h->drawBounds(), h->name());
-							else
+								continue;
+							}
+
+							std::shared_ptr<const CircleFieldRegion> cregion = std::dynamic_pointer_cast<const CircleFieldRegion>(h);
+							if (cregion != nullptr)
+							{
 								paintCircleHighlight(paint, h->color(), h->drawBounds(), h->name());
+								continue;
+							}
+
+							std::shared_ptr<const PolygonFieldRegion> pregion = std::dynamic_pointer_cast<const PolygonFieldRegion>(h);
+							if (pregion != nullptr)
+							{
+								paintPolygonHighlight(paint, h->color(), pregion->polygon(), h->name());
+								continue;
+							}
+
+							assert(false);
 						}
 					}
 

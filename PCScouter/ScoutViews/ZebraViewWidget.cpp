@@ -23,8 +23,9 @@
 
 #include "ZebraViewWidget.h"
 #include "RobotTrack.h"
-#include "CircleFieldHighlight.h"
-#include "RectFieldHighlight.h"
+#include "CircleFieldRegion.h"
+#include "RectFieldRegion.h"
+#include "PolygonFieldRegion.h"
 #include <QBoxLayout>
 #include <QTableWidget>
 #include <QHeaderView>
@@ -165,7 +166,7 @@ namespace xero
 					connect(act, &QAction::triggered, cb);
 
 					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Both, HighlightType::Polygon);
-					act = both->addAction("Add Polygon Area");
+					act = red->addAction("Add Polygon Area");
 					connect(act, &QAction::triggered, cb);
 
 					all->addMenu(red);
@@ -181,7 +182,7 @@ namespace xero
 					connect(act, &QAction::triggered, cb);
 
 					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Both, HighlightType::Polygon);
-					act = both->addAction("Add Polygon Area");
+					act = blue->addAction("Add Polygon Area");
 					connect(act, &QAction::triggered, cb);
 
 					all->addMenu(blue);
@@ -225,6 +226,8 @@ namespace xero
 						c = QColor(0, 0, 255, 128);
 
 					auto h = std::make_shared<PolygonFieldRegion>(name, c, points, a);
+					field_->addHighlight(h);
+					dataModel()->addFieldRegion(h);
 				}
 			}
 
@@ -247,14 +250,14 @@ namespace xero
 					if (ht == HighlightType::Circle)
 					{
 						qDebug() << "ZebraViewWidget::areaSelected " << area;
-						auto h = std::make_shared<CircleFieldHighlight>(name, c, area.center(), area.width() / 2, a);
+						auto h = std::make_shared<CircleFieldRegion>(name, c, area.center(), area.width() / 2, a);
 						field_->addHighlight(h);
 						dataModel()->addFieldRegion(h);
 					}
 					else
 					{
 						qDebug() << "ZebraViewWidget::areaSelected " << area;
-						auto h = std::make_shared<RectFieldHighlight>(name, c, area, a);
+						auto h = std::make_shared<RectFieldRegion>(name, c, area, a);
 						field_->addHighlight(h);
 						dataModel()->addFieldRegion(h);
 					}
@@ -263,7 +266,7 @@ namespace xero
 
 			void ZebraViewWidget::removeHighlight(const QString& name)
 			{
-				std::shared_ptr<const FieldHighlight> region = nullptr;
+				std::shared_ptr<const FieldRegion> region = nullptr;
 
 				for (auto h : dataModel()->fieldRegions())
 				{

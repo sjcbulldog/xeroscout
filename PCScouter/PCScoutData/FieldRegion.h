@@ -10,17 +10,10 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			class FieldHighlight
+			class FieldRegion
 			{
 			public:
-				enum class DrawType
-				{
-					Circle,
-					Rect,
-				};
-
-			public:
-				FieldHighlight(const QString &name, QColor color, xero::scouting::datamodel::Alliance a) {
+				FieldRegion(const QString &name, QColor color, xero::scouting::datamodel::Alliance a) {
 					name_ = name;
 					color_ = color;
 					alliance_ = a;
@@ -44,8 +37,7 @@ namespace xero
 
 				virtual bool isWithin(const QPointF& pt) const = 0;
 
-				virtual DrawType drawType() const = 0;
-				virtual const QRectF& drawBounds() const = 0;
+				virtual QRectF drawBounds() const = 0;
 
 			protected:
 				static double distSquared(const QPointF& r1, const QPointF& r2)
