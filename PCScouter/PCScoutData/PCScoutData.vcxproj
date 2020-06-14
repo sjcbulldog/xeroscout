@@ -98,8 +98,11 @@
     <ClInclude Include="FieldRegion.h" />
     <ClInclude Include="PolygonFieldRegion.h" />
     <ClInclude Include="RectFieldRegion.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="RobotTrack.h" />
     <ClInclude Include="ZebraDataInfoExtractor.h" />
+    <ClInclude Include="ZebraEvent.h" />
+    <ClInclude Include="ZebraSequence.h" />
     <QtMoc Include="DataGenerator.h" />
     <ClInclude Include="DataModelMatch.h" />
     <ClInclude Include="DataModelTeam.h" />
@@ -167,6 +170,10 @@
     <ClCompile Include="TimerCountItemDisplay.cpp" />
     <ClCompile Include="UpDownItemDisplay.cpp" />
     <ClCompile Include="ZebraDataInfoExtractor.cpp" />
+    <ClCompile Include="ZebraSequence.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PCScoutData.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

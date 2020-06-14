@@ -104,7 +104,7 @@ namespace xero
 							std::vector<QPointF> points;
 
 							for (const QPointF& pt : points_)
-								points_.push_back(windowToWorld(pt));
+								points.push_back(windowToWorld(pt));
 
 							mode_ = SelectMode::None;
 							emit polySelected(points);
@@ -159,6 +159,9 @@ namespace xero
 						update();
 					}
 					else if (mode_ == SelectMode::ContinuingPolygon)
+					{
+					}
+					else if (mode_ == SelectMode::None)
 					{
 					}
 					else
@@ -272,7 +275,7 @@ namespace xero
 
 					std::shared_ptr<const PolygonFieldRegion> pregion = std::dynamic_pointer_cast<const PolygonFieldRegion>(h);
 					{
-						paint.drawPolygon(pregion->polygon(), Qt::FillRule::OddEvenFill);
+						paint.drawPolygon(worldToWindow(pregion->polygon()), Qt::FillRule::OddEvenFill);
 					}
 				}
 				paint.restore();
@@ -468,9 +471,10 @@ namespace xero
 				QBrush brush(c, Qt::BrushStyle::Dense6Pattern);
 				paint.setBrush(brush);
 
-				QRectF rp = worldToWindow(polygon.boundingRect());
+				QPolygonF poly = worldToWindow(polygon);
+				QRectF rp = poly.boundingRect();
 
-				paint.drawPolygon(polygon, Qt::FillRule::OddEvenFill);
+				paint.drawPolygon(poly, Qt::FillRule::OddEvenFill);
 
 				if (title.length() > 0)
 				{
@@ -702,6 +706,26 @@ namespace xero
 					height = -height;
 
 				return QRectF(x, y, width, height);
+			}
+
+			QPolygonF PathFieldView::worldToWindow(const QPolygonF& poly)
+			{
+				QVector<QPointF> points;
+
+				for (const QPointF& pt : poly)
+					points.push_back(worldToWindow(pt));
+
+				return QPolygonF(points);
+			}
+
+			QPolygonF PathFieldView::windowToWorld(const QPolygonF& poly)
+			{
+				QVector<QPointF> points;
+
+				for (const QPointF& pt : poly)
+					points.push_back(windowToWorld(pt));
+
+				return QPolygonF(points);
 			}
 
 			std::vector<QPointF> PathFieldView::worldToWindow(const std::vector<QPointF>& points)

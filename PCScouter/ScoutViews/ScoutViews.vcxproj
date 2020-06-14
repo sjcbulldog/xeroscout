@@ -116,6 +116,7 @@
     <ClCompile Include="TeamScheduleViewWidget.cpp" />
     <ClCompile Include="TeamSummaryWidget.cpp" />
     <ClCompile Include="UnitConverter.cpp" />
+    <ClCompile Include="ZebraAnalysisView.cpp" />
     <ClCompile Include="ZebraViewWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +137,7 @@
     <QtMoc Include="TimeBoundWidget.h" />
     <ClInclude Include="SelectTeamsDialog.h" />
     <QtMoc Include="TeamSummaryWidget.h" />
+    <ClInclude Include="ZebraAnalysisView.h" />
     <ClInclude Include="ZebraViewWidget.h" />
     <QtMoc Include="PathFieldView.h" />
     <ClInclude Include="ScoutDataMergeDialog.h" />

@@ -72,8 +72,11 @@ namespace xero
 
 				QPointF worldToWindow(const QPointF& pt);
 				QPointF windowToWorld(const QPointF& pt);
-				QRectF worldToWindow(const QRectF& pt);
-				QRectF windowToWorld(const QRectF& pt);
+				QRectF worldToWindow(const QRectF& rect);
+				QRectF windowToWorld(const QRectF& rect);
+				QPolygonF worldToWindow(const QPolygonF& poly);
+				QPolygonF windowToWorld(const QPolygonF& poly);
+
 				std::vector<QPointF> worldToWindow(const std::vector<QPointF>& points);
 				std::vector<QPointF> windowToWorld(const std::vector<QPointF>& points);
 

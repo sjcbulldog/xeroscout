@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <QString>
+
 namespace xero
 {
 	namespace scouting

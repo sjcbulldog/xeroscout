@@ -35,6 +35,9 @@ namespace xero
 				}
 
 			private:
+				void calcMaxVelocityAccel();
+
+			private:
 
 				double distance(const QPointF& start, const QPointF& end) {
 					double dx = start.x() - end.x();

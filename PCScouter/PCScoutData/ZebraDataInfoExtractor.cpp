@@ -42,7 +42,6 @@ namespace xero
 				return -1;
 			}
 
-			int cnt = 0;
 			void ZebraDataInfoExtractor::calcRobotCharacterstics()
 			{
 				if (data_ == nullptr)
@@ -53,6 +52,11 @@ namespace xero
 				if (track_->timeCount() == 0 || track_->pointCount() == 0)
 					return;
 
+				calcMaxVelocityAccel();
+			}
+
+			void ZebraDataInfoExtractor::calcMaxVelocityAccel()
+			{
 				//
 				// Get the index just before the start time 
 				//
@@ -93,8 +97,6 @@ namespace xero
 
 				data_->insert_or_assign("Max Velocity", maxv);
 				data_->insert_or_assign("Max Acceleration", maxa);
-
-				cnt++;
 			}
 		}
 	}

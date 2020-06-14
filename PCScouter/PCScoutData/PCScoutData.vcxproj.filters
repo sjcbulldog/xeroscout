@@ -171,6 +171,15 @@
     <ClInclude Include="PolygonFieldRegion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZebraEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZebraSequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoutingDatabase.cpp">
@@ -245,6 +254,9 @@
     <ClCompile Include="ZebraDataInfoExtractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ZebraSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ScoutingDataModel.h">
@@ -256,5 +268,8 @@
     <QtMoc Include="DataGenerator.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PCScoutData.rc" />
   </ItemGroup>
 </Project>

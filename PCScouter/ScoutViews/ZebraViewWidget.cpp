@@ -165,7 +165,7 @@ namespace xero
 					act = red->addAction("Add Rectangular Area");
 					connect(act, &QAction::triggered, cb);
 
-					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Both, HighlightType::Polygon);
+					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Red, HighlightType::Polygon);
 					act = red->addAction("Add Polygon Area");
 					connect(act, &QAction::triggered, cb);
 
@@ -181,7 +181,7 @@ namespace xero
 					act = blue->addAction("Add Rectangular Area");
 					connect(act, &QAction::triggered, cb);
 
-					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Both, HighlightType::Polygon);
+					cb = std::bind(&ZebraViewWidget::addHighlight, this, Alliance::Blue, HighlightType::Polygon);
 					act = blue->addAction("Add Polygon Area");
 					connect(act, &QAction::triggered, cb);
 
