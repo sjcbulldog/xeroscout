@@ -26,6 +26,7 @@
 #include "CircleFieldRegion.h"
 #include "RectFieldRegion.h"
 #include "PolygonFieldRegion.h"
+#include "DataModelBuilder.h"
 #include <QBoxLayout>
 #include <QTableWidget>
 #include <QHeaderView>
@@ -610,54 +611,44 @@ namespace xero
 					slider_->setRangeMode(true);
 			}
 
-			void ZebraViewWidget::getTimes(const QJsonArray& array, std::shared_ptr<RobotTrack> track)
+			std::shared_ptr<RobotTrack> ZebraViewWidget::createTrack(const QString& mkey, const QString& tkey)
 			{
-				for (int i = 0; i < array.size(); i++)
+				auto t = dataModel()->findTeamByKey(tkey);
+				auto m = dataModel()->findMatchByKey(mkey);
+
+				QString title;
+				Alliance c;
+				int slot;
+
+				if (mode_ == Mode::SingleMatch)
 				{
-					if (array[i].isDouble())
-					{
-						double d = array[i].toDouble();
-						track->addTime(d);
-					}
+					title = QString::number(t->number());
+					m->teamToAllianceSlot(tkey, c, slot);
 				}
-			}
-
-			bool ZebraViewWidget::extractOneAlliance(const QJsonArray& arr, int index, std::shared_ptr<xero::scouting::datamodel::RobotTrack> track)
-			{
-				if (!arr[index].isObject())
-					return false;
-
-				const QJsonObject& obj = arr[index].toObject();
-
-				if (!obj.contains("xs") || !obj.value("xs").isArray())
-					return false;
-
-				if (!obj.contains("ys") || !obj.value("ys").isArray())
-					return false;
-
-				const QJsonArray& xa = obj.value("xs").toArray();
-				const QJsonArray& ya = obj.value("ys").toArray();
-
-				if (xa.size() != ya.size())
-					return false;
-
-				for (int k = 0; k < xa.size(); k++)
+				else
 				{
-					if (xa[k].isUndefined() || ya[k].isUndefined())
-						continue;
-
-					if (xa[k].isNull() || ya[k].isNull())
-						continue;
-
-					if (!xa[k].isDouble() || !ya[k].isDouble())
-						continue;
-
-					double xv = xa[k].toDouble();
-					double yv = ya[k].toDouble();
-
-					track->addPoint(QPointF(xv, yv));
+					slot = 1;
+					c = Alliance::Red;
+					title = m->title(true);
 				}
-				return true;
+
+				auto track = DataModelBuilder::createTrack(dataModel(), mkey, tkey);
+				track->setTitle(title);
+				track->setColor(matchRobotColor(c, slot));
+				track->setAlliance(c);
+
+				track->setRange(slider_->rangeStart(), slider_->rangeEnd());
+
+				TrackEntry te(mkey, tkey, track);
+				entries_.push_back(te);
+
+				if (c == Alliance::Blue && mode_ == Mode::SingleTeam)
+					track->transform(54.0, 27.0);
+
+				field_->addTrack(track);
+				track->setRange(slider_->rangeStart(), slider_->rangeEnd());
+
+				return track;
 			}
 
 			//
@@ -680,77 +671,6 @@ namespace xero
 				all_->blockSignals(false);
 			}
 
-			//
-			// Create a new track object
-			//
-			std::shared_ptr<RobotTrack> ZebraViewWidget::createTrack(const QString& mkey, const QString& tkey)
-			{
-				Alliance c;
-				int slot;
-				QString color;
-
-				auto m = dataModel()->findMatchByKey(mkey);
-				if (m == nullptr)
-					return nullptr;
-
-				if (!m->teamToAllianceSlot(tkey, c, slot))
-					return nullptr;
-
-				auto team = dataModel()->findTeamByKey(tkey);
-				if (team == nullptr)
-					return nullptr;
-
-				color = toString(c);
-
-				if (!m->hasZebra())
-					return nullptr;
-
-				const QJsonObject& obj = m->zebra();
-				if (!obj.contains("times") || !obj.value("times").isArray())
-					return nullptr;
-
-				if (!obj.contains("alliances") || !obj.value("alliances").isObject())
-					return nullptr;
-
-				QJsonObject aobj = obj.value("alliances").toObject();
-
-				if (!aobj.contains(color) || !aobj.value(color).isArray())
-					return nullptr;
-
-				QJsonArray array = aobj.value(color).toArray();
-				if (array.size() != 3)
-					return nullptr;
-
-				QString title;
-				if (mode_ == Mode::SingleMatch)
-				{
-					title = QString::number(team->number());
-				}
-				else
-				{
-					c = Alliance::Red;
-					title = m->title(true);
-				}
-
-				auto t = std::make_shared<RobotTrack>(title, matchRobotColor(c, slot), c);
-				t->setRange(slider_->rangeStart(), slider_->rangeEnd());
-
-				if (!extractOneAlliance(array, slot - 1, t))
-					return nullptr;
-
-				QJsonArray tarray = obj.value("times").toArray();
-				getTimes(tarray, t);
-				
-				TrackEntry te(mkey, tkey, t);
-				entries_.push_back(te);
-
-				if (c == Alliance::Blue && mode_ == Mode::SingleTeam)
-					t->transform(54.0, 27.0);
-
-				field_->addTrack(t);
-
-				return t;
-			}
 
 			//
 			// Called when we want to create a new zebra plot based on the a given match

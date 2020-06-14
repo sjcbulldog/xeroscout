@@ -151,7 +151,7 @@ void DataModelBuilder::addBlueAllianceData(std::shared_ptr<BlueAlliance> ba, std
 	calc.calc();
 }
 
-bool DataModelBuilder::addTeamsMatches(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm)
+bool DataModelBuilder::addTeamsMatches(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<::ScoutingDataModel> dm)
 {
 	bool assignteams = false;
 
@@ -230,7 +230,7 @@ bool DataModelBuilder::addTeamsMatches(xero::ba::BlueAllianceEngine& engine, std
 }
 
 
-bool DataModelBuilder::addTeams(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, const QStringList &teamlist)
+bool DataModelBuilder::addTeams(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<::ScoutingDataModel> dm, const QStringList &teamlist)
 {
 	auto it = engine.events().find(dm->evkey());
 	if (it == engine.events().end())
@@ -259,10 +259,10 @@ bool DataModelBuilder::addTeams(xero::ba::BlueAllianceEngine& engine, std::share
 // Build a data model for an event from blue alliance data.  In this case we are given
 // scouting forms that are ours to own.
 //
-std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> 
+std::shared_ptr<::ScoutingDataModel> 
 	DataModelBuilder::buildModel(xero::ba::BlueAllianceEngine& engine, 
-	std::shared_ptr<xero::scouting::datamodel::ScoutingForm> team,
-	std::shared_ptr<xero::scouting::datamodel::ScoutingForm> match,
+	std::shared_ptr<::ScoutingForm> team,
+	std::shared_ptr<::ScoutingForm> match,
 		const QString& evkey, QString& error)
 {
 	auto& bateams = engine.teams();
@@ -346,7 +346,7 @@ std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
 // Build a data model for an event from blue alliance data.  In this case we are given
 // the name of files that contains the scouting forms
 //
-std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
+std::shared_ptr<::ScoutingDataModel>
 DataModelBuilder::buildModel(xero::ba::BlueAllianceEngine& engine,
 	const QString& pitform, const QString& matchform,
 	const QString& evkey, QString& error)
@@ -361,14 +361,115 @@ DataModelBuilder::buildModel(xero::ba::BlueAllianceEngine& engine,
 // Build a data model for an event from blue alliance data.  In this case we are given
 // pointers to scouting forms that are not ours and we need to make a copy.
 //
-std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
+std::shared_ptr<::ScoutingDataModel>
 DataModelBuilder::buildModel(xero::ba::BlueAllianceEngine& engine,
-	std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> cpit,
-	std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> cmatch,
+	std::shared_ptr<const ::ScoutingForm> cpit,
+	std::shared_ptr<const ::ScoutingForm> cmatch,
 	const QString& evkey, QString& error)
 {
 	std::shared_ptr<ScoutingForm> team = std::make_shared<ScoutingForm>(cpit->obj());
 	std::shared_ptr<ScoutingForm> match = std::make_shared<ScoutingForm>(cmatch->obj());
 
 	return DataModelBuilder::buildModel(engine, team, match, evkey, error);
+}
+
+//
+// Create a new track object
+//
+std::shared_ptr<RobotTrack> DataModelBuilder::createTrack(std::shared_ptr<ScoutingDataModel> model, const QString& mkey, const QString& tkey)
+{
+	Alliance c;
+	int slot;
+	QString color;
+
+	auto m = model->findMatchByKey(mkey);
+	if (m == nullptr)
+		return nullptr;
+
+	if (!m->teamToAllianceSlot(tkey, c, slot))
+		return nullptr;
+
+	auto team = model->findTeamByKey(tkey);
+	if (team == nullptr)
+		return nullptr;
+
+	color = toString(c);
+
+	if (!m->hasZebra())
+		return nullptr;
+
+	const QJsonObject& obj = m->zebra();
+	if (!obj.contains("times") || !obj.value("times").isArray())
+		return nullptr;
+
+	if (!obj.contains("alliances") || !obj.value("alliances").isObject())
+		return nullptr;
+
+	QJsonObject aobj = obj.value("alliances").toObject();
+
+	if (!aobj.contains(color) || !aobj.value(color).isArray())
+		return nullptr;
+
+	QJsonArray array = aobj.value(color).toArray();
+	if (array.size() != 3)
+		return nullptr;
+
+	auto t = std::make_shared<RobotTrack>(mkey, tkey);
+	if (!extractOneAlliance(array, slot - 1, t))
+		return nullptr;
+
+	QJsonArray tarray = obj.value("times").toArray();
+	getTimes(tarray, t);
+
+	return t;
+}
+
+void DataModelBuilder::getTimes(const QJsonArray& array, std::shared_ptr<RobotTrack> track)
+{
+	for (int i = 0; i < array.size(); i++)
+	{
+		if (array[i].isDouble())
+		{
+			double d = array[i].toDouble();
+			track->addTime(d);
+		}
+	}
+}
+
+bool DataModelBuilder::extractOneAlliance(const QJsonArray& arr, int index, std::shared_ptr<xero::scouting::datamodel::RobotTrack> track)
+{
+	if (!arr[index].isObject())
+		return false;
+
+	const QJsonObject& obj = arr[index].toObject();
+
+	if (!obj.contains("xs") || !obj.value("xs").isArray())
+		return false;
+
+	if (!obj.contains("ys") || !obj.value("ys").isArray())
+		return false;
+
+	const QJsonArray& xa = obj.value("xs").toArray();
+	const QJsonArray& ya = obj.value("ys").toArray();
+
+	if (xa.size() != ya.size())
+		return false;
+
+	for (int k = 0; k < xa.size(); k++)
+	{
+		if (xa[k].isUndefined() || ya[k].isUndefined())
+			continue;
+
+		if (xa[k].isNull() || ya[k].isNull())
+			continue;
+
+		if (!xa[k].isDouble() || !ya[k].isDouble())
+			continue;
+
+		double xv = xa[k].toDouble();
+		double yv = ya[k].toDouble();
+
+		track->addPoint(QPointF(xv, yv));
+	}
+	return true;
 }

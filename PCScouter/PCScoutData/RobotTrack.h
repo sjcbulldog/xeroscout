@@ -38,13 +38,24 @@ namespace xero
             class PCSCOUTDATA_EXPORT RobotTrack
             {
             public:
-                RobotTrack(const QString &title, QColor c, Alliance a) {
-                    title_ = title;
-                    color_ = c;
-                    all_ = a;
+                RobotTrack(const QString &mkey, const QString &tkey) {
+                    mkey_ = mkey;
+                    tkey_ = tkey;
                 }
 
                 virtual ~RobotTrack() {
+                }
+
+                void setColor(QColor c) {
+                    color_ = c;
+                }
+
+                void setAlliance(Alliance a) {
+                    all_ = a;
+                }
+
+                void setTitle(const QString& title) {
+                    title_ = title;
                 }
 
                 Alliance alliance() const {
@@ -156,6 +167,8 @@ namespace xero
                 }
 
             private:
+                QString mkey_;
+                QString tkey_;
                 QString title_;
                 QColor color_;
                 std::vector<double> time_;

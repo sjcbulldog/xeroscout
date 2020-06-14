@@ -67,9 +67,6 @@
     <ClCompile Include="AboutDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DataModelBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ApplicationController.cpp">
       <Filter>AppControllers\Source Files</Filter>
     </ClCompile>
@@ -161,9 +158,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="build.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DataModelBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImportMatchDataController.h">

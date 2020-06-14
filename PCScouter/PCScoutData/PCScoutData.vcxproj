@@ -43,11 +43,11 @@
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <QtInstall>msvc2019_64</QtInstall>
-    <QtModules>core;gui;sql;widgets</QtModules>
+    <QtModules>core;gui;network;sql;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <QtInstall>msvc2019_64</QtInstall>
-    <QtModules>core;gui;sql;widgets</QtModules>
+    <QtModules>core;gui;network;sql;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
     <Import Project="$(QtMsBuild)\qt.props" />
@@ -60,13 +60,13 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PreprocessorDefinitions>PCSCOUTDATA_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)eigen;$(SolutionDir)BlueAllianceAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ExprLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ExprLib.lib;BlueAllianceAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)x64/$(ConfigurationName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -77,13 +77,13 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <PreprocessorDefinitions>PCSCOUTDATA_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)eigen;$(SolutionDir)BlueAllianceAPI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).dll</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>ExprLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ExprLib.lib;BlueAllianceAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)x64/$(ConfigurationName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -95,6 +95,7 @@
     <ClInclude Include="ChoiceItemDisplay.h" />
     <ClInclude Include="CircleFieldRegion.h" />
     <ClInclude Include="DataCollection.h" />
+    <ClInclude Include="DataModelBuilder.h" />
     <ClInclude Include="FieldRegion.h" />
     <ClInclude Include="PolygonFieldRegion.h" />
     <ClInclude Include="RectFieldRegion.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="BooleanItemDisplay.cpp" />
     <ClCompile Include="ChoiceItemDisplay.cpp" />
     <ClCompile Include="DataGenerator.cpp" />
+    <ClCompile Include="DataModelBuilder.cpp" />
     <ClCompile Include="FormInstance.cpp" />
     <ClCompile Include="FormItemDisplay.cpp" />
     <ClCompile Include="GraphDescriptor.cpp" />

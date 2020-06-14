@@ -128,7 +128,6 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
     <ClCompile Include="ApplicationController.cpp" />
     <ClCompile Include="ClientProtocolHandler.cpp" />
     <ClCompile Include="CoachSync.cpp" />
-    <ClCompile Include="DataModelBuilder.cpp" />
     <ClCompile Include="ImportMatchDataController.cpp" />
     <ClCompile Include="ImportMatchScheduleController.cpp" />
     <ClCompile Include="ImportZebraDataController.cpp" />
@@ -167,7 +166,6 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
     <QtMoc Include="ClientProtocolHandler.h" />
     <QtMoc Include="ApplicationController.h" />
     <ClInclude Include="build.h" />
-    <ClInclude Include="DataModelBuilder.h" />
     <ClInclude Include="ImportMatchDataController.h" />
     <ClInclude Include="ImportZebraDataController.h" />
     <ClInclude Include="KPIController.h" />

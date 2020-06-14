@@ -2,7 +2,13 @@
 
 #include "scoutviews_global.h"
 #include "ViewBase.h"
+#include "ZebraSequence.h"
 #include <QWidget>
+#include <QComboBox>
+#include <QGroupBox>
+#include <QTextBrowser>
+#include <list>
+#include <memory>
 
 namespace xero
 {
@@ -15,7 +21,23 @@ namespace xero
 			public:
 				ZebraAnalysisView(QWidget* parent);
 				~ZebraAnalysisView();
+
+				void refreshView();
+				void clearView();
+
+			protected:
+				void showEvent(QShowEvent* ev) override;
+
 			private:
+				void teamChanged(int index);
+				void regenerate();
+
+			private:
+				QComboBox* box_;
+				QGroupBox* report_;
+				QTextBrowser* report_txt_;
+				QString current_team_;
+				std::list<std::shared_ptr<xero::scouting::datamodel::ZebraSequence>> sequences_;
 			};
 		}
 	}

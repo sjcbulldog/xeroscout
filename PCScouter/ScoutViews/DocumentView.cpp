@@ -33,6 +33,7 @@
 #include "AllianceGraphView.h"
 #include "TeamSummaryWidget.h"
 #include "PickListView.h"
+#include "ZebraAnalysisView.h"
 #include <QLabel>
 #include <QDebug>
 #include <QFont>
@@ -89,7 +90,8 @@ namespace xero
 				gview->create();
 				addWidget(gview);																				// 15
 
-				addWidget(new PickListView("picklist", this));
+				addWidget(new PickListView("picklist", this));													// 16
+				addWidget(new ZebraAnalysisView(this));													// 16
 
 				if (gamemgr)
 				{
