@@ -48,6 +48,8 @@ namespace xero
 
 				void setRangeMode(bool b) {
 					range_mode_ = b;
+					current_time_ = range_start_;
+					update();
 				}
 
 				bool rangeMode() const {
@@ -103,6 +105,7 @@ namespace xero
 			signals:
 				void rangeChanged(double rangemin, double rangemax);
 				void changeAnimationState(bool state, double multi);
+				void currentTimeChanged(double now);
 
 			protected:
 				void paintEvent(QPaintEvent* ev) override ;
@@ -143,6 +146,7 @@ namespace xero
 				{
 					DraggingStart,
 					DraggingEnd,
+					DraggingCurrent,
 					None,
 				};
 
@@ -158,7 +162,6 @@ namespace xero
 				State state_;
 
 				bool range_mode_;
-				bool animating_;
 			};
 		}
 	}

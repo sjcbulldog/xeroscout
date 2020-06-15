@@ -323,6 +323,10 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraDataView)));
 	view_selector_->addItem(item);
 
+	item = new QListWidgetItem(loadIcon("sequence.png"), "Zebra Analysis", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraAnalysis)));
+	view_selector_->addItem(item);
+
 	item = new QListWidgetItem(loadIcon("history.png"), "Change History", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::HistoryView)));
 	view_selector_->addItem(item);
@@ -335,11 +339,7 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PickListView)));
 	view_selector_->addItem(item);
 
-#ifdef _DEBUG
-	item = new QListWidgetItem(loadIcon("picklist.png"), "Zebra Analysis", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraAnalysis)));
-	view_selector_->addItem(item);
-#endif
+
 
 	view_selector_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 

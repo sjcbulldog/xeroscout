@@ -39,7 +39,6 @@ namespace xero
 
 				virtual QRectF drawBounds() const = 0;
 
-			protected:
 				static double distSquared(const QPointF& r1, const QPointF& r2)
 				{
 					double dx = r1.x() - r2.x();

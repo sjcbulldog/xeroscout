@@ -106,11 +106,11 @@ namespace xero
 				void createPlotTeam(const QString& key);
 
 				void rangeChanged(double minv, double maxv);
+				void fieldKeyPressed(Qt::Key key);
 
-				void getTimes(const QJsonArray& array, std::shared_ptr<xero::scouting::datamodel::RobotTrack> track);
+				void removeAllRegions();
 
 				QColor matchRobotColor(xero::scouting::datamodel::Alliance c, int slot);
-				bool extractOneAlliance(const QJsonArray& arr, int index, std::shared_ptr<xero::scouting::datamodel::RobotTrack> track);
 
 				void updateDisplay();
 				void updateDetail();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "pcscoutdata_global.h"
 #include "FieldRegion.h"
 #include "RobotTrack.h"
 #include "ZebraEvent.h"
@@ -13,7 +14,7 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			class ZebraSequence
+			class PCSCOUTDATA_EXPORT ZebraSequence
 			{
 			public:
 				ZebraSequence(const QString &mkey, const QString &tkey, std::shared_ptr<RobotTrack> track,
@@ -32,8 +33,26 @@ namespace xero
 					return events_.cend();
 				}
 
+				const QString& matchKey() const {
+					return mkey_;
+				}
+
+				const QString& teamKey() const {
+					return tkey_;
+				}
+
+			private:
+				constexpr static const double debounceDelay = 1.0;
+				constexpr static const double idleDelay = 1.5;
+				constexpr static const double idleThreshold = 0.5;
+
 			private:
 				void extractEvents(std::shared_ptr<RobotTrack> track, std::vector<std::shared_ptr<const FieldRegion>>& regions);
+				void debounceEvents();
+				void logicallyOrder();
+
+				void swapEvents(int i, int j);
+				int findNextEvent(int i, ZebraEvent& ev);
 
 			private:
 				QString mkey_;

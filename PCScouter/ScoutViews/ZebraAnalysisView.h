@@ -3,6 +3,7 @@
 #include "scoutviews_global.h"
 #include "ViewBase.h"
 #include "ZebraSequence.h"
+#include "SequenceAnalyzer.h"
 #include <QWidget>
 #include <QComboBox>
 #include <QGroupBox>
@@ -32,12 +33,16 @@ namespace xero
 				void teamChanged(int index);
 				void regenerate();
 
+				void printRawData();
+				void printSequences();
+
 			private:
 				QComboBox* box_;
 				QGroupBox* report_;
 				QTextBrowser* report_txt_;
 				QString current_team_;
 				std::list<std::shared_ptr<xero::scouting::datamodel::ZebraSequence>> sequences_;
+				xero::scouting::datamodel::SequenceAnalyzer analyzer_;
 			};
 		}
 	}

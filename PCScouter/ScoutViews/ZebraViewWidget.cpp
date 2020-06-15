@@ -58,6 +58,7 @@ namespace xero
 				mode_select_->addItem("Tracks", static_cast<int>(PathFieldView::ViewMode::Track));
 				mode_select_->addItem("Heatmap", static_cast<int>(PathFieldView::ViewMode::Heatmap));
 				mode_select_->addItem("Replay", static_cast<int>(PathFieldView::ViewMode::Robot));
+				mode_select_->addItem("Region Editor", static_cast<int>(PathFieldView::ViewMode::Editor));
 				(void)connect(mode_select_, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged), this, &ZebraViewWidget::modeChanged);
 
 				matches_ = new QRadioButton("Match", top);
@@ -82,6 +83,7 @@ namespace xero
 
 				field_ = new PathFieldView(vertical_);
 				connect(field_, &PathFieldView::showContextMenu, this, &ZebraViewWidget::fieldContextMenu);
+				connect(field_, &PathFieldView::keyPressed, this, &ZebraViewWidget::fieldKeyPressed);
 				field_->setViewMode(PathFieldView::ViewMode::Track);
 				vertical_->addWidget(field_);
 
@@ -111,6 +113,7 @@ namespace xero
 				vlay->addWidget(slider_);
 				connect(slider_, &TimeBoundWidget::rangeChanged, this, &ZebraViewWidget::rangeChanged);
 				connect(slider_, &TimeBoundWidget::changeAnimationState, this, &ZebraViewWidget::sliderChangedAnimationState);
+				connect(slider_, &TimeBoundWidget::currentTimeChanged, this, &ZebraViewWidget::animationSetTime);
 
 				mode_ = Mode::Uninitialized;
 				animation_timer_ = nullptr;
@@ -120,13 +123,26 @@ namespace xero
 			{
 			}
 
+			void ZebraViewWidget::fieldKeyPressed(Qt::Key key)
+			{
+				if (key == Qt::Key::Key_Delete)
+				{
+					auto list = field_->selectedRegions();
+					for (auto r : list)
+					{
+						field_->removeHighlight(r);
+						dataModel()->removeFieldRegion(r);
+					}
+				}
+			}
+
 			void ZebraViewWidget::fieldContextMenu(QPoint pt)
 			{
 				menu_point_ = pt;
+				QAction* act;
 
 				if (field_->viewMode() == PathFieldView::ViewMode::Robot)
 				{
-					QAction* act;
 					QMenu* menu = new QMenu("Field");
 
 					act = menu->addAction("Show Defense");
@@ -137,6 +153,11 @@ namespace xero
 						act->setChecked(false);
 					connect(act, &QAction::triggered, this, &ZebraViewWidget::defenseToggled);
 
+					menu->exec(pt);
+				}
+				else if (field_->viewMode() == PathFieldView::ViewMode::Editor)
+				{
+					QMenu* menu = new QMenu("Field");
 					QMenu* all = new QMenu("Add Highlight");
 					menu->addMenu(all);
 
@@ -188,17 +209,28 @@ namespace xero
 
 					all->addMenu(blue);
 
-					bool items = false;
+					int count = 0;
 					QMenu* remove = new QMenu("Remove");
+					QAction* first = nullptr;
 					for (auto h : dataModel()->fieldRegions())
 					{
 						act = remove->addAction(h->name());
+						if (first == nullptr)
+							first = act;
 						auto removedb = std::bind(&ZebraViewWidget::removeHighlight, this, h->name());
 						connect(act, &QAction::triggered, removedb);
-						items = true;
+						count++;
 					}
 
-					if (items)
+					if (count > 1)
+					{
+						act = new QAction("*** ALL ***");
+						remove->insertAction(first, act);
+						remove->insertSeparator(first);
+						connect(act, &QAction::triggered, this, &ZebraViewWidget::removeAllRegions);
+					}
+
+					if (count)
 						menu->addMenu(remove);
 
 					menu->exec(pt);
@@ -262,6 +294,16 @@ namespace xero
 						field_->addHighlight(h);
 						dataModel()->addFieldRegion(h);
 					}
+				}
+			}
+
+			void ZebraViewWidget::removeAllRegions()
+			{
+				while (dataModel()->fieldRegions().size() > 0)
+				{
+					auto h = dataModel()->fieldRegions().front();
+					dataModel()->removeFieldRegion(h);
+					field_->removeHighlight(h);
 				}
 			}
 
@@ -606,9 +648,13 @@ namespace xero
 				field_->update();
 
 				if (m == PathFieldView::ViewMode::Robot)
+				{
 					slider_->setRangeMode(false);
+				}
 				else
+				{
 					slider_->setRangeMode(true);
+				}
 			}
 
 			std::shared_ptr<RobotTrack> ZebraViewWidget::createTrack(const QString& mkey, const QString& tkey)
@@ -820,6 +866,8 @@ namespace xero
 
 				slider_->setMinimum(minv);
 				slider_->setMaximum(maxv);
+				slider_->setRangeStart(minv);
+				slider_->setRangeEnd(maxv);
 			}
 		}
 	}

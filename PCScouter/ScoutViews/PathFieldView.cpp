@@ -59,6 +59,11 @@ namespace xero
 			{
 			}
 
+			void PathFieldView::keyPressEvent(QKeyEvent* ev)
+			{
+				emit keyPressed((Qt::Key)ev->key());
+			}
+
 			void PathFieldView::selectRectArea()
 			{
 				mode_ = SelectMode::StartingRectangular;
@@ -75,12 +80,48 @@ namespace xero
 				mode_ = SelectMode::StartingPolygon;
 			}
 
+			void PathFieldView::selectShape(const QPointF& pt, bool add)
+			{
+				bool changed = false;
+
+				if (!add)
+				{
+					if (selected_.size() > 0)
+					{
+						selected_.clear();
+						changed = true;
+					}
+				}
+
+				QPointF world = windowToWorld(pt);
+				for (auto h : highlights_)
+				{
+					if (h->isWithin(world))
+					{
+						selected_.push_back(h);
+						changed = true;
+					}
+				}
+
+				if (changed)
+					update();
+			}
+
 			void PathFieldView::mousePressEvent(QMouseEvent* ev)
 			{
 				if (ev->button() == Qt::MouseButton::LeftButton)
 				{
 					base_pt_ = ev->pos();
 
+					if (mode_ == SelectMode::None)
+					{
+						bool add = false;
+
+						if (ev->modifiers() & (Qt::ShiftModifier | Qt::ControlModifier))
+							add = true;
+
+						selectShape(ev->pos(), add) ;
+					}
 					if (mode_ == SelectMode::StartingCircular)
 					{
 						mode_ = SelectMode::DraggingCircular;
@@ -98,7 +139,7 @@ namespace xero
 					{
 						points_.push_back(ev->pos());
 
-						double dist = distSquared(points_[0], points_[points_.size() - 1]);
+						double dist = FieldRegion::distSquared(points_[0], points_[points_.size() - 1]);
 						if (dist < 20)
 						{
 							std::vector<QPointF> points;
@@ -250,7 +291,15 @@ namespace xero
 				paint.restore();
 			}
 
-			void PathFieldView::paintHighlights(QPainter& paint)
+			void PathFieldView::drawHandle(QPainter& paint, const QPointF& pt)
+			{
+				static const int hsize = 8;
+				
+				QRectF r(pt.x() - hsize / 2, pt.y() - hsize / 2, hsize, hsize);
+				paint.drawRect(r);
+			}
+
+			void PathFieldView::paintHighlights(QPainter& paint, bool full)
 			{
 				paint.save();
 				paint.setBrush(Qt::BrushStyle::NoBrush);
@@ -262,20 +311,66 @@ namespace xero
 					std::shared_ptr<const RectFieldRegion> rregion = std::dynamic_pointer_cast<const RectFieldRegion>(h);
 					if (rregion != nullptr)
 					{
-						paint.drawRect(worldToWindow(h->drawBounds()));
+						if (full)
+							paintRectHighlight(paint, h->color(), h->drawBounds(), h->name());
+						else
+							paint.drawRect(worldToWindow(h->drawBounds()));
+
+						if (std::find(selected_.begin(), selected_.end(), h) != selected_.end())
+						{
+							QRectF win = worldToWindow(h->drawBounds());
+							QBrush br(QColor(255, 255, 32));
+							paint.setBrush(br);
+							paint.setPen(Qt::PenStyle::NoPen);
+							drawHandle(paint, win.topLeft());
+							drawHandle(paint, win.topRight());
+							drawHandle(paint, win.bottomLeft());
+							drawHandle(paint, win.bottomRight());
+						}
+
 						continue;
 					}
 
 					std::shared_ptr<const CircleFieldRegion> cregion = std::dynamic_pointer_cast<const CircleFieldRegion>(h);
 					if (cregion != nullptr)
 					{
-						paint.drawEllipse(worldToWindow(h->drawBounds()));
+						if (full)
+							paintCircleHighlight(paint, h->color(), h->drawBounds(), h->name());
+						else
+							paint.drawEllipse(worldToWindow(h->drawBounds()));
+
+						if (std::find(selected_.begin(), selected_.end(), h) != selected_.end())
+						{
+							QRectF win = worldToWindow(h->drawBounds());
+							QBrush br(QColor(255, 255, 32));
+							paint.setBrush(br);
+							paint.setPen(Qt::PenStyle::NoPen);
+							drawHandle(paint, win.topLeft());
+							drawHandle(paint, win.topRight());
+							drawHandle(paint, win.bottomLeft());
+							drawHandle(paint, win.bottomRight());
+						}
+
 						continue;
 					}
 
 					std::shared_ptr<const PolygonFieldRegion> pregion = std::dynamic_pointer_cast<const PolygonFieldRegion>(h);
 					{
-						paint.drawPolygon(worldToWindow(pregion->polygon()), Qt::FillRule::OddEvenFill);
+						if (full)
+							paintPolygonHighlight(paint, h->color(), pregion->polygon(), h->name());
+						else
+							paint.drawPolygon(worldToWindow(pregion->polygon()), Qt::FillRule::OddEvenFill);
+
+						if (std::find(selected_.begin(), selected_.end(), h) != selected_.end())
+						{
+							QPolygonF poly = worldToWindow(pregion->polygon());
+							QBrush br(QColor(255, 255, 32));
+							paint.setBrush(br);
+							paint.setPen(Qt::PenStyle::NoPen);
+
+							for (auto pt : poly)
+								drawHandle(paint, pt);
+						}
 					}
 				}
 				paint.restore();
@@ -291,17 +386,23 @@ namespace xero
 					for (int i = 0; i < tracks_.size(); i++)
 						paintTrack(paint, tracks_[i]);
 				}
+				else if (view_mode_ == ViewMode::Editor)
+				{
+					paintHighlights(paint);
+
+					if (mode_ == SelectMode::DraggingCircular || mode_ == SelectMode::DraggingRectangular)
+						paintSelect(paint);
+					else if (mode_ == SelectMode::ContinuingPolygon)
+						paintSelectPolygon(paint);
+
+				}
 				else if (view_mode_ == ViewMode::Robot)
 				{
 					for (int i = 0; i < tracks_.size(); i++)
 						paintRobot(paint, tracks_[i]);
 
 					paintDefense(paint);
-					paintHighlights(paint);
-					if (mode_ == SelectMode::DraggingCircular || mode_ == SelectMode::DraggingRectangular)
-						paintSelect(paint);
-					else if (mode_ == SelectMode::ContinuingPolygon)
-						paintSelectPolygon(paint);
+
 				}
 				else
 				{
@@ -511,14 +612,6 @@ namespace xero
 				paint.restore();
 			}
 
-			double PathFieldView::distSquared(const QPointF& r1, const QPointF& r2)
-			{
-				double dx = r1.x() - r2.x();
-				double dy = r1.y() - r2.y();
-
-				return dx * dx + dy * dy;
-			}
-
 			void PathFieldView::paintDefense(QPainter& paint)
 			{
 				QRectF bounds;
@@ -564,7 +657,7 @@ namespace xero
 							{
 								QPointF r2 = tracks_[j]->point(tracks_[j]->current());
 
-								if (distSquared(r1, r2) < 24)
+								if (FieldRegion::distSquared(r1, r2) < 24)
 								{
 									if (tracks_[i]->alliance() != tracks_[j]->alliance())
 									{

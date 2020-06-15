@@ -157,8 +157,13 @@ namespace xero
 
 				int rs = timeToPixel(range_start_);
 				int re = timeToPixel(range_end_);
+				int ct = timeToPixel(current_time_);
 
-				if (std::abs(ev->localPos().x() - rs) < range)
+				if (std::abs(ev->localPos().x() - ct) < range)
+				{
+					state_ = State::DraggingCurrent;
+				}
+				else if (std::abs(ev->localPos().x() - rs) < range)
 				{
 					state_ = State::DraggingStart;
 				}
@@ -209,8 +214,18 @@ namespace xero
 					emit rangeChanged(range_start_, range_end_);
 
 					break;
-				}
 
+				case State::DraggingCurrent:
+					if (v > range_end_)
+						v = range_end_;
+					else if (v < range_start_)
+						v = range_start_;
+
+					current_time_ = v;
+					update();
+
+					emit currentTimeChanged(current_time_);
+				}
 			}
 
 			void TimeBoundWidget::paintEvent(QPaintEvent* ev)

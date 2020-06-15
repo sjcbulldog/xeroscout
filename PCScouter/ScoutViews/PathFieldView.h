@@ -49,12 +49,17 @@ namespace xero
 				{
 					Heatmap,
 					Track,
-					Robot
+					Robot,
+					Editor
 				};
 
 			public:
 				PathFieldView(QWidget* parent = Q_NULLPTR);
 				virtual ~PathFieldView();
+
+				std::list<std::shared_ptr<const xero::scouting::datamodel::FieldRegion>> selectedRegions() {
+					return selected_;
+				}
 
 				void setViewMode(ViewMode m) { view_mode_ = m; update(); }
 				ViewMode viewMode() const { return view_mode_;  }
@@ -100,6 +105,7 @@ namespace xero
 
 				void removeHighlight(std::shared_ptr<const xero::scouting::datamodel::FieldRegion> h) {
 					highlights_.remove(h);
+					selected_.remove(h);
 				}
 
 				void clearTracks() {
@@ -123,6 +129,7 @@ namespace xero
 
 			signals:
 				void showContextMenu(QPoint pt);
+				void keyPressed(Qt::Key key);
 				void areaSelected(const QRectF& bounds);
 				void polySelected(const std::vector<QPointF>& points);
 
@@ -133,6 +140,7 @@ namespace xero
 				void mousePressEvent(QMouseEvent* ev) override;
 				void mouseMoveEvent(QMouseEvent* ev) override;
 				void mouseReleaseEvent(QMouseEvent* ev) override;
+				void keyPressEvent(QKeyEvent* ev) override;
 
 				QSize minimumSizeHint() const override;
 				QSize sizeHint() const override;
@@ -159,22 +167,24 @@ namespace xero
 				void paintDefense(QPainter& paint);
 				void paintSelect(QPainter& paint);
 				void paintSelectPolygon(QPainter& paint);
-				void paintHighlights(QPainter& paint);
+				void paintHighlights(QPainter& paint, bool full = true);
 
 				void paintRectHighlight(QPainter& paint, QColor c, const QRectF& bounds, const QString& title);
 				void paintCircleHighlight(QPainter& paint, QColor c, const QRectF& bounds, const QString& title);
 				void paintPolygonHighlight(QPainter& paint, QColor c, const QPolygonF &polygon, const QString& title);
 
+				void drawHandle(QPainter& paint, const QPointF& pt);
+
+
 				QColor heatmapColorGenerator(double rel);
 				QPoint pointToHeatmapBox(const QPointF& pt);
 
-				double distSquared(const QPointF& p1, const QPointF& p2);
+				void selectShape(const QPointF& pt, bool add);
 
 			private:
 				std::vector<QPointF> transformPoints(QTransform& trans, const std::vector<QPointF>& points);
 				void createTransforms();
 
-				std::list<std::shared_ptr<const xero::scouting::datamodel::FieldRegion>> highlights_;
 
 			private:
 				// Used only in the robot view mode
@@ -197,6 +207,9 @@ namespace xero
 				SelectMode mode_;
 
 				std::vector<QPointF> points_;
+
+				std::list<std::shared_ptr<const xero::scouting::datamodel::FieldRegion>> highlights_;
+				std::list<std::shared_ptr<const xero::scouting::datamodel::FieldRegion>> selected_;
 			};
 		}
 	}

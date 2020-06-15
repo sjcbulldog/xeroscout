@@ -309,8 +309,8 @@ namespace xero
 					return pick_list_trans_;
 				}
 
-				std::list<std::shared_ptr<const FieldRegion>> fieldRegions() const {
-					std::list<std::shared_ptr<const FieldRegion>> list;
+				std::vector<std::shared_ptr<const FieldRegion>> fieldRegions() const {
+					std::vector<std::shared_ptr<const FieldRegion>> list;
 
 					for (auto h : regions_)
 						list.push_back(h);
@@ -358,8 +358,10 @@ namespace xero
 				}
 
 				void removeFieldRegion(std::shared_ptr<const FieldRegion> h) {
+					auto it = std::find(regions_.begin(), regions_.end(), h);
 					dirty_ = true;
-					regions_.remove(h);
+					if (it != regions_.end())
+						regions_.erase(it);
 					emitChangedSignal(ChangeType::FieldRegionsChanged);
 				}
 
@@ -1028,7 +1030,7 @@ namespace xero
 
 				std::shared_ptr<PickListTranslator> pick_list_trans_;
 
-				std::list<std::shared_ptr<const FieldRegion>> regions_;
+				std::vector<std::shared_ptr<const FieldRegion>> regions_;
 			};
 
 		}

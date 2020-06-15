@@ -1,6 +1,7 @@
 #include "DataModelTeam.h"
 #include "ZebraAnalysisView.h"
 #include "ZebraSequence.h"
+#include "DataModelBuilder.h"
 #include <QBoxLayout>
 
 using namespace xero::scouting::datamodel;
@@ -81,9 +82,11 @@ namespace xero
 
 			void ZebraAnalysisView::regenerate()
 			{
+				report_txt_->clear();
 				sequences_.clear();
 
 				QString tkey = box_->currentData().toString();
+
 				for (auto m : dataModel()->matches())
 				{
 					if (!m->hasZebra())
@@ -94,7 +97,46 @@ namespace xero
 
 					if (m->teamToAllianceSlot(tkey, c, slot))
 					{
+						auto track = DataModelBuilder::createTrack(dataModel(), m->key(), tkey);
+						auto seq = std::make_shared<ZebraSequence>(m->key(), tkey, track, dataModel()->fieldRegions());
+						sequences_.push_back(seq);
 					}
+				}
+
+				analyzer_.setSequences(sequences_);
+				printSequences();
+				printRawData();
+			}
+
+			void ZebraAnalysisView::printSequences()
+			{
+
+			}
+
+			void ZebraAnalysisView::printRawData()
+			{
+				for (auto seq : sequences_)
+				{
+					QString txt = seq->matchKey() + ":";
+					
+					while (txt.length() < 16)
+						txt += " ";
+
+
+					for (auto it = seq->cbegin(); it != seq->cend(); it++)
+					{
+						QString one = it->toString();
+						if (txt.length() + one.length() > 132)
+						{
+							report_txt_->append(txt);
+							txt = QString(16, ' ');
+						}
+
+						txt += one;
+					}
+
+					if (txt.length() > 0)
+						report_txt_->append(txt);
 				}
 			}
 		}
