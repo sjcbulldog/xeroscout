@@ -64,7 +64,8 @@ namespace xero
 					if (mode_ != Mode::Uninitialized)
 						createPlot();
 
-					if (field_ != nullptr) {
+					if (field_ != nullptr && model != nullptr)
+					{
 						for (auto h : model->fieldRegions())
 							field_->addHighlight(h);
 					}
@@ -128,6 +129,8 @@ namespace xero
 				void removeHighlight(const QString& name);
 				void areaSelected(const QRectF& area, xero::scouting::datamodel::Alliance a, HighlightType ht);
 				void polygonSelected(const std::vector<QPointF>& points, xero::scouting::datamodel::Alliance a);
+				void renameRegion();
+				bool validRegionName(const QString& name);
 
 				std::shared_ptr<xero::scouting::datamodel::RobotTrack> createTrack(const QString& mkey, const QString& tkey);
 

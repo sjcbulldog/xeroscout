@@ -4,6 +4,7 @@
 #include "FieldRegion.h"
 #include "RobotTrack.h"
 #include "ZebraEvent.h"
+#include "SequencePattern.h"
 #include <QString>
 #include <vector>
 #include <memory>
@@ -33,6 +34,10 @@ namespace xero
 					return events_.cend();
 				}
 
+				const ZebraEvent& operator[](size_t index) const {
+					return events_[index];
+				}
+
 				const QString& matchKey() const {
 					return mkey_;
 				}
@@ -40,6 +45,8 @@ namespace xero
 				const QString& teamKey() const {
 					return tkey_;
 				}
+
+				std::pair<int, int> matchPattern(const std::vector<std::shared_ptr<SequencePattern>>& pattern, int start);
 
 			private:
 				constexpr static const double debounceDelay = 1.0;
@@ -58,6 +65,7 @@ namespace xero
 				QString mkey_;
 				QString tkey_;
 				std::vector<ZebraEvent> events_;
+				Alliance alliance_;
 			};
 		}
 	}

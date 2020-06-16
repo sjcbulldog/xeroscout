@@ -37,6 +37,10 @@ namespace xero
 
 				virtual bool isWithin(const QPointF& pt) const = 0;
 
+				void rename(const QString& newname) {
+					name_ = newname;
+				}
+
 				virtual QRectF drawBounds() const = 0;
 
 				static double distSquared(const QPointF& r1, const QPointF& r2)

@@ -61,6 +61,10 @@ namespace xero
 					return selected_;
 				}
 
+				bool isOneSelected() {
+					return selected_.size() == 1;
+				}
+
 				void setViewMode(ViewMode m) { view_mode_ = m; update(); }
 				ViewMode viewMode() const { return view_mode_;  }
 

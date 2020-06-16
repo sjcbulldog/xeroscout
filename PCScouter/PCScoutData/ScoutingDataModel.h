@@ -79,7 +79,9 @@ namespace xero
 					DataSetColumnOrder,				///< the column order for a dataset
 					MatchVideoAdded,				///< added match video links
 					PickListTranslatorAdded,		///< added the pick list translator
-					FieldRegionsChanged,			///< the field highlight list changed
+					FieldRegionsAdded,				///< a field region was added
+					FieldRegionRemoved,				///< a field region was removed
+					FieldRegionRenamed,				///< a field retion was renamed
 				};
 
 			public:
@@ -351,20 +353,42 @@ namespace xero
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				void addFieldRegion(std::shared_ptr<FieldRegion> h) {
+				bool addFieldRegion(std::shared_ptr<FieldRegion> h) {
+					for (auto r : regions_)
+					{
+						if (r->name() == h->name())
+							return false;
+					}
+
 					dirty_ = true;
 					regions_.push_back(h);
-					emitChangedSignal(ChangeType::FieldRegionsChanged);
+					emitChangedSignal(ChangeType::FieldRegionsAdded);
+
+					return true;
 				}
 
 				void removeFieldRegion(std::shared_ptr<const FieldRegion> h) {
 					auto it = std::find(regions_.begin(), regions_.end(), h);
-					dirty_ = true;
+
 					if (it != regions_.end())
+					{
 						regions_.erase(it);
-					emitChangedSignal(ChangeType::FieldRegionsChanged);
+						dirty_ = true;
+						emitChangedSignal(ChangeType::FieldRegionRemoved);
+					}
 				}
 
+				void renameFieldRegion(std::shared_ptr<const FieldRegion> h, const QString& newname) {
+					auto it = std::find(regions_.begin(), regions_.end(), h);
+					if (it == regions_.end())
+						return;
+
+					auto r = std::const_pointer_cast<FieldRegion>(h);
+					r->rename(newname);
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::FieldRegionRenamed);
+				}
 
 				/// \brief set the scouting forms for the data model
 				/// This can only be done once right after the data model is created.  Any subsequent call to this API will return false.

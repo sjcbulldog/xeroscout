@@ -189,6 +189,12 @@
     <ClInclude Include="SequencePattern.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SequenceEnterExitPattern.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SequenceEnterIdlePattern.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoutingDatabase.cpp">
@@ -270,6 +276,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SequenceAnalyzer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SequenceEnterExitPattern.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SequenceEnterIdlePattern.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

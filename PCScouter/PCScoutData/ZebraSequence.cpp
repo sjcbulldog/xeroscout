@@ -13,6 +13,7 @@ namespace xero
 			{
 				mkey_ = mkey;
 				tkey_ = tkey;
+				alliance_ = track->alliance();
 
 				extractEvents(track, regions);
 				debounceEvents();
@@ -123,7 +124,7 @@ namespace xero
 				//
 				for (auto region : regions)
 				{
-					bool b = region->isWithin(track->point(0));
+					bool b = region->isWithin(track->point(0)) && region->doesAllianceMatch(alliance_);
 					if (b)
 					{
 						ZebraEvent ev(region->name(), track->time(0), ZebraEvent::EventType::Enter);
@@ -185,6 +186,9 @@ namespace xero
 
 					for (auto region : regions)
 					{
+						if (!region->doesAllianceMatch(alliance_))
+							continue;
+
 						bool b = region->isWithin(track->point(i));
 						if (b != states[region->name()])
 						{
@@ -197,7 +201,43 @@ namespace xero
 							states.insert_or_assign(region->name(), b);
 						}
 					}
+				}	
+			}
+
+			std::pair<int, int> ZebraSequence::matchPattern(const std::vector<std::shared_ptr<SequencePattern>>& plist, int start)
+			{
+				auto bad = std::make_pair(-1, -1);
+
+				if (plist.size() == 0)
+					return bad;
+
+				if (start < 0 || start >= size())
+					return bad;
+
+				int patindex = 0;
+				int seqindex = start;
+				while (patindex < plist.size())
+				{
+					int cnt = 0;
+					auto pattern = plist[patindex];
+
+					while (cnt < pattern->maxCount() && seqindex < size())
+					{
+						int matchlen = pattern->doesMatch(alliance_, *this, seqindex);
+						if (matchlen == 0)
+							break;
+
+						seqindex += matchlen ;
+						cnt++;
+					}
+
+					if (cnt < pattern->minCount())
+						return bad;
+
+					patindex++;
 				}
+
+				return std::make_pair(start, seqindex - 1);
 			}
 		}
 	}

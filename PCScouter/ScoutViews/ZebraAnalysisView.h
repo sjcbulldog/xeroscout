@@ -33,8 +33,8 @@ namespace xero
 				void teamChanged(int index);
 				void regenerate();
 
-				void printRawData();
-				void printSequences();
+				void printRawData(QString& html);
+				void printSequences(QString& html);
 
 			private:
 				QComboBox* box_;

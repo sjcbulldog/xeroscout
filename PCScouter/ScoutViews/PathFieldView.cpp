@@ -98,7 +98,9 @@ namespace xero
 				{
 					if (h->isWithin(world))
 					{
-						selected_.push_back(h);
+						auto it = std::find(selected_.begin(), selected_.end(), h);
+						if (it == selected_.end())
+							selected_.push_back(h);
 						changed = true;
 					}
 				}

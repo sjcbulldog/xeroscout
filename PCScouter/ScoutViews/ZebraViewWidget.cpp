@@ -32,6 +32,7 @@
 #include <QHeaderView>
 #include <QMenu>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <functional>
 
 using namespace xero::scouting::datamodel;
@@ -123,6 +124,26 @@ namespace xero
 			{
 			}
 
+			void ZebraViewWidget::renameRegion()
+			{
+				bool ok;
+
+				disconnect(field_connect_);
+
+				QString name = QInputDialog::getText(this, "Name", "Name", QLineEdit::Normal, "", &ok);
+				if (ok)
+				{
+					if (!validRegionName(name))
+					{
+						QMessageBox::critical(this, "Error", "Invalid region name, must be all letters");
+						return;
+					}
+					auto region = field_->selectedRegions().front();
+					dataModel()->renameFieldRegion(region, name);
+					field_->update();
+				}
+			}
+
 			void ZebraViewWidget::fieldKeyPressed(Qt::Key key)
 			{
 				if (key == Qt::Key::Key_Delete)
@@ -209,6 +230,12 @@ namespace xero
 
 					all->addMenu(blue);
 
+					if (field_->isOneSelected())
+					{
+						act = all->addAction("Rename Current Region");
+						connect(act, &QAction::triggered, this, &ZebraViewWidget::renameRegion);
+					}
+
 					int count = 0;
 					QMenu* remove = new QMenu("Remove");
 					QAction* first = nullptr;
@@ -248,9 +275,18 @@ namespace xero
 
 				disconnect(field_connect_);
 
-				QString name = QInputDialog::getText(this, "Name", "Name", QLineEdit::Normal, "", &ok);
+				QString label = "Name";
+				if (a != Alliance::Both)
+					label = "Name: " + toString(a) + "-";
+
+				QString name = QInputDialog::getText(this, "Name", label, QLineEdit::Normal, "", &ok);
 				if (ok)
 				{
+					if (!validRegionName(name))
+					{
+						QMessageBox::critical(this, "Error", "Invalid region name, must be all letters");
+						return;
+					}
 					QColor c = QColor(242, 245, 66, 128);
 
 					if (a == Alliance::Red)
@@ -258,10 +294,28 @@ namespace xero
 					else if (a == Alliance::Blue)
 						c = QColor(0, 0, 255, 128);
 
+					if (a != Alliance::Both)
+						name = toString(a) + "-" + name;
+
 					auto h = std::make_shared<PolygonFieldRegion>(name, c, points, a);
+					if (!dataModel()->addFieldRegion(h))
+					{
+						QMessageBox::critical(this, "Error", "Cannot add region, a region with the name '" + name + "' already exists");
+						return;
+					}
 					field_->addHighlight(h);
-					dataModel()->addFieldRegion(h);
 				}
+			}
+
+			bool ZebraViewWidget::validRegionName(const QString& name)
+			{
+				for (auto& ch : name)
+				{
+					if (!ch.isLetter())
+						return false;
+				}
+
+				return true;
 			}
 
 			void ZebraViewWidget::areaSelected(const QRectF& area, Alliance a, HighlightType ht)
@@ -270,9 +324,19 @@ namespace xero
 
 				disconnect(field_connect_);
 
-				QString name = QInputDialog::getText(this, "Name", "Name", QLineEdit::Normal, "", &ok);
+				QString label = "Name";
+				if (a != Alliance::Both)
+					label = "Name: " + toString(a) + "-";
+
+				QString name = QInputDialog::getText(this, "Name", label, QLineEdit::Normal, "", &ok);
 				if (ok)
 				{
+					if (!validRegionName(name))
+					{
+						QMessageBox::critical(this, "Error", "Invalid region name, must be all letters");
+						return;
+					}
+
 					QColor c = QColor(242, 245, 66, 128);
 
 					if (a == Alliance::Red)
@@ -280,19 +344,30 @@ namespace xero
 					else if (a == Alliance::Blue)
 						c = QColor(0, 0, 255, 128);
 
+					if (a != Alliance::Both)
+						name = toString(a) + "-" + name;
+
 					if (ht == HighlightType::Circle)
 					{
 						qDebug() << "ZebraViewWidget::areaSelected " << area;
 						auto h = std::make_shared<CircleFieldRegion>(name, c, area.center(), area.width() / 2, a);
+						if (!dataModel()->addFieldRegion(h))
+						{
+							QMessageBox::critical(this, "Error", "Cannot add region, a region with the name '" + name + "' already exists");
+							return;
+						}
 						field_->addHighlight(h);
-						dataModel()->addFieldRegion(h);
 					}
 					else
 					{
 						qDebug() << "ZebraViewWidget::areaSelected " << area;
 						auto h = std::make_shared<RectFieldRegion>(name, c, area, a);
+						if (!dataModel()->addFieldRegion(h))
+						{
+							QMessageBox::critical(this, "Error", "Cannot add region, a region with the name '" + name + "' already exists");
+							return;
+						}
 						field_->addHighlight(h);
-						dataModel()->addFieldRegion(h);
 					}
 				}
 			}
@@ -632,7 +707,7 @@ namespace xero
 
 			void ZebraViewWidget::comboxChanged(int which)
 			{
-				if (animation_timer_ != nullptr)
+				if (field_->viewMode() == PathFieldView::ViewMode::Robot)
 				{
 					animationSetTime(slider_->rangeStart());
 				}
@@ -679,6 +754,9 @@ namespace xero
 				}
 
 				auto track = DataModelBuilder::createTrack(dataModel(), mkey, tkey);
+				if (track == nullptr)
+					return nullptr;
+
 				track->setTitle(title);
 				track->setColor(matchRobotColor(c, slot));
 				track->setAlliance(c);

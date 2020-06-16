@@ -104,40 +104,82 @@ namespace xero
 				}
 
 				analyzer_.setSequences(sequences_);
-				printSequences();
-				printRawData();
+				analyzer_.analyze();
+				QString html;
+
+				printSequences(html);
+				html += "<hr><br><br>";
+				// printRawData(html);
+
+				report_txt_->setHtml(html);
 			}
 
-			void ZebraAnalysisView::printSequences()
+			void ZebraAnalysisView::printSequences(QString &html)
 			{
+				QString last;
+				bool first = true;
 
+				html = "<center><table border=\"1\">";
+
+				html += "<tr>";
+				html += "<th>Match</th>";
+				html += "<th>Pattern</th>";
+				html += "<th>Start Event</th>";
+				html += "<th>End Event</th>";
+				html += "<th>Duration</th>";
+				html += "</tr>";
+
+				for (auto& match : analyzer_.matches())
+				{
+					html += "<tr>";
+					double duration = match.endTime() - match.startTime();
+
+					html += "<td>" + match.sequence()->matchKey() + "</td>";
+					html += "<td>" + match.name() + "</td>";
+					html += "<td>" + QString::number(match.start()) + "</td>";
+					html += "<td>" + QString::number(match.end()) + "</td>";
+					html += "<td>" + QString::number(duration) + "</td>";
+					html += "</tr>";
+				}
+
+				html += "</table>";
 			}
 
-			void ZebraAnalysisView::printRawData()
+			void ZebraAnalysisView::printRawData(QString &html)
 			{
+				int evcols = 8;
+				html = "<center><table border=\"1\">";
+
+				html += "<tr>";
+				html += "<th>Match</th>";
+				for(int i = 0 ; i < evcols ; i++)
+					html += "<th>Event</th>";
+				html += "</tr>";
+
 				for (auto seq : sequences_)
 				{
-					QString txt = seq->matchKey() + ":";
-					
-					while (txt.length() < 16)
-						txt += " ";
+					html += "<tr>";
+					html += "<td>" + seq->matchKey() + "</tr>";
 
-
+					int index = 0;
+					int col = 0;
 					for (auto it = seq->cbegin(); it != seq->cend(); it++)
 					{
-						QString one = it->toString();
-						if (txt.length() + one.length() > 132)
+						if (col == evcols)
 						{
-							report_txt_->append(txt);
-							txt = QString(16, ' ');
+							html += "</tr>";
+							html += "<tr>";
+							html += "<td></td>";
+							col = 0;
 						}
 
-						txt += one;
+						html += "<td>" + QString::number(index++) + it->toString() + "</td>";
+						col++;
 					}
 
-					if (txt.length() > 0)
-						report_txt_->append(txt);
+					html += "</tr>";
 				}
+				html += "</table>";
 			}
 		}
 	}

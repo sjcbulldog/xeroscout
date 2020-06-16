@@ -38,9 +38,10 @@ namespace xero
             class PCSCOUTDATA_EXPORT RobotTrack
             {
             public:
-                RobotTrack(const QString &mkey, const QString &tkey) {
+                RobotTrack(const QString &mkey, const QString &tkey, Alliance c) {
                     mkey_ = mkey;
                     tkey_ = tkey;
+                    all_ = c;
                 }
 
                 virtual ~RobotTrack() {

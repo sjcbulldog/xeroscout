@@ -414,7 +414,7 @@ std::shared_ptr<RobotTrack> DataModelBuilder::createTrack(std::shared_ptr<Scouti
 	if (array.size() != 3)
 		return nullptr;
 
-	auto t = std::make_shared<RobotTrack>(mkey, tkey);
+	auto t = std::make_shared<RobotTrack>(mkey, tkey, c);
 	if (!extractOneAlliance(array, slot - 1, t))
 		return nullptr;
 

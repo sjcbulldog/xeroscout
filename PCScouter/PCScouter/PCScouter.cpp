@@ -283,6 +283,10 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamDataSet)));
 	view_selector_->addItem(item);
 
+	item = new QListWidgetItem("----------------------------------------------------");
+	item->setFlags(Qt::ItemFlag::NoItemFlags);
+	view_selector_->addItem(item);
+
 	item = new QListWidgetItem(loadIcon("matchform.png"), "Match Scouting Form - Red", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewRed)));
 	view_selector_->addItem(item);
@@ -303,6 +307,10 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchGraphView)));
 	view_selector_->addItem(item);
 
+	item = new QListWidgetItem("----------------------------------------------------");
+	item->setFlags(Qt::ItemFlag::NoItemFlags);
+	view_selector_->addItem(item);
+
 	item = new QListWidgetItem(loadIcon("teamsummary.png"), "Single Team Summary", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamReport)));
 	view_selector_->addItem(item);
@@ -315,8 +323,16 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::AllianceGraphView)));
 	view_selector_->addItem(item);
 
+	item = new QListWidgetItem(loadIcon("picklist.png"), "Pick List", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PickListView)));
+	view_selector_->addItem(item);
+
 	item = new QListWidgetItem(loadIcon("customdata.png"), "Custom Data", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::CustomDataSet)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem("----------------------------------------------------");
+	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Data", view_selector_);
@@ -327,6 +343,10 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraAnalysis)));
 	view_selector_->addItem(item);
 
+	item = new QListWidgetItem("----------------------------------------------------");
+	item->setFlags(Qt::ItemFlag::NoItemFlags);
+	view_selector_->addItem(item);
+
 	item = new QListWidgetItem(loadIcon("history.png"), "Change History", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::HistoryView)));
 	view_selector_->addItem(item);
@@ -334,12 +354,6 @@ void PCScouter::createWindows()
 	item = new QListWidgetItem(loadIcon("merge.png"), "Merge List", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MergeListView)));
 	view_selector_->addItem(item);
-
-	item = new QListWidgetItem(loadIcon("picklist.png"), "Pick List", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PickListView)));
-	view_selector_->addItem(item);
-
-
 
 	view_selector_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 
@@ -1305,6 +1319,7 @@ void PCScouter::updateCurrentView()
 				}
 			}
 		}
+		break;
 
 		case DocumentView::ViewType::ZebraAnalysis:
 		{

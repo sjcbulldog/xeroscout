@@ -102,6 +102,8 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="RobotTrack.h" />
     <ClInclude Include="SequenceAnalyzer.h" />
+    <ClInclude Include="SequenceEnterExitPattern.h" />
+    <ClInclude Include="SequenceEnterIdlePattern.h" />
     <ClInclude Include="SequencePattern.h" />
     <ClInclude Include="ZebraDataInfoExtractor.h" />
     <ClInclude Include="ZebraEvent.h" />
@@ -165,6 +167,8 @@
     <ClCompile Include="OPRCalculator.cpp" />
     <ClCompile Include="PickListTranslator.cpp" />
     <ClCompile Include="SequenceAnalyzer.cpp" />
+    <ClCompile Include="SequenceEnterExitPattern.cpp" />
+    <ClCompile Include="SequenceEnterIdlePattern.cpp" />
     <ClCompile Include="StartStopWidget.cpp" />
     <ClCompile Include="ScoutingDatabase.cpp" />
     <ClCompile Include="ScoutingDataModel.cpp" />
