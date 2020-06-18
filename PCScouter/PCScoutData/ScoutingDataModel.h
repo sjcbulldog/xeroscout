@@ -26,6 +26,7 @@
 #pragma once
 
 #include "pcscoutdata_global.h"
+#include "RobotActivity.h"
 #include "ScoutingForm.h"
 #include "ScoutingDataSet.h"
 #include "ScoutingDatabase.h"
@@ -37,6 +38,7 @@
 #include "GraphDescriptorCollection.h"
 #include "GraphDescriptor.h"
 #include "FieldRegion.h"
+#include "SequencePattern.h"
 #include <QString>
 #include <QJsonDocument>
 #include <QFile>
@@ -82,6 +84,9 @@ namespace xero
 					FieldRegionsAdded,				///< a field region was added
 					FieldRegionRemoved,				///< a field region was removed
 					FieldRegionRenamed,				///< a field retion was renamed
+					ActivityAdded,					///< an activity was added
+					ActivityRemoved,				///< an activity was removed
+					ActivityChanged,				///< an activity was changed
 				};
 
 			public:
@@ -320,6 +325,15 @@ namespace xero
 					return list;
 				}
 
+				std::vector<std::shared_ptr<const RobotActivity>> activities() const {
+					std::vector<std::shared_ptr<const RobotActivity>> list;
+
+					for (auto p : activities_)
+						list.push_back(p);
+
+					return list;
+				}
+
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
 				// These methods generate data sets.  The are a special case of the query methods in that they synthesis sets of data
@@ -352,6 +366,45 @@ namespace xero
 				// These method change the datamodel and will generate modelChanged signals
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				bool addActivity(std::shared_ptr<const RobotActivity> p) {
+					dirty_ = true;
+					activities_.push_back(p);
+
+					emitChangedSignal(ChangeType::ActivityAdded);
+
+					return true;
+				}
+
+				bool updatedActivity(std::shared_ptr<const RobotActivity> act) {
+					auto it = std::find(activities_.begin(), activities_.end(), act);
+					if (it == activities_.end())
+						return false;
+
+					auto a = std::const_pointer_cast<RobotActivity>(act);
+					*a = *act;
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::ActivityChanged);
+
+					return true ;
+				}				
+
+				void removeActivty(std::shared_ptr<const RobotActivity> p) {
+
+					for (auto it = activities_.begin(); it != activities_.end(); it++)
+					{
+						auto act = *it;
+						if (act->name() == p->name())
+						{
+							activities_.erase(it);
+							dirty_ = true;
+							emitChangedSignal(ChangeType::ActivityRemoved);
+
+							break;
+						}
+					}
+				}
 
 				bool addFieldRegion(std::shared_ptr<FieldRegion> h) {
 					for (auto r : regions_)
@@ -1055,6 +1108,8 @@ namespace xero
 				std::shared_ptr<PickListTranslator> pick_list_trans_;
 
 				std::vector<std::shared_ptr<const FieldRegion>> regions_;
+
+				std::vector<std::shared_ptr<const RobotActivity>> activities_;
 			};
 
 		}

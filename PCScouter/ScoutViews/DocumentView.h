@@ -63,7 +63,10 @@ namespace xero
 					AllianceGraphView = 15,
 					PickListView = 16,
 					ZebraAnalysis = 17,
-					FirstFormView = 18
+					ZebraPatternEditor=18,
+					ZebraRegionEditor=19,
+					ZebraIntro=20,
+					FirstFormView = 21
 				};
 
 			public:
@@ -120,8 +123,13 @@ namespace xero
 
 				bool createFetchFormView(const QString& key, const QString& title, QColor c, int& index);
 
+				void logText(const QString& msg) {
+					emit logMessage(msg);
+				}
+
 			signals:
 				void itemDoubleClicked(ViewType type, const QString& key);
+				void logMessage(const QString& msg);
 
 			private:
 				void teamItemDoubleClicked(QTreeWidgetItem* item, int col);

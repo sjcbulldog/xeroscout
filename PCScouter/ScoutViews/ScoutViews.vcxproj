@@ -102,12 +102,15 @@
     <ClCompile Include="GameFieldManager.cpp" />
     <ClCompile Include="GraphConfigurationDialog.cpp" />
     <ClCompile Include="GraphView.cpp" />
+    <ClCompile Include="IntroView.cpp" />
     <ClCompile Include="ManagerBase.cpp" />
     <ClCompile Include="MatchViewWidget.cpp" />
     <ClCompile Include="MathUtils.cpp" />
     <ClCompile Include="PathFieldView.cpp" />
+    <ClCompile Include="PatternListWidget.cpp" />
     <ClCompile Include="PickListView.cpp" />
     <ClCompile Include="PreMatchGraphView.cpp" />
+    <ClCompile Include="RobotActivityEditWidget.cpp" />
     <ClCompile Include="TimeBoundWidget.cpp" />
     <ClCompile Include="QueryViewWidget.cpp" />
     <ClCompile Include="ScoutDataMergeDialog.cpp" />
@@ -117,6 +120,8 @@
     <ClCompile Include="TeamSummaryWidget.cpp" />
     <ClCompile Include="UnitConverter.cpp" />
     <ClCompile Include="ZebraAnalysisView.cpp" />
+    <ClCompile Include="ZebraPatternView.cpp" />
+    <ClCompile Include="ZebraRegionEditor.cpp" />
     <ClCompile Include="ZebraViewWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -130,14 +135,19 @@
     <ClInclude Include="GameFieldManager.h" />
     <ClInclude Include="GraphConfigurationDialog.h" />
     <ClInclude Include="GraphView.h" />
+    <ClInclude Include="IntroView.h" />
     <ClInclude Include="ManagerBase.h" />
     <ClInclude Include="MathUtils.h" />
+    <ClInclude Include="PatternListWidget.h" />
     <ClInclude Include="PickListView.h" />
     <ClInclude Include="PreMatchGraphView.h" />
     <QtMoc Include="TimeBoundWidget.h" />
+    <QtMoc Include="RobotActivityEditWidget.h" />
     <ClInclude Include="SelectTeamsDialog.h" />
     <QtMoc Include="TeamSummaryWidget.h" />
     <ClInclude Include="ZebraAnalysisView.h" />
+    <ClInclude Include="ZebraPatternView.h" />
+    <ClInclude Include="ZebraRegionEditor.h" />
     <ClInclude Include="ZebraViewWidget.h" />
     <QtMoc Include="PathFieldView.h" />
     <ClInclude Include="ScoutDataMergeDialog.h" />
@@ -153,8 +163,6 @@
     <QtMoc Include="DataMergeListWidget.h" />
     <ClInclude Include="MatchViewWidget.h" />
     <ClInclude Include="scoutviews_global.h" />
-  </ItemGroup>
-  <ItemGroup>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

@@ -17,13 +17,13 @@ namespace xero
 			{
 			}
 
-			int SequenceEnterIdlePattern::doesMatch(Alliance a, const ZebraSequence& sequence, int start)
+			int SequenceEnterIdlePattern::doesMatch(Alliance a, const ZebraSequence& sequence, int start) const
 			{
 				assert(perAlliance() == false || a == Alliance::Red || a == Alliance::Blue);
 
 				QString name = name_;
 				if (perAlliance())
-					name = toString(a) + "-" + name_;
+					name = xero::scouting::datamodel::toString(a) + "-" + name_;
 
 				if (sequence[start].isEnter() && sequence[start].name() == name &&
 					sequence[start + 1].isIdle())

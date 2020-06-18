@@ -25,6 +25,7 @@ namespace xero
 				virtual ~SequencePattern() {
 				}
 
+
 				bool perAlliance() const {
 					return perall_;
 				}
@@ -37,7 +38,8 @@ namespace xero
 					return max_count_;
 				}
 
-				virtual int doesMatch(Alliance a, const ZebraSequence& sequence, int start) = 0;
+				virtual QString toString() const = 0;
+				virtual int doesMatch(Alliance a, const ZebraSequence& sequence, int start) const = 0;
 
 			private:
 				//

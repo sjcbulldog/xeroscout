@@ -111,6 +111,21 @@
     <ClCompile Include="ZebraAnalysisView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ZebraPatternView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ZebraRegionEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PatternListWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RobotActivityEditWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MatchViewWidget.h">
@@ -180,6 +195,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ZebraAnalysisView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZebraPatternView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ZebraRegionEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PatternListWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotActivityEditWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -84,12 +84,6 @@ namespace xero
 					SingleTeam,
 				};
 
-				enum class HighlightType
-				{
-					Circle,
-					Rectangle,
-					Polygon
-				};
 
 			private:
 				void detailItemChanged(QListWidgetItem* item);
@@ -107,9 +101,6 @@ namespace xero
 				void createPlotTeam(const QString& key);
 
 				void rangeChanged(double minv, double maxv);
-				void fieldKeyPressed(Qt::Key key);
-
-				void removeAllRegions();
 
 				QColor matchRobotColor(xero::scouting::datamodel::Alliance c, int slot);
 
@@ -125,12 +116,6 @@ namespace xero
 
 				void fieldContextMenu(QPoint pt);
 				void defenseToggled();
-				void addHighlight(xero::scouting::datamodel::Alliance a, HighlightType ht);
-				void removeHighlight(const QString& name);
-				void areaSelected(const QRectF& area, xero::scouting::datamodel::Alliance a, HighlightType ht);
-				void polygonSelected(const std::vector<QPointF>& points, xero::scouting::datamodel::Alliance a);
-				void renameRegion();
-				bool validRegionName(const QString& name);
 
 				std::shared_ptr<xero::scouting::datamodel::RobotTrack> createTrack(const QString& mkey, const QString& tkey);
 

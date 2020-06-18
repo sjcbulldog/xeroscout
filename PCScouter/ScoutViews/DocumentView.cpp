@@ -34,6 +34,9 @@
 #include "TeamSummaryWidget.h"
 #include "PickListView.h"
 #include "ZebraAnalysisView.h"
+#include "ZebraPatternView.h"
+#include "ZebraRegionEditor.h"
+#include "IntroView.h"
 #include <QLabel>
 #include <QDebug>
 #include <QFont>
@@ -59,13 +62,9 @@ namespace xero
 				if (!field_mgr_.initialize())
 					gamemgr = false;
 
-				QLabel* label = new QLabel("No Event Loaded", this);
-				label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-				QFont font = label->font();
-				font.setPointSizeF(18.0);
-				label->setFont(font);
-
-				addWidget(label);																				// 0
+				IntroView* iview = new IntroView("Introduction", this);
+				iview->setFile("intro.html");
+				addWidget(iview);																	// 0
 				addWidget(new FormView(images_, "TeamTemplate", "Preview", QColor(0, 255, 0, 255), this));		// 1
 				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(255, 0, 0, 255), this));		// 2
 				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(0, 0, 255, 255), this));		// 3
@@ -91,7 +90,14 @@ namespace xero
 				addWidget(gview);																				// 15
 
 				addWidget(new PickListView("picklist", this));													// 16
-				addWidget(new ZebraAnalysisView(this));													// 16
+				addWidget(new ZebraAnalysisView(this));															// 17
+				addWidget(new ZebraPatternView(images_, this));													// 18
+
+				ZebraRegionEditor* rview = new ZebraRegionEditor(this);
+				addWidget(rview);																				// 19
+				iview = new IntroView("Zebra Introduction", this);
+				iview->setFile("zebra.html");
+				addWidget(iview);																				// 20
 
 				if (gamemgr)
 				{
@@ -107,7 +113,10 @@ namespace xero
 					}
 
 					if (fld != nullptr)
+					{
 						zview->field()->setField(fld);
+						rview->field()->setField(fld);
+					}
 				}
 
 				setCurrentIndex(0);
@@ -120,6 +129,8 @@ namespace xero
 
 				tree = dynamic_cast<QTreeWidget*>(getWidget(ViewType::MatchView));
 				(void)connect(tree, &QTreeWidget::itemDoubleClicked, this, &DocumentView::matchItemDoubleClicked);
+
+
 			}
 
 			DocumentView::~DocumentView()

@@ -195,6 +195,9 @@
     <ClInclude Include="SequenceEnterIdlePattern.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RobotActivity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoutingDatabase.cpp">

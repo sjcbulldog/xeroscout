@@ -204,7 +204,7 @@ namespace xero
 				}	
 			}
 
-			std::pair<int, int> ZebraSequence::matchPattern(const std::vector<std::shared_ptr<SequencePattern>>& plist, int start)
+			std::pair<int, int> ZebraSequence::matchPattern(const std::vector<std::shared_ptr<const SequencePattern>>& plist, int start)
 			{
 				auto bad = std::make_pair(-1, -1);
 

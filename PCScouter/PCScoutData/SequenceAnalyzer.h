@@ -2,6 +2,7 @@
 
 #include "pcscoutdata_global.h"
 #include "ZebraSequence.h"
+#include "RobotActivity.h"
 #include <memory>
 #include <list>
 #include <map>
@@ -87,7 +88,7 @@ namespace xero
 
 			private:
 				std::vector<std::shared_ptr<ZebraSequence>> sequences_;
-				std::map<QString, std::vector<std::shared_ptr<SequencePattern>>> named_patterns_;
+				std::vector<std::shared_ptr<RobotActivity>> activities_;
 				std::list<MatchedSequence> matches_;
 			};
 		}

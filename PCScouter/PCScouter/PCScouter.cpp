@@ -39,6 +39,9 @@
 #include "AllianceGraphView.h"
 #include "TeamSummaryWidget.h"
 #include "PickListView.h"
+#include "ZebraPatternView.h"
+#include "ZebraRegionEditor.h"
+#include "IntroView.h"
 #include "DataGenerator.h"
 
 #include "USBServer.h"
@@ -271,6 +274,14 @@ void PCScouter::createWindows()
 	(void)connect(view_selector_, &SpecialListWidget::magicWord, this, &PCScouter::magicWordTyped);
 	left_right_splitter_->addWidget(view_selector_);
 
+	item = new QListWidgetItem(loadIcon("teamform.png"), "Introduction", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::NoModelView)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem("----------------------------------------------------");
+	item->setFlags(Qt::ItemFlag::NoItemFlags);
+	view_selector_->addItem(item);
+
 	item = new QListWidgetItem(loadIcon("teamform.png"), "Team Scouting Form", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamScoutingFormView)));
 	view_selector_->addItem(item);
@@ -335,13 +346,26 @@ void PCScouter::createWindows()
 	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
 
+	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Introduction", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraIntro)));
+	view_selector_->addItem(item);
+
 	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Data", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraDataView)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Region Editor", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraRegionEditor)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem(loadIcon("pencil.png"), "Zebra Pattern Editor", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraPatternEditor)));
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("sequence.png"), "Zebra Analysis", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraAnalysis)));
 	view_selector_->addItem(item);
+
 
 	item = new QListWidgetItem("----------------------------------------------------");
 	item->setFlags(Qt::ItemFlag::NoItemFlags);
@@ -362,6 +386,7 @@ void PCScouter::createWindows()
 	left_right_splitter_->addWidget(top_bottom_splitter_);
 
 	view_frame_ = new DocumentView(images_, year_, "", top_bottom_splitter_);
+	connect(view_frame_, &DocumentView::logMessage, this, &PCScouter::logMessage);
 
 	DataSetViewWidget * ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
 	connect(ds, &DataSetViewWidget::rowChanged, this, &PCScouter::matchRowChanged);
@@ -1136,30 +1161,6 @@ void PCScouter::updateCurrentView()
 		}
 		break;
 
-		case DocumentView::ViewType::TeamView:
-		{
-			TeamScheduleViewWidget* ds = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				ds->setData(data_model_->teams());
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
-
-		case DocumentView::ViewType::MatchView:
-		{
-			MatchViewWidget* ds = dynamic_cast<MatchViewWidget*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				ds->setData(data_model_->matches());
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
-
 		case DocumentView::ViewType::MatchDataSet:
 		{
 			DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(view));
@@ -1186,29 +1187,6 @@ void PCScouter::updateCurrentView()
 		}
 		break;
 
-		case DocumentView::ViewType::CustomDataSet:
-		{
-			QueryViewWidget* ds = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				ds->refreshView();
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
-
-		case DocumentView::ViewType::TeamReport:
-		{
-			TeamSummaryWidget* ds = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				ds->refreshView();
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
 
 		case DocumentView::ViewType::AllTeamReport:
 		{
@@ -1219,42 +1197,6 @@ void PCScouter::updateCurrentView()
 				auto ctrl = new AllTeamSummaryController(blue_alliance_, data_model_, ds->dataset());
 				setAppController(ctrl);
 				(void)connect(ctrl, &ApplicationController::complete, this, &PCScouter::teamSummaryCompleted);
-			}
-		}
-		break;
-
-		case DocumentView::ViewType::HistoryView:
-		{
-			ChangeHistoryView* ds = dynamic_cast<ChangeHistoryView*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				ds->refreshView();
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
-
-		case DocumentView::ViewType::MergeListView:
-		{
-			DataMergeListWidget* ds = dynamic_cast<DataMergeListWidget*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				ds->refreshView();
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
-
-		case DocumentView::ViewType::ZebraDataView:
-		{
-			ZebraViewWidget* ds = dynamic_cast<ZebraViewWidget*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				ds->refreshView();
-				ds->clearNeedRefresh();
 			}
 		}
 		break;
@@ -1321,14 +1263,46 @@ void PCScouter::updateCurrentView()
 		}
 		break;
 
-		case DocumentView::ViewType::ZebraAnalysis:
+		case DocumentView::ViewType::MatchView:
 		{
-			ZebraAnalysisView* ds = dynamic_cast<ZebraAnalysisView*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
+			MatchViewWidget* ds = dynamic_cast<MatchViewWidget*>(view_frame_->getWidget(view));
+			if (ds != nullptr)
 			{
-				ds->refreshView();
-				ds->clearNeedRefresh();
+				if (ds->needsRefresh())
+				{
+					ds->setData(data_model_->matches());
+					ds->refreshView();
+					ds->clearNeedRefresh();
+				}
+			}
+		}
+		break;
+
+		case DocumentView::ViewType::TeamView:
+		{
+			TeamScheduleViewWidget* ds = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(view));
+			if (ds != nullptr)
+			{
+				if (ds->needsRefresh())
+				{
+					ds->setData(data_model_->teams());
+					ds->refreshView();
+					ds->clearNeedRefresh();
+				}
+			}
+		}
+		break;
+
+		default:
+		{
+			ViewBase* vb = dynamic_cast<ViewBase*>(view_frame_->getWidget(view));
+			if (vb != nullptr)
+			{
+				if (vb->needsRefresh())
+				{
+					vb->refreshView();
+					vb->clearNeedRefresh();
+				}
 			}
 		}
 		break;

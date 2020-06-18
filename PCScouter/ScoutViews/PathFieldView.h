@@ -103,6 +103,10 @@ namespace xero
 					text_in_heatmap_ = b;
 				}
 
+				void clearHighlights() {
+					highlights_.clear();
+				}
+
 				void addHighlight(std::shared_ptr<const xero::scouting::datamodel::FieldRegion> h) {
 					highlights_.push_back(h);
 				}

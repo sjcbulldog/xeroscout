@@ -32,6 +32,9 @@
     <Filter Include="AppControllers\Source Files">
       <UniqueIdentifier>{7bd2ecfb-e407-48ef-af90-b35863ce19be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="html">
+      <UniqueIdentifier>{f5900e89-a57f-481c-8de5-f45e4b179ae5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -198,10 +201,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="PitScouting.json" />
-    <None Include="MatchScouting.json" />
+    <None Include="html\intro.html">
+      <Filter>html</Filter>
+    </None>
+    <None Include="html\zebra.html">
+      <Filter>html</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="MainIcon.png" />
     <Image Include="icon1.ico" />
   </ItemGroup>
   <ItemGroup>

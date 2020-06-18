@@ -46,7 +46,7 @@ namespace xero
 					return tkey_;
 				}
 
-				std::pair<int, int> matchPattern(const std::vector<std::shared_ptr<SequencePattern>>& pattern, int start);
+				std::pair<int, int> matchPattern(const std::vector<std::shared_ptr<const SequencePattern>>& pattern, int start);
 
 			private:
 				constexpr static const double debounceDelay = 1.0;

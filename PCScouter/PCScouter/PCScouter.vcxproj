@@ -72,6 +72,8 @@
       <Command>if not exist "$(OutDir)fields" mkdir $(OutDir)fields
 copy $(ProjectDir)fields\*.* $(OutDir)\fields
 copy $(ProjectDir)images\*.* $(OutDir)
+if not exist "$(OutDir)html" mkdir $(OutDir)html
+copy $(ProjectDir)html\*.* $(OutDir)\html
 $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe
 copy $(QTDIR)\bin\Qt5Sql.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Charts.dll $(OutDir)
@@ -106,6 +108,8 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
       <Command>if not exist "$(OutDir)fields" mkdir $(OutDir)fields
 copy $(ProjectDir)fields\*.* $(OutDir)\fields
 copy $(ProjectDir)images\*.* $(OutDir)
+if not exist "$(OutDir)html" mkdir $(OutDir)html
+copy $(ProjectDir)html\*.* $(OutDir)\html
 $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe
 copy $(QTDIR)\bin\Qt5Sql.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Charts.dll $(OutDir)
@@ -183,12 +187,12 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
     <QtUic Include="Preferences.ui" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="MatchScouting.json" />
+    <None Include="html\intro.html" />
+    <None Include="html\zebra.html" />
     <None Include="PitScouting.json" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />
-    <Image Include="MainIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PCScouter.rc" />

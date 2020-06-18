@@ -117,6 +117,11 @@ namespace xero
 			constexpr const char* JsonRadiusName = "radius";
 			constexpr const char* JsonCircleName = "circle";
 			constexpr const char* JsonBoundsName = "bounds";
+			constexpr const char* JsonPatternsName = "patterns";
+			constexpr const char* JsonActivitiesName = "activities";
+			constexpr const char* JsonPerAllianceName = "peralliance";
+			constexpr const char* JsonMinName = "min";
+			constexpr const char* JsonMaxName = "max";
 		}
 	}
 }

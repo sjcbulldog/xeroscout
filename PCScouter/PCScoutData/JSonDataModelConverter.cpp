@@ -26,6 +26,8 @@
 #include "CircleFieldRegion.h"
 #include "PolygonFieldRegion.h"
 #include "RectFieldRegion.h"
+#include "SequenceEnterExitPattern.h"
+#include "SequenceEnterIdlePattern.h"
 #include <QJsonArray>
 #include <QTextCodec>
 
@@ -522,6 +524,7 @@ namespace xero
 				obj[JsonTeamSummaryFieldsName] = encodeStringList(dm_->teamSummaryFields());
 				obj[JsonDatasetColumnOrdersName] = encodeColumnOrders();
 				obj[JsonFieldRegionsName] = encodeFieldRegions();
+				obj[JsonActivitiesName] = encodeActivities();
 				doc.setObject(obj);
 				return doc;
 			}
@@ -1437,7 +1440,121 @@ namespace xero
 				if (obj.contains(JsonFieldRegionsName) && obj.value(JsonFieldRegionsName).isArray())
 					decodeFieldRegions(obj.value(JsonFieldRegionsName).toArray());
 
+				if (obj.contains(JsonActivitiesName) && obj.value(JsonActivitiesName).isArray())
+					decodeActivities(obj.value(JsonActivitiesName).toArray());
+
 				return true;
+			}
+
+			QJsonArray JSonDataModelConverter::encodeActivities()
+			{
+				QJsonArray result;
+
+				for (auto p : dm_->activities())
+				{
+					QJsonObject obj;
+					QJsonArray sarray;
+
+					obj[JsonNameName] = p->name();
+
+					for (auto seq : p->patterns())
+					{
+						QJsonObject sobj;
+						sobj[JsonMinName] = seq->minCount();
+						sobj[JsonMaxName] = seq->maxCount();
+						sobj[JsonPerAllianceName] = seq->perAlliance();
+
+						auto entexit = std::dynamic_pointer_cast<const SequenceEnterExitPattern>(seq);
+						if (entexit != nullptr)
+						{
+							sobj[JsonTypeName] = "enterexit";
+							sobj[JsonNameName] = entexit->name();
+							sarray.push_back(sobj);
+							continue;
+						}
+
+						auto entidle = std::dynamic_pointer_cast<const SequenceEnterIdlePattern>(seq);
+						if (entidle != nullptr)
+						{
+							sobj[JsonTypeName] = "enteridle";
+							sobj[JsonNameName] = entidle->name();
+							sarray.push_back(sobj);
+							continue;
+						}
+
+						assert(false);
+					}
+
+					obj[JsonPatternsName] = sarray;
+					result.push_back(obj);
+				}
+
+				return result;
+			}
+
+			void JSonDataModelConverter::decodeActivities(const QJsonArray& array)
+			{
+				int minv, maxv;
+				QString name;
+				bool perall;
+
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (!array[i].isObject())
+						continue;
+
+					QJsonObject obj = array[i].toObject();
+
+					if (!obj.contains(JsonNameName) || !obj.value(JsonNameName).isString())
+						continue;
+
+					if (!obj.contains(JsonPatternsName) || !obj.value(JsonPatternsName).isArray())
+						continue;
+
+					auto act = std::make_shared<RobotActivity>(obj.value(JsonNameName).toString());
+
+					QJsonArray patterns = obj.value(JsonPatternsName).toArray();
+					for (int j = 0; j < patterns.size(); j++)
+					{
+						if (!patterns[j].isObject())
+							continue;
+
+						QJsonObject pobj = patterns[j].toObject();
+
+						if (!pobj.contains(JsonMinName) || !pobj.value(JsonMinName).isDouble())
+							continue;
+
+						if (!pobj.contains(JsonMaxName) || !pobj.value(JsonMaxName).isDouble())
+							continue;
+
+						if (!pobj.contains(JsonNameName) || !pobj.value(JsonNameName).isString())
+							continue;
+
+						if (!pobj.contains(JsonPerAllianceName) || !pobj.value(JsonPerAllianceName).isBool())
+							continue;
+
+						if (!pobj.contains(JsonTypeName) || !pobj.value(JsonTypeName).isString())
+							continue;
+
+						name = pobj.value(JsonNameName).toString();
+						minv = pobj.value(JsonMinName).toInt();
+						maxv = pobj.value(JsonMaxName).toInt();
+						perall = pobj.value(JsonPerAllianceName).toBool();
+
+						if (pobj.value(JsonTypeName).toString() == "enterexit")
+						{
+							auto p = std::make_shared<SequenceEnterExitPattern>(name, minv, maxv, perall);
+							act->addPattern(p);
+						}
+						else if (pobj.value(JsonTypeName).toString() == "enteridle")
+						{
+							auto p = std::make_shared<SequenceEnterIdlePattern>(name, minv, maxv, perall);
+							act->addPattern(p);
+						}
+					}
+
+					dm_->addActivity(act);
+				}
 			}
 
 			QJsonArray JSonDataModelConverter::encodeFieldRegions()
@@ -1446,7 +1563,6 @@ namespace xero
 
 				for (auto h : dm_->fieldRegions())
 				{
-					bool processed = false;
 					QJsonObject obj;
 
 					obj[JsonAllianceName] = toString(h->alliance());
@@ -1463,7 +1579,8 @@ namespace xero
 						robj[JsonWidthName] = bounds.width();
 						robj[JsonHeightName] = bounds.height();
 						obj[JsonBoundsName] = robj;
-						processed = true;
+						result.push_back(obj);
+						continue;
 					}
 
 					auto circle = std::dynamic_pointer_cast<const CircleFieldRegion>(h);
@@ -1474,7 +1591,8 @@ namespace xero
 						robj[JsonYName] = circle->center().y();
 						robj[JsonRadiusName] = circle->radius();
 						obj[JsonCircleName] = robj;
-						processed = true;
+						result.push_back(obj);
+						continue;
 					}
 
 					auto polygon = std::dynamic_pointer_cast<const PolygonFieldRegion>(h);
@@ -1491,10 +1609,11 @@ namespace xero
 						}
 
 						obj[JsonPointsName] = ptarray;
-						processed = true;
+						result.push_back(obj);
+						continue;
 					}
 
-					result.push_back(obj);
+					assert(false);
 				}
 
 				return result;
