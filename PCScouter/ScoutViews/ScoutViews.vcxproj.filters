@@ -126,6 +126,9 @@
     <ClCompile Include="RobotActivityEditWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MatchTeamSelector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MatchViewWidget.h">
@@ -209,9 +212,6 @@
     <ClInclude Include="PatternListWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RobotActivityEditWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scoutviews_global.h">
@@ -244,6 +244,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ChartViewWrapper.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="RobotActivityEditWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MatchTeamSelector.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

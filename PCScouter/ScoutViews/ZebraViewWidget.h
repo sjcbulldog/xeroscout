@@ -23,6 +23,7 @@
 #pragma once
 
 #include "scoutviews_global.h"
+#include "MatchTeamSelector.h"
 #include "ViewBase.h"
 #include "PathFieldView.h"
 #include "DataModelMatch.h"
@@ -61,40 +62,27 @@ namespace xero
 
 				void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model) {
 					ViewBase::setDataModel(model);
-					if (mode_ != Mode::Uninitialized)
-						createPlot();
 
 					if (field_ != nullptr && model != nullptr)
 					{
 						for (auto h : model->fieldRegions())
 							field_->addHighlight(h);
 					}
-				}
 
-			protected:
-				void showEvent(QShowEvent*) override;
+					selector_->setDataModel(model);
+
+					createPlot();
+				}
 
 			private:
 				static const constexpr double AnimationTimeStep = 0.1;
 
-				enum class Mode
-				{
-					Uninitialized,
-					SingleMatch,
-					SingleTeam,
-				};
-
-
 			private:
 				void detailItemChanged(QListWidgetItem* item);
 
-				void matchesSelected(bool checked);
-				void robotSelected(bool checked);
-				void comboxChanged(int index);
+				void matchesRobotsSelected();
+				void comboxChanged(const QString& key);
 				void modeChanged(int index);
-
-				void updateComboBoxMatch();
-				void updateComboBoxTeam();
 
 				void createPlot();
 				void createPlotMatch(const QString& key);
@@ -168,9 +156,7 @@ namespace xero
 				};
 
 			private:
-				QComboBox* box_;
-				QRadioButton* matches_;
-				QRadioButton* robot_;
+				MatchTeamSelector* selector_;
 				PathFieldView* field_;
 				TimeBoundWidget* slider_;
 				QPushButton* detail_;
@@ -186,7 +172,6 @@ namespace xero
 				double animation_time_;
 				double animation_mult_;
 
-				Mode mode_;
 				std::vector<TrackEntry> entries_;
 
 				QPoint menu_point_;

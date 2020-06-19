@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+    <TITLE>Zebra Data Analysis</TITLE>
+</HEAD>
+<BODY>
+    The XeroScout scouting software provides for some new features to analyze zebra data
+    from the Blue Alliance.  Zebra data is recorded during the match and provides a x/y location
+    for reach robot in a given match at about 100 ms intervals.  This data can be analyzed to
+    deduce information about the behaviour of a given robot.  In generaly the Zebra data support
+    in the scouting program consists of:
+    <ul>
+        <li>Visualization of robot position data for all robots in a match</li>
+        <li>Visualization of robot position data for a robot across all matches</li>
+        <li>Visualization of a position heatmap for all robots in a match</li>
+        <li>Visualization of a position heatmap for a robot across all matches</li>
+        <li>Visual playback of the movement for all robots in a match</li>
+        <li>Visual playback of the movement for a robot across all matches</li>
+        <li>Analysis of rebot movement patterns</li>
+    </ul>
+    <br>
+    <br>
+    The analysis of robot movement patterns is experimental and consists of the following steps:
+    <ul>
+        <li>
+            Define specific regions on the field that are interesting.  For instance, the control panel on each
+            side of the field could be a region.  A region can be active for both alliances, or can be alliance specific.
+        </li>
+        <li>Analyze the zebra data and determine when a robot enters and exits a given region. These are stored as robot events.</li>
+        <li>Analyze the zebra data and determine when the robot is sitting idle.  These are stored as robot events.</li>
+        <li>
+            Filter the event sequence to reduce the noise.  This means doing things like taking an event sequence like ENTER->EXIT->ENTER->EXIT
+            that occurs within a single second and reducing it to a single ENTER->EXIT event sequence.
+        </li>
+        <li>Apply pattern matching to the event sequence to create a set of robot activities.  For instance, a sequence like ...</li>
+        <ul>
+            <li>Enter Loading Station Event</li>
+            <li>Optional Idle Event</li>
+            <li>Exit Loading Station Event</li>
+            <li>Enter Control Panel Event</li>
+            <li>Exit Control Panel Event</li>
+            <li>Enter Tranch Event</li>
+            <li>Required Idle Event</li>
+        </ul>
+    </ul>
+</BODY>
+</HTML>

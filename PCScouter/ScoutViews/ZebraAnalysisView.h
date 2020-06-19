@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scoutviews_global.h"
+#include "MatchTeamSelector.h"
 #include "ViewBase.h"
 #include "ZebraSequence.h"
 #include "SequenceAnalyzer.h"
@@ -26,18 +27,29 @@ namespace xero
 				void refreshView();
 				void clearView();
 
+				void madeActive() override;
+
+				void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm) {
+					selector_->setDataModel(dm);
+					ViewBase::setDataModel(dm);
+				}
+
 			protected:
-				void showEvent(QShowEvent* ev) override;
 
 			private:
-				void teamChanged(int index);
 				void regenerate();
+
+				void generateRobot();
+				void generateMatch();
 
 				void printRawData(QString& html);
 				void printSequences(QString& html);
 
+				void matchesRobotsSelected();
+				void comboxChanged(const QString& key);
+
 			private:
-				QComboBox* box_;
+				MatchTeamSelector* selector_;
 				QGroupBox* report_;
 				QTextBrowser* report_txt_;
 				QString current_team_;

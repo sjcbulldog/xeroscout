@@ -39,12 +39,12 @@ namespace xero
 						return start_;
 					}
 
-					int end() const {
-						return end_;
-					}
-
 					double startTime() const {
 						return (*seq_)[start_].when();
+					}
+
+					int end() const {
+						return end_;
 					}
 
 					double endTime() const {
@@ -82,13 +82,17 @@ namespace xero
 					return matches_;
 				}
 
+				void setActivities(std::vector<std::shared_ptr<const RobotActivity>> activities) {
+					activities_ = activities;
+				}
+
 			private:
 				void addBlueSequences();
 				void analyzeOneSequence(std::shared_ptr<ZebraSequence> seq);
 
 			private:
 				std::vector<std::shared_ptr<ZebraSequence>> sequences_;
-				std::vector<std::shared_ptr<RobotActivity>> activities_;
+				std::vector<std::shared_ptr<const RobotActivity>> activities_;
 				std::list<MatchedSequence> matches_;
 			};
 		}

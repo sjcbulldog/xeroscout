@@ -25,6 +25,10 @@ namespace xero
 				virtual ~SequencePattern() {
 				}
 
+				void setMinMax(int minv, int maxv) {
+					min_count_ = minv;
+					max_count_ = maxv;
+				}
 
 				bool perAlliance() const {
 					return perall_;

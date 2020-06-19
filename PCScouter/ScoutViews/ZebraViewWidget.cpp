@@ -61,24 +61,15 @@ namespace xero
 				mode_select_->addItem("Replay", static_cast<int>(PathFieldView::ViewMode::Robot));
 				(void)connect(mode_select_, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged), this, &ZebraViewWidget::modeChanged);
 
-				matches_ = new QRadioButton("Match", top);
-				matches_->setChecked(true);
-				hlay->addWidget(matches_);
-				(void)connect(matches_, &QRadioButton::toggled, this, &ZebraViewWidget::matchesSelected);
-
-				robot_ = new QRadioButton("Robot", top);
-				hlay->addWidget(robot_);
-				(void)connect(robot_, &QRadioButton::toggled, this, &ZebraViewWidget::robotSelected);
-
-				box_ = new QComboBox(top);
-				hlay->addWidget(box_);
-				(void)connect(box_, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged), this, &ZebraViewWidget::comboxChanged);
-				QSizePolicy p(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
-				box_->setSizePolicy(p);
+				selector_ = new MatchTeamSelector(dataModel(), top);
+				hlay->addWidget(selector_);
+				connect(selector_, &MatchTeamSelector::matchSelected, this, &ZebraViewWidget::matchesRobotsSelected);
+				connect(selector_, &MatchTeamSelector::robotSelected, this, &ZebraViewWidget::matchesRobotsSelected);
+				connect(selector_, &MatchTeamSelector::selectedItemChanged, this, &ZebraViewWidget::comboxChanged);
 
 				vertical_ = new QSplitter(Qt::Orientation::Horizontal, this);
 				vlay->addWidget(vertical_);
-				p = QSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+				QSizePolicy p = QSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 				vertical_->setSizePolicy(p);
 
 				field_ = new PathFieldView(vertical_);
@@ -114,14 +105,12 @@ namespace xero
 				connect(slider_, &TimeBoundWidget::changeAnimationState, this, &ZebraViewWidget::sliderChangedAnimationState);
 				connect(slider_, &TimeBoundWidget::currentTimeChanged, this, &ZebraViewWidget::animationSetTime);
 
-				mode_ = Mode::Uninitialized;
 				animation_timer_ = nullptr;
 			}
 
 			ZebraViewWidget::~ZebraViewWidget()
 			{
 			}
-
 
 			void ZebraViewWidget::fieldContextMenu(QPoint pt)
 			{
@@ -196,25 +185,6 @@ namespace xero
 					animation_time_ = slider_->rangeStart();
 
 				animationSetTime(animation_time_);
-			}
-
-			void ZebraViewWidget::showEvent(QShowEvent *ev)
-			{
-				if (mode_ == Mode::Uninitialized)
-				{
-					//
-					// Normally changing mode select current item would trigger a signal which would
-					// recreate the plot.  But when we check matches below, we will do the same.  So, to prevent
-					// going through the process of creating the plot twice during initialization, we block the 
-					// signals while we setup the view mode
-					//
-					mode_select_->blockSignals(true);
-					mode_select_->setCurrentIndex(0);
-					mode_select_->blockSignals(false);
-
-					matches_->setChecked(true);
-					matchesSelected(true);
-				}
 			}
 
 			void ZebraViewWidget::checkChanged(int state)
@@ -301,15 +271,14 @@ namespace xero
 
 			void ZebraViewWidget::clearView()
 			{
-				box_->clear();
+				selector_->clear();
 				field_->clearTracks();
 				entries_.clear();
 			}
 
 			void ZebraViewWidget::refreshView()
 			{
-				if (mode_ != Mode::Uninitialized)
-					createPlot();
+				createPlot();
 			}
 
 			QColor ZebraViewWidget::matchRobotColor(xero::scouting::datamodel::Alliance c, int slot)
@@ -350,94 +319,32 @@ namespace xero
 				return ret;
 			}
 
-			void ZebraViewWidget::updateComboBoxMatch()
-			{
-				if (dataModel() != nullptr)
-				{
-					box_->blockSignals(true);
-					box_->clear();
-
-					for (auto m : dataModel()->matches())
-					{
-						if (!m->zebra().isEmpty())
-							box_->addItem(m->title(), m->key());
-					}
-					box_->blockSignals(false);
-					box_->setCurrentIndex(0);
-				}
-				else
-				{
-					box_->clear();
-				}
-			}
-
-			void ZebraViewWidget::updateComboBoxTeam()
-			{
-
-				if (dataModel() != nullptr)
-				{
-					box_->blockSignals(true);
-					box_->clear();
-					auto dm = dataModel();
-					if (dm != nullptr) {
-						std::list<std::shared_ptr<const DataModelTeam>> teams = dm->teams();
-						teams.sort([](std::shared_ptr<const DataModelTeam> a, std::shared_ptr<const DataModelTeam> b) -> bool
-							{
-								return a->number() < b->number();
-							});
-
-						for (auto t : teams)
-							box_->addItem(QString::number(t->number()) + " - " + t->nick(), t->key());
-					}
-					box_->blockSignals(false);
-					box_->setCurrentIndex(0);
-				}
-				else
-				{
-					box_->clear();
-				}
-			}
-
-
 			//
 			// This is called when the matches radio button changes.  We only process the
 			// event when checked is true meaning the user has asked for matches
 			//
-			void ZebraViewWidget::matchesSelected(bool checked)
+			void ZebraViewWidget::matchesRobotsSelected()
 			{
-				if (!checked)
-					return;
-
-				mode_ = Mode::SingleMatch;
 				setNeedRefresh();
-				updateComboBoxMatch();
 				createPlot();
 			}
 
-			//
-			// This is called when the robot radio button changes.  We only process the
-			// event when checked is true meaning the user has asked for robots
-			//
-			void ZebraViewWidget::robotSelected(bool checked)
+			void ZebraViewWidget::comboxChanged(const QString &key)
 			{
-				if (!checked)
-					return;
-
-				mode_ = Mode::SingleTeam;
-				setNeedRefresh();
-				updateComboBoxTeam();
-				createPlot();
-			}
-
-			void ZebraViewWidget::comboxChanged(int which)
-			{
-				if (field_->viewMode() == PathFieldView::ViewMode::Robot)
+				if (field_->viewMode() == PathFieldView::ViewMode::Robot && animation_timer_ != nullptr)
 				{
-					animationSetTime(slider_->rangeStart());
+					animation_timer_->stop();
+					delete animation_timer_;
+					animation_timer_ = nullptr;
+					slider_->setCurrentTime(slider_->minimum());
 				}
-				setNeedRefresh();
-				createPlot();
-				field_->update();
+
+				if (key.length() > 0)
+				{
+					setNeedRefresh();
+					createPlot();
+					field_->update();
+				}
 			}
 
 			void ZebraViewWidget::modeChanged(int which)
@@ -465,21 +372,27 @@ namespace xero
 				Alliance c;
 				int slot;
 
-				if (mode_ == Mode::SingleMatch)
+				m->teamToAllianceSlot(tkey, c, slot);
+
+				if (selector_->isMatchesSelected())
 				{
 					title = QString::number(t->number());
-					m->teamToAllianceSlot(tkey, c, slot);
 				}
 				else
 				{
-					slot = 1;
-					c = Alliance::Red;
 					title = m->title(true);
 				}
 
 				auto track = DataModelBuilder::createTrack(dataModel(), mkey, tkey);
 				if (track == nullptr)
 					return nullptr;
+
+				if (selector_->isRobotsSelected() && c == Alliance::Blue)
+				{
+					track->transform(54.0, 27.0);
+					c = Alliance::Red;
+					slot = 1;
+				}
 
 				track->setTitle(title);
 				track->setColor(matchRobotColor(c, slot));
@@ -489,9 +402,6 @@ namespace xero
 
 				TrackEntry te(mkey, tkey, track);
 				entries_.push_back(te);
-
-				if (c == Alliance::Blue && mode_ == Mode::SingleTeam)
-					track->transform(54.0, 27.0);
 
 				field_->addTrack(track);
 				track->setRange(slider_->rangeStart(), slider_->rangeEnd());
@@ -504,14 +414,13 @@ namespace xero
 			//
 			void ZebraViewWidget::createPlot()
 			{
-				QVariant v = box_->itemData(box_->currentIndex());
-				if (mode_ == Mode::SingleMatch)
+				if (selector_->isMatchesSelected())
 				{
-					createPlotMatch(v.toString());
+					createPlotMatch(selector_->currentKey());
 				}
 				else
 				{
-					createPlotTeam(v.toString());
+					createPlotTeam(selector_->currentKey());
 				}
 
 				all_->blockSignals(true);
@@ -586,7 +495,7 @@ namespace xero
 					const TrackEntry& entry = entries_[i];
 					QListWidgetItem* item;
 
-					if (mode_ == Mode::SingleMatch)
+					if (selector_->isMatchesSelected())
 					{
 						auto team = dataModel()->findTeamByKey(entry.teamKey());
 						item = new QListWidgetItem(QString::number(team->number()) + " - " + team->nick());
@@ -616,7 +525,7 @@ namespace xero
 					auto m = dataModel()->findMatchByKey(te.matchKey());
 
 					QTreeWidgetItem* item = new QTreeWidgetItem(info_);
-					if (mode_ == Mode::SingleMatch)
+					if (selector_->isMatchesSelected())
 					{
 						item->setText(0, t->title());
 					}

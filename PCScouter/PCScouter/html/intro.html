@@ -1,0 +1,160 @@
+<html>
+<body>
+    <b>Introduction</b><hr>
+    This application is a scouting application.  It is built to help with the following:
+    <ul>
+        <li>Create a scouting schedule for both matches and pits</li>
+        <li>Track the collection of scouting data</li>
+        <li>Integrate match scoring and zebra data from the Blue Alliance</li>
+        <li>View the raw collected data and look for data integrity problems</li>
+        <li>Visualize data to assist in match stratergy or alliance selection</li>
+    </ul>
+    <br><br>
+    <hr>
+    <h1>Windows</h1>
+    <h2>View Windows</h2>
+    The application consits of set of windows which can be selected from the left side
+    view selector.  Note that only the introduction page is visible until an FRC event data set is
+    either loaded from disk or created.
+    <p></p>
+    <br>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+    <table width="900">
+        <tr>
+            <th>Name</th>
+            <th>Purpose</th>
+        </tr>
+        <tr>
+            <td>Introduction</td>
+            <td>This window which provides an overview of the XeroScout scouting program.</td>
+        </tr>
+        <tr>
+            <td>Team Scouting Form</td>
+            <td>A window that provides a view of the team (pit) scouting form.  This is just to be sure what form actually gets downloaded to tablets.  This form is not actually used to edit data.</td>
+        </tr>
+        <tr>
+            <td>Team Scouting Status</td>
+            <td>A window that provides the status of team scouting.  If the ScoutCentral program has team scouting data for a team, it will be indicated by a green 'Y'.  If not, it is indicated by a red 'N'.</td>
+        </tr>
+        <tr>
+            <td>Team Scouting Data</td>
+            <td>A dataset window to display the team scouting data collected to date, one team per row.</td>
+        </tr>
+        <tr>
+            <td>Match Scouting Form - Red</td>
+            <td>
+                A window that provides a view of the match scouting form when scouting the red alliance.  This is just to be sure what form
+                \actually gets downloaded to tablets.  This form is not actually used to edit data.
+            </td>
+        </tr>
+        <tr>
+            <td>Match Scouting Form - Blue</td>
+            <td>
+                A window that provides a view of the match scouting form when scouting the blue alliance.  This is just to be sure what form
+                actually gets downloaded to tablets.  This form is not actually used to edit data.
+            </td>
+        </tr>
+        <tr>
+            <td>Match Scouting Status</td>
+            <td>
+                A window that provides status information on match scouting.  Data that is available is highlighed with a green 'Y'.  Data that
+                is not avaible is highlighed with a red 'N'.  This status may be augmented with a 'Z' or 'B'.  A 'Z' means that Blue Alliance Zebra
+                data is available for the given match.  A 'B' means that Blue Alliance scoring data is available for the given match
+            </td>
+        </tr>
+        <tr>
+            <td>Match Scouting Data</td>
+            <td>
+                a dataset window to display the match data collected to date, one team and match per row.  This will result in six total rows per
+                match
+            </td>
+        </tr>
+        <tr>
+            <td>Pre-Match Graphs</td>
+            <td>
+                A graph window that can be used to display data about the six teams in a specific match.  The right click mouse will allow new graph
+                panes to be created, or new variables or expressions to be added to or removed from existing graph panes
+            </td>
+        </tr>
+        <tr>
+            <td>Single Team Summary</td>
+            <td>A windows that displays a summary of a single team.  Right clicking will display menus for adding values to be displayed in the team summary.</td>
+        </tr>
+        <tr>
+            <td>All Team Summary</td>
+            <td>
+                A dataset view that displays all scouting data, one row per team, across all teams.  Numeric match scouting data is averaged across all
+                matches played and displayed.
+            </td>
+        </tr>
+        <tr>
+            <td>Alliance Graphs</td>
+            <td>
+                A graph window that can be used to display data about any arbitrary group of teams. The right click mouse will allow new graph
+                panes to be created, or new variables or expressions to be added to or removed from existing graph panes
+            </td>
+        </tr>
+        <tr>
+            <td>Pick List</td>
+            <td>
+                This windows shows the results of an external pick list analysis program.  The program is assumed to be named analysisYYYY where YYYY is the current year.
+                A picklist json file can be loaded via the file menu which maps the data in the scouting program, to output in a CSV file that will be used as input to the
+                picklist program.  This window displays two different HTML files generated by the external picklist program.
+            </td>
+        </tr>
+        <tr>
+            <td>Custom Data</td>
+            <td>A window that allow a general SQL query to be typed in and the results displayed in a dataset.</td>
+        </tr>
+        <tr>
+            <td>Zebra Introduction</td>
+            <td>An introduction to the zebra data analysis methodology.</td>
+        </tr>
+        <tr>
+            <td>Zebra Data</td>
+            <td>
+                A graphical display of the zebra data either as a set of tracks, a heat map, or a replay of any selected matches.  The data can be viewed
+                per match or per robot.  If viewed per robot, all matches for that robot will be displayed concurrently.
+            </td>
+        </tr>
+        <tr>
+            <td>Zebra Region Editor</td>
+            <td>
+                A window to add, edit, or remove polygonial, rectangle, or circular regions on the field.  The Zebra analysis can detect when a robot enters or
+                leaves one of these regions.
+            </td>
+        </tr>
+        <tr>
+            <td>Zebra Pattern Editor</td>
+            <td>
+                An editor for patterns of events to be detected and reported as robot activities.
+            </td>
+        </tr>
+        <tr>
+            <td>Zebra Analysis</td>
+            <td>
+                This window displays the output of the zebra data analysis dislaying all detected sequences and their duration.
+            </td>
+        </tr>
+        <tr>
+            <td>Change History</td>
+            <td>A window that shows the history of changes to the scouting database.</td>
+        </tr>
+        <tr>
+            <td>Merge List</td>
+            <td>This is for a future featuer.  It provides a way to merge multiple scouting records for a given match or team.</td>
+        </tr>
+    </table>
+    <h2>Log Window</h2>
+    <br>
+    At the bottom of the main window, there is a log window that provides messages about interesting events that
+    happen in the program.  Keep a close eye on this window, especially if something goes wrong.  Turning on the
+    View/Debug menu item will cause more information to appear in the log window, especially during synchronization.
+    <hr>
+</body>
+</html>

@@ -25,6 +25,9 @@ namespace xero
 				if (perAlliance())
 					name = xero::scouting::datamodel::toString(a) + "-" + name_;
 
+				if (start >= sequence.size() - 1)
+					return 0;
+
 				if (sequence[start].isEnter() && sequence[start].name() == name &&
 					sequence[start + 1].isIdle())
 					return 2;

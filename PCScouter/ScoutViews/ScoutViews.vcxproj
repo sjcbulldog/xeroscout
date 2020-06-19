@@ -104,6 +104,7 @@
     <ClCompile Include="GraphView.cpp" />
     <ClCompile Include="IntroView.cpp" />
     <ClCompile Include="ManagerBase.cpp" />
+    <ClCompile Include="MatchTeamSelector.cpp" />
     <ClCompile Include="MatchViewWidget.cpp" />
     <ClCompile Include="MathUtils.cpp" />
     <ClCompile Include="PathFieldView.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="GraphView.h" />
     <ClInclude Include="IntroView.h" />
     <ClInclude Include="ManagerBase.h" />
+    <QtMoc Include="MatchTeamSelector.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="PatternListWidget.h" />
     <ClInclude Include="PickListView.h" />

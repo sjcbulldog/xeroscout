@@ -11,28 +11,6 @@ namespace xero
 		{
 			SequenceAnalyzer::SequenceAnalyzer()
 			{
-				auto act = std::make_shared<RobotActivity>("Load-Trench-Trenchshot");
-				act->addPattern(std::make_shared<SequenceEnterExitPattern>("LoadingStation", 1, 8, true));
-				act->addPattern(std::make_shared<SequenceEnterExitPattern>("ControlPanel", 1, 1, true));
-				act->addPattern(std::make_shared<SequenceEnterIdlePattern>("Trench", 1, 1, true));
-				activities_.push_back(act);
-
-				act = std::make_shared<RobotActivity>("Load-Trench-FarShot");
-				act->addPattern(std::make_shared<SequenceEnterExitPattern>("LoadingStation", 1, 8, true));
-				act->addPattern(std::make_shared<SequenceEnterExitPattern>("ControlPanel", 1, 1, true));
-				act->addPattern(std::make_shared<SequenceEnterExitPattern>("Trench", 1, 1, true));
-				act->addPattern(std::make_shared<SequenceEnterIdlePattern>("FarShot", 1, 1, true));
-
-				act = std::make_shared<RobotActivity>("Load-Central-FarShot");
-				act->addPattern(std::make_shared<SequenceEnterExitPattern>("LoadingStation", 1, 8, true));
-				act->addPattern(std::make_shared<SequenceEnterExitPattern>("Center", 1, 1, false));
-				act->addPattern(std::make_shared<SequenceEnterIdlePattern>("FarShot", 1, 1, true));
-
-				act = std::make_shared<RobotActivity>("Load-Central-Trench");
-				act->addPattern(std::make_shared<SequenceEnterExitPattern>("LoadingStation", 1, 8, true));
-				act->addPattern(std::make_shared<SequenceEnterExitPattern>("Center", 1, 1, false));
-				act->addPattern(std::make_shared<SequenceEnterExitPattern>("Trench", 1, 1, true));
-				act->addPattern(std::make_shared<SequenceEnterIdlePattern>("FarShot", 1, 1, true));
 			}
 
 			SequenceAnalyzer::~SequenceAnalyzer()

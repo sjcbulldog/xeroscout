@@ -369,7 +369,9 @@ namespace xero
 
 				bool addActivity(std::shared_ptr<const RobotActivity> p) {
 					dirty_ = true;
-					activities_.push_back(p);
+
+					auto a = std::const_pointer_cast<RobotActivity>(p);
+					activities_.push_back(a);
 
 					emitChangedSignal(ChangeType::ActivityAdded);
 
@@ -389,6 +391,19 @@ namespace xero
 
 					return true ;
 				}				
+
+				void renameActivity(const QString &oldname, const QString& newname)
+				{
+					for (auto a : activities_)
+					{
+						if (a->name() == oldname)
+						{
+							a->setName(newname);
+							emitChangedSignal(ChangeType::ActivityChanged);
+							return;
+						}
+					}
+				}
 
 				void removeActivty(std::shared_ptr<const RobotActivity> p) {
 
@@ -1107,9 +1122,9 @@ namespace xero
 
 				std::shared_ptr<PickListTranslator> pick_list_trans_;
 
-				std::vector<std::shared_ptr<const FieldRegion>> regions_;
+				std::vector<std::shared_ptr<FieldRegion>> regions_;
 
-				std::vector<std::shared_ptr<const RobotActivity>> activities_;
+				std::vector<std::shared_ptr<RobotActivity>> activities_;
 			};
 
 		}
