@@ -849,7 +849,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 		auto team = data_model_->findTeamByKey(key);
 		QString title = generateTeamTitle(team);
 
-		index = startScouting(key, "team", title, Alliance::Red, data_model_->teamScoutingForm());
+		index = startScouting(key, FormView::FormType::Team, title, Alliance::Red, data_model_->teamScoutingForm());
 		saveForm(index);
 
 		TeamScheduleViewWidget* w = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamView));
@@ -865,7 +865,7 @@ void PCScoutApp::viewItemDoubleClicked(DocumentView::ViewType t, const QString& 
 		auto team = data_model_->findTeamByKey(m->team(c, slot));
 
 		QString title = generateMatchTitle(m, team);
-		index = startScouting(key, "match", title , c, data_model_->matchScoutingForm());
+		index = startScouting(key, FormView::FormType::Match, title , c, data_model_->matchScoutingForm());
 		saveForm(index);
 
 		MatchViewWidget* w = dynamic_cast<MatchViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchView));
@@ -910,14 +910,14 @@ bool PCScoutApp::viewExists(int viewindex)
 	return ret;
 }
 
-int PCScoutApp::startScouting(const QString& key, const QString &type, const QString &title, Alliance c, std::shared_ptr<const ScoutingForm> form)
+int PCScoutApp::startScouting(const QString& key, FormView::FormType type, const QString &title, Alliance c, std::shared_ptr<const ScoutingForm> form)
 {
 	QListWidgetItem* item;
 	int index;
 	QColor color;
 	bool teamstate;
 
-	if (type == "team")
+	if (type == FormView::FormType::Team)
 		color = QColor(0, 128, 0);
 	else if (c == Alliance::Red)
 		color = QColor(255, 0, 0);
@@ -927,7 +927,7 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 	//
 	// Create the view
 	//
-	if (view_frame_->createFetchFormView(key, title, color, index))
+	if (view_frame_->createFetchFormView(key, title, color, type, c, index))
 	{
 		QString title;
 		QString icon;
@@ -935,13 +935,13 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 		//
 		// Put the view into the view selector
 		//
-		if (type == "team") {
+		if (type == FormView::FormType::Team) {
 			auto team = data_model_->findTeamByKey(key);
 			title = "Team:" + QString::number(team->number());
 			icon = "teamform";
 			teamstate = true;
 		}
-		else if (type == "match") {
+		else if (type == FormView::FormType::Match) {
 			auto match = data_model_->findMatchByKey(key);
 			title = match->title();
 			icon = "matchform";
@@ -965,7 +965,6 @@ int PCScoutApp::startScouting(const QString& key, const QString &type, const QSt
 	//
 	FormView* view = dynamic_cast<FormView*>(view_frame_->getWidget(index));
 	assert(view != nullptr);
-	view->setScoutingForm(form, toString(c));
 
 	setScoutingView(index);
 	return index;
@@ -987,7 +986,7 @@ void PCScoutApp::createTeamScoutingForms()
 			int slot;
 
 			QString title = generateTeamTitle(t);
-			int index = startScouting(t->key(), "team", title, Alliance::Red, data_model_->teamScoutingForm());
+			int index = startScouting(t->key(), FormView::FormType::Team, title, Alliance::Red, data_model_->teamScoutingForm());
 
 			FormView* form = dynamic_cast<FormView*>(view_frame_->getWidget(index));
 			assert(form != nullptr);
@@ -1010,7 +1009,7 @@ void PCScoutApp::createMatchScoutingForms()
 			{
 				auto t = data_model_->findTeamByKey(m->team(c, slot));
 				QString title = generateMatchTitle(m, t);
-				int index = startScouting(m->key(), "match", title, c, data_model_->matchScoutingForm());
+				int index = startScouting(m->key(), FormView::FormType::Match, title, c, data_model_->matchScoutingForm());
 
 				FormView* form = dynamic_cast<FormView*>(view_frame_->getWidget(index));
 				assert(form != nullptr);
@@ -1146,7 +1145,7 @@ void PCScoutApp::addTeam()
 	view_frame_->refreshAll();
 
 	QString title = generateTeamTitle(team);
-	int index = startScouting(team->key(), "team", title, Alliance::Red, data_model_->teamScoutingForm());
+	int index = startScouting(team->key(), FormView::FormType::Team, title, Alliance::Red, data_model_->teamScoutingForm());
 	saveForm(index);
 }
 
@@ -1183,6 +1182,6 @@ void PCScoutApp::addMatch()
 	QString tkey = m->team(c, slot);
 	auto team = data_model_->findTeamByKey(tkey);
 	QString title = generateMatchTitle(m, team);
-	int index = startScouting(mkey, "match", title, c, data_model_->matchScoutingForm());
+	int index = startScouting(mkey, FormView::FormType::Match, title, c, data_model_->matchScoutingForm());
 	saveForm(index);
 }

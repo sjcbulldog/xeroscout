@@ -67,8 +67,8 @@ namespace xero
 					TabletListChanged,				///< the list of team or match scouting tablets was changed
 					TeamAdded,						///< a new team was added to the data model
 					TeamDataChanged,				///< the data associated with a team was changed
-					PitScoutingDataAdded,			///< team scouting data was added or replaced for a team
-					PitScoutingTabletChanged,		///< the tablet used for team scouting a team was changed
+					TeamScoutingDataAdded,			///< team scouting data was added or replaced for a team
+					TeamScoutingTabletChanged,		///< the tablet used for team scouting a team was changed
 					MatchScoutingDataAdded,			///< match scouting data was added or replaced for a match
 					MatchScoutingTabletChanged,		///< the tablet used for match scouting a match was changed
 					TeamAddedToMatch,				///< added a team to a match
@@ -626,7 +626,7 @@ namespace xero
 
 					dirty_ = true;
 
-					emitChangedSignal(ChangeType::PitScoutingTabletChanged);
+					emitChangedSignal(ChangeType::TeamScoutingTabletChanged);
 
 					return true;
 				}
@@ -645,7 +645,7 @@ namespace xero
 					if (ret)
 					{
 						dirty_ = true;
-						emitChangedSignal(ChangeType::PitScoutingDataAdded);
+						emitChangedSignal(ChangeType::TeamScoutingDataAdded);
 					}
 
 					return ret;

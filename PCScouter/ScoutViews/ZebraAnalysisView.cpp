@@ -152,6 +152,7 @@ namespace xero
 				html += "<tr>";
 				html += "<th>Match</th>";
 				html += "<th>Team</th>";
+				html += "<ht>Alliance</th>";
 				html += "<th>Pattern</th>";
 				html += "<th>Start</th>";
 				html += "<th>Duration</th>";
@@ -167,6 +168,11 @@ namespace xero
 
 					auto t = dataModel()->findTeamByKey(match.sequence()->teamKey());
 					html += "<td>" + t->title() + "</td>";
+
+					Alliance c;
+					int slot;
+					m->teamToAllianceSlot(t->key(), c, slot);
+					html += "<td>" + toString(c) + "</td>";
 
 					html += "<td>" + match.name() + "</td>";
 					html += "<td>" + QString::number(match.startTime(), 'f', 2) + "</td>";

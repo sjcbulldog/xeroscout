@@ -64,40 +64,43 @@ namespace xero
 
 				IntroView* iview = new IntroView("Introduction", this);
 				iview->setFile("intro.html");
-				addWidget(iview);																	// 0
-				addWidget(new FormView(images_, "TeamTemplate", "Preview", QColor(0, 255, 0, 255), this));		// 1
-				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(255, 0, 0, 255), this));		// 2
-				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(0, 0, 255, 255), this));		// 3
-				addWidget(new TeamScheduleViewWidget(tablet, this));											// 4
-				addWidget(new MatchViewWidget(tablet, this));													// 5
-				addWidget(new DataSetViewWidget("matchdata", true, this));										// 6
-				addWidget(new DataSetViewWidget("teamdata", true, this));			  							// 7
-				addWidget(new QueryViewWidget(this));															// 8
-				addWidget(new TeamSummaryWidget(this));															// 9
-				addWidget(new DataSetViewWidget("allteam", false, this));										// 10
-				addWidget(new ChangeHistoryView(this));															// 11
-				addWidget(new DataMergeListWidget(this));														// 12
+				addWidget(iview);																									// 0
+				addWidget(new FormView(images_, "TeamTemplate", "Preview", QColor(0, 255, 0, 255), 
+					FormView::FormType::Team, Alliance::Both, this));																// 1
+				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(255, 0, 0, 255), 
+					FormView::FormType::Match, Alliance::Red, this));																// 2
+				addWidget(new FormView(images_, "MatchTemplate", "Preview", QColor(0, 0, 255, 255), 
+					FormView::FormType::Match, Alliance::Blue, this));																// 3
+				addWidget(new TeamScheduleViewWidget(tablet, this));																// 4
+				addWidget(new MatchViewWidget(tablet, this));																		// 5
+				addWidget(new DataSetViewWidget("matchdata", true, this));															// 6
+				addWidget(new DataSetViewWidget("teamdata", true, this));			  												// 7
+				addWidget(new QueryViewWidget(this));																				// 8
+				addWidget(new TeamSummaryWidget(this));																				// 9
+				addWidget(new DataSetViewWidget("allteam", false, this));															// 10
+				addWidget(new ChangeHistoryView(this));																				// 11
+				addWidget(new DataMergeListWidget(this));																			// 12
 
 				ZebraViewWidget* zview = new ZebraViewWidget(this);
-				addWidget(zview);																				// 13
+				addWidget(zview);																									// 13
 
 				GraphView* gview = new PreMatchGraphView(this);
 				gview->create();
-				addWidget(gview);																				// 14
+				addWidget(gview);																									// 14
 
 				gview = new AllianceGraphView(this);
 				gview->create();
-				addWidget(gview);																				// 15
+				addWidget(gview);																									// 15
 
-				addWidget(new PickListView("picklist", this));													// 16
-				addWidget(new ZebraAnalysisView(this));															// 17
-				addWidget(new ZebraPatternView(images_, this));													// 18
+				addWidget(new PickListView("picklist", this));																		// 16
+				addWidget(new ZebraAnalysisView(this));																				// 17
+				addWidget(new ZebraPatternView(images_, this));																		// 18
 
 				ZebraRegionEditor* rview = new ZebraRegionEditor(this);
-				addWidget(rview);																				// 19
+				addWidget(rview);																									// 19
 				iview = new IntroView("Zebra Introduction", this);
 				iview->setFile("zebra.html");
-				addWidget(iview);																				// 20
+				addWidget(iview);																									// 20
 
 				if (gamemgr)
 				{
@@ -176,7 +179,8 @@ namespace xero
 					vb->refreshView();
 			}
 
-			bool DocumentView::createFetchFormView(const QString& key, const QString& title, QColor c, int& index)
+			bool DocumentView::createFetchFormView(const QString& key, const QString& title, QColor c, 
+						FormView::FormType type, Alliance a, int& index)
 			{
 				bool ret = false;
 				index = -1;
@@ -184,7 +188,7 @@ namespace xero
 				auto it = scouting_forms_.find(key);
 				if (it == scouting_forms_.end())
 				{
-					QWidget* w = new FormView(images_, key, title, c, this);
+					QWidget* w = new FormView(images_, key, title, c, type, a, this);
 					scouting_forms_.insert(std::make_pair(key, w));
 
 					index = count();

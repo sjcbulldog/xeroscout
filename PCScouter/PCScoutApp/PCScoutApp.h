@@ -30,6 +30,7 @@
 #include "BluetoothClient.h"
 #include "FormInstance.h"
 #include "ImageManager.h"
+#include "FormView.h"
 #include <QMainWindow>
 #include <QMainWindow>
 #include <QSplitter>
@@ -84,7 +85,8 @@ private:
 	bool viewExists(int index);
 
 	void viewItemDoubleClicked(xero::scouting::views::DocumentView::ViewType type, const QString& key);
-	int startScouting(const QString &key, const QString &type, const QString &title, xero::scouting::datamodel::Alliance c, std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form);
+	int startScouting(const QString &key, xero::scouting::views::FormView::FormType type, const QString &title, 
+		xero::scouting::datamodel::Alliance c, std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form);
 
 	void extractDataFromForm(int formindex, bool team, const QString &label);
 

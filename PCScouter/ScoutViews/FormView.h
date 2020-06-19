@@ -43,13 +43,19 @@ namespace xero
 				Q_OBJECT
 
 			public:
-				FormView(xero::scouting::datamodel::ImageManager &images, QString name, QString title, QColor c, QWidget* parent = Q_NULLPTR);
+				enum class FormType
+				{
+					Team,
+					Match
+				};
+
+			public:
+				FormView(xero::scouting::datamodel::ImageManager &images, QString name, QString title, QColor c, 
+					FormType formtype_, xero::scouting::datamodel::Alliance a, QWidget* parent = Q_NULLPTR);
 				virtual ~FormView();
 
-				void setScoutingForm(std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form, const QString& alliance);
 				void clearView();
-				void refreshView() {
-				}
+				void refreshView();
 
 				void extractData(xero::scouting::datamodel::ScoutingDataMapPtr ptr);
 				void assignData(xero::scouting::datamodel::ConstScoutingDataMapPtr ptr);
@@ -61,6 +67,7 @@ namespace xero
 				void setScale(double s);
 
 			private:
+				void setScoutingForm(std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form);
 				void createSection(std::shared_ptr<const xero::scouting::datamodel::FormSection> section);
 				void plus();
 				void minus();
@@ -70,7 +77,9 @@ namespace xero
 				QString title_txt_;
 				QString name_;
 				QLabel* titles_;
-				QString alliance_;
+
+				FormType formtype_;
+				xero::scouting::datamodel::Alliance alliance_;
 
 				QPushButton* bigger_;
 				QPushButton* smaller_;

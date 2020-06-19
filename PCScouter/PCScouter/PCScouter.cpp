@@ -1125,42 +1125,6 @@ void PCScouter::updateCurrentView()
 	auto view = view_frame_->viewType();
 	switch (view)
 	{
-		case DocumentView::ViewType::TeamScoutingFormView:
-		{
-			FormView* ds = dynamic_cast<FormView*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				ds->setScoutingForm(data_model_->teamScoutingForm(), "");
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
-
-		case DocumentView::ViewType::MatchScoutingFormViewRed:
-		{
-			FormView* ds = dynamic_cast<FormView*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				ds->setScoutingForm(data_model_->matchScoutingForm(), "red");
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
-
-		case DocumentView::ViewType::MatchScoutingFormViewBlue:
-		{
-			FormView* ds = dynamic_cast<FormView*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				ds->setScoutingForm(data_model_->matchScoutingForm(), "blue");
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
-
 		case DocumentView::ViewType::MatchDataSet:
 		{
 			DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(view));
@@ -1317,61 +1281,6 @@ void PCScouter::updateCurrentView()
 void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 {
 	view_frame_->needsRefreshAll();
-
-	switch (type)
-	{
-		case ScoutingDataModel::ChangeType::HistoryChanged:
-		{
-			ChangeHistoryView* v = dynamic_cast<ChangeHistoryView*>(view_frame_->getWidget(DocumentView::ViewType::HistoryView));
-			v->setNeedRefresh();
-		}
-		break;
-
-		case ScoutingDataModel::ChangeType::MatchAdded:
-		case ScoutingDataModel::ChangeType::MatchDataChanged:
-		case ScoutingDataModel::ChangeType::MatchScoutingDataAdded:
-		case ScoutingDataModel::ChangeType::MatchScoutingTabletChanged:
-		{
-			MatchViewWidget* mv = dynamic_cast<MatchViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchView));
-			mv->setNeedRefresh();
-
-			DataSetViewWidget* w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
-			w->setNeedRefresh();
-
-			w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::AllTeamReport));
-			w->setNeedRefresh();
-
-			QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
-			qv->setNeedRefresh();
-
-			TeamSummaryWidget* sw = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamReport));
-			sw->setNeedRefresh();
-		}
-		break;
-
-		case ScoutingDataModel::ChangeType::PitScoutingDataAdded:
-		case ScoutingDataModel::ChangeType::PitScoutingTabletChanged:
-		case ScoutingDataModel::ChangeType::TeamAdded:
-		case ScoutingDataModel::ChangeType::TeamDataChanged:
-		{
-			TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamView));
-			tv->setNeedRefresh();
-
-			DataSetViewWidget* w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamDataSet));
-			w->setNeedRefresh();
-
-			QueryViewWidget* qv = dynamic_cast<QueryViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::CustomDataSet));
-			qv->setNeedRefresh();
-
-			TeamSummaryWidget* sw = dynamic_cast<TeamSummaryWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamReport));
-			sw->setNeedRefresh();
-
-			w = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::AllTeamReport));
-			w->setNeedRefresh();
-		}
-		break;
-	}
-
 	updateCurrentView();
 }
 

@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "Alliance.h"
 #include "DataCollection.h"
 #include "FieldDesc.h"
 #include <QString>
@@ -60,11 +61,11 @@ namespace xero
 					return base_tag_;
 				}
 
-				void setAlliance(const QString& a) {
+				void setAlliance(Alliance a) {
 					alliance_ = a;
 				}
 
-				const QString& alliance() const {
+				Alliance alliance() const {
 					return alliance_;
 				}
 
@@ -120,7 +121,7 @@ namespace xero
 			private:
 				QString base_tag_;
 				QString display_;
-				QString alliance_;
+				Alliance alliance_;
 				std::vector<std::shared_ptr<FieldDesc>> fields_;
 			};
 		}

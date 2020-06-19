@@ -34,11 +34,13 @@ namespace xero
 	{
 		namespace views
 		{
-			FormView::FormView(ImageManager& images, QString name, QString title, QColor titlec, QWidget* parent) : QWidget(parent), ViewBase("FormView"), images_(images)
+			FormView::FormView(ImageManager& images, QString name, QString title, QColor titlec, FormView::FormType formtype, Alliance a, QWidget* parent) : QWidget(parent), ViewBase("FormView"), images_(images)
 			{
 				name_ = name;
 				title_txt_ = title;
 				instance_ = nullptr;
+				formtype_ = formtype;
+				alliance_ = a;
 
 				QVBoxLayout* lay = new QVBoxLayout();
 				setLayout(lay);
@@ -119,7 +121,7 @@ namespace xero
 				tab->setLayout(layout);
 
 				for (auto item : section->items()) {
-					if (alliance_.length() == 0 || item->alliance() == alliance_ || item->alliance().length() == 0)
+					if (item->alliance() == Alliance::Both || item->alliance() == alliance_)
 					{
 						FormItemDisplay* w = item->createDisplay(images_, this);
 						layout->addWidget(w);
@@ -130,10 +132,8 @@ namespace xero
 				tabs_->addTab(tab, section->name());
 			}
 
-			void FormView::setScoutingForm(std::shared_ptr<const ScoutingForm> form, const QString &alliance)
+			void FormView::setScoutingForm(std::shared_ptr<const ScoutingForm> form)
 			{
-				alliance_ = alliance;
-
 				clearView();
 
 				form_ = form;
@@ -142,6 +142,26 @@ namespace xero
 				for (auto section : sections) {
 					createSection(section);
 				}
+			}
+
+			void FormView::refreshView()
+			{
+				std::shared_ptr<const ScoutingForm> form;
+
+				if (formtype_ == FormType::Team)
+				{
+					form = dataModel()->teamScoutingForm();
+				}
+				else if (formtype_ == FormType::Match)
+				{
+					form = dataModel()->matchScoutingForm();
+				}
+				else
+				{
+					assert(false);
+				}
+
+				setScoutingForm(form);
 			}
 
 			void FormView::clearView()

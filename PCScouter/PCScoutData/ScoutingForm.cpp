@@ -110,7 +110,11 @@ namespace xero
 				for (auto s : sections_) {
 					for (auto i : s->items())
 					{
-						if (i->alliance().length() == 0 || i->alliance() == "red")
+						//
+						// We exclude the blue versions because the red and blue should be symmetrical and
+						// we want the unique field names.
+						//
+						if (i->alliance() == Alliance::Both || i->alliance() == Alliance::Red)
 						{
 							auto fields = i->getFields();
 							result.insert(result.end(), fields.begin(), fields.end());
@@ -268,7 +272,7 @@ namespace xero
 				{
 					for (auto i : s->items())
 					{
-						if (i->alliance().length() == 0)
+						if (i->alliance() == Alliance::Both)
 						{
 							if (red.contains(i->tag()))
 							{
@@ -290,7 +294,7 @@ namespace xero
 								blue.push_back(i->tag());
 							}
 						}
-						else if (i->alliance() == "red")
+						else if (i->alliance() == Alliance::Red)
 						{
 							if (red.contains(i->tag()))
 							{
@@ -302,7 +306,7 @@ namespace xero
 								red.push_back(i->tag());
 							}
 						}
-						else if (i->alliance() == "blue")
+						else if (i->alliance() == Alliance::Blue)
 						{
 							if (blue.contains(i->tag()))
 							{
@@ -432,7 +436,18 @@ namespace xero
 						return false;
 					}
 
-					item->setAlliance(alliance);
+					Alliance a = Alliance::Both;
+					
+					if (alliance.length() > 0)
+						a = allianceFromString(alliance);
+
+					if (a == Alliance::Invalid)
+					{
+						errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
+							+ " the alliance is invalid, got '" + alliance + "', expected 'red' or 'blue'");
+						return false;
+					}
+					item->setAlliance(a);
 				}
 				return true;
 			}

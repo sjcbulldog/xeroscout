@@ -128,13 +128,6 @@ void PCFormViewer::loadForm()
 
 void PCFormViewer::updateWindow()
 {
-	FormView* ds;
-
-	ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormViewRed));
-	ds->setScoutingForm(form_, "red");
-
-	ds = dynamic_cast<FormView*>(view_frame_->getWidget(DocumentView::ViewType::MatchScoutingFormViewBlue));
-	ds->setScoutingForm(form_, "blue");
 }
 
 void PCFormViewer::createWindows()

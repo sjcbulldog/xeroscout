@@ -438,7 +438,7 @@ namespace xero
 					incrTeamTabletIndex(tablet);
 				}
 
-				emitChangedSignal(ChangeType::PitScoutingTabletChanged);
+				emitChangedSignal(ChangeType::TeamScoutingTabletChanged);
 			}
 
 			std::shared_ptr<DataModelMatch> ScoutingDataModel::findMatch(const QString& comp, int set, int match)

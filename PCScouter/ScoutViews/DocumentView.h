@@ -28,6 +28,7 @@
 #include "ViewBase.h"
 #include "GameFieldManager.h"
 #include "ImageManager.h"
+#include "FormView.h"
 #include <QStackedWidget>
 #include <QTreeWidget>
 #include <map>
@@ -121,7 +122,8 @@ namespace xero
 					return index > static_cast<int>(ViewType::CustomDataSet);
 				}
 
-				bool createFetchFormView(const QString& key, const QString& title, QColor c, int& index);
+				bool createFetchFormView(const QString& key, const QString& title, QColor c, 
+						FormView::FormType type, xero::scouting::datamodel::Alliance a, int& index);
 
 				void logText(const QString& msg) {
 					emit logMessage(msg);
