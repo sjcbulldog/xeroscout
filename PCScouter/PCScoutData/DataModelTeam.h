@@ -42,6 +42,8 @@ namespace xero
 			public:
 				static constexpr const char* RankName = "ba_rank";
 				static constexpr const char* OPRName = "calc_opr";
+				static constexpr const char* DPRName = "calc_dpr";
+				static constexpr const char* NPRName = "calc_npr";
 				static constexpr const char* TeamName = "Team";
 				static constexpr const char* TeamKeyName = "TeamKey";
 				static constexpr const char* TeamNumberName = "TeamNumber";
@@ -200,6 +202,18 @@ namespace xero
 						team_data_.erase(team_data_.begin());
 				}
 
+				void setOPR(double opr) {
+					if (extra_data_ == nullptr)
+						extra_data_ = std::make_shared<ScoutingDataMap>();
+					extra_data_->insert_or_assign(OPRName, opr);
+				}
+
+				void setDPR(double opr) {
+					if (extra_data_ == nullptr)
+						extra_data_ = std::make_shared<ScoutingDataMap>();
+					extra_data_->insert_or_assign(DPRName, opr);
+				}
+
 			protected:
 				void addExtraData(ScoutingDataMapPtr data) {
 					if (extra_data_ == nullptr)
@@ -216,11 +230,7 @@ namespace xero
 					extra_data_->insert_or_assign(name, v);
 				}
 
-				void setOPR(double opr) {
-					if (extra_data_ == nullptr)
-						extra_data_ = std::make_shared<ScoutingDataMap>();
-					extra_data_->insert_or_assign(OPRName, opr);
-				}
+
 
 				void setRanking(const QJsonObject& obj) {
 					ranking_ = obj;

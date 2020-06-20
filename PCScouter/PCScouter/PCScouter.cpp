@@ -58,6 +58,7 @@
 #include "ZebraAnalysisView.h"
 
 #include "OPRCalculator.h"
+#include "DPRCalculator.h"
 #include "TestDataInjector.h"
 
 #include <QSqlDatabase>
@@ -213,6 +214,23 @@ void PCScouter::setDataModel(std::shared_ptr<xero::scouting::datamodel::Scouting
 	{
 		connect(data_model_.get(), &ScoutingDataModel::modelChanged, this, &PCScouter::dataModelChanged);
 		data_model_->blockSignals(false);
+
+		DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
+		ds->setDataGenerator(std::bind(&ScoutingDataModel::createMatchDataSet, data_model_, std::placeholders::_1));
+
+		ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamDataSet));
+		ds->setDataGenerator(std::bind(&ScoutingDataModel::createTeamDataSet, data_model_, std::placeholders::_1));
+
+		ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::Predictions));
+		ds->setDataGenerator(std::bind(&PCScouter::outputExpData, this, std::placeholders::_1));
+	}
+	else
+	{
+		DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
+		ds->setDataGenerator(nullptr);
+
+		ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamDataSet));
+		ds->setDataGenerator(nullptr);
 	}
 }
 
@@ -366,7 +384,6 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraAnalysis)));
 	view_selector_->addItem(item);
 
-
 	item = new QListWidgetItem("----------------------------------------------------");
 	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
@@ -377,6 +394,14 @@ void PCScouter::createWindows()
 
 	item = new QListWidgetItem(loadIcon("merge.png"), "Merge List", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MergeListView)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem("----------------------------------------------------");
+	item->setFlags(Qt::ItemFlag::NoItemFlags);
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem(loadIcon("history.png"), "Predictions", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::Predictions)));
 	view_selector_->addItem(item);
 
 	view_selector_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
@@ -1125,33 +1150,6 @@ void PCScouter::updateCurrentView()
 	auto view = view_frame_->viewType();
 	switch (view)
 	{
-		case DocumentView::ViewType::MatchDataSet:
-		{
-			DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				data_model_->createMatchDataSet(ds->dataset());
-				ds->refreshView();
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
-
-		case DocumentView::ViewType::TeamDataSet:
-		{
-			DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				data_model_->createTeamDataSet(ds->dataset());
-				ds->refreshView();
-				ds->clearNeedRefresh();
-			}
-		}
-		break;
-
-
 		case DocumentView::ViewType::AllTeamReport:
 		{
 			DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(view));
@@ -1363,6 +1361,182 @@ void PCScouter::magicWordTyped(SpecialListWidget::Word w)
 		{
 			QMessageBox::warning(this, "No Generator", "There is no data generator for the year '" + QString::number(year_) + "'");
 		}
+	}
+}
+
+void PCScouter::outputExpData(ScoutingDataSet& ds)
+{
+	Alliance c;
+	QStringList fields = { "ba_autoCellPoints", "ba_autoInitLinePoints", "ba_controlPanelPoints", "ba_endgamePoints", "ba_teleopCellPoints", "ba_foulPoints" };
+	std::vector<OPRCalculator*> oprs;
+
+	ds.clear();
+
+	OPRCalculator opr(data_model_, "ba_totalPoints");
+	opr.calc();
+
+	DPRCalculator dpr(opr);
+	dpr.calc();
+
+	for (const QString& field : fields)
+	{
+		auto opr = new OPRCalculator(data_model_, field);
+		assert(opr->calc() == true);
+		oprs.push_back(opr);
+	}
+
+	ds.addHeader(std::make_shared<FieldDesc>("Match", FieldDesc::Type::String, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Red Score", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Blue Score", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Red OPR Score", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Blue OPR Score", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("OPR Delta", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Red DPR Score", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Blue DPR Score", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Red NPR Scoure", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Blue NPR Score", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("NPR Delta", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Red Partial OPR Scoure", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Blue Partial OPR Score", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Partial OPR Delta", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Actual Winner", FieldDesc::Type::String, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("OPR Winner", FieldDesc::Type::String, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("NPR Winner", FieldDesc::Type::String, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Partial OPR Winner", FieldDesc::Type::String, false, true));
+
+
+	int row = 0;
+	for (auto m : data_model_->matches())
+	{
+		ds.newRow();
+
+		ds.addData(m->key());
+
+		auto it = m->extraData(Alliance::Red, 1)->find("ba_totalPoints");
+		assert(it != m->extraData(Alliance::Red, 1)->end());
+		double redscore = it->second.toDouble();
+		ds.addData(redscore);
+
+		it = m->extraData(Alliance::Blue, 1)->find("ba_totalPoints");
+		assert(it != m->extraData(Alliance::Blue, 1)->end());
+		double bluescore = it->second.toDouble();
+		ds.addData(bluescore);
+
+		//
+		// Compute predicted match scores based on OPR and NPR
+		//
+		double redopr = 0;
+		double reddpr = 0;
+		double blueopr = 0;
+		double bluedpr = 0;
+		double rednpr;
+		double bluenpr;
+
+		c = Alliance::Red;
+		for (int slot = 1; slot <= 3; slot++)
+		{
+			QString team = m->team(c, slot);
+			redopr += opr[team];
+			reddpr += dpr[team];
+		}
+
+		c = Alliance::Blue;
+		for (int slot = 1; slot <= 3; slot++)
+		{
+			QString team = m->team(c, slot);
+			blueopr += opr[team];
+			bluedpr += dpr[team];
+		}
+
+		reddpr /= 3.0;
+		bluedpr /= 3.0;
+
+		ds.addData(redopr);
+		ds.addData(blueopr);
+		ds.addData(std::fabs(redopr - blueopr));
+
+		ds.addData(reddpr);
+		ds.addData(bluedpr);
+
+		rednpr = redopr * bluedpr ;
+		bluenpr = blueopr * reddpr;
+
+		ds.addData(rednpr);
+		ds.addData(bluenpr);
+		ds.addData(std::fabs(rednpr - bluenpr));
+
+		int redpartial = 0;
+		int bluepartial = 0;
+
+		c = Alliance::Red;
+		for (int slot = 1; slot <= 3; slot++)
+		{
+			QString team = m->team(c, slot);
+			for (auto one : oprs)
+			{
+				redpartial += (*one)[team];
+			}
+		}
+
+		c = Alliance::Blue;
+		for (int slot = 1; slot <= 3; slot++)
+		{
+			QString team = m->team(c, slot);
+			for (auto one : oprs)
+			{
+				bluepartial += (*one)[team];
+			}
+		}
+
+		ds.addData(redpartial);
+		ds.addData(bluepartial);
+		ds.addData(std::fabs(redpartial - bluepartial));
+
+		if (redscore > bluescore)
+			ds.addData("RED");
+		else
+			ds.addData("BLUE");
+
+		if (std::fabs(redopr - blueopr) < 10.0)
+		{
+			ds.addData("");
+		}
+		else if (redopr > blueopr)
+		{
+			ds.addData("RED");
+		}
+		else
+		{
+			ds.addData("BLUE");
+		}
+
+		if (std::fabs(rednpr - bluenpr) < 10.0)
+		{
+			ds.addData("");
+		}
+		else if (rednpr > bluenpr)
+		{
+			ds.addData("RED");
+		}
+		else
+		{
+			ds.addData("BLUE");
+		}
+
+		if (std::fabs(redpartial - bluepartial) < 10.0)
+		{
+			ds.addData("");
+		}
+		else if (redpartial > bluepartial)
+		{
+			ds.addData("RED");
+		}
+		else
+		{
+			ds.addData("BLUE");
+		}
+
+		row++;
 	}
 }
 

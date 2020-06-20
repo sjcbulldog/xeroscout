@@ -278,7 +278,8 @@ namespace xero
 
 			void ZebraViewWidget::refreshView()
 			{
-				createPlot();
+				if (dataModel() != nullptr)
+					createPlot();
 			}
 
 			QColor ZebraViewWidget::matchRobotColor(xero::scouting::datamodel::Alliance c, int slot)

@@ -24,6 +24,8 @@
 #include "BlueAllianceEngine.h"
 #include "DataModelBuilder.h"
 #include "TestDataInjector.h"
+#include "OPRCalculator.h"
+#include "DPRCalculator.h"
 
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
@@ -162,6 +164,18 @@ void ImportMatchDataController::gotRankings()
 	}
 
 	dataModel()->blockSignals(false);
+
+	OPRCalculator opr(dataModel(), "ba_totalPoints");
+	DPRCalculator dpr(opr);
+
+	if (dpr.calc() == DPRCalculator::Error::Success)
+	{
+		for (auto t : dataModel()->teams())
+		{
+			dataModel()->setTeamOPR(t->key(), opr[t->key()]);
+			dataModel()->setTeamDPR(t->key(), dpr[t->key()]);
+		}
+	}
 
 	state_ = State::Done;
 	emit complete(false);

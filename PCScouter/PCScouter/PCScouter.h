@@ -148,6 +148,8 @@ private:
 	void teamRowChanged(int row, int col);
 	void matchRowChanged(int row, int col);
 
+	void outputExpData(xero::scouting::datamodel::ScoutingDataSet& ds);
+
 private:
 	// 
 	// Timer for background activities that must be done

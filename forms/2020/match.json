@@ -487,5 +487,12 @@
         }
       ]
     }
-  ]
+  ],
+  "checks" : {
+    "auto__line" : "ba_autoInitLinePoints / 5",
+    "auto__lowgoal" : "ba_autoCellsBottom",
+    "auto__highgoal" : "ba_autoCellsInner + ba_autoCellsOuter",
+    "teleop__lowgoal" : "ba_teleopCellsBottom",
+    "teleop__highgoal" : "ba_teleopCellsInner + ba_teleopCellsOuter"
+  }
 }

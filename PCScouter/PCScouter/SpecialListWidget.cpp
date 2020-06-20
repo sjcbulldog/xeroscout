@@ -49,4 +49,9 @@ void SpecialListWidget::keyPressEvent(QKeyEvent* ev)
 		emit magicWord(Word::PLOUGH);
 		keyword_.clear();
 	}
+	else if (keyword_.length() >= 3 && keyword_.right(3) == "dpr")
+	{
+		emit magicWord(Word::DPR);
+		keyword_.clear();
+	}
 }

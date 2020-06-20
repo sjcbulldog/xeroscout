@@ -354,6 +354,9 @@ namespace xero
 				setUpdatesEnabled(false);
 				clear();
 
+				if (dataModel() == nullptr)
+					return;
+
 				for (auto m : matches_)
 				{
 					if (tablet_.size() == 0)

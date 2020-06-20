@@ -24,6 +24,7 @@
 #include "DataModelMatch.h"
 #include "Alliance.h"
 #include "OPRCalculator.h"
+#include "DPRCalculator.h"
 
 using namespace xero::scouting::datamodel;
 using namespace xero::ba;
@@ -147,8 +148,9 @@ void DataModelBuilder::addBlueAllianceData(std::shared_ptr<BlueAlliance> ba, std
 
 	breakoutBlueAlliancePerRobotData(dm, badata, maxmatch);
 
-	OPRCalculator calc(dm);
-	calc.calc();
+	OPRCalculator oprcalc(dm, "ba_totalPoints");
+	DPRCalculator dprcalc(oprcalc);
+	dprcalc.calc();
 }
 
 bool DataModelBuilder::addTeamsMatches(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<::ScoutingDataModel> dm)

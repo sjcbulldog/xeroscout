@@ -152,7 +152,7 @@ namespace xero
 				html += "<tr>";
 				html += "<th>Match</th>";
 				html += "<th>Team</th>";
-				html += "<ht>Alliance</th>";
+				html += "<th>Alliance</th>";
 				html += "<th>Pattern</th>";
 				html += "<th>Start</th>";
 				html += "<th>Duration</th>";

@@ -64,6 +64,9 @@ namespace xero
 			{
 				auto dm = dataModel();
 
+				if (dm == nullptr)
+					return;
+
 				for (auto p : dm->teams())
 				{
 					if (p->teamScoutingDataList().size() > 1)

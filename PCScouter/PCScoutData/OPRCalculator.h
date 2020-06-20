@@ -36,13 +36,24 @@ namespace xero
 			class PCSCOUTDATA_EXPORT OPRCalculator
 			{
 			public:
-				OPRCalculator(std::shared_ptr<ScoutingDataModel> dm);
+				OPRCalculator(std::shared_ptr<ScoutingDataModel> dm, const QString& field);
 				virtual ~OPRCalculator();
 
 				bool calc();
+				bool hasData() {
+					return opr_.size() > 0;
+				}
 
-			private:
-				static constexpr const char* BATotalPoints = "ba_totalPoints";
+				double operator[](const QString& key) {
+					auto it = opr_.find(key);
+					assert(it != opr_.end());
+
+					return it->second;
+				}
+
+				std::shared_ptr<ScoutingDataModel> dataModel() {
+					return dm_;
+				}
 
 			private:
 				int calcRowCount();
@@ -50,6 +61,7 @@ namespace xero
 				bool buildTeamMatchMatrix(Eigen::MatrixXd& m, Eigen::VectorXd& score);
 
 			private:
+				QString field_;
 				std::map<QString, double> opr_;
 				std::shared_ptr<ScoutingDataModel> dm_;
 				std::map<QString, int> team_to_index_;

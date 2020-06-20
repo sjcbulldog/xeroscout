@@ -101,6 +101,7 @@ namespace xero
 				iview = new IntroView("Zebra Introduction", this);
 				iview->setFile("zebra.html");
 				addWidget(iview);																									// 20
+				addWidget(new DataSetViewWidget("hidden", true, this));																// 21
 
 				if (gamemgr)
 				{

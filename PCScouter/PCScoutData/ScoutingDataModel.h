@@ -514,6 +514,17 @@ namespace xero
 					emitChangedSignal(ChangeType::TeamDataChanged);
 				}
 
+				void setTeamDPR(const QString& teamkey, double opr) {
+					auto team = findTeamByKeyInt(teamkey);
+					team->setDPR(opr);
+
+					if (getFieldByName(DataModelTeam::DPRName) == nullptr)
+						team_extra_fields_.push_back(std::make_shared<FieldDesc>(DataModelTeam::DPRName, FieldDesc::Type::Double, false));
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::TeamDataChanged);
+				}
+
 				/// \brief set the ranking data from the blue alliance.  
 				/// This data is stored as the JSON object received from the blue alliance
 				/// \param key the team key identifying the team of interest

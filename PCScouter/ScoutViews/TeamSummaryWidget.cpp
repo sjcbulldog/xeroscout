@@ -172,7 +172,14 @@ namespace xero
 
 			void TeamSummaryWidget::refreshView()
 			{
-				regenerate(true);
+				if (dataModel() == nullptr)
+				{
+					report_txt_->setHtml("");
+				}
+				else
+				{
+					regenerate(true);
+				}
 			}
 
 			void TeamSummaryWidget::clearView()

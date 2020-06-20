@@ -21,8 +21,7 @@
 //
 
 #include "OPRCalculator.h"
-#include <QFile>
-#include <QTextStream>
+
 
 using namespace Eigen;
 
@@ -32,8 +31,9 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			OPRCalculator::OPRCalculator(std::shared_ptr<ScoutingDataModel> dm) {
+			OPRCalculator::OPRCalculator(std::shared_ptr<ScoutingDataModel> dm, const QString &field) {
 				dm_ = dm;
+				field_ = field;
 			}
 
 			OPRCalculator::~OPRCalculator()
@@ -63,7 +63,7 @@ namespace xero
 				int rows = 0;
 				for (auto m : dm_->matches())
 				{
-					if (m->hasExtraField(Alliance::Red, 1, BATotalPoints) && m->hasExtraField(Alliance::Blue, 1, BATotalPoints))
+					if (m->hasExtraField(Alliance::Red, 1, field_) && m->hasExtraField(Alliance::Blue, 1, field_))
 						rows += 2;
 				}
 
@@ -80,7 +80,7 @@ namespace xero
 
 				for (auto m : dm_->matches())
 				{
-					if (!m->hasExtraField(Alliance::Red, 1, BATotalPoints) || !m->hasExtraField(Alliance::Blue, 1, BATotalPoints))
+					if (!m->hasExtraField(Alliance::Red, 1, field_) || !m->hasExtraField(Alliance::Blue, 1, field_))
 						continue;
 
 					Alliance c = Alliance::Red;
@@ -92,7 +92,7 @@ namespace xero
 						mat(row, index) = 1;
 					}
 
-					QVariant v = m->value(c, 1, BATotalPoints);
+					QVariant v = m->value(c, 1, field_);
 					if (!v.isValid())
 						v = QVariant(0);
 
@@ -108,7 +108,7 @@ namespace xero
 						mat(row, index) = 1;
 					}
 
-					v = m->value(c, 1, "ba_totalPoints");
+					v = m->value(c, 1, field_);
 					if (!v.isValid())
 						v = QVariant(0);
 					score(row) = v.toInt();
@@ -141,13 +141,10 @@ namespace xero
 				MatrixXd mpinv = mp.inverse();
 				MatrixXd opr = mpinv * rt;
 
-				dm_->blockSignals(true);
 				for (auto pair : team_to_index_)
 				{
-					dm_->setTeamOPR(pair.first, opr(pair.second));
+					opr_[pair.first] = opr(pair.second);
 				}
-				dm_->blockSignals(false);
-				dm_->emitChangedSignal(ScoutingDataModel::ChangeType::TeamDataChanged);
 
 				return true;
 			}

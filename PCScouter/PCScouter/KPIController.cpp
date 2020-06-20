@@ -124,7 +124,7 @@ void KPIController::computeKPI()
 		DataModelBuilder::addBlueAllianceData(blueAlliance(), model, std::numeric_limits<int>::max());
 
 		models_.insert_or_assign(ev, model);
-		OPRCalculator calc(model);
+		OPRCalculator calc(model, "ba_totalPoints");
 		if (!calc.calc())
 		{
 			qDebug() << "Error calculating OPR for event '" << ev << "'";

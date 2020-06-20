@@ -71,7 +71,8 @@ namespace xero
 
 					selector_->setDataModel(model);
 
-					createPlot();
+					if (model != nullptr)
+						createPlot();
 				}
 
 			private:

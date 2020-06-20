@@ -32,6 +32,7 @@ public:
 	{
 		XYZZY,
 		PLOUGH,
+		DPR,
 	};
 
 public:

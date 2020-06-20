@@ -51,8 +51,14 @@ namespace xero
 				Q_OBJECT
 
 			public:
-				DataSetViewWidget(const QString &name, bool editable, QWidget* parent);
+				
+				DataSetViewWidget(const QString& name, bool editable, QWidget* parent);
+				DataSetViewWidget(const QString& name, bool editable, std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn, QWidget* parent);
 				virtual ~DataSetViewWidget();
+
+				void setDataGenerator(std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn) {
+					fn_ = fn;
+				}
 
 				xero::scouting::datamodel::ScoutingDataSet& dataset() override {
 					return data_;
@@ -99,6 +105,8 @@ namespace xero
 				QString name_;
 				QPoint pt_;
 
+				// Function to generate data set
+				std::function<void (xero::scouting::datamodel::ScoutingDataSet &ds)> fn_;
 				xero::scouting::datamodel::ScoutingDataSet data_;
 				QTableWidget* table_;
 

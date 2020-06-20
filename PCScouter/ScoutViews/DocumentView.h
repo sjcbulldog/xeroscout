@@ -67,7 +67,8 @@ namespace xero
 					ZebraPatternEditor=18,
 					ZebraRegionEditor=19,
 					ZebraIntro=20,
-					FirstFormView = 21
+					Predictions = 21,
+					FirstFormView = 22
 				};
 
 			public:

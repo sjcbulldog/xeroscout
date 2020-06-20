@@ -135,12 +135,15 @@ namespace xero
 			void FormView::setScoutingForm(std::shared_ptr<const ScoutingForm> form)
 			{
 				clearView();
-
 				form_ = form;
-				instance_ = std::make_shared<FormInstance>(form);
-				auto& sections = form_->sections();
-				for (auto section : sections) {
-					createSection(section);
+
+				if (form_ != nullptr)
+				{
+					instance_ = std::make_shared<FormInstance>(form);
+					auto& sections = form_->sections();
+					for (auto section : sections) {
+						createSection(section);
+					}
 				}
 			}
 
@@ -148,17 +151,20 @@ namespace xero
 			{
 				std::shared_ptr<const ScoutingForm> form;
 
-				if (formtype_ == FormType::Team)
+				if (dataModel() != nullptr)
 				{
-					form = dataModel()->teamScoutingForm();
-				}
-				else if (formtype_ == FormType::Match)
-				{
-					form = dataModel()->matchScoutingForm();
-				}
-				else
-				{
-					assert(false);
+					if (formtype_ == FormType::Team)
+					{
+						form = dataModel()->teamScoutingForm();
+					}
+					else if (formtype_ == FormType::Match)
+					{
+						form = dataModel()->matchScoutingForm();
+					}
+					else
+					{
+						assert(false);
+					}
 				}
 
 				setScoutingForm(form);
