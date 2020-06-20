@@ -52,8 +52,6 @@ namespace xero
 				MatchTeamSelector* selector_;
 				QGroupBox* report_;
 				QTextBrowser* report_txt_;
-				QString current_team_;
-				std::list<std::shared_ptr<xero::scouting::datamodel::ZebraSequence>> sequences_;
 				xero::scouting::datamodel::SequenceAnalyzer analyzer_;
 				double idle_;
 			};

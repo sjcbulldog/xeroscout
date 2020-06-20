@@ -1478,6 +1478,7 @@ namespace xero
 						{
 							sobj[JsonTypeName] = "enteridle";
 							sobj[JsonNameName] = entidle->name();
+							sobj[JsonIdleValueName] = entidle->duration();
 							sarray.push_back(sobj);
 							continue;
 						}
@@ -1548,7 +1549,10 @@ namespace xero
 						}
 						else if (pobj.value(JsonTypeName).toString() == "enteridle")
 						{
-							auto p = std::make_shared<SequenceEnterIdlePattern>(name, minv, maxv, perall);
+							if (!pobj.contains(JsonIdleValueName) || pobj.value(JsonIdleValueName).isDouble())
+								continue;
+
+							auto p = std::make_shared<SequenceEnterIdlePattern>(name, pobj.value(JsonIdleValueName).toDouble(), minv, maxv, perall);
 							act->addPattern(p);
 						}
 					}

@@ -3,6 +3,7 @@
 #include "pcscoutdata_global.h"
 #include "ZebraSequence.h"
 #include "RobotActivity.h"
+#include "ScoutingDataModel.h"
 #include <memory>
 #include <list>
 #include <map>
@@ -66,17 +67,13 @@ namespace xero
 				SequenceAnalyzer();
 				virtual ~SequenceAnalyzer();
 
-				void setSequences(const std::list<std::shared_ptr<ZebraSequence>>& sequences) {
-					sequences_.clear();
-					for (auto s : sequences)
-						sequences_.push_back(s);
-
-					clearAll();
+				void setDataModel(std::shared_ptr<ScoutingDataModel> model) {
+					dm_ = model;
 				}
 
 				void clearAll();
 
-				void analyze();
+				void analyze(std::list<std::pair<QString, QString>>& which);
 
 				const std::list<SequenceAnalyzer::MatchedSequence>& matches() const {
 					return matches_;
@@ -87,11 +84,13 @@ namespace xero
 				}
 
 			private:
-				void addBlueSequences();
+				void createSequences();
 				void analyzeOneSequence(std::shared_ptr<ZebraSequence> seq);
+				double findShortestIdle(std::shared_ptr<const RobotActivity> activity);
+				double findShortestIdle();
 
 			private:
-				std::vector<std::shared_ptr<ZebraSequence>> sequences_;
+				std::shared_ptr<ScoutingDataModel> dm_;
 				std::vector<std::shared_ptr<const RobotActivity>> activities_;
 				std::list<MatchedSequence> matches_;
 			};

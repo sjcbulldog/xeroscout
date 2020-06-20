@@ -170,11 +170,13 @@ void ImportMatchDataController::gotRankings()
 
 	if (dpr.calc() == DPRCalculator::Error::Success)
 	{
+		dataModel()->blockSignals(true);
 		for (auto t : dataModel()->teams())
 		{
 			dataModel()->setTeamOPR(t->key(), opr[t->key()]);
 			dataModel()->setTeamDPR(t->key(), dpr[t->key()]);
 		}
+		dataModel()->blockSignals(false);
 	}
 
 	state_ = State::Done;

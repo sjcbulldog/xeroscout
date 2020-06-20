@@ -218,7 +218,16 @@ namespace xero
 				{
 					int won = 0, loss = 0, tie = 0;
 
-					html = "<center><table border=\"1\">";
+					html += "<style>";
+					html += "table {";
+					html += "  border-collapse: collapse;";
+					html += "}";
+					html += "td, th {";
+					html += "  padding: 3px;";
+					html += "}";
+					html += "</style>";
+					html += "<center>";
+					html += "<table border=\"1\">";
 					html += "<tr><th colspan=\"10\">Matches " + rectoken + " </th></tr>";
 					for (int row = 0; row < ds.rowCount(); row++)
 					{
@@ -228,7 +237,7 @@ namespace xero
 
 						auto m = dataModel()->findMatchByKey(key.toString());
 						html += "<tr>";
-						html += "<td width=\"80\">";
+						html += "<td>";
 
 						QString youtube = m->youtubeKey();
 
@@ -269,7 +278,7 @@ namespace xero
 						for (int slot = 1; slot <= 3; slot++)
 						{
 							QString mkey = m->team(Alliance::Red, slot);
-							html += "<td width=\"80\" bgcolor=\"#ff9999\">";
+							html += "<td bgcolor=\"#ff9999\">";
 							if (mkey == current_team_)
 							{
 								html += "<p style=\"text-decoration:underline;font-weight:bold;\">";
@@ -286,7 +295,7 @@ namespace xero
 						for (int slot = 1; slot <= 3; slot++)
 						{
 							QString mkey = m->team(Alliance::Blue, slot);
-							html += "<td width=\"80\" bgcolor=\"#cee5ff\">";
+							html += "<td bgcolor=\"#cee5ff\">";
 							if (mkey == current_team_)
 							{
 								isred = false;
@@ -313,7 +322,7 @@ namespace xero
 
 						if (redscore != -1)
 						{
-							html += "<td width=\"40\" bgcolor=\"#ff9999\" style=\"text-align:center\">";
+							html += "<td bgcolor=\"#ff9999\" style=\"text-align:center\">";
 							if (redscore > bluescore)
 								html += "<b>";
 							html += QString::number(redscore);
@@ -323,12 +332,12 @@ namespace xero
 						}
 						else
 						{
-							html += "<td width=\"40\"></td>";
+							html += "<td></td>";
 						}
 
 						if (bluescore != -1)
 						{
-							html += "<td width=\"40\" bgcolor=\"#cee5ff\" style=\"text-align:center\">";
+							html += "<td bgcolor=\"#cee5ff\" style=\"text-align:center\">";
 							if (redscore < bluescore)
 								html += "<b>";
 							html += QString::number(bluescore);
@@ -338,7 +347,7 @@ namespace xero
 						}
 						else
 						{
-							html += "<td width=\"40\"></td>";
+							html += "<td></td>";
 						}
 
 						QString status;
@@ -378,7 +387,7 @@ namespace xero
 							}
 						}
 
-						html += "<td width=\"40\" style=\"text-align:center\"><b>" + status + "</b></td>";
+						html += "<td style=\"text-align:center\"><b>" + status + "</b></td>";
 					}
 					html += "</table></center>";
 
@@ -409,7 +418,16 @@ namespace xero
 				if (t == nullptr)
 					return html;
 
-				html = "<center><table border=\"1\">";
+				html += "<style>";
+				html += "table {";
+				html += "  border-collapse: collapse;";
+				html += "}";
+				html += "td, th {";
+				html += "  padding: 3px;";
+				html += "}";
+				html += "</style>";
+				html += "<center>";
+				html += "<table border=\"1\">";
 				html += "<tr><th colspan=\"2\">TeamInfo</th></tr>";
 
 				for (const QString& field : fields) {
@@ -425,9 +443,9 @@ namespace xero
 					}
 
 					html += "<tr>";
-					html += "<td width=\"40\" >" + field + "</td>";
+					html += "<td >" + field + "</td>";
 
-					html += "<td width=\"120\" >";
+					html += "<td>";
 					if (!v.isValid())
 					{
 						html += "No Data";

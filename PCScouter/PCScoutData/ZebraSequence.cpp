@@ -18,8 +18,15 @@ namespace xero
 				idletime_ = idletime;
 
 				extractEvents(track, regions);
-				debounceEvents();
-				logicallyOrder();
+				if (events_.size() > 1)
+				{
+					debounceEvents();
+					logicallyOrder();
+				}
+				else
+				{
+					qDebug() << "Match " << mkey << ", team " << tkey << " - track with no events";
+				}
 			}
 
 			ZebraSequence::~ZebraSequence()

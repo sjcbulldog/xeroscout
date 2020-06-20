@@ -122,6 +122,7 @@ namespace xero
 			constexpr const char* JsonPerAllianceName = "peralliance";
 			constexpr const char* JsonMinName = "min";
 			constexpr const char* JsonMaxName = "max";
+			constexpr const char* JsonIdleValueName = "idle";
 		}
 	}
 }

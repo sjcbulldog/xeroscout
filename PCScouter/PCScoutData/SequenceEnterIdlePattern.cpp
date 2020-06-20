@@ -8,9 +8,10 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			SequenceEnterIdlePattern::SequenceEnterIdlePattern(const QString& name, int mincnt, int maxcnt, bool perall) : SequencePattern(mincnt, maxcnt, perall)
+			SequenceEnterIdlePattern::SequenceEnterIdlePattern(const QString& name, double idle, int mincnt, int maxcnt, bool perall) : SequencePattern(mincnt, maxcnt, perall)
 			{
 				name_ = name;
+				idle_ = idle;
 			}
 
 			SequenceEnterIdlePattern::~SequenceEnterIdlePattern()
@@ -29,8 +30,10 @@ namespace xero
 					return 0;
 
 				if (sequence[start].isEnter() && sequence[start].name() == name &&
-					sequence[start + 1].isIdle())
+					sequence[start + 1].isIdle() && sequence[start + 1].duration() > idle_)
+				{
 					return 2;
+				}
 
 				return 0;
 			}

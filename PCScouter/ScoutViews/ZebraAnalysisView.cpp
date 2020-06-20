@@ -76,7 +76,6 @@ namespace xero
 				QString key = selector_->currentKey();
 
 				report_txt_->clear();
-				sequences_.clear();
 
 				if (key.length() == 0)
 					return;
@@ -95,10 +94,7 @@ namespace xero
 						QString tkey = m->team(c, slot);
 						auto track = DataModelBuilder::createTrack(dataModel(), key, tkey);
 						if (track->hasData())
-						{
-							auto seq = std::make_shared<ZebraSequence>(key, tkey, track, dataModel()->fieldRegions(), idle_);
-							sequences_.push_back(seq);
-						}
+							selected.push_back(std::make_pair(key, tkey));
 					}
 
 					c = Alliance::Blue;
@@ -107,10 +103,7 @@ namespace xero
 						QString tkey = m->team(c, slot);
 						auto track = DataModelBuilder::createTrack(dataModel(), key, tkey);
 						if (track->hasData())
-						{
-							auto seq = std::make_shared<ZebraSequence>(key, tkey, track, dataModel()->fieldRegions(), idle_);
-							sequences_.push_back(seq);
-						}
+							selected.push_back(std::make_pair(key, tkey));
 					}
 				}
 				else
@@ -127,16 +120,13 @@ namespace xero
 						{						
 							auto track = DataModelBuilder::createTrack(dataModel(), m->key(), key);
 							if (track->hasData())
-							{
-								auto seq = std::make_shared<ZebraSequence>(m->key(), key, track, dataModel()->fieldRegions(), idle_);
-								sequences_.push_back(seq);
-							}
+								selected.push_back(std::make_pair(m->key(), key));
 						}
 					}
 				}
 
-				analyzer_.setSequences(sequences_);
-				analyzer_.analyze();
+				analyzer_.setDataModel(dataModel());
+				analyzer_.analyze(selected);
 				QString html;
 
 				printSequences(html);
@@ -150,7 +140,16 @@ namespace xero
 				QString last;
 				bool first = true;
 
-				html = "<center><table border=\"1\">";
+				html += "<style>";
+				html += "table {";
+				html += "  border-collapse: collapse;";
+				html += "}";
+				html += "td, th {";
+				html += "  padding: 3px;";
+				html += "}";
+				html += "</style>";
+				html += "<center>";
+				html += "<table border=\"1\">";
 
 				html += "<tr>";
 				html += "<th>Match</th>";
@@ -183,43 +182,6 @@ namespace xero
 					html += "</tr>";
 				}
 
-				html += "</table>";
-			}
-
-			void ZebraAnalysisView::printRawData(QString &html)
-			{
-				int evcols = 8;
-				html = "<center><table border=\"1\">";
-
-				html += "<tr>";
-				html += "<th>Match</th>";
-				for(int i = 0 ; i < evcols ; i++)
-					html += "<th>Event</th>";
-				html += "</tr>";
-
-				for (auto seq : sequences_)
-				{
-					html += "<tr>";
-					html += "<td>" + seq->matchKey() + "</tr>";
-
-					int index = 0;
-					int col = 0;
-					for (auto it = seq->cbegin(); it != seq->cend(); it++)
-					{
-						if (col == evcols)
-						{
-							html += "</tr>";
-							html += "<tr>";
-							html += "<td></td>";
-							col = 0;
-						}
-
-						html += "<td>" + QString::number(index++) + it->toString() + "</td>";
-						col++;
-					}
-
-					html += "</tr>";
-				}
 				html += "</table>";
 			}
 		}

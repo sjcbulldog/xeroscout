@@ -20,6 +20,7 @@ namespace xero
 			public:
 				ZebraSequence(const QString &mkey, const QString &tkey, std::shared_ptr<RobotTrack> track,
 					std::vector<std::shared_ptr<const FieldRegion>> &regions, double idletime);
+
 				virtual ~ZebraSequence();
 
 				size_t size() const {

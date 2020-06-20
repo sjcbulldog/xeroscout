@@ -109,7 +109,7 @@ namespace xero
 				auto p = act->patterns()[pattern];
 
 				int mincnt = QInputDialog::getInt(this, "Mininum Match Count", "Minimum Match Count", p->minCount());
-				int maxcnt = QInputDialog::getInt(this, "Mininum Match Count", "Minimum Match Count", p->maxCount());
+				int maxcnt = QInputDialog::getInt(this, "Maximum Match Count", "Minimum Match Count", p->maxCount());
 
 				act->setMinMaxCount(pattern, mincnt, maxcnt);
 				emit changedActivity(act);
@@ -596,7 +596,8 @@ namespace xero
 				}
 				else if (type == "EnterIdle")
 				{
-					p = std::make_shared<SequenceEnterIdlePattern>(region, 1, 1, per);
+					double d = QInputDialog::getDouble(this, "Idle Period", "Idle Period", 1.0);
+					p = std::make_shared<SequenceEnterIdlePattern>(region, d, 1, 1, per);
 				}
 				else
 				{

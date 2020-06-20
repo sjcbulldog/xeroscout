@@ -13,7 +13,7 @@ namespace xero
 			class PCSCOUTDATA_EXPORT SequenceEnterIdlePattern : public SequencePattern
 			{
 			public:
-				SequenceEnterIdlePattern(const QString& name, int mincnt, int maxcnt, bool perall);
+				SequenceEnterIdlePattern(const QString& name, double idle, int mincnt, int maxcnt, bool perall);
 				virtual ~SequenceEnterIdlePattern();
 
 				virtual int doesMatch(Alliance a, const ZebraSequence& sequence, int start) const;
@@ -26,8 +26,14 @@ namespace xero
 					return "EnterIdle:" + name_;
 				}
 
+				double duration() const {
+					return idle_;
+				}
+
+
 			private:
 				QString name_;
+				double idle_;
 			};
 		}
 	}
