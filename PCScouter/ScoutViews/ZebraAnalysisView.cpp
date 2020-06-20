@@ -38,6 +38,8 @@ namespace xero
 				report_txt_->setReadOnly(true);
 				report_txt_->setOpenLinks(false);
 				report_txt_->setOpenExternalLinks(false);
+
+				idle_ = 2.0;
 			}
 
 			ZebraAnalysisView::~ZebraAnalysisView()
@@ -79,6 +81,8 @@ namespace xero
 				if (key.length() == 0)
 					return;
 
+				std::list<std::pair<QString, QString>> selected;
+
 				if (selector_->isMatchesSelected())
 				{
 					auto m = dataModel()->findMatchByKey(key);
@@ -92,7 +96,7 @@ namespace xero
 						auto track = DataModelBuilder::createTrack(dataModel(), key, tkey);
 						if (track->hasData())
 						{
-							auto seq = std::make_shared<ZebraSequence>(key, tkey, track, dataModel()->fieldRegions());
+							auto seq = std::make_shared<ZebraSequence>(key, tkey, track, dataModel()->fieldRegions(), idle_);
 							sequences_.push_back(seq);
 						}
 					}
@@ -104,7 +108,7 @@ namespace xero
 						auto track = DataModelBuilder::createTrack(dataModel(), key, tkey);
 						if (track->hasData())
 						{
-							auto seq = std::make_shared<ZebraSequence>(key, tkey, track, dataModel()->fieldRegions());
+							auto seq = std::make_shared<ZebraSequence>(key, tkey, track, dataModel()->fieldRegions(), idle_);
 							sequences_.push_back(seq);
 						}
 					}
@@ -124,7 +128,7 @@ namespace xero
 							auto track = DataModelBuilder::createTrack(dataModel(), m->key(), key);
 							if (track->hasData())
 							{
-								auto seq = std::make_shared<ZebraSequence>(m->key(), key, track, dataModel()->fieldRegions());
+								auto seq = std::make_shared<ZebraSequence>(m->key(), key, track, dataModel()->fieldRegions(), idle_);
 								sequences_.push_back(seq);
 							}
 						}
@@ -137,7 +141,6 @@ namespace xero
 
 				printSequences(html);
 				html += "<hr><br><br>";
-				// printRawData(html);
 
 				report_txt_->setHtml(html);
 			}

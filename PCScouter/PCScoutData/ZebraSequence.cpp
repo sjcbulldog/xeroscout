@@ -9,11 +9,13 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			ZebraSequence::ZebraSequence(const QString& mkey, const QString& tkey, std::shared_ptr<RobotTrack> track, std::vector<std::shared_ptr<const FieldRegion>>& regions)
+			ZebraSequence::ZebraSequence(const QString& mkey, const QString& tkey, std::shared_ptr<RobotTrack> track, 
+				std::vector<std::shared_ptr<const FieldRegion>>& regions, double idletime)
 			{
 				mkey_ = mkey;
 				tkey_ = tkey;
 				alliance_ = track->alliance();
+				idletime_ = idletime;
 
 				extractEvents(track, regions);
 				debounceEvents();
@@ -157,7 +159,7 @@ namespace xero
 					{
 						double dt = track->time(i) - lasttime;
 
-						if (dt > idleDelay)
+						if (dt > idletime_)
 						{
 							//
 							// We have been in place long enough for an idle event

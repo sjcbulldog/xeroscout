@@ -202,6 +202,19 @@ void PCScouter::showEvent(QShowEvent* ev)
 	{
 		logwin_->append("Started in coach mode");
 	}
+
+	if (datafile_.length() > 0)
+	{
+		auto dm = std::make_shared<ScoutingDataModel>();
+		if (!dm->load(datafile_)) {
+			QMessageBox::critical(this, "Error", "Could not load event data file");
+			return;
+		}
+		setDataModel(dm);
+		setupViews();
+
+		datafile_.clear();
+	}
 }
 
 void PCScouter::setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm)

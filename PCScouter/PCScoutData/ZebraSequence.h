@@ -19,7 +19,7 @@ namespace xero
 			{
 			public:
 				ZebraSequence(const QString &mkey, const QString &tkey, std::shared_ptr<RobotTrack> track,
-					std::vector<std::shared_ptr<const FieldRegion>> &regions);
+					std::vector<std::shared_ptr<const FieldRegion>> &regions, double idletime);
 				virtual ~ZebraSequence();
 
 				size_t size() const {
@@ -50,7 +50,6 @@ namespace xero
 
 			private:
 				constexpr static const double debounceDelay = 1.0;
-				constexpr static const double idleDelay = 1.5;
 				constexpr static const double idleThreshold = 0.5;
 
 			private:
@@ -66,6 +65,7 @@ namespace xero
 				QString tkey_;
 				std::vector<ZebraEvent> events_;
 				Alliance alliance_;
+				double idletime_;
 			};
 		}
 	}

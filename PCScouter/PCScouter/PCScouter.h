@@ -52,6 +52,10 @@ class PCScouter : public QMainWindow
 public:
 	PCScouter(bool coach, QWidget *parent = Q_NULLPTR);
 
+	void setDataFile(const QString& file) {
+		datafile_ = file;
+	}
+
 protected:
 	void closeEvent(QCloseEvent* ev);
 	void showEvent(QShowEvent* ev);
@@ -232,4 +236,6 @@ private:
 	SyncManager* sync_mgr_;
 
 	bool coach_;
+
+	QString datafile_;
 };

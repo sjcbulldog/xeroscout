@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 	int i = 1;
 	QStringList args = QCoreApplication::arguments();
 	TestDataInjector& injector = TestDataInjector::getInstance();
+	QString datafile;
 
 	while (i < args.size()) {
 		QString arg = args[i++];
@@ -70,15 +71,24 @@ int main(int argc, char *argv[])
 		{
 			coach = true;
 		}
-		else
+		else if (arg.startsWith("-"))
 		{
 			QMessageBox::critical(nullptr, "Error", "invalid command line argument '" + arg + "'");
 			return 1;
+		}
+		else if (datafile.length() > 0)
+		{
+			QMessageBox::critical(nullptr, "Error", "only one data file allowed on the command line");
+		}
+		else
+		{
+			datafile = arg;
 		}
 	}
 
 	try {
 		PCScouter w(coach);
+		w.setDataFile(datafile);
 		w.show();
 		return a.exec();
 	}
