@@ -398,7 +398,7 @@ namespace xero
 						paintSelectPolygon(paint);
 
 				}
-				else if (view_mode_ == ViewMode::Robot)
+				else if (view_mode_ == ViewMode::Replay)
 				{
 					for (int i = 0; i < tracks_.size(); i++)
 						paintRobot(paint, tracks_[i]);

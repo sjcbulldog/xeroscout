@@ -82,6 +82,9 @@ namespace xero
 					return true;
 				}
 
+			protected:
+				bool eventFilter(QObject* o, QEvent* e);
+
 			signals:
 				void rowChanged(int row, int col);
 
@@ -89,6 +92,7 @@ namespace xero
 				void updateData(QTableWidget* w);
 				void sortData(int column);
 				void contextMenuRequested(const QPoint& pt);
+				void cellContextMenuRequested(const QPoint& pt);
 				void hideColumn();
 				void unhideColumns();
 				void resetColumns();
@@ -100,6 +104,9 @@ namespace xero
 				void setDelegates();
 
 				void computeHeaderTooltips(QTableWidget* table);
+
+				void viewMatchReplay(const QString& mkey);
+				void viewMatchVideo(const QString& mkey);
 
 			private:
 				QString name_;

@@ -81,8 +81,7 @@ namespace xero
 				addWidget(new ChangeHistoryView(this));																				// 11
 				addWidget(new DataMergeListWidget(this));																			// 12
 
-				ZebraViewWidget* zview = new ZebraViewWidget(this);
-				addWidget(zview);																									// 13
+				addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebratrack", PathFieldView::ViewMode::Track));						// 13
 
 				GraphView* gview = new PreMatchGraphView(this);
 				gview->create();
@@ -96,32 +95,17 @@ namespace xero
 				addWidget(new ZebraAnalysisView(this));																				// 17
 				addWidget(new ZebraPatternView(images_, this));																		// 18
 
-				ZebraRegionEditor* rview = new ZebraRegionEditor(this);
-				addWidget(rview);																									// 19
+				addWidget(new ZebraRegionEditor(field_mgr_, yearstr, this));														// 19
 				iview = new IntroView("Zebra Introduction", this);
 				iview->setFile("zebra.html");
 				addWidget(iview);																									// 20
-				addWidget(new DataSetViewWidget("hidden", true, this));																// 21
+				addWidget(new DataSetViewWidget("predictions", true, this));														// 21
 
-				if (gamemgr)
-				{
-					std::shared_ptr<GameField> fld = nullptr;
+				addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebraheatmap", PathFieldView::ViewMode::Heatmap));		// 22
 
-					for (auto f : field_mgr_.getFields()) {
-						QString name = f->getName().c_str();
-						if (name.contains(yearstr))
-						{
-							fld = f;
-							break;
-						}
-					}
+				addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebrareplay", PathFieldView::ViewMode::Replay));			// 23
 
-					if (fld != nullptr)
-					{
-						zview->field()->setField(fld);
-						rview->field()->setField(fld);
-					}
-				}
+
 
 				setCurrentIndex(0);
 				view_ = ViewType::NoModelView;
@@ -189,7 +173,8 @@ namespace xero
 				auto it = scouting_forms_.find(key);
 				if (it == scouting_forms_.end())
 				{
-					QWidget* w = new FormView(images_, key, title, c, type, a, this);
+					FormView* w = new FormView(images_, key, title, c, type, a, this);
+					w->setDataModel(dm_);
 					scouting_forms_.insert(std::make_pair(key, w));
 
 					index = count();

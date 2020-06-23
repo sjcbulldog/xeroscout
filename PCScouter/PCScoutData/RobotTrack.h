@@ -143,13 +143,6 @@ namespace xero
                     return QPointF(0.0, 0.0);
                 }
 
-                void removeLastPoint() {
-                    if (time_.size() == points_.size()) {
-                        time_.resize(time_.size() - 1);
-                        points_.resize(points_.size() - 1);
-                    }
-                }
-
                 QPointF beginning() {
                     for (int i = 0; i < time_.size() - 1; i++)
                     {

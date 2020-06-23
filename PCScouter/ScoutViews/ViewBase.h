@@ -79,6 +79,8 @@ namespace xero
 				virtual void refreshView() = 0;
 				virtual void setTablet(const QString& tablet) {
 				}
+				virtual void setKey(const QString& key) {
+				}
 
 			private:
 				std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model_;

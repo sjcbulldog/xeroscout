@@ -5,7 +5,7 @@
 #define MyCoachName "XeroCoach"
 #define MyScoutName "XeroScout"
 #define MyViewerName "XeroView"
-#define MyAppVersion "0.3.13"
+#define MyAppVersion "0.3.15"
 #define MyAppPublisher "ErrorCodeXero"
 #define MyAppURL "http://www.wilsonvillerobotics.com/"
 #define MyAppExeName "PCScouter.exe"
@@ -60,11 +60,6 @@ Name: "{autoprograms}\{#MyScoutName}"; Filename: "{app}\{#MyScoutAppExeName}"
 Name: "{autodesktop}\{#MyScoutName}"; Filename: "{app}\{#MyScoutAppExeName}"; Tasks: desktopicon
 Name: "{autoprograms}\{#MyViewerName}"; Filename: "{app}\{#MyFormViewerExeName}"
 Name: "{autodesktop}\{#MyViewerName}"; Filename: "{app}\{#MyFormViewerExeName}"; Tasks: desktopicon
-
-[Registry]
-Root: HKLM; Subkey: "Software\Classes\.evd"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName}.EXE"; Flags: uninsdeletevalue
-Root: HKLM; Subkey: "Software\Classes\MyProgramFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName}.EXE,0"
-Root: HKLM; Subkey: "Software\Classes\MyProgramFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}.EXE"" ""%1"""
 
 [Run]
 Filename: {app}\VC_redist.x64.exe; \

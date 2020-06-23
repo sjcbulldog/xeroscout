@@ -59,7 +59,7 @@ namespace xero
 					AllTeamReport = 10,
 					HistoryView = 11,
 					MergeListView = 12,
-					ZebraDataView = 13,
+					ZebraTrackView = 13,
 					MatchGraphView = 14,
 					AllianceGraphView = 15,
 					PickListView = 16,
@@ -68,7 +68,9 @@ namespace xero
 					ZebraRegionEditor=19,
 					ZebraIntro=20,
 					Predictions = 21,
-					FirstFormView = 22
+					ZebraHeatmapView = 22,
+					ZebraReplayView = 23,
+					FirstFormView = 24
 				};
 
 			public:
@@ -95,6 +97,7 @@ namespace xero
 					}
 
 					needsRefreshAll();
+					dm_ = model;
 				}
 
 				void clearAll();
@@ -130,9 +133,14 @@ namespace xero
 					emit logMessage(msg);
 				}
 
+				void emitSwitchViewSignal(ViewType vtype, const QString& key) {
+					emit switchView(vtype, key);
+				}
+
 			signals:
 				void itemDoubleClicked(ViewType type, const QString& key);
 				void logMessage(const QString& msg);
+				void switchView(ViewType vtype, const QString& key);
 
 			private:
 				void teamItemDoubleClicked(QTreeWidgetItem* item, int col);
@@ -143,6 +151,7 @@ namespace xero
 				std::map<QString, QWidget*> scouting_forms_;
 				GameFieldManager field_mgr_;
 				xero::scouting::datamodel::ImageManager &images_;
+				std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 			};
 		}
 	}

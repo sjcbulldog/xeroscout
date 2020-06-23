@@ -30,6 +30,8 @@
 #include "TimeBoundWidget.h"
 #include "ZebraDataInfoExtractor.h"
 #include "RobotTrack.h"
+#include "GameFieldManager.h"
+#include "FieldBasedWidget.h"
 #include <QWidget>
 #include <QComboBox>
 #include <QRadioButton>
@@ -47,26 +49,22 @@ namespace xero
 	{
 		namespace views
 		{
-			class SCOUTVIEWS_EXPORT ZebraViewWidget : public QWidget, public ViewBase
+			class SCOUTVIEWS_EXPORT ZebraViewWidget : public FieldBasedWidget, public ViewBase
 			{
 			public:
-				ZebraViewWidget(QWidget* parent);
+				ZebraViewWidget(QWidget* parent, GameFieldManager &mgr, const QString &year, const QString &name, PathFieldView::ViewMode vm);
 				virtual ~ZebraViewWidget();
 
 				void clearView();
 				void refreshView();
 
-				PathFieldView* field() {
-					return field_;
-				}
-
 				void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model) {
 					ViewBase::setDataModel(model);
 
-					if (field_ != nullptr && model != nullptr)
+					if (field() != nullptr && model != nullptr)
 					{
 						for (auto h : model->fieldRegions())
-							field_->addHighlight(h);
+							field()->addHighlight(h);
 					}
 
 					selector_->setDataModel(model);
@@ -75,11 +73,14 @@ namespace xero
 						createPlot();
 				}
 
+				void setKey(const QString& key);
+
 			private:
 				static const constexpr double AnimationTimeStep = 0.1;
 
 			private:
 				void detailItemChanged(QListWidgetItem* item);
+				void resetAnimation();
 
 				void matchesRobotsSelected();
 				void comboxChanged(const QString& key);
@@ -158,7 +159,6 @@ namespace xero
 
 			private:
 				MatchTeamSelector* selector_;
-				PathFieldView* field_;
 				TimeBoundWidget* slider_;
 				QPushButton* detail_;
 				QSplitter* vertical_;
@@ -167,7 +167,6 @@ namespace xero
 				QTreeWidget* info_;
 				QListWidget* list_;
 				QCheckBox* all_;
-				QComboBox* mode_select_;
 
 				QTimer* animation_timer_;
 				double animation_time_;

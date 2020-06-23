@@ -49,6 +49,9 @@ namespace xero
 					return robots_->isChecked();
 				}
 
+				void setTeamKey(const QString& key);
+				void setMatchKey(const QString& key);
+
 			signals:
 				void robotSelected();
 				void matchSelected();

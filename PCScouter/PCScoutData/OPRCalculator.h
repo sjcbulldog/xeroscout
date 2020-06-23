@@ -55,6 +55,10 @@ namespace xero
 					return dm_;
 				}
 
+				const QString& field() const {
+					return field_;
+				}
+
 			private:
 				int calcRowCount();
 				int findTeamIndex(const QString &key);

@@ -46,14 +46,14 @@ namespace xero
 					return current_time_;
 				}
 
-				void setRangeMode(bool b) {
-					range_mode_ = b;
+				void setReplayMode(bool b) {
+					replay_mode_ = b;
 					current_time_ = range_start_;
 					update();
 				}
 
-				bool rangeMode() const {
-					return range_mode_;
+				bool replayMode() const {
+					return replay_mode_;
 				}
 
 				double minimum() const {
@@ -161,7 +161,7 @@ namespace xero
 				int NumberHeight;
 				State state_;
 
-				bool range_mode_;
+				bool replay_mode_;
 			};
 		}
 	}

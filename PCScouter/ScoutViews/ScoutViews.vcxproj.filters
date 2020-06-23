@@ -212,6 +212,9 @@
     <ClInclude Include="PatternListWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FieldBasedWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scoutviews_global.h">

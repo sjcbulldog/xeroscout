@@ -309,7 +309,7 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::NoModelView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem("----------------------------------------------------");
+	item = new QListWidgetItem("---------- Team Scouting ------------------------------------");
 	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
 
@@ -325,7 +325,7 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamDataSet)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem("----------------------------------------------------");
+	item = new QListWidgetItem("---------- Match Scouting ------------------------------------------");
 	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
 
@@ -345,12 +345,13 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchDataSet)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("matchgraphs.png"), "Pre-Match Graphs", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchGraphView)));
+
+	item = new QListWidgetItem("---------- Analysis ------------------------------------");
+	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem("----------------------------------------------------");
-	item->setFlags(Qt::ItemFlag::NoItemFlags);
+	item = new QListWidgetItem(loadIcon("matchgraphs.png"), "Pre-Match Graphs", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchGraphView)));
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("teamsummary.png"), "Single Team Summary", view_selector_);
@@ -369,20 +370,12 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PickListView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("customdata.png"), "Custom Data", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::CustomDataSet)));
-	view_selector_->addItem(item);
-
-	item = new QListWidgetItem("----------------------------------------------------");
+	item = new QListWidgetItem("---------- Zebra ------------------------------------------");
 	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Introduction", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraIntro)));
-	view_selector_->addItem(item);
-
-	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Data", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraDataView)));
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Region Editor", view_selector_);
@@ -393,11 +386,23 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraPatternEditor)));
 	view_selector_->addItem(item);
 
+	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Track View", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraTrackView)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Heatmap View", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraHeatmapView)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem(loadIcon("zebradata.png"), "Zebra Replay View", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraReplayView)));
+	view_selector_->addItem(item);
+
 	item = new QListWidgetItem(loadIcon("sequence.png"), "Zebra Analysis", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::ZebraAnalysis)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem("----------------------------------------------------");
+	item = new QListWidgetItem("---------- Misc ------------------------------------------");
 	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
 
@@ -409,7 +414,11 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MergeListView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem("----------------------------------------------------");
+	item = new QListWidgetItem(loadIcon("customdata.png"), "Custom Data", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::CustomDataSet)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem("---------- Experimental ------------------------------------------");
 	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
 
@@ -425,6 +434,7 @@ void PCScouter::createWindows()
 
 	view_frame_ = new DocumentView(images_, year_, "", top_bottom_splitter_);
 	connect(view_frame_, &DocumentView::logMessage, this, &PCScouter::logMessage);
+	connect(view_frame_, &DocumentView::switchView, this, &PCScouter::switchView);
 
 	DataSetViewWidget * ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
 	connect(ds, &DataSetViewWidget::rowChanged, this, &PCScouter::matchRowChanged);
@@ -711,6 +721,24 @@ void PCScouter::processTimer()
 // Display related
 ////////////////////////////////////////////////////////////
 
+void PCScouter::switchView(DocumentView::ViewType vt, const QString& key)
+{
+	for (int i = 0; i < view_selector_->count(); i++)
+	{
+		QListWidgetItem* item = view_selector_->item(i);
+		const QVariant& v = item->data(Qt::UserRole);
+		if (v.isValid() && v.type() == QVariant::Type::Int && v.toInt() == static_cast<int>(vt))
+		{
+			view_selector_->setCurrentRow(i);
+			break;
+		}
+	}
+
+	ViewBase* vb = dynamic_cast<ViewBase*>(view_frame_->currentWidget()); 
+	if (vb != nullptr)
+		vb->setKey(key);
+}
+
 void PCScouter::showIPAddresses()
 {
 	QString addrstr;
@@ -947,8 +975,7 @@ void PCScouter::importZebraDataComplete(bool err)
 {
 	saveAndBackup();
 
-	ZebraViewWidget* w = dynamic_cast<ZebraViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::ZebraDataView));
-	w->setNeedRefresh();
+	view_frame_->needsRefreshAll();
 }
 
 void PCScouter::importZebraData()
@@ -1377,13 +1404,33 @@ void PCScouter::magicWordTyped(SpecialListWidget::Word w)
 	}
 }
 
+void PCScouter::findPointFields(QStringList& list)
+{
+	list.clear();
+
+	auto m = data_model_->matches().front();
+	if (!m->hasExtraField("ba_totalPoints"))
+		return;
+
+	for (auto f : *m->extraData(Alliance::Red, 1))
+	{
+		if (f.first.endsWith("Points") && f.first != "ba_totalPoints")
+			list.push_back(f.first);
+	}
+}
+
 void PCScouter::outputExpData(ScoutingDataSet& ds)
 {
+	int nopredict = 5;
 	Alliance c;
 	QStringList fields = { "ba_autoCellPoints", "ba_autoInitLinePoints", "ba_controlPanelPoints", "ba_endgamePoints", "ba_teleopCellPoints", "ba_foulPoints" };
 	std::vector<OPRCalculator*> oprs;
 
+	findPointFields(fields);
 	ds.clear();
+
+	if (fields.size() == 0)
+		return;
 
 	OPRCalculator opr(data_model_, "ba_totalPoints");
 	opr.calc();
@@ -1394,13 +1441,20 @@ void PCScouter::outputExpData(ScoutingDataSet& ds)
 	for (const QString& field : fields)
 	{
 		auto opr = new OPRCalculator(data_model_, field);
-		assert(opr->calc() == true);
+		opr->calc();
 		oprs.push_back(opr);
 	}
+	qDebug() << "Added " << oprs.size() << " OPR Fields";
 
-	ds.addHeader(std::make_shared<FieldDesc>("Match", FieldDesc::Type::String, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("MatchKey", FieldDesc::Type::String, false, true));
 	ds.addHeader(std::make_shared<FieldDesc>("Red Score", FieldDesc::Type::Double, false, true));
 	ds.addHeader(std::make_shared<FieldDesc>("Blue Score", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("R1", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("R2", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("R3", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("B1", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("B2", FieldDesc::Type::Double, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("B3", FieldDesc::Type::Double, false, true));
 	ds.addHeader(std::make_shared<FieldDesc>("Red OPR Score", FieldDesc::Type::Double, false, true));
 	ds.addHeader(std::make_shared<FieldDesc>("Blue OPR Score", FieldDesc::Type::Double, false, true));
 	ds.addHeader(std::make_shared<FieldDesc>("OPR Delta", FieldDesc::Type::Double, false, true));
@@ -1416,13 +1470,18 @@ void PCScouter::outputExpData(ScoutingDataSet& ds)
 	ds.addHeader(std::make_shared<FieldDesc>("OPR Winner", FieldDesc::Type::String, false, true));
 	ds.addHeader(std::make_shared<FieldDesc>("NPR Winner", FieldDesc::Type::String, false, true));
 	ds.addHeader(std::make_shared<FieldDesc>("Partial OPR Winner", FieldDesc::Type::String, false, true));
+	ds.addHeader(std::make_shared<FieldDesc>("Predicted", FieldDesc::Type::String, false, true));
 
 
 	int row = 0;
+	int miss = 1;
+	int none = 1;
 	for (auto m : data_model_->matches())
 	{
-		ds.newRow();
+		if (!m->hasExtraField("ba_totalPoints"))
+			continue;
 
+		ds.newRow();
 		ds.addData(m->key());
 
 		auto it = m->extraData(Alliance::Red, 1)->find("ba_totalPoints");
@@ -1445,10 +1504,14 @@ void PCScouter::outputExpData(ScoutingDataSet& ds)
 		double rednpr;
 		double bluenpr;
 
+		Alliance w[3], wact;
+
 		c = Alliance::Red;
 		for (int slot = 1; slot <= 3; slot++)
 		{
 			QString team = m->team(c, slot);
+			auto t = data_model_->findTeamByKey(team);
+			ds.addData(t->number());
 			redopr += opr[team];
 			reddpr += dpr[team];
 		}
@@ -1457,6 +1520,8 @@ void PCScouter::outputExpData(ScoutingDataSet& ds)
 		for (int slot = 1; slot <= 3; slot++)
 		{
 			QString team = m->team(c, slot);
+			auto t = data_model_->findTeamByKey(team);
+			ds.addData(t->number());
 			blueopr += opr[team];
 			bluedpr += dpr[team];
 		}
@@ -1487,6 +1552,7 @@ void PCScouter::outputExpData(ScoutingDataSet& ds)
 			QString team = m->team(c, slot);
 			for (auto one : oprs)
 			{
+				qDebug() << "team " << team << " field " << one->field() << " value " << (*one)[team];
 				redpartial += (*one)[team];
 			}
 		}
@@ -1497,6 +1563,7 @@ void PCScouter::outputExpData(ScoutingDataSet& ds)
 			QString team = m->team(c, slot);
 			for (auto one : oprs)
 			{
+				qDebug() << "team " << team << " field " << one->field() << " value " << (*one)[team];
 				bluepartial += (*one)[team];
 			}
 		}
@@ -1505,49 +1572,88 @@ void PCScouter::outputExpData(ScoutingDataSet& ds)
 		ds.addData(bluepartial);
 		ds.addData(std::fabs(redpartial - bluepartial));
 
+		
 		if (redscore > bluescore)
-			ds.addData("RED");
-		else
-			ds.addData("BLUE");
-
-		if (std::fabs(redopr - blueopr) < 10.0)
 		{
+			wact = Alliance::Red;
+			ds.addData("RED");
+		}
+		else
+		{
+			wact = Alliance::Blue;
+			ds.addData("BLUE");
+		}
+
+		if (std::fabs(redopr - blueopr) < nopredict)
+		{
+			w[0] = Alliance::Invalid;
 			ds.addData("");
 		}
 		else if (redopr > blueopr)
 		{
+			w[0] = Alliance::Red;
 			ds.addData("RED");
 		}
 		else
 		{
+			w[0] = Alliance::Blue;
 			ds.addData("BLUE");
 		}
 
-		if (std::fabs(rednpr - bluenpr) < 10.0)
+		if (std::fabs(rednpr - bluenpr) < nopredict)
 		{
+			w[1] = Alliance::Invalid;
 			ds.addData("");
 		}
 		else if (rednpr > bluenpr)
 		{
+			w[1] = Alliance::Red;
 			ds.addData("RED");
 		}
 		else
 		{
+			w[1] = Alliance::Blue;
 			ds.addData("BLUE");
 		}
 
-		if (std::fabs(redpartial - bluepartial) < 10.0)
+		if (std::fabs(redpartial - bluepartial) < nopredict)
 		{
+			w[2] = Alliance::Invalid;
 			ds.addData("");
 		}
 		else if (redpartial > bluepartial)
 		{
+			w[2] = Alliance::Red;
 			ds.addData("RED");
 		}
 		else
 		{
+			w[2] = Alliance::Blue;
 			ds.addData("BLUE");
 		}
+
+		int bcnt = 0;
+		int rcnt = 0;
+		for (int i = 0; i < 3; i++)
+		{
+			if (w[i] == Alliance::Red)
+				rcnt++;
+			else if (w[i] == Alliance::Blue)
+				bcnt++;
+		}
+
+		Alliance predicted = Alliance::Invalid;
+		if (rcnt > bcnt)
+			predicted = Alliance::Red;
+		else if (bcnt > rcnt)
+			predicted = Alliance::Blue;
+
+		if (predicted != Alliance::Invalid && predicted != wact)
+			ds.addData("MISS-" + QString::number(miss++));
+		else if (predicted == Alliance::Invalid)
+			ds.addData("NONE-" + QString::number(none++));
+		else
+			ds.addData("OK");
 
 		row++;
 	}

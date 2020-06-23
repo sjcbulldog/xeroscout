@@ -15,18 +15,21 @@ namespace xero
 	{
 		namespace views
 		{
-			ZebraRegionEditor::ZebraRegionEditor(QWidget* parent) : QWidget(parent), ViewBase("RegionEditor")
+			ZebraRegionEditor::ZebraRegionEditor(GameFieldManager &mgr, const QString &year, QWidget* parent) : FieldBasedWidget(mgr, parent), ViewBase("RegionEditor")
 			{
 				QVBoxLayout* vlay = new QVBoxLayout();
 				setLayout(vlay);
 
-				field_ = new PathFieldView(this);
-				connect(field_, &PathFieldView::showContextMenu, this, &ZebraRegionEditor::fieldContextMenu);
-				connect(field_, &PathFieldView::keyPressed, this, &ZebraRegionEditor::fieldKeyPressed);
-				field_->setViewMode(PathFieldView::ViewMode::Track);
-				vlay->addWidget(field_);
+				auto f = new PathFieldView(this);
+				setField(f, year);
 
-				field_->setViewMode(PathFieldView::ViewMode::Editor);
+				connect(field(), &PathFieldView::showContextMenu, this, &ZebraRegionEditor::fieldContextMenu);
+				connect(field(), &PathFieldView::keyPressed, this, &ZebraRegionEditor::fieldKeyPressed);
+				field()->setViewMode(PathFieldView::ViewMode::Track);
+				vlay->addWidget(field());
+
+
+				field()->setViewMode(PathFieldView::ViewMode::Editor);
 			}
 
 			ZebraRegionEditor::~ZebraRegionEditor()
@@ -43,9 +46,9 @@ namespace xero
 
 			void ZebraRegionEditor::madeActive()
 			{
-				field_->clearHighlights();
+				field()->clearHighlights();
 				for (auto h : dataModel()->fieldRegions())
-					field_->addHighlight(h);
+					field()->addHighlight(h);
 			}
 
 			void ZebraRegionEditor::fieldContextMenu(QPoint pt)
@@ -55,7 +58,7 @@ namespace xero
 				menu_point_ = pt;
 
 				QMenu* menu = new QMenu("Field");
-				QMenu* all = new QMenu("Add Highlight");
+				QMenu* all = new QMenu("Add Region");
 				menu->addMenu(all);
 
 				QMenu* both = new QMenu("Both Alliances");
@@ -106,7 +109,7 @@ namespace xero
 
 				all->addMenu(blue);
 
-				if (field_->isOneSelected())
+				if (field()->isOneSelected())
 				{
 					act = all->addAction("Rename Current Region");
 					connect(act, &QAction::triggered, this, &ZebraRegionEditor::renameRegion);
@@ -143,10 +146,10 @@ namespace xero
 			{
 				if (key == Qt::Key::Key_Delete)
 				{
-					auto list = field_->selectedRegions();
+					auto list = field()->selectedRegions();
 					for (auto r : list)
 					{
-						field_->removeHighlight(r);
+						field()->removeHighlight(r);
 						dataModel()->removeFieldRegion(r);
 					}
 				}
@@ -166,9 +169,9 @@ namespace xero
 						QMessageBox::critical(this, "Error", "Invalid region name, must be all letters");
 						return;
 					}
-					auto region = field_->selectedRegions().front();
+					auto region = field()->selectedRegions().front();
 					dataModel()->renameFieldRegion(region, name);
-					field_->update();
+					field()->update();
 				}
 			}
 
@@ -206,7 +209,7 @@ namespace xero
 						QMessageBox::critical(this, "Error", "Cannot add region, a region with the name '" + name + "' already exists");
 						return;
 					}
-					field_->addHighlight(h);
+					field()->addHighlight(h);
 				}
 			}
 
@@ -259,7 +262,7 @@ namespace xero
 							QMessageBox::critical(this, "Error", "Cannot add region, a region with the name '" + name + "' already exists");
 							return;
 						}
-						field_->addHighlight(h);
+						field()->addHighlight(h);
 					}
 					else
 					{
@@ -270,7 +273,7 @@ namespace xero
 							QMessageBox::critical(this, "Error", "Cannot add region, a region with the name '" + name + "' already exists");
 							return;
 						}
-						field_->addHighlight(h);
+						field()->addHighlight(h);
 					}
 				}
 			}
@@ -281,7 +284,7 @@ namespace xero
 				{
 					auto h = dataModel()->fieldRegions().front();
 					dataModel()->removeFieldRegion(h);
-					field_->removeHighlight(h);
+					field()->removeHighlight(h);
 				}
 			}
 
@@ -301,31 +304,31 @@ namespace xero
 				if (region != nullptr)
 				{
 					dataModel()->removeFieldRegion(region);
-					field_->removeHighlight(region);
+					field()->removeHighlight(region);
 				}
 			}
 
 			void ZebraRegionEditor::addHighlight(Alliance a, HighlightType ht)
 			{
-				QPointF fpt = field_->globalToWorld(menu_point_);
+				QPointF fpt = field()->globalToWorld(menu_point_);
 
 				if (ht == HighlightType::Circle)
 				{
-					field_->selectCircularArea();
+					field()->selectCircularArea();
 					auto cb = std::bind(&ZebraRegionEditor::areaSelected, this, std::placeholders::_1, a, ht);
-					field_connect_ = connect(field_, &PathFieldView::areaSelected, cb);
+					field_connect_ = connect(field(), &PathFieldView::areaSelected, cb);
 				}
 				else if (ht == HighlightType::Rectangle)
 				{
-					field_->selectRectArea();
+					field()->selectRectArea();
 					auto cb = std::bind(&ZebraRegionEditor::areaSelected, this, std::placeholders::_1, a, ht);
-					field_connect_ = connect(field_, &PathFieldView::areaSelected, cb);
+					field_connect_ = connect(field(), &PathFieldView::areaSelected, cb);
 				}
 				else if (ht == HighlightType::Polygon)
 				{
-					field_->selectPolygonArea();
+					field()->selectPolygonArea();
 					auto cb = std::bind(&ZebraRegionEditor::polygonSelected, this, std::placeholders::_1, a);
-					field_connect_ = connect(field_, &PathFieldView::polySelected, cb);
+					field_connect_ = connect(field(), &PathFieldView::polySelected, cb);
 				}
 			}
 

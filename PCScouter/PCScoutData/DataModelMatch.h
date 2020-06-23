@@ -177,6 +177,16 @@ namespace xero
 					return robot->hasExtraData();
 				}
 
+				bool hasExtraData() const {
+					return hasExtraData(Alliance::Red, 1) &&
+						hasExtraData(Alliance::Red, 2) &&
+						hasExtraData(Alliance::Red, 2) &&
+						hasExtraData(Alliance::Red, 3) &&
+						hasExtraData(Alliance::Blue, 1) &&
+						hasExtraData(Alliance::Blue, 2) &&
+						hasExtraData(Alliance::Blue, 3);
+				}
+
 				ConstScoutingDataMapPtr extraData(Alliance a, int slot) const {
 					auto robot = findRobotByColorSlot(a, slot);
 					assert(robot != nullptr);
@@ -197,6 +207,16 @@ namespace xero
 					}
 
 					return ret;
+				}
+
+				bool hasExtraField(const QString& name) const {
+					return hasExtraField(Alliance::Red, 1, name) &&
+						hasExtraField(Alliance::Red, 2, name) &&
+						hasExtraField(Alliance::Red, 2, name) &&
+						hasExtraField(Alliance::Red, 3, name) &&
+						hasExtraField(Alliance::Blue, 1, name) &&
+						hasExtraField(Alliance::Blue, 2, name) &&
+						hasExtraField(Alliance::Blue, 3, name);
 				}
 
 				QVariant value(Alliance a, int slot, const QString& name) const {

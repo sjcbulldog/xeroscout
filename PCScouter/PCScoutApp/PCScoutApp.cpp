@@ -965,6 +965,7 @@ int PCScoutApp::startScouting(const QString& key, FormView::FormType type, const
 	//
 	FormView* view = dynamic_cast<FormView*>(view_frame_->getWidget(index));
 	assert(view != nullptr);
+	view->refreshView();
 
 	setScoutingView(index);
 	return index;

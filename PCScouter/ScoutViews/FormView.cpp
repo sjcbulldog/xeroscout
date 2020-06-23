@@ -149,25 +149,28 @@ namespace xero
 
 			void FormView::refreshView()
 			{
-				std::shared_ptr<const ScoutingForm> form;
-
-				if (dataModel() != nullptr)
+				if (form_ == nullptr)
 				{
-					if (formtype_ == FormType::Team)
-					{
-						form = dataModel()->teamScoutingForm();
-					}
-					else if (formtype_ == FormType::Match)
-					{
-						form = dataModel()->matchScoutingForm();
-					}
-					else
-					{
-						assert(false);
-					}
-				}
+					std::shared_ptr<const ScoutingForm> form;
 
-				setScoutingForm(form);
+					if (dataModel() != nullptr)
+					{
+						if (formtype_ == FormType::Team)
+						{
+							form = dataModel()->teamScoutingForm();
+						}
+						else if (formtype_ == FormType::Match)
+						{
+							form = dataModel()->matchScoutingForm();
+						}
+						else
+						{
+							assert(false);
+						}
+					}
+
+					setScoutingForm(form);
+				}
 			}
 
 			void FormView::clearView()

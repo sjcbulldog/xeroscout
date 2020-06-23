@@ -109,7 +109,7 @@ namespace xero
 				auto p = act->patterns()[pattern];
 
 				int mincnt = QInputDialog::getInt(this, "Mininum Match Count", "Minimum Match Count", p->minCount());
-				int maxcnt = QInputDialog::getInt(this, "Maximum Match Count", "Minimum Match Count", p->maxCount());
+				int maxcnt = QInputDialog::getInt(this, "Maximum Match Count", "Maximum Match Count", p->maxCount());
 
 				act->setMinMaxCount(pattern, mincnt, maxcnt);
 				emit changedActivity(act);

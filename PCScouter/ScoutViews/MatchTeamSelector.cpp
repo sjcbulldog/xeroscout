@@ -37,6 +37,36 @@ namespace xero
 			{
 			}
 
+			void MatchTeamSelector::setTeamKey(const QString& key)
+			{
+				if (!robots_->isChecked())
+					robots_->setChecked(true);
+
+				for (int i = 0; i < box_->count(); i++)
+				{
+					if (box_->itemData(i).toString() == key)
+					{
+						box_->setCurrentIndex(i);
+						break;
+					}
+				}
+			}
+
+			void MatchTeamSelector::setMatchKey(const QString& key)
+			{
+				if (!matches_->isChecked())
+					matches_->setChecked(true);
+
+				for (int i = 0; i < box_->count(); i++)
+				{
+					if (box_->itemData(i).toString() == key)
+					{
+						box_->setCurrentIndex(i);
+						break;
+					}
+				}
+			}
+
 			void MatchTeamSelector::update()
 			{
 				box_->clear();

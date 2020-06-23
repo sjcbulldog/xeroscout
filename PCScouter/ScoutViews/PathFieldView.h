@@ -49,7 +49,7 @@ namespace xero
 				{
 					Heatmap,
 					Track,
-					Robot,
+					Replay,
 					Editor
 				};
 

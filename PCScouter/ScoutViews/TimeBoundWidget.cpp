@@ -47,7 +47,7 @@ namespace xero
 				setMaximumHeight(NumberHeight + IndicatorHeight + TickRegionHeight);
 
 				state_ = State::None;
-				range_mode_ = true;
+				replay_mode_ = false;
 
 				current_time_ = std::numeric_limits<double>::max();
 			}
@@ -74,7 +74,7 @@ namespace xero
 				act = menu->addAction("Complete Match");
 				connect(act, &QAction::triggered, this, &TimeBoundWidget::completeMatch);
 
-				if (!range_mode_)
+				if (replay_mode_)
 				{
 					QMenu* sub = new QMenu("Animation");
 
@@ -240,7 +240,7 @@ namespace xero
 
 			void TimeBoundWidget::drawCurrent(QPainter& p)
 			{
-				if (!range_mode_ && current_time_ >= minv_ && current_time_ <= maxv_)
+				if (replay_mode_ && current_time_ >= minv_ && current_time_ <= maxv_)
 				{
 					int height = 0;
 

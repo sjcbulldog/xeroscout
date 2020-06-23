@@ -144,6 +144,7 @@ private:
 
 	void processAppController();
 
+	void switchView(xero::scouting::views::DocumentView::ViewType vt, const QString& key);
 	void logMessage(const QString& msg);
 	void errorMessage(const QString& msg);
 	void coachSyncError(const QString& msg);
@@ -153,6 +154,7 @@ private:
 	void matchRowChanged(int row, int col);
 
 	void outputExpData(xero::scouting::datamodel::ScoutingDataSet& ds);
+	void findPointFields(QStringList& list);
 
 private:
 	// 

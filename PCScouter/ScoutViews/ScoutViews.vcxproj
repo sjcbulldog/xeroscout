@@ -132,6 +132,7 @@
     <ClInclude Include="DataSetItemDelegate.h" />
     <QtMoc Include="EditName.h" />
     <ClInclude Include="ExpressionsEntryDialog.h" />
+    <ClInclude Include="FieldBasedWidget.h" />
     <ClInclude Include="GameField.h" />
     <ClInclude Include="GameFieldManager.h" />
     <ClInclude Include="GraphConfigurationDialog.h" />

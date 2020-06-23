@@ -3,6 +3,8 @@
 #include "Alliance.h"
 #include "PathFieldView.h"
 #include "ViewBase.h"
+#include "FieldBasedWidget.h"
+#include "GameFieldManager.h"
 #include <QWidget>
 
 namespace xero
@@ -11,18 +13,16 @@ namespace xero
 	{
 		namespace views
 		{
-			class ZebraRegionEditor : public QWidget, public ViewBase
+			class ZebraRegionEditor : public FieldBasedWidget, public ViewBase
 			{
 			public:
-				ZebraRegionEditor(QWidget* parent);
+				ZebraRegionEditor(GameFieldManager &mgr, const QString &year, QWidget* parent);
 				virtual ~ZebraRegionEditor();
 
 				virtual void clearView() override ;
 				virtual void refreshView() override ;
 
 				virtual void madeActive() override;
-
-				PathFieldView* field() { return field_; }
 
 			private:
 
@@ -45,7 +45,6 @@ namespace xero
 				void removeAllRegions();
 
 			private:
-				PathFieldView* field_;
 				QMetaObject::Connection field_connect_;
 				QPoint menu_point_;
 			};

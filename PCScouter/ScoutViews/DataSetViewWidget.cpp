@@ -22,6 +22,7 @@
 
 #include "DataSetViewWidget.h"
 #include "DataSetItemDelegate.h"
+#include "DocumentView.h"
 #include <QLabel>
 #include <QContextMenuEvent>
 #include <QMenu>
@@ -29,6 +30,7 @@
 #include <QBoxLayout>
 #include <QScrollBar>
 #include <QHeaderView>
+#include <QDesktopServices>
 #include <cmath>
 
 using namespace xero::scouting::datamodel;
@@ -70,6 +72,7 @@ namespace xero
 
 				table_ = new QTableWidget(this);
 				table_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Fixed);
+				table_->installEventFilter(this);
 				addWidget(table_);
 
 				connect(table_, &QTableWidget::itemChanged, this, &DataSetViewWidget::itemChanged);
@@ -80,6 +83,9 @@ namespace xero
 
 				table_->horizontalHeader()->setSectionsMovable(true);
 				connect(table_->horizontalHeader(), &QHeaderView::sectionMoved, this, &DataSetViewWidget::columnMoved);
+
+				table_->setContextMenuPolicy(Qt::CustomContextMenu);
+				connect(table_, &QTableWidget::customContextMenuRequested, this, &DataSetViewWidget::cellContextMenuRequested);
 			}
 
 			DataSetViewWidget::DataSetViewWidget(const QString& name, bool editable, 
@@ -90,6 +96,101 @@ namespace xero
 
 			DataSetViewWidget::~DataSetViewWidget()
 			{
+			}
+
+			bool DataSetViewWidget::eventFilter(QObject* o, QEvent* e)
+			{
+				bool ret = false;
+
+				if (e->type() == QEvent::KeyPress)
+				{
+					QKeyEvent* k = dynamic_cast<QKeyEvent*>(e);
+					if (k != nullptr)
+					{
+						if (k->key() == Qt::Key::Key_Plus && (k->modifiers() & Qt::ControlModifier) != 0)
+						{
+							QFont f = table_->font();
+							f.setPointSizeF(f.pointSizeF() + 1.0);
+							table_->setFont(f);
+							table_->resizeColumnsToContents();
+							table_->update();
+							ret = true;
+						}
+						else if (k->key() == Qt::Key::Key_Minus && (k->modifiers() & Qt::ControlModifier) != 0)
+						{
+							QFont f = table_->font();
+							f.setPointSizeF(f.pointSizeF() - 1.0);
+							table_->setFont(f);
+							table_->resizeColumnsToContents();
+							table_->update();
+							ret = true;
+						}
+					}
+				}
+
+				return ret;
+			}
+
+			void DataSetViewWidget::cellContextMenuRequested(const QPoint& pt)
+			{
+				QTableWidgetItem* item = table_->itemAt(pt);
+				if (item != nullptr && item->column() >= 0 && item->column() < data_.columnCount())
+				{
+					auto hdr = data_.colHeader(item->column());
+					if (hdr->name() == "MatchKey")
+					{
+						auto m = dataModel()->findMatchByKey(item->text());
+						if (m != nullptr)
+						{
+							QMenu* menu = new QMenu();
+							QAction* act;
+
+							if (m->hasZebra())
+							{
+								act = menu->addAction("View Zebra Match Replay");
+								auto cb = std::bind(&DataSetViewWidget::viewMatchReplay, this, m->key());
+								connect(act, &QAction::triggered, cb);
+							}
+
+							if (m->youtubeKey().length() > 0)
+							{
+								act = menu->addAction("View Match YouTube Video");
+								auto cb = std::bind(&DataSetViewWidget::viewMatchVideo, this, m->key());
+								connect(act, &QAction::triggered, cb);
+							}
+
+							QPoint gpt = mapToGlobal(pt);
+							menu->exec(gpt);
+						}
+					}
+				}
+			}
+
+			void DataSetViewWidget::viewMatchReplay(const QString& key)
+			{
+				QObject* p = parent();
+
+				while (p != nullptr)
+				{
+					DocumentView* dv = dynamic_cast<DocumentView*>(p);
+					if (dv != nullptr)
+					{
+						dv->emitSwitchViewSignal(DocumentView::ViewType::ZebraReplayView, key);
+						break;
+					}
+
+					p = p->parent();
+				}
+			}
+
+			void DataSetViewWidget::viewMatchVideo(const QString& key)
+			{
+				auto m = dataModel()->findMatchByKey(key);
+				if (m->youtubeKey().length() > 0)
+				{
+					QString url = "https://www.youtube.com/watch?v=" + m->youtubeKey();
+					QDesktopServices::openUrl(url);
+				}
 			}
 
 			void DataSetViewWidget::itemChanged(QTableWidgetItem* item)

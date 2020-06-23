@@ -43,26 +43,14 @@ namespace xero
 	{
 		namespace views
 		{
-			ZebraViewWidget::ZebraViewWidget(QWidget* parent) : QWidget(parent), ViewBase("ZebraViewWidget")
+			ZebraViewWidget::ZebraViewWidget(QWidget* parent, GameFieldManager &mgr, const QString &year, 
+						const QString &name, PathFieldView::ViewMode vm) : FieldBasedWidget(mgr, parent), ViewBase(name)
 			{
 				QVBoxLayout* vlay = new QVBoxLayout();
 				setLayout(vlay);
 
-				QWidget* top = new QWidget(this);
-				vlay->addWidget(top);
-
-				QHBoxLayout* hlay = new QHBoxLayout();
-				top->setLayout(hlay);
-
-				mode_select_ = new QComboBox(top);
-				hlay->addWidget(mode_select_);
-				mode_select_->addItem("Tracks", static_cast<int>(PathFieldView::ViewMode::Track));
-				mode_select_->addItem("Heatmap", static_cast<int>(PathFieldView::ViewMode::Heatmap));
-				mode_select_->addItem("Replay", static_cast<int>(PathFieldView::ViewMode::Robot));
-				(void)connect(mode_select_, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged), this, &ZebraViewWidget::modeChanged);
-
-				selector_ = new MatchTeamSelector(dataModel(), top);
-				hlay->addWidget(selector_);
+				selector_ = new MatchTeamSelector(dataModel(), this);
+				vlay->addWidget(selector_);
 				connect(selector_, &MatchTeamSelector::matchSelected, this, &ZebraViewWidget::matchesRobotsSelected);
 				connect(selector_, &MatchTeamSelector::robotSelected, this, &ZebraViewWidget::matchesRobotsSelected);
 				connect(selector_, &MatchTeamSelector::selectedItemChanged, this, &ZebraViewWidget::comboxChanged);
@@ -72,10 +60,11 @@ namespace xero
 				QSizePolicy p = QSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 				vertical_->setSizePolicy(p);
 
-				field_ = new PathFieldView(vertical_);
-				connect(field_, &PathFieldView::showContextMenu, this, &ZebraViewWidget::fieldContextMenu);
-				field_->setViewMode(PathFieldView::ViewMode::Track);
-				vertical_->addWidget(field_);
+				auto f = new PathFieldView(vertical_);
+				setField(f, year);
+				connect(field(), &PathFieldView::showContextMenu, this, &ZebraViewWidget::fieldContextMenu);
+				vertical_->addWidget(field());
+				field()->setViewMode(vm);
 
 				horizontal_ = new QSplitter(Qt::Orientation::Vertical, vertical_);
 				vertical_->addWidget(horizontal_);
@@ -106,6 +95,15 @@ namespace xero
 				connect(slider_, &TimeBoundWidget::currentTimeChanged, this, &ZebraViewWidget::animationSetTime);
 
 				animation_timer_ = nullptr;
+
+				if (vm == PathFieldView::ViewMode::Replay)
+				{
+					//
+					// Setup the slider for replay mode.
+					//
+					slider_->setReplayMode(true);
+					animationSetTime(slider_->rangeStart());
+				}
 			}
 
 			ZebraViewWidget::~ZebraViewWidget()
@@ -117,13 +115,13 @@ namespace xero
 				menu_point_ = pt;
 				QAction* act;
 
-				if (field_->viewMode() == PathFieldView::ViewMode::Robot)
+				if (field()->viewMode() == PathFieldView::ViewMode::Replay)
 				{
 					QMenu* menu = new QMenu("Field");
 
 					act = menu->addAction("Show Defense");
 					act->setCheckable(true);
-					if (field_->showDefense())
+					if (field()->showDefense())
 						act->setChecked(true);
 					else
 						act->setChecked(false);
@@ -135,9 +133,8 @@ namespace xero
 
 			void ZebraViewWidget::defenseToggled()
 			{
-				field_->setShowDefense(!field_->showDefense());
+				field()->setShowDefense(!field()->showDefense());
 			}
-
 
 			void ZebraViewWidget::sliderChangedAnimationState(bool state, double mult)
 			{
@@ -175,7 +172,7 @@ namespace xero
 				slider_->setCurrentTime(t);
 
 				slider_->update();
-				field_->update();
+				field()->update();
 			}
 
 			void ZebraViewWidget::animationProc()
@@ -216,7 +213,7 @@ namespace xero
 				{
 					if (!entries_[entindex].enabled())
 					{
-						field_->addTrack(entries_[entindex].track());
+						field()->addTrack(entries_[entindex].track());
 						entries_[entindex].setEnabled(true);
 					}
 				}
@@ -224,11 +221,11 @@ namespace xero
 				{
 					if (entries_[entindex].enabled())
 					{
-						field_->removeTrack(entries_[entindex].track());
+						field()->removeTrack(entries_[entindex].track());
 						entries_[entindex].setEnabled(false);
 					}
 				}
-				field_->update();
+				field()->update();
 
 				bool allon = true;
 				bool alloff = true;
@@ -260,26 +257,32 @@ namespace xero
 
 			void ZebraViewWidget::rangeChanged(double minv, double maxv)
 			{
-				for (auto t : field_->tracks())
+				for (auto t : field()->tracks())
 				{
 					t->setRange(slider_->rangeStart(), slider_->rangeEnd());
 				}
 
 				updatePerformance(true);
-				field_->update();
+				field()->update();
 			}
 
 			void ZebraViewWidget::clearView()
 			{
 				selector_->clear();
-				field_->clearTracks();
+				field()->clearTracks();
 				entries_.clear();
 			}
 
 			void ZebraViewWidget::refreshView()
 			{
 				if (dataModel() != nullptr)
+				{
+					field()->clearHighlights();
+					for (auto h : dataModel()->fieldRegions())
+						field()->addHighlight(h);
+
 					createPlot();
+				}
 			}
 
 			QColor ZebraViewWidget::matchRobotColor(xero::scouting::datamodel::Alliance c, int slot)
@@ -320,47 +323,52 @@ namespace xero
 				return ret;
 			}
 
+			void ZebraViewWidget::resetAnimation()
+			{
+				if (field()->viewMode() == PathFieldView::ViewMode::Replay)
+				{
+					animationSetTime(slider_->minimum());
+					if (animation_timer_ != nullptr)
+					{
+						animation_timer_->stop();
+						delete animation_timer_;
+						animation_timer_ = nullptr;
+					}
+				}
+			}
+
 			//
 			// This is called when the matches radio button changes.  We only process the
 			// event when checked is true meaning the user has asked for matches
 			//
 			void ZebraViewWidget::matchesRobotsSelected()
 			{
+				resetAnimation();
 				setNeedRefresh();
 				createPlot();
 			}
 
+			void ZebraViewWidget::setKey(const QString& key)
+			{
+				if (dataModel()->findMatchByKey(key))
+				{
+					selector_->setMatchKey(key);
+				}
+				else if (dataModel()->findTeamByKey(key))
+				{
+					selector_->setTeamKey(key);
+				}
+			}
+
 			void ZebraViewWidget::comboxChanged(const QString &key)
 			{
-				if (field_->viewMode() == PathFieldView::ViewMode::Robot && animation_timer_ != nullptr)
-				{
-					animation_timer_->stop();
-					delete animation_timer_;
-					animation_timer_ = nullptr;
-					slider_->setCurrentTime(slider_->minimum());
-				}
+				resetAnimation();
 
 				if (key.length() > 0)
 				{
 					setNeedRefresh();
 					createPlot();
-					field_->update();
-				}
-			}
-
-			void ZebraViewWidget::modeChanged(int which)
-			{
-				auto m = static_cast<PathFieldView::ViewMode>(mode_select_->itemData(which).toInt());
-				field_->setViewMode(m);
-				field_->update();
-
-				if (m == PathFieldView::ViewMode::Robot)
-				{
-					slider_->setRangeMode(false);
-				}
-				else
-				{
-					slider_->setRangeMode(true);
+					field()->update();
 				}
 			}
 
@@ -404,7 +412,7 @@ namespace xero
 				TrackEntry te(mkey, tkey, track);
 				entries_.push_back(te);
 
-				field_->addTrack(track);
+				field()->addTrack(track);
 				track->setRange(slider_->rangeStart(), slider_->rangeEnd());
 
 				return track;
@@ -438,7 +446,7 @@ namespace xero
 				if (!needsRefresh())
 					return;
 
-				field_->clearTracks();
+				field()->clearTracks();
 				entries_.clear();
 
 				auto m = dataModel()->findMatchByKey(mkey);
@@ -467,7 +475,7 @@ namespace xero
 					return;
 
 				entries_.clear();
-				field_->clearTracks();
+				field()->clearTracks();
 
 				for (auto m : dataModel()->matches())
 				{

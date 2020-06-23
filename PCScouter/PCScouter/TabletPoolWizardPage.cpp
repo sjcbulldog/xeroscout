@@ -77,6 +77,12 @@ QWidget* TabletPoolWizardPage::createTabletPoolWidget(QWidget* parent)
 	pool_list_ = new TabletPoolListWidget(w);
 	l->addWidget(pool_list_);
 
+	label = new QLabel("INS key to add, DEL key to delete");
+	QFont f = label->font();
+	f.setPointSizeF(6.0);
+	label->setFont(f);
+	l->addWidget(label);
+
 	connect(pool_list_, &QListWidget::itemChanged, this, &TabletPoolWizardPage::poolChanged);
 	connect(pool_list_, &TabletPoolListWidget::tabletDeleted, this, &TabletPoolWizardPage::tabletDeleted);
 	connect(pool_list_, &TabletPoolListWidget::tabletRenamed, this, &TabletPoolWizardPage::tabletRenamed);
@@ -148,6 +154,12 @@ QWidget* TabletPoolWizardPage::createMatchScoutList(QWidget *parent)
 	l->addWidget(match_list_);
 	match_list_->setDragDropMode(QAbstractItemView::DragDropMode::DropOnly);
 
+	label = new QLabel("drag from tablet pool");
+	QFont f = label->font();
+	f.setPointSizeF(6.0);
+	label->setFont(f);
+	l->addWidget(label);
+
 	connect(match_list_, &QListWidget::itemChanged, this, &TabletPoolWizardPage::matchChanged);
 
 	return w;
@@ -176,6 +188,12 @@ QWidget* TabletPoolWizardPage::createPitScoutList(QWidget* parent)
 	pit_list_ = new AdvListWidget(w);
 	l->addWidget(pit_list_);
 	pit_list_->setDragDropMode(QAbstractItemView::DragDropMode::DropOnly);
+
+	label = new QLabel("drag from tablet pool");
+	QFont f = label->font();
+	f.setPointSizeF(6.0);
+	label->setFont(f);
+	l->addWidget(label);
 
 	connect(pit_list_, &QListWidget::itemChanged, this, &TabletPoolWizardPage::pitChanged);
 
