@@ -60,5 +60,22 @@ TEST_CASE("ExprPrecedence")
 		v = e.eval(ctxt);
 		REQUIRE(v.type() == QVariant::Type::Int);
 		REQUIRE(v.toInt() == 39);
+
+		ret = e.parse(ctxt, "3 * 1 > 1 + 1", err);
+		REQUIRE(ret == true);
+		REQUIRE(err.length() == 0);
+
+		v = e.eval(ctxt);
+		REQUIRE(v.type() == QVariant::Type::Bool);
+		REQUIRE(v.toBool() == true);
+
+		ret = e.parse(ctxt, "(2 > 1) || (1 > 2) && (3 > 4) || (4 > 3)", err);
+		REQUIRE(ret == true);
+		REQUIRE(err.length() == 0);
+
+		v = e.eval(ctxt);
+		REQUIRE(v.type() == QVariant::Type::Bool);
+		REQUIRE(v.toBool() == true);
+
 	}
 }

@@ -84,6 +84,20 @@ namespace xero
 					analyzeOneSequence(seq);
 			}
 
+			bool SequenceAnalyzer::isDuplicate(const MatchedSequence& m)
+			{
+				for (const MatchedSequence& one : matches_)
+				{
+					if (one.name() != m.name())
+						continue;
+
+					if (one.end() == m.end())
+						return true;
+				}
+
+				return false;
+			}
+
 			void SequenceAnalyzer::analyzeOneSequence(std::shared_ptr<ZebraSequence> seq)
 			{
 				for (int i = 0; i < seq->size(); i++)
@@ -93,8 +107,13 @@ namespace xero
 						std::pair<int, int> match = seq->matchPattern(p->patterns(), i);
 						if (match.first != -1 && match.second != -1)
 						{
+							//
+							// We have a match, make sure its not a duplicate
+							//
+
 							MatchedSequence m(p->name(), seq, match.first, match.second);
-							matches_.push_back(m);
+							if (!isDuplicate(m))
+								matches_.push_back(m);
 						}
 					}
 				}

@@ -66,6 +66,19 @@ namespace xero
 						}
 					}
 
+					int i = activities_.size() - 1;
+					while (i >= 0)
+					{
+						if (activities_[i]->count() == 0)
+						{
+							auto act = activities_[i];
+							activities_.erase(activities_.begin() + i);
+							emit deletedActivity(act); 
+						}
+
+						i--;
+					}
+					
 					selected_.clear();
 					update();
 				}

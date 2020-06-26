@@ -39,6 +39,14 @@ namespace xero
 				Minus,
 				Times,
 				Divide,
+				LessThan,
+				GreaterThan,
+				Equal,
+				NotEqual,
+				GreaterEqual,
+				LessThanEqual,
+				LogicalAnd,
+				LogicalOr,
 			};
 
 		public:
@@ -60,6 +68,14 @@ namespace xero
 			static QVariant minus(const QVariant& v1, const QVariant& v2);
 			static QVariant times(const QVariant& v1, const QVariant& v2);
 			static QVariant divide(const QVariant& v1, const QVariant& v2);
+			static QVariant lessthan(const QVariant& v1, const QVariant& v2);
+			static QVariant greaterthan(const QVariant& v1, const QVariant& v2);
+			static QVariant equal(const QVariant& v1, const QVariant& v2);
+			static QVariant notequal(const QVariant& v1, const QVariant& v2);
+			static QVariant greaterequal(const QVariant& v1, const QVariant& v2);
+			static QVariant lessthanequal(const QVariant& v1, const QVariant& v2);
+			static QVariant logicaland(const QVariant& v1, const QVariant& v2);
+			static QVariant logicalor(const QVariant& v1, const QVariant& v2);
 
 		private:
 			OpType op_;

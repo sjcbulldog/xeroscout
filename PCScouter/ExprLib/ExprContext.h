@@ -24,11 +24,14 @@
 
 #include "exprlib_global.h"
 #include <QVariant>
+#include <memory>
 
 namespace xero
 {
 	namespace expr
 	{
+		class ExprNode;
+
 		class EXPRLIB_EXPORT ExprContext
 		{
 		public:
@@ -38,8 +41,23 @@ namespace xero
 			virtual ~ExprContext() {
 			}
 
-			virtual bool isValidVariable(const QString&) = 0;
-			virtual QVariant getVariable(const QString& name) = 0;
+			virtual bool isValidVariable(const QString&) {
+				return false;
+			}
+
+			virtual QVariant getVariable(const QString& name) {
+				QVariant v;
+				return v;
+			}
+
+			virtual bool isValidFunction(const QString& name) {
+				return false;
+			}
+
+			virtual QVariant evalFunction(const QString &name, std::vector<std::shared_ptr<ExprNode>> values) {
+				QVariant v;
+				return v;
+			}
 
 		private:
 		};

@@ -123,6 +123,13 @@ namespace xero
 			constexpr const char* JsonMinName = "min";
 			constexpr const char* JsonMaxName = "max";
 			constexpr const char* JsonIdleValueName = "idle";
+			constexpr const char* JsonRulesName = "rules";
+			constexpr const char* JsonDescriptionName = "description";
+			constexpr const char* JsonForegroundName = "foreground";
+			constexpr const char* JsonBackgroundName = "background";
+			constexpr const char* JsonEquationName = "equation";
+			constexpr const char* JsonSelectListName = "select";
+			constexpr const char* JsonHighlightListName = "highlight";
 		}
 	}
 }

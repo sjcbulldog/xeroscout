@@ -75,7 +75,7 @@ ScoutingDataMapPtr KPIController::evToData(const QString& tkey, const QString& e
 	model->clearDatabaseTables();
 
 	QString query, error;
-	ScoutingDataSet ds;
+	ScoutingDataSet ds("$kpi");
 	query = "select * from matches where MatchTeamKey='" + tkey + "'";
 	if (!model->createCustomDataSet(ds, query, error))
 	{
@@ -106,7 +106,7 @@ ScoutingDataMapPtr KPIController::evToData(const QString& tkey, const QString& e
 void KPIController::computeKPI()
 {
 	auto& baevents = blueAlliance()->getEngine().events();
-	ScoutingDataSet ds;
+	ScoutingDataSet ds("$kpi");
 	QString query, error;
 
 	for (const QString& ev : evlist_)

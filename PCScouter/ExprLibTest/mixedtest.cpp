@@ -102,4 +102,29 @@ TEST_CASE("ExprMixedTest")
 		REQUIRE(v.type() == QVariant::Type::Double);
 		REQUIRE_THAT(v.toDouble(), Catch::Matchers::Floating::WithinAbsMatcher(4.0, 1e-6));
 	}
+
+	SECTION("Equality")
+	{
+		ExprLibTestContext ctxt;
+		QVariant v;
+		QString err;
+		Expr e;
+		bool ret;
+
+		ret = e.parse(ctxt, "2 + 2 == 3 + 1", err);
+		REQUIRE(ret == true);
+		REQUIRE(err.length() == 0);
+
+		v = e.eval(ctxt);
+		REQUIRE(v.type() == QVariant::Type::Bool);
+		REQUIRE(v.toBool() == true);
+
+		ret = e.parse(ctxt, "3 * 3 == 10 - 2", err);
+		REQUIRE(ret == true);
+		REQUIRE(err.length() == 0);
+
+		v = e.eval(ctxt);
+		REQUIRE(v.type() == QVariant::Type::Bool);
+		REQUIRE(v.toBool() == false);
+	}
 }

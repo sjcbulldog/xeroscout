@@ -26,6 +26,7 @@
 #include "ExprContext.h"
 #include "ExprOperator.h"
 #include "ExprNode.h"
+#include "ExprEvalException.h"
 #include <QVariant>
 #include <QString>
 #include <stack>
@@ -50,7 +51,7 @@ namespace xero
 
 			QStringList allVariables() const;
 
-			QVariant eval(ExprContext&) const;
+			QVariant eval(ExprContext& ctxt) const;
 
 		private:
 			std::shared_ptr<ExprNode> parseSubExpr(ExprContext& context, const QString& txt, int& index, QString& err);

@@ -345,7 +345,6 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchDataSet)));
 	view_selector_->addItem(item);
 
-
 	item = new QListWidgetItem("---------- Analysis ------------------------------------");
 	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
@@ -1318,8 +1317,28 @@ void PCScouter::updateCurrentView()
 
 void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 {
-	view_frame_->needsRefreshAll();
-	updateCurrentView();
+	//
+	// We carve out some special cases because they are expensive and no update
+	// is really needed, as the change was initiated by the view and the view has
+	// already updated what the user sees
+	//
+	auto vtype = view_frame_->viewType();
+	if (vtype == DocumentView::ViewType::MatchDataSet || vtype == DocumentView::ViewType::TeamDataSet)
+	{
+		//
+		// These are datasets showing all the data, if the only changes was the rules where changed or the data column order was
+		// changed, don't refresh the data set views
+		//
+		if (type == ScoutingDataModel::ChangeType::RulesChanged || 
+			type == ScoutingDataModel::ChangeType::DataSetColumnOrder || 
+			type == ScoutingDataModel::ChangeType::HistoryChanged)
+			return;
+	}
+	else
+	{
+		view_frame_->needsRefreshAll();
+		updateCurrentView();
+	}
 }
 
 void PCScouter::saveAndBackup()
@@ -1705,6 +1724,7 @@ void PCScouter::teamRowChanged(int row, int col)
 void PCScouter::matchRowChanged(int row, int col)
 {
 	DataSetViewWidget* ds = dynamic_cast<DataSetViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::MatchDataSet));
+	assert(ds != nullptr);
 
 	auto& set = ds->dataset();
 

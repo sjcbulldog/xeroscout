@@ -96,6 +96,8 @@
     <ClInclude Include="CircleFieldRegion.h" />
     <ClInclude Include="DataCollection.h" />
     <ClInclude Include="DataModelBuilder.h" />
+    <ClInclude Include="DataSetExprContext.h" />
+    <ClInclude Include="DataSetHighlightRules.h" />
     <ClInclude Include="DPRCalculator.h" />
     <ClInclude Include="FieldRegion.h" />
     <ClInclude Include="PolygonFieldRegion.h" />
@@ -157,6 +159,8 @@
     <ClCompile Include="ChoiceItemDisplay.cpp" />
     <ClCompile Include="DataGenerator.cpp" />
     <ClCompile Include="DataModelBuilder.cpp" />
+    <ClCompile Include="DataSetExprContext.cpp" />
+    <ClCompile Include="DataSetHighlightRules.cpp" />
     <ClCompile Include="DPRCalculator.cpp" />
     <ClCompile Include="FormInstance.cpp" />
     <ClCompile Include="FormItemDisplay.cpp" />

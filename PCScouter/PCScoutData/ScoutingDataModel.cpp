@@ -493,6 +493,18 @@ namespace xero
 				}
 			}
 
+			void ScoutingDataModel::addRulesToDataSet(ScoutingDataSet& set)
+			{
+				auto it = rules_.find(set.name());
+				if (it != rules_.end())
+				{
+					for (auto rule : it->second)
+					{
+						set.addRule(rule);
+					}
+				}
+			}
+
 			void ScoutingDataModel::createMatchDataSet(ScoutingDataSet& set)
 			{
 				auto scouting_form_fields = match_scouting_form_->fields();
@@ -517,6 +529,8 @@ namespace xero
 					processDataSetAlliance(set, m, Alliance::Red);
 					processDataSetAlliance(set, m, Alliance::Blue);
 				}
+
+				addRulesToDataSet(set);
 			}
 
 			void ScoutingDataModel::createTeamDataSet(ScoutingDataSet& set)
@@ -549,6 +563,8 @@ namespace xero
 						set.addData(v);
 					}
 				}
+
+				addRulesToDataSet(set);
 			}
 
 			bool ScoutingDataModel::createCustomDataSet(ScoutingDataSet& set, const QString& query, QString& error)
@@ -559,7 +575,7 @@ namespace xero
 
 				if (!db->hasTable("matches"))
 				{
-					ScoutingDataSet matchset;
+					ScoutingDataSet matchset("$temporary-matches");
 					createMatchDataSet(matchset);
 					if (!db->addTable("matches", matchset))
 						return false;
@@ -567,7 +583,7 @@ namespace xero
 
 				if (!db->hasTable("teams"))
 				{
-					ScoutingDataSet pitset;
+					ScoutingDataSet pitset("$temporary-teams");
 					createTeamDataSet(pitset);
 					if (!db->addTable("teams", pitset))
 						return false;

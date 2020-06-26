@@ -552,7 +552,7 @@ namespace xero
 
 			bool GraphView::getData(std::map<QString, std::vector<QVariant>>& data, const QStringList& teams, const QStringList& exprlist)
 			{
-				ScoutingDataSet ds;
+				ScoutingDataSet ds("$graph");
 				QString err;
 
 				QStringList matchfields, alllist;

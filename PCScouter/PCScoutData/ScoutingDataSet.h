@@ -25,6 +25,7 @@
 #include "pcscoutdata_global.h"
 #include "ScoutingDataMap.h"
 #include "FieldDesc.h"
+#include "DataSetHighlightRules.h"
 #include <QStringList>
 #include <QString>
 #include <QVariant>
@@ -40,10 +41,15 @@ namespace xero
 			class PCSCOUTDATA_EXPORT ScoutingDataSet
 			{
 			public:
-				ScoutingDataSet() {
+				ScoutingDataSet(const QString name) {
+					name_ = name;
 				}
 
 				virtual ~ScoutingDataSet() {
+				}
+
+				const QString& name() const {
+					return name_;
 				}
 
 				int columnCount() const {
@@ -57,6 +63,7 @@ namespace xero
 				void clear() {
 					headers_.clear();
 					data_.clear();
+					rules_.clear();
 				}
 
 				const std::vector<std::shared_ptr<FieldDesc>> headers() const {
@@ -108,6 +115,8 @@ namespace xero
 
 				const QVariant& get(int row, const QString& colname) const {
 					int col = getColumnByName(colname);
+					if (col == -1)
+						return empty_;
 					return get(row, col);
 				}
 
@@ -119,9 +128,64 @@ namespace xero
 
 				QVariant columnSummary(int col, bool html = false);
 
+				QStringList fieldNames() const {
+					QStringList list;
+					for (int i = 0; i < columnCount(); i++)
+						list.push_back(colHeader(i)->name());
+
+					return list;
+				}
+
+				void clearRules() {
+					rules_.clear();
+				}
+
+				void addRule(std::shared_ptr<const DataSetHighlightRules> rule) {
+					rules_.push_back(rule);
+				}
+
+				const std::list<std::shared_ptr<const DataSetHighlightRules>>& rules() const {
+					return rules_;
+				}
+
+				void getCombinations(const QStringList &fields, std::vector<std::vector<QVariant>> &combinations, std::map<int, std::vector<int>> &rowgroups) {
+					for (int row = 0; row < rowCount(); row++)
+					{
+						std::vector<QVariant> rowdata;
+
+						for (const QString& field : fields)
+							rowdata.push_back(get(row, field));
+
+						int index = -1;
+						for (int comb = 0; comb < combinations.size(); comb++)
+						{
+							if (combinations[comb] == rowdata)
+							{
+								index = comb;
+								break;
+							}
+						}
+
+						if (index == -1)
+						{
+							combinations.push_back(rowdata);
+							index = combinations.size() - 1;
+							std::vector<int> rows = { row };
+							rowgroups.insert_or_assign(index, rows);
+						}
+						else
+						{
+							rowgroups[index].push_back(row);
+						}
+					}
+				}
+
 			private:
+				QString name_;
 				std::vector<std::shared_ptr<FieldDesc>> headers_;
 				std::vector<std::vector<QVariant>> data_;
+				std::list<std::shared_ptr<const DataSetHighlightRules>> rules_;
+				QVariant empty_;
 			};
 
 		}

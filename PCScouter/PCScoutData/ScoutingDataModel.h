@@ -87,6 +87,7 @@ namespace xero
 					ActivityAdded,					///< an activity was added
 					ActivityRemoved,				///< an activity was removed
 					ActivityChanged,				///< an activity was changed
+					RulesChanged,					///< the rules for a data set changed
 				};
 
 			public:
@@ -366,6 +367,13 @@ namespace xero
 				// These method change the datamodel and will generate modelChanged signals
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				void setRules(const QString& name, const std::list<std::shared_ptr<DataSetHighlightRules>>& rules) {
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::RulesChanged);
+					rules_.insert_or_assign(name, rules);
+				}
 
 				bool addActivity(std::shared_ptr<const RobotActivity> p) {
 					dirty_ = true;
@@ -1077,6 +1085,7 @@ namespace xero
 				}
 
 			private:
+				void addRulesToDataSet(ScoutingDataSet &set);
 				void addTemporaryFieldDesc();
 
 				void incrMatchTabletIndex(int& index) {
@@ -1136,6 +1145,8 @@ namespace xero
 				std::vector<std::shared_ptr<FieldRegion>> regions_;
 
 				std::vector<std::shared_ptr<RobotActivity>> activities_;
+
+				std::map<QString, std::list<std::shared_ptr<DataSetHighlightRules>>> rules_;
 			};
 
 		}

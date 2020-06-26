@@ -62,7 +62,7 @@ void AllTeamSummaryController::run()
 void AllTeamSummaryController::computeOneTeam(const QString& key)
 {
 	QString query, error;
-	ScoutingDataSet teamds;
+	ScoutingDataSet teamds("allteam");
 
 	auto t = dataModel()->findTeamByKey(key);
 	if (t == nullptr)

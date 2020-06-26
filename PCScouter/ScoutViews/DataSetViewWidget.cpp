@@ -21,8 +21,11 @@
 //
 
 #include "DataSetViewWidget.h"
+#include "DataSetExprContext.h"
 #include "DataSetItemDelegate.h"
 #include "DocumentView.h"
+#include "Expr.h"
+#include "DataSetRulesEditor.h"
 #include <QLabel>
 #include <QContextMenuEvent>
 #include <QMenu>
@@ -34,6 +37,7 @@
 #include <cmath>
 
 using namespace xero::scouting::datamodel;
+using namespace xero::expr;
 
 namespace xero
 {
@@ -60,7 +64,7 @@ namespace xero
 				return ret;
 			}
 
-			DataSetViewWidget::DataSetViewWidget(const QString &name, bool editable, QWidget* parent) : QSplitter(parent), ViewBase("DataSetViewWidgetItem")
+			DataSetViewWidget::DataSetViewWidget(const QString &name, bool editable, QWidget* parent) : QSplitter(parent), ViewBase("DataSetViewWidgetItem"), data_(name)
 			{
 				editable_ = true;
 				name_ = name;
@@ -248,6 +252,8 @@ namespace xero
 
 				if (changed)
 					emit rowChanged(item->row(), item->column());
+
+				applyRules();
 			}
 
 			void DataSetViewWidget::columnMoved(int logindex, int oldindex, int newindex)
@@ -309,8 +315,30 @@ namespace xero
 				act = menu->addAction(tr("Reset Column Order"));
 				connect(act, &QAction::triggered, this, &DataSetViewWidget::resetColumns);
 
+				if (!data_.name().startsWith("$"))
+				{
+					act = menu->addAction(tr("Edit Highlight Rules"));
+					connect(act, &QAction::triggered, this, &DataSetViewWidget::editHighlightRules);
+				}
+
 				QPoint p = table_->mapToGlobal(pt);
 				menu->exec(p);
+			}
+
+			void DataSetViewWidget::editHighlightRules()
+			{
+				DataSetRulesEditor editor(data_.rules(), data_);
+
+				if (editor.exec() == QDialog::Accepted)
+				{
+					dataModel()->setRules(data_.name(), editor.rules());
+
+					data_.clearRules();
+					for (auto r : editor.rules())
+						data_.addRule(r);
+
+					applyRules();
+				}
 			}
 
 			void DataSetViewWidget::sortData(int col)
@@ -338,12 +366,127 @@ namespace xero
 					fn_(data_);
 
 				updateData(table_);
+				applyRules();
 
 				if (colstate_.size() > 0)
 					table_->horizontalHeader()->restoreState(colstate_);
 
 				if (colgeom_.size() > 0)
 					table_->horizontalHeader()->restoreGeometry(colgeom_);
+			}
+
+			void DataSetViewWidget::applyRules()
+			{
+				table_->blockSignals(true);
+
+				for (int row = 0; row < table_->rowCount(); row++)
+				{
+					for (int col = 0; col < table_->columnCount(); col++)
+					{
+						auto i = table_->item(row, col);
+						i->setToolTip("");
+					}
+				}
+
+				for (auto rule : data_.rules())
+					applyRule(rule);
+
+				table_->blockSignals(false);
+			}
+
+			void DataSetViewWidget::applyRule(std::shared_ptr<const DataSetHighlightRules> rule)
+			{
+				std::vector<std::vector<QVariant>> combinations;
+				std::map<int, std::vector<int>> rowgroups;
+
+				data_.getCombinations(rule->fields(), combinations, rowgroups);
+
+				//
+				// Now we know the logical combinations and the rows that go with each
+				//
+				for (int i = 0; i < combinations.size(); i++)
+				{
+					//
+					// Now apply the rule, per combination
+					//
+					const std::vector<int>& rows = rowgroups[i];
+
+					//
+					// Create a context that is per row group to evaluate the expression
+					//
+					DataSetExprContext context(data_, rows);
+					Expr expr;
+
+					QString err;
+					if (!expr.parse(context, rule->equation(), err))
+						continue;
+
+					QVariant v;
+					
+					QString exprerr;
+					try
+					{
+						v = expr.eval(context);
+					}
+					catch (const ExprEvalException& ex)
+					{
+						v = QVariant();
+						exprerr = ex.what();
+					}
+
+					for (int which = 0; which < rows.size(); which++)
+					{
+						for (const QString& h : rule->highlights())
+						{
+							int col = data_.getColumnByName(h);
+							if (col != -1)
+							{
+								if (!v.isValid() || !v.canConvert(QVariant::Bool))
+								{
+									QTableWidgetItem* item = table_->item(rows[which], col);
+									QBrush br = QBrush(QColor(255, 255, 255));
+									item->setForeground(br);
+
+									br = QBrush(QColor(0, 0, 0));
+									item->setBackground(br);
+
+									if (exprerr.length() == 0)
+										exprerr = "rule expression did not evaluate to a boolean";
+
+									item->setToolTip(exprerr);
+								}
+								else if (v.toBool())
+								{
+									QTableWidgetItem* item = table_->item(rows[which], col);
+									QBrush br = QBrush(rule->foreground());
+									item->setForeground(br);
+
+									br = QBrush(rule->background());
+									item->setBackground(br);
+
+									QString txt = item->toolTip();
+									if (txt.length() > 0)
+										txt += "\n";
+
+									txt += rule->descriptor();
+
+									item->setToolTip(txt);
+								}
+								else
+								{
+									QTableWidgetItem* item = table_->item(rows[which], col);
+									QBrush br = QBrush(QColor(0, 0, 0));
+									item->setForeground(br);
+
+									br = QBrush(QColor(255, 255, 255));
+									item->setBackground(br);
+
+									item->setToolTip("");
+								}
+							}
+						}
+					}
+				}
 			}
 
 			void DataSetViewWidget::updateData(QTableWidget* table)
@@ -400,14 +543,6 @@ namespace xero
 							auto t = dataModel()->findTeamByKey(str);
 							QString txt = QString::number(t->number()) + " - " + t->nick();
 							item->setToolTip(txt);
-						}
-
-						if (colhdr->hasLimits() && colhdr->type() == FieldDesc::Type::Integer && v.isValid())
-						{
-							double intpart;
-							double value = v.toDouble();
-							if (value < colhdr->minLimit() - 0.01 || value > colhdr->maxLimit() + 0.01)
-								item->setBackgroundColor(QColor(0xFF, 0xEE, 0xEE));
 						}
 
 						if (colhdr->isEditable() && editable_)

@@ -35,7 +35,7 @@ namespace xero
 			class ViewBase
 			{
 			public:
-				ViewBase(const QString &name) {
+				ViewBase(const QString &name) : empty_("empty") {
 					name_ = name;
 					need_refresh_ = true;
 				}

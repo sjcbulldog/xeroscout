@@ -84,11 +84,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ExprFunction.cpp" />
     <ClCompile Include="ExprOperator.cpp" />
     <ClCompile Include="ExprVariable.cpp" />
     <ClInclude Include="Expr.h" />
     <ClInclude Include="ExprConst.h" />
     <ClInclude Include="ExprContext.h" />
+    <ClInclude Include="ExprEvalException.h" />
+    <ClInclude Include="ExprFunction.h" />
     <ClInclude Include="exprlib_global.h" />
     <ClCompile Include="Expr.cpp" />
     <ClInclude Include="ExprNode.h" />

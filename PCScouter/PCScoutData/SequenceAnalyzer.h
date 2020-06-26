@@ -84,7 +84,7 @@ namespace xero
 				}
 
 			private:
-				void createSequences();
+				bool isDuplicate(const MatchedSequence& m);
 				void analyzeOneSequence(std::shared_ptr<ZebraSequence> seq);
 				double findShortestIdle(std::shared_ptr<const RobotActivity> activity);
 				double findShortestIdle();

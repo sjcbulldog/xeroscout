@@ -201,6 +201,12 @@
     <ClInclude Include="DPRCalculator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DataSetHighlightRules.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataSetExprContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoutingDatabase.cpp">
@@ -291,6 +297,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DPRCalculator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DataSetHighlightRules.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DataSetExprContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

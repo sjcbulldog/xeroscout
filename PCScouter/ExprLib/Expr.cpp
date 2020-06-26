@@ -25,6 +25,7 @@
 #include "ExprOperator.h"
 #include "ExprConst.h"
 #include "ExprVariable.h"
+#include "ExprFunction.h"
 #include <QRegExp>
 #include <QDebug>
 #include <stack>
@@ -111,7 +112,7 @@ namespace xero
 				while (operators.size() > 0)
 				{
 					op1 = operators.top();
-					if (op1->prec() < op2->prec())
+					if (op1->prec() > op2->prec())
 						break;
 
 					reduce(operands, operators);
@@ -222,13 +223,68 @@ namespace xero
 					index++;
 				}
 
-				if (context.isValidVariable(id))
+				skipSpaces(txt, index);
+
+				if (index < txt.length() && txt[index] == '(')
 				{
-					ret = std::make_shared<ExprVariable>(this, id);
+					std::vector<std::shared_ptr<ExprNode>> arguments;
+					index++;
+
+					//
+					// This is a function, parse the arguments
+					//
+					while (true)
+					{
+						auto arg = parseSubExpr(context, txt, index, err);
+						if (arg == nullptr)
+							return nullptr;
+
+						arguments.push_back(arg);
+
+						skipSpaces(txt, index);
+						if (index == txt.length())
+						{
+							err = "function '" + id + "' missing trailing ')'";
+							return nullptr;
+						}
+
+						QString imd = txt.mid(index);
+						if (txt[index] == ')')
+						{
+							break;
+						}
+						else if (txt[index] != ',')
+						{
+							err = "function '" + id + "' expected ',' or ')', got '" + QString(txt[index]) + "'";
+							return nullptr;
+						}
+
+						index++;
+						skipSpaces(txt, index);
+					}
+
+					index++;
+					ret = std::make_shared<ExprFunction>(this, id, arguments);
+
 				}
 				else
 				{
-					err = "Identifier '" + id + "' is invalid";
+					if (id == "true" || id == "TRUE")
+					{
+						ret = std::make_shared<ExprConst>(this, QVariant(true));
+					}
+					else if (id == "false" || id == "FALSE")
+					{
+						ret = std::make_shared<ExprConst>(this, QVariant(false));
+					}
+					else if (context.isValidVariable(id))
+					{
+						ret = std::make_shared<ExprVariable>(this, id);
+					}
+					else
+					{
+						err = "Identifier '" + id + "' is invalid";
+					}
 				}
 			}
 
@@ -265,6 +321,36 @@ namespace xero
 			{
 				result = std::make_shared<ExprOperator>(this, ExprOperator::OpType::Divide);
 				index++;
+			}
+			else if (txt.at(index) == '<')
+			{
+				result = std::make_shared<ExprOperator>(this, ExprOperator::OpType::LessThan);
+				index++;
+			}
+			else if (txt.at(index) == '>')
+			{
+				result = std::make_shared<ExprOperator>(this, ExprOperator::OpType::GreaterThan);
+				index++;
+			}
+			else if (index < txt.length() - 1 && txt.mid(index, 2) == "==")
+			{
+				result = std::make_shared<ExprOperator>(this, ExprOperator::OpType::Equal);
+				index += 2;
+			}
+			else if (index < txt.length() - 1 && txt.mid(index, 2) == "!=")
+			{
+				result = std::make_shared<ExprOperator>(this, ExprOperator::OpType::NotEqual);
+				index += 2;
+			}
+			else if (index < txt.length() - 1 && txt.mid(index, 2) == ">=")
+			{
+				result = std::make_shared<ExprOperator>(this, ExprOperator::OpType::GreaterEqual);
+				index += 2;
+			}
+			else if (index < txt.length() - 1 && txt.mid(index, 2) == "<")
+			{
+				result = std::make_shared<ExprOperator>(this, ExprOperator::OpType::LessThanEqual);
+				index += 2;
 			}
 			else
 			{

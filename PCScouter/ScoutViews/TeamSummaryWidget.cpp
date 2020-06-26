@@ -36,7 +36,7 @@ namespace xero
 	{
 		namespace views
 		{
-			TeamSummaryWidget::TeamSummaryWidget(QWidget* parent) : QWidget(parent), ViewBase("TeamSummaryWidget")
+			TeamSummaryWidget::TeamSummaryWidget(QWidget* parent) : QWidget(parent), ViewBase("TeamSummaryWidget"), matches_ds_("teamsummary")
 			{
 				QBoxLayout* lay = new QVBoxLayout();
 				setLayout(lay);
@@ -208,7 +208,7 @@ namespace xero
 			{
 				QString rectoken = "$$$$RECORD$$$$";
 				QString html;
-				ScoutingDataSet ds;
+				ScoutingDataSet ds("$match-record");
 				QString query;
 				QString err;
 				const char* prop = "ba_totalPoints";

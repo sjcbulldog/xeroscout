@@ -525,6 +525,7 @@ namespace xero
 				obj[JsonDatasetColumnOrdersName] = encodeColumnOrders();
 				obj[JsonFieldRegionsName] = encodeFieldRegions();
 				obj[JsonActivitiesName] = encodeActivities();
+				obj[JsonRulesName] = encodeRules();
 				doc.setObject(obj);
 				return doc;
 			}
@@ -1443,7 +1444,125 @@ namespace xero
 				if (obj.contains(JsonActivitiesName) && obj.value(JsonActivitiesName).isArray())
 					decodeActivities(obj.value(JsonActivitiesName).toArray());
 
+				if (obj.contains(JsonRulesName) && obj.value(JsonRulesName).isArray())
+					decodeRules(obj.value(JsonRulesName).toArray());
+
 				return true;
+			}
+
+			QJsonArray JSonDataModelConverter::encodeRules()
+			{
+				QJsonArray r;
+
+				for (auto rules : dm_->rules_)
+				{
+					QJsonObject obj;
+					QJsonArray ruleset;
+
+					obj[JsonNameName] = rules.first;
+					for (auto rule : rules.second)
+					{
+						QJsonObject onerule;
+						QJsonArray slist;
+						QJsonArray hlist;
+
+						onerule[JsonNameName] = rule->name();
+						onerule[JsonDescriptionName] = rule->descriptor();
+						onerule[JsonForegroundName] = rule->foreground().name();
+						onerule[JsonBackgroundName] = rule->background().name();
+						onerule[JsonEquationName] = rule->equation();
+
+						for (auto s : rule->fields())
+							slist.push_back(s);
+						onerule[JsonSelectListName] = slist;
+
+						for (auto h : rule->highlights())
+							hlist.push_back(h);
+						onerule[JsonHighlightListName] = hlist;
+
+						ruleset.push_back(onerule);
+					}
+
+					obj[JsonRulesName] = ruleset;
+					r.push_back(obj);
+				}
+
+				return r;
+			}
+
+			void JSonDataModelConverter::decodeRules(const QJsonArray &array)
+			{
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (!array[i].isObject())
+						continue;
+
+					QJsonObject obj = array[i].toObject();
+					if (!obj.contains(JsonNameName) || !obj.value(JsonNameName).isString())
+						continue;
+
+					if (!obj.contains(JsonRulesName) || !obj.value(JsonRulesName).isArray())
+						continue;
+
+					QJsonArray rarray = obj.value(JsonRulesName).toArray();
+					std::list<std::shared_ptr<DataSetHighlightRules>> list;
+
+					for (int i = 0; i < rarray.size(); i++)
+					{
+						if (!rarray[i].isObject())
+							continue;
+
+						QJsonObject robj = rarray[i].toObject();
+
+						if (!robj.contains(JsonNameName) || !robj.value(JsonNameName).isString())
+							continue;
+
+						if (!robj.contains(JsonDescriptionName) || !robj.value(JsonDescriptionName).isString())
+							continue;
+
+						if (!robj.contains(JsonForegroundName) || !robj.value(JsonForegroundName).isString())
+							continue;
+
+						if (!robj.contains(JsonBackgroundName) || !robj.value(JsonBackgroundName).isString())
+							continue;
+
+						if (!robj.contains(JsonEquationName) || !robj.value(JsonEquationName).isString())
+							continue;
+
+						if (!robj.contains(JsonSelectListName) || !robj.value(JsonSelectListName).isArray())
+							continue;
+
+						if (!robj.contains(JsonHighlightListName) || !robj.value(JsonHighlightListName).isArray())
+							continue;
+
+						QStringList select, highlight;
+
+						QString name = robj[JsonNameName].toString();
+						QString equ = robj[JsonEquationName].toString();
+						QString desc = robj[JsonDescriptionName].toString();
+
+						QColor foreground = QColor(robj[JsonForegroundName].toString());
+						QColor background = QColor(robj[JsonBackgroundName].toString());
+
+						QJsonArray array = robj.value(JsonSelectListName).toArray();
+						for (int i = 0; i < array.size(); i++)
+						{
+							if (array[i].isString())
+								select.push_back(array[i].toString());
+						}
+
+						array = robj.value(JsonHighlightListName).toArray();
+						for (int i = 0; i < array.size(); i++)
+						{
+							if (array[i].isString())
+								highlight.push_back(array[i].toString());
+						}
+
+						auto r = std::make_shared<DataSetHighlightRules>(name, select, highlight, equ, foreground, background, desc);
+						list.push_back(r);
+					}
+					dm_->rules_.insert_or_assign(obj.value(JsonNameName).toString(), list);
+				}
 			}
 
 			QJsonArray JSonDataModelConverter::encodeActivities()
@@ -1549,7 +1668,7 @@ namespace xero
 						}
 						else if (pobj.value(JsonTypeName).toString() == "enteridle")
 						{
-							if (!pobj.contains(JsonIdleValueName) || pobj.value(JsonIdleValueName).isDouble())
+							if (!pobj.contains(JsonIdleValueName) || !pobj.value(JsonIdleValueName).isDouble())
 								continue;
 
 							auto p = std::make_shared<SequenceEnterIdlePattern>(name, pobj.value(JsonIdleValueName).toDouble(), minv, maxv, perall);

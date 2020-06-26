@@ -24,6 +24,7 @@
 
 #include "pcscoutdata_global.h"
 #include "FormSection.h"
+#include "DataSetHighlightRules.h"
 #include <QString>
 #include <QVariant>
 #include <QStringList>
@@ -84,6 +85,10 @@ namespace xero
 
 				bool addSection(const QString& name);
 
+				const std::vector<std::shared_ptr<const DataSetHighlightRules>>& rules() const {
+					return rules_;
+				}
+
 			private:
 				void parse(const QString& filename);
 				bool parseSection(const QJsonObject& obj, int index);
@@ -117,6 +122,8 @@ namespace xero
 				std::list<std::shared_ptr<FormSection>> sections_;
 				QString form_type_;
 				QJsonObject obj_;
+
+				std::vector<std::shared_ptr<const DataSetHighlightRules>> rules_;
 
 				static QStringList reserved_words_;
 			};

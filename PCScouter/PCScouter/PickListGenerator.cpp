@@ -78,7 +78,7 @@ QString PickListGenerator::genInputFile()
 	}
 
 	QString query = genQuery();
-	ScoutingDataSet ds;
+	ScoutingDataSet ds("$picklist");
 	QString error;
 	if (!dm_->createCustomDataSet(ds, query, error))
 	{

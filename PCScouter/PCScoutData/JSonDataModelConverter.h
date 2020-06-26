@@ -118,6 +118,9 @@ namespace xero
 				QJsonArray encodeActivities();
 				void decodeActivities(const QJsonArray& array);
 
+				QJsonArray encodeRules();
+				void decodeRules(const QJsonArray& array);
+
 			private:
 				ScoutingDataModel* dm_;
 				QStringList errors_;

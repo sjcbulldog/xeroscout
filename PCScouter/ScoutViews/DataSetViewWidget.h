@@ -25,6 +25,7 @@
 #include "scoutviews_global.h"
 #include "ScoutingDataSet.h"
 #include "ViewBase.h"
+#include "DataSetHighlightRules.h"
 #include <QSplitter>
 #include <QTableWidget>
 
@@ -82,6 +83,7 @@ namespace xero
 					return true;
 				}
 
+
 			protected:
 				bool eventFilter(QObject* o, QEvent* e);
 
@@ -89,6 +91,8 @@ namespace xero
 				void rowChanged(int row, int col);
 
 			private:
+				void applyRules();
+				void applyRule(std::shared_ptr<const xero::scouting::datamodel::DataSetHighlightRules> rule);
 				void updateData(QTableWidget* w);
 				void sortData(int column);
 				void contextMenuRequested(const QPoint& pt);
@@ -107,6 +111,8 @@ namespace xero
 
 				void viewMatchReplay(const QString& mkey);
 				void viewMatchVideo(const QString& mkey);
+
+				void editHighlightRules();
 
 			private:
 				QString name_;

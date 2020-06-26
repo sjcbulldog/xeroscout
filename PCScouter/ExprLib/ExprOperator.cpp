@@ -21,7 +21,7 @@
 //
 
 #include "ExprOperator.h"
-
+#include <cmath>
 
 namespace xero
 {
@@ -43,16 +43,32 @@ namespace xero
 			switch (op_)
 			{
 			case OpType::Plus:
-				result = 1;
+				result = 4;
 				break;
 			case OpType::Minus:
-				result = 1;
+				result = 4;
 				break;
 			case OpType::Times:
 				result = 3;
 				break;
 			case OpType::Divide:
 				result = 3;
+				break;
+			case OpType::LessThan:
+			case OpType::GreaterThan:
+			case OpType::GreaterEqual:
+			case OpType::LessThanEqual:
+				result = 6;
+				break;
+			case OpType::Equal:
+			case OpType::NotEqual:
+				result = 7;
+				break;
+			case OpType::LogicalOr:
+				result = 11;
+				break;
+			case OpType::LogicalAnd:
+				result = 12;
 				break;
 			}
 
@@ -81,8 +97,136 @@ namespace xero
 				case OpType::Divide:
 					result = divide(result, r);
 					break;
+				case OpType::LessThan:
+					result = lessthan(result, r);
+					break;
+				case OpType::GreaterThan:
+					result = greaterthan(result, r);
+					break;
+				case OpType::Equal:
+					result = equal(result, r);
+					break;
+				case OpType::NotEqual:
+					result = notequal(result, r);
+					break;
+				case OpType::GreaterEqual:
+					result = greaterequal(result, r);
+					break;
+				case OpType::LessThanEqual:
+					result = lessthanequal(result, r);
+					break;
+				case OpType::LogicalAnd:
+					result = logicaland(result, r);
+					break;
+				case OpType::LogicalOr:
+					result = logicalor(result, r);
+					break;
 				}
 			}
+
+			return result;
+		}
+
+		QVariant ExprOperator::lessthan(const QVariant& v1, const QVariant& v2)
+		{
+			QVariant result;
+
+			if (v1.type() == QVariant::Type::String && v2.type() == QVariant::Type::String)
+				result = v1.toString() < v2.toString();
+			else if (v1.type() == QVariant::Int && v2.type() == QVariant::Type::Int)
+				result = v1.toInt() < v2.toInt();
+			else if (v1.canConvert(QVariant::Type::Double) && v1.canConvert(QVariant::Type::Double))
+				result = v1.toDouble() < v2.toDouble();
+
+			return result;
+		}
+
+		QVariant ExprOperator::greaterthan(const QVariant& v1, const QVariant& v2)
+		{
+			QVariant result;
+
+			if (v1.type() == QVariant::Type::String && v2.type() == QVariant::Type::String)
+				result = v1.toString() > v2.toString();
+			else if (v1.type() == QVariant::Int && v2.type() == QVariant::Type::Int)
+				result = v1.toInt() > v2.toInt();
+			else if (v1.canConvert(QVariant::Type::Double) && v1.canConvert(QVariant::Type::Double))
+				result = v1.toDouble() > v2.toDouble();
+
+			return result;
+		}
+
+		QVariant ExprOperator::equal(const QVariant& v1, const QVariant& v2)
+		{
+			QVariant result;
+
+			if (v1.type() == QVariant::Type::String && v2.type() == QVariant::Type::String)
+				result = v1.toString() == v2.toString();
+			else if (v1.type() == QVariant::Int && v2.type() == QVariant::Type::Int)
+				result = v1.toInt() == v2.toInt();
+			else if (v1.canConvert(QVariant::Type::Double) && v1.canConvert(QVariant::Type::Double))
+				result = std::fabs(v1.toDouble() - v2.toDouble()) < 0.001;
+
+			return result;
+		}
+
+		QVariant ExprOperator::notequal(const QVariant& v1, const QVariant& v2)
+		{
+			QVariant result;
+
+			if (v1.type() == QVariant::Type::String && v2.type() == QVariant::Type::String)
+				result = v1.toString() != v2.toString();
+			else if (v1.type() == QVariant::Int && v2.type() == QVariant::Type::Int)
+				result = v1.toInt() != v2.toInt();
+			else if (v1.canConvert(QVariant::Type::Double) && v1.canConvert(QVariant::Type::Double))
+				result = std::fabs(v1.toDouble() - v2.toDouble()) > 0.001;
+
+			return result;
+		}
+
+		QVariant ExprOperator::greaterequal(const QVariant& v1, const QVariant& v2)
+		{
+			QVariant result;
+
+			if (v1.type() == QVariant::Type::String && v2.type() == QVariant::Type::String)
+				result = v1.toString() >= v2.toString();
+			else if (v1.type() == QVariant::Int && v2.type() == QVariant::Type::Int)
+				result = v1.toInt() >= v2.toInt();
+			else if (v1.canConvert(QVariant::Type::Double) && v1.canConvert(QVariant::Type::Double))
+				result = v1.toDouble() >= v2.toDouble();
+
+			return result;
+		}
+
+		QVariant ExprOperator::lessthanequal(const QVariant& v1, const QVariant& v2)
+		{
+			QVariant result;
+
+			if (v1.type() == QVariant::Type::String && v2.type() == QVariant::Type::String)
+				result = v1.toString() <= v2.toString();
+			else if (v1.type() == QVariant::Int && v2.type() == QVariant::Type::Int)
+				result = v1.toInt() <= v2.toInt();
+			else if (v1.canConvert(QVariant::Type::Double) && v1.canConvert(QVariant::Type::Double))
+				result = v1.toDouble() <= v2.toDouble();
+
+			return result;
+		}
+
+		QVariant ExprOperator::logicaland(const QVariant& v1, const QVariant& v2)
+		{
+			QVariant result;
+
+			if (v1.type() == QVariant::Type::Bool && v2.type() == QVariant::Type::Bool)
+				result = v1.toBool() && v2.toBool();
+
+			return result;
+		}
+
+		QVariant ExprOperator::logicalor(const QVariant& v1, const QVariant& v2)
+		{
+			QVariant result;
+
+			if (v1.type() == QVariant::Type::Bool && v2.type() == QVariant::Type::Bool)
+				result = v1.toBool() || v2.toBool();
 
 			return result;
 		}
