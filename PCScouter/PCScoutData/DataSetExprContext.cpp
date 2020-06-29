@@ -47,11 +47,11 @@ namespace xero
 
 				if (current_row_ == -1)
 				{
-					QVariant v = ds_.get(rows_[0], col);
+					ret = ds_.get(rows_[0], col);
 
 					for (int i = 1; i < rows_.size(); i++)
 					{
-						ret = ds_.get(rows_[i], col);
+						QVariant v = ds_.get(rows_[i], col);
 						if (ret != v)
 						{
 							QString msg = "expression references column '" + name + "' directly by name which varies across the matched rows";

@@ -58,6 +58,8 @@ namespace xero
 
 		BlueAllianceResult::Status FetchRankingController::processJson(int code, std::shared_ptr<QJsonDocument> doc)
 		{
+			Q_UNUSED(code);
+
 			QJsonObject obj = doc->object();
 
 			if (obj.contains("rankings") && obj.value("rankings").isArray())

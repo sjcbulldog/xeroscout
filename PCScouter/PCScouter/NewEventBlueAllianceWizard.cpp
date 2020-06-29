@@ -27,8 +27,9 @@
 #include "TabletPoolWizardPage.h"
 
 using namespace xero::ba;
+using namespace xero::scouting::datamodel;
 
-NewEventBlueAllianceWizard::NewEventBlueAllianceWizard(BlueAllianceEngine &engine)
+NewEventBlueAllianceWizard::NewEventBlueAllianceWizard(ImageManager &mgr, BlueAllianceEngine &engine)
 {
 	addPage(new SelectEventWizardPage(props_, engine));
 
@@ -92,6 +93,12 @@ QString NewEventBlueAllianceWizard::getEventKey()
 		result = it->second.toString();
 
 	return result;
+}
+
+void NewEventBlueAllianceWizard::setTitle()
+{
+	QString ev = getEventName();
+	setWindowTitle(ev);
 }
 
 QString NewEventBlueAllianceWizard::getEventName()

@@ -173,8 +173,6 @@ namespace xero
 
 			void GraphView::addExpr(std::shared_ptr<GraphDescriptor::GraphPane> pane)
 			{
-				bool ok;
-
 				QStringList list;
 				for (auto f : dataModel()->getAllFields())
 				{

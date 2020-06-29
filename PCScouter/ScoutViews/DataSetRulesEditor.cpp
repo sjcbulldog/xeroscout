@@ -155,7 +155,7 @@ namespace xero
 
 				std::set<int> sizes;
 				for (int i = 0; i < rowgroups.size(); i++) {
-					sizes.insert(rowgroups[i].size());
+					sizes.insert(static_cast<int>(rowgroups[i].size()));
 				}
 
 				ui.matched_count_->setText("Groups: " + QString::number(combinations.size()) + "  ");
@@ -324,7 +324,7 @@ namespace xero
 
 				ui.all_rules_->setCurrentItem(item);
 
-				current_ = rules_.size() - 1;
+				current_ = static_cast<int>(rules_.size() - 1);
 				initRule();
 			}
 

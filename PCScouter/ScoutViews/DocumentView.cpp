@@ -81,7 +81,10 @@ namespace xero
 				addWidget(new ChangeHistoryView(this));																				// 11
 				addWidget(new DataMergeListWidget(this));																			// 12
 
-				addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebratrack", PathFieldView::ViewMode::Track));						// 13
+				if (year == -1)
+					addWidget(new QWidget());
+				else
+					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebratrack", PathFieldView::ViewMode::Track));			// 13
 
 				GraphView* gview = new PreMatchGraphView(this);
 				gview->create();
@@ -95,17 +98,25 @@ namespace xero
 				addWidget(new ZebraAnalysisView(this));																				// 17
 				addWidget(new ZebraPatternView(images_, this));																		// 18
 
-				addWidget(new ZebraRegionEditor(field_mgr_, yearstr, this));														// 19
+				if (year == -1)
+					addWidget(new QWidget());
+				else
+					addWidget(new ZebraRegionEditor(field_mgr_, yearstr, this));													// 19
+
 				iview = new IntroView("Zebra Introduction", this);
 				iview->setFile("zebra.html");
 				addWidget(iview);																									// 20
 				addWidget(new DataSetViewWidget("predictions", true, this));														// 21
 
-				addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebraheatmap", PathFieldView::ViewMode::Heatmap));		// 22
+				if (year == -1)
+					addWidget(new QWidget());
+				else
+					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebraheatmap", PathFieldView::ViewMode::Heatmap));	// 22
 
-				addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebrareplay", PathFieldView::ViewMode::Replay));			// 23
-
-
+				if (year == -1)
+					addWidget(new QWidget());
+				else
+					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebrareplay", PathFieldView::ViewMode::Replay));		// 23
 
 				setCurrentIndex(0);
 				view_ = ViewType::NoModelView;

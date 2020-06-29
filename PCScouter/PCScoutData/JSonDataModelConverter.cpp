@@ -1770,7 +1770,6 @@ namespace xero
 
 					if (obj.contains(JsonBoundsName) && obj.value(JsonBoundsName).isObject())
 					{
-						double x, y, width, height;
 						QJsonObject robj = obj.value(JsonBoundsName).toObject();
 
 						if (!robj.contains(JsonXName) || !robj.value(JsonXName).isDouble())
@@ -1792,7 +1791,7 @@ namespace xero
 					}
 					else if (obj.contains(JsonCircleName))
 					{
-						double x, y, radius;
+						double radius;
 						QJsonObject robj = obj.value(JsonCircleName).toObject();
 
 						if (!robj.contains(JsonXName) || !robj.value(JsonXName).isDouble())

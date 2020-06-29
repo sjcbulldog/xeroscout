@@ -188,7 +188,7 @@ namespace xero
 								//
 								ZebraEvent ev(track->time(i) - lasttime, lasttime);
 								events_.push_back(ev);
-								index = events_.size() - 1;
+								index = static_cast<int>(events_.size() - 1);
 							}
 						}
 					}

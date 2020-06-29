@@ -36,7 +36,7 @@ namespace xero
 
 				receive_connection_ = connect(socket_, &QTcpSocket::readyRead, this, &TcpTransport::dataReceived);
 				disconnect_connection_ = connect(socket_, &QTcpSocket::disconnected, this, &TcpTransport::streamDisconnected);
-				error_connection_ = connect(socket_, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), this, &TcpTransport::errorReceived);
+				error_connection_ = connect(socket_, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::errorOccurred), this, &TcpTransport::errorReceived);
 			}
 
 			TcpTransport::TcpTransport(TcpServer *server, QTcpSocket* s)
@@ -46,7 +46,7 @@ namespace xero
 
 				receive_connection_ = connect(socket_, &QTcpSocket::readyRead, this, &TcpTransport::dataReceived);
 				disconnect_connection_ = connect(socket_, &QTcpSocket::disconnected, this, &TcpTransport::streamDisconnected);
-				error_connection_ = connect(socket_, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), this, &TcpTransport::errorReceived);
+				error_connection_ = connect(socket_, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::errorOccurred), this, &TcpTransport::errorReceived);
 			}
 
 			TcpTransport::~TcpTransport()

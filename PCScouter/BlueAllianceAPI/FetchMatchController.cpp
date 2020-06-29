@@ -50,6 +50,8 @@ namespace xero
 
 		BlueAllianceResult::Status FetchMatchController::processJson(int code, std::shared_ptr<QJsonDocument> doc)
 		{
+			Q_UNUSED(code);
+
 			if (doc->isObject())
 			{
 				auto matmap = engine().matches();
@@ -81,16 +83,16 @@ namespace xero
 						if (!videos[i].isObject())
 							continue;
 
-						QJsonObject obj = videos[i].toObject();
+						QJsonObject vobj = videos[i].toObject();
 
-						if (!obj.contains("type") || !obj.value("type").isString())
+						if (!vobj.contains("type") || !vobj.value("type").isString())
 							continue;
 
-						if (!obj.contains("key") || !obj.value("key").isString())
+						if (!vobj.contains("key") || !vobj.value("key").isString())
 							continue;
 
-						QString type = obj.value("type").toString();
-						QString key = obj.value("key").toString();
+						QString type = vobj.value("type").toString();
+						QString key = vobj.value("key").toString();
 
 						it->second->addVideo(type, key);
 					}

@@ -29,7 +29,7 @@
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
-NewEventAppController::NewEventAppController(std::shared_ptr<BlueAlliance> ba, const QStringList& tablets, int year) : ApplicationController(ba, nullptr)
+NewEventAppController::NewEventAppController(ImageManager& mgr, std::shared_ptr<BlueAlliance> ba, const QStringList& tablets, int year) : ApplicationController(ba, nullptr), images_(mgr)
 {
 	tablets_ = tablets;
 	state_ = State::Start;
@@ -215,7 +215,7 @@ void NewEventAppController::start()
 
 void NewEventAppController::promptUser()
 {
-	NewEventBlueAllianceWizard wizard(blueAlliance()->getEngine());
+	NewEventBlueAllianceWizard wizard(images_, blueAlliance()->getEngine());
 	wizard.setTabletList(tablets_);
 
 	if (wizard.exec() == QDialog::DialogCode::Accepted) {

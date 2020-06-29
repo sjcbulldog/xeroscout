@@ -60,6 +60,8 @@ namespace xero
 
 		BlueAllianceResult::Status FetchEventsController::processJson(int code, std::shared_ptr<QJsonDocument> doc)
 		{
+			Q_UNUSED(code);
+
 			if (!doc->isArray())
 				return BlueAllianceResult::Status::JSONError;
 
@@ -72,16 +74,6 @@ namespace xero
 
 				QJsonObject obj = v.toObject();
 
-				bool bkey = obj.contains("key");
-				bool bevent_code = obj.contains("event_code");
-				bool bevent_type = obj.contains("event_type");
-				bool bcity = obj.contains("city");
-				bool bstate = obj.contains("state_prov");
-				bool bcountry = obj.contains("country");
-				bool bsdate = obj.contains("start_date");
-				bool bedate = obj.contains("end_date");
-				bool bdistrict = obj.contains("district");
-
 				if (!obj.contains("key") || !obj.contains("name") || !obj.contains("event_code") || !obj.contains("event_type") ||
 					!obj.contains("city") || !obj.contains("state_prov") || !obj.contains("country") ||
 					!obj.contains("start_date") || !obj.contains("end_date") || !obj.contains("year"))
@@ -92,7 +84,6 @@ namespace xero
 				QString key = obj["key"].toString();
 				QString name = obj["name"].toString();
 				QString event_code = obj["event_code"].toString();
-				int etype = obj["event_type"].toInt();
 
 				QJsonObject dist = obj["district"].toObject();
 
@@ -111,10 +102,10 @@ namespace xero
 					QString abbrev = dobj["abberviation"].toString();
 					QString dname = dobj["display_name"].toString();
 					dkey = dobj["key"].toString();
-					int year = dobj["year"].toInt();
+					int dyear = dobj["year"].toInt();
 
 					if (dkey.length() > 0)
-						district = engine().createDistrict(dkey, abbrev, dname, year);
+						district = engine().createDistrict(dkey, abbrev, dname, dyear);
 				}
 
 				auto ev = engine().createEvent(key, name, city, state, country, startdate, enddate, year);
@@ -123,7 +114,6 @@ namespace xero
 					ev->setDistrict(district);
 					district->addEvent(ev);
 				}
-
 			}
 
 			done_ = true;

@@ -86,13 +86,14 @@ namespace xero
 
 		BlueAllianceResult::Status FetchTeamsController::processJson(int code, std::shared_ptr<QJsonDocument> doc)
 		{
+			Q_UNUSED(code);
+
 			if (state_ == State::FetchingKeys)
 			{
 				if (!doc->isArray())
 					return BlueAllianceResult::Status::JSONError;
 
 				QJsonArray arr = doc->array();
-				int size = arr.size();
 				if (arr.size() == 0)
 				{
 					state_ = State::FetchingData;

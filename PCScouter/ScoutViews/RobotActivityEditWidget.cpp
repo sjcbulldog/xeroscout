@@ -66,7 +66,7 @@ namespace xero
 						}
 					}
 
-					int i = activities_.size() - 1;
+					int i = static_cast<int>(activities_.size() - 1);
 					while (i >= 0)
 					{
 						if (activities_[i]->count() == 0)
@@ -179,7 +179,7 @@ namespace xero
 						item.pattern_ = -1;
 						item.type_ = SelectType::Activity;
 
-						int i = selected_.size() - 1;
+						int i = static_cast<int>(selected_.size() - 1);
 						while (i >= 0)
 						{
 							if (selected_[i].type_ == SelectType::Pattern && selected_[i].activity_ == col)
@@ -237,12 +237,12 @@ namespace xero
 			void RobotActivityEditWidget::setSize()
 			{
 				column_width_ = calcColumnWidth();
-				int width = (activities_.size() + 1) * column_width_ + left_right_border_ * 2 + between_column_spacing_ * activities_.size();
-				int height = title_area_height_ + image_size_;
+				int width = static_cast<int>((activities_.size() + 1) * column_width_ + left_right_border_ * 2 + between_column_spacing_ * activities_.size());
+				int height = static_cast<int>(title_area_height_ + image_size_);
 
 				for (auto a : activities_)
 				{
-					int aheight = title_area_height_ + a->patterns().size() * (image_size_ + between_item_border_);
+					int aheight = static_cast<int>(title_area_height_ + a->patterns().size() * (image_size_ + between_item_border_));
 					if (aheight > height)
 						height = aheight;
 				}
@@ -475,7 +475,7 @@ namespace xero
 				{
 					assert(col < activities_.size());
 					auto act = activities_[col];
-					height = title_area_height_ + act->patterns().size() * image_size_;
+					height = static_cast<int>(title_area_height_ + act->patterns().size() * image_size_);
 				}
 
 				return QRect(x, y, width, height);
@@ -577,7 +577,7 @@ namespace xero
 				// Do now send a changed signal when we add the pattern as we are adding a new
 				// activity and want to send the addedActivity signal
 				//
-				addNewPattern(activities_.size() - 1, text);
+				addNewPattern(static_cast<int>(activities_.size() - 1), text);
 				blockSignals(false);
 
 				emit addedActivity(act);

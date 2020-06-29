@@ -53,7 +53,7 @@ namespace xero
 				}
 
 				int columnCount() const {
-					return headers_.size();
+					return static_cast<int>(headers_.size());
 				}
 
 				int rowCount() const {
@@ -169,7 +169,7 @@ namespace xero
 						if (index == -1)
 						{
 							combinations.push_back(rowdata);
-							index = combinations.size() - 1;
+							index = static_cast<int>(combinations.size() - 1);
 							std::vector<int> rows = { row };
 							rowgroups.insert_or_assign(index, rows);
 						}

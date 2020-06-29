@@ -45,7 +45,7 @@ namespace xero
 				}
 
 				int count() const {
-					return patterns_.size();
+					return static_cast<int>(patterns_.size());
 				}
 
 				void movePatternUp(int index) {

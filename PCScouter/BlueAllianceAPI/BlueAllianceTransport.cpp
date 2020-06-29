@@ -54,6 +54,8 @@ namespace xero
 
 		void BlueAllianceTransport::authRequired(QNetworkReply* reply, QAuthenticator* auth)
 		{
+			Q_UNUSED(reply);
+			Q_UNUSED(auth);
 		}
 
 		bool BlueAllianceTransport::request(QString req, std::function<void(std::shared_ptr<QJsonDocument>, BlueAllianceResult::Status st, int code)> cb)
@@ -112,10 +114,10 @@ namespace xero
 				//
 				// Now, convert the result to a JSON document and hand to the post processor
 				//
-				QJsonParseError err;
+				QJsonParseError perr;
 				doc = std::make_shared<QJsonDocument>();
-				*doc = QJsonDocument::fromJson(bdata, &err);
-				if (err.error != QJsonParseError::NoError)
+				*doc = QJsonDocument::fromJson(bdata, &perr);
+				if (perr.error != QJsonParseError::NoError)
 				{
 					doc = nullptr;
 					st = BlueAllianceResult::Status::JSONError;
@@ -132,6 +134,9 @@ namespace xero
 
 		void BlueAllianceTransport::sslError(QNetworkReply* reply, const QList<QSslError>& errors)
 		{
+			Q_UNUSED(errors);
+			Q_UNUSED(reply);
+
 			delete reply_;
 			reply_ = nullptr;
 			cb_(nullptr, BlueAllianceResult::Status::SSLError, -1);

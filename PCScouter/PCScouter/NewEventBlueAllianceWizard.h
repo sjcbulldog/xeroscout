@@ -23,6 +23,7 @@
 #pragma once
 
 #include "BlueAllianceEngine.h"
+#include "ImageManager.h"
 #include <QWizard>
 #include <QString>
 #include <QVariant>
@@ -38,13 +39,15 @@ public:
 	typedef std::map<QString, QVariant> PropertyMap;
 
 public:
-	NewEventBlueAllianceWizard(xero::ba::BlueAllianceEngine &engine);
+	NewEventBlueAllianceWizard(xero::scouting::datamodel::ImageManager& mgr, xero::ba::BlueAllianceEngine &engine);
 	virtual ~NewEventBlueAllianceWizard();
 
 	QString getEventKey();
 	QString getEventName();
 	QString getPitScoutingForm();
 	QString getMatchScoutingForm();
+
+	void setTitle();
 
 	void setTabletList(const QStringList& tablets);
 	QStringList getTabletList();

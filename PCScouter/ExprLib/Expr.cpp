@@ -295,6 +295,8 @@ namespace xero
 		{
 			std::shared_ptr<ExprOperator> result;
 
+			(void)context;
+
 			skipSpaces(txt, index);
 			if (index == txt.length())
 			{

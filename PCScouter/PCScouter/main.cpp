@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 		w.show();
 		return a.exec();
 	}
-	catch (const std::exception &ex) {
+	catch (const std::exception &) {
 		return 1;
 	}
 

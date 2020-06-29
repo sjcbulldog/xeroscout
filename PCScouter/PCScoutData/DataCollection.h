@@ -41,7 +41,7 @@ namespace xero
 				}
 
 				int count() const {
-					return data_.size();
+					return static_cast<int>(data_.size());
 				}
 
 				QString tag(int index) const {

@@ -101,7 +101,7 @@ namespace xero
                 }
 
                 int timeCount() {
-                    return time_.size();
+                    return static_cast<int>(time_.size());
                 }
 
                 double time(int index) const {
@@ -113,7 +113,7 @@ namespace xero
                 }
 
                 int pointCount() {
-                    return points_.size();
+                    return static_cast<int>(points_.size());
                 }
 
                 const QPointF& point(int index) {

@@ -37,7 +37,7 @@ namespace xero
 			virtual ~ExprConst() {
 			}
 
-			virtual QVariant eval(ExprContext& ctxt) {
+			virtual QVariant eval(ExprContext&) {
 				return value_;
 			}
 
@@ -45,7 +45,7 @@ namespace xero
 				return value_.toString();
 			}
 
-			virtual void allVariables(QStringList& list) {
+			virtual void allVariables(QStringList&) {
 			}
 
 		private:

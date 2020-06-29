@@ -441,7 +441,6 @@ namespace xero
 				// Calculate the heatmap
 				//
 				int maxv = 0;
-				int px, py;
 				for (auto tr : tracks_)
 				{
 					if (tr->hasData())

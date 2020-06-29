@@ -385,6 +385,12 @@ namespace xero
 					{
 						auto i = table_->item(row, col);
 						i->setToolTip("");
+
+						QBrush br = QBrush(QColor(0, 0, 0));
+						i->setForeground(br);
+
+						br = QBrush(QColor(255, 255, 255));
+						i->setBackground(br);
 					}
 				}
 
@@ -453,7 +459,11 @@ namespace xero
 									if (exprerr.length() == 0)
 										exprerr = "rule expression did not evaluate to a boolean";
 
-									item->setToolTip(exprerr);
+									QString tt = item->toolTip();
+									if (tt.length() > 0)
+										tt += "\n";
+									tt += exprerr;
+									item->setToolTip(tt);
 								}
 								else if (v.toBool())
 								{
@@ -471,17 +481,6 @@ namespace xero
 									txt += rule->descriptor();
 
 									item->setToolTip(txt);
-								}
-								else
-								{
-									QTableWidgetItem* item = table_->item(rows[which], col);
-									QBrush br = QBrush(QColor(0, 0, 0));
-									item->setForeground(br);
-
-									br = QBrush(QColor(255, 255, 255));
-									item->setBackground(br);
-
-									item->setToolTip("");
 								}
 							}
 						}

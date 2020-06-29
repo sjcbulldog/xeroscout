@@ -33,6 +33,7 @@ public:
 	virtual ~SelectScoutingFormsWizardPage();
 
 	bool isComplete() const override;
+	void initializePage() override;
 
 public:
 	static constexpr const char* PitScoutFieldName = "pitscout";

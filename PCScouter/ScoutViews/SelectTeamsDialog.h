@@ -44,7 +44,6 @@ namespace xero
 
 				bool operator<(const QTreeWidgetItem& other) const {
 					int mynum, othernum;
-					bool ret;
 
 					if (text(1) == "-")
 						mynum = 100 + text(2).toInt();

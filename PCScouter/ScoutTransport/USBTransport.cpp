@@ -164,7 +164,7 @@ namespace xero
 				{
 					std::lock_guard<std::mutex> guard(read_mutex_);
 					int oldsize = data_read_.size();
-					data_read_.resize(oldsize + data.size());
+					data_read_.resize(static_cast<int>(oldsize + data.size()));
 					memcpy(data_read_.data() + oldsize, data.data(), data.size());
 				}
 			}

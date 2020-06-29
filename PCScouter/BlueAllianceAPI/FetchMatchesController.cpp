@@ -79,23 +79,23 @@ namespace xero
 
 			if (obj.contains("surrogate_team_keys") && obj.value("surrogate_team_keys").isArray())
 			{
-				QJsonArray arr = obj.value("surrogate_team_keys").toArray();
-				for (int i = 0; i < arr.size(); i++) {
-					if (!arr[i].isString())
+				QJsonArray sarr = obj.value("surrogate_team_keys").toArray();
+				for (int i = 0; i < sarr.size(); i++) {
+					if (!sarr[i].isString())
 						continue;
 
-					alliance->addSurrogate(arr[i].toString());
+					alliance->addSurrogate(sarr[i].toString());
 				}
 			}
 
 			if (obj.contains("dq_team_keys") && obj.value("dq_team_keys").isArray())
 			{
-				QJsonArray arr = obj.value("dq_team_keys").toArray();
-				for (int i = 0; i < arr.size(); i++) {
-					if (!arr[i].isString())
+				QJsonArray darr = obj.value("dq_team_keys").toArray();
+				for (int i = 0; i < darr.size(); i++) {
+					if (!darr[i].isString())
 						continue;
 
-					alliance->addDQ(arr[i].toString());
+					alliance->addDQ(darr[i].toString());
 				}
 			}
 
@@ -104,6 +104,8 @@ namespace xero
 
 		BlueAllianceResult::Status FetchMatchesController::processJson(int code, std::shared_ptr<QJsonDocument> doc)
 		{
+			Q_UNUSED(code);
+
 			if (state_ == State::ReadingMatches)
 			{
 				if (!doc->isArray())

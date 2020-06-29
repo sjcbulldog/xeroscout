@@ -325,7 +325,6 @@ static void generateAutoMedium(ScoutingDataMapPtr data, const QString& pos)
 
 static void generateAutoLow(ScoutingDataMapPtr data, const QString& pos)
 {
-    int value;
     int high = 0;
     int low = 0;
     int eject = 0;

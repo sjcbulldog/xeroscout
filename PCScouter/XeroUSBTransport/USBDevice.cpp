@@ -156,8 +156,6 @@ namespace xero
             bool USBDevice::read(uint8_t pipe, std::vector<uint8_t>& data, size_t len)
             {
                 UINT xfer;
-                UINT to;
-                UINT plen = sizeof(to);
 
                 if (len == 0)
                     len = buffer_.size();

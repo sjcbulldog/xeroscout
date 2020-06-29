@@ -132,8 +132,8 @@ namespace xero
 
 			void ScoutDataMergeDialog::populate()
 			{
-				table_->setColumnCount(list_.size() + 2);
-				table_->setRowCount(list_.front()->size());
+				table_->setColumnCount(static_cast<int>(list_.size() + 2));
+				table_->setRowCount(static_cast<int>(list_.front()->size()));
 
 				QStringList headers;
 				for (auto pair : *list_.front())
@@ -274,7 +274,7 @@ namespace xero
 						for (col = 1; col < table_->columnCount() - 1; col++)
 						{
 							auto item = table_->item(row, col);
-							item->setBackgroundColor(QColor(154, 221, 252, 255));
+							item->setBackground(QBrush(QColor(154, 221, 252)));
 						}
 					}
 				}

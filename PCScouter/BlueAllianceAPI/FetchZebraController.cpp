@@ -50,6 +50,8 @@ namespace xero
 
 		BlueAllianceResult::Status FetchZebraController::processJson(int code, std::shared_ptr<QJsonDocument> doc)
 		{
+			Q_UNUSED(code);
+
 			if (doc->isObject())
 			{
 				QJsonObject obj = doc->object();

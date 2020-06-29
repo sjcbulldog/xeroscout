@@ -288,8 +288,6 @@ void PCScoutApp::processTimer()
 
 void PCScoutApp::setupViews()
 {
-	FormView* view;
-
 	TeamScheduleViewWidget* tv = dynamic_cast<TeamScheduleViewWidget*>(view_frame_->getWidget(DocumentView::ViewType::TeamView));
 	std::list<std::shared_ptr<const DataModelTeam>> teams;
 	for (auto t : data_model_->teams()) {
@@ -590,7 +588,9 @@ void PCScoutApp::resetTablet()
 	// based on that old name
 	//
 	if (data_model_ != nullptr && data_model_->filename().length() > 0)
+	{
 		saveAndBackup();
+	}
 
 	ignore_view_select_changes_ = true;
 	removeAllScoutingFormsFromViews();
@@ -610,6 +610,8 @@ void PCScoutApp::resetTablet()
 	QString msg = "Data Model: " + QString::number(data_model_->teams().size()) + " teams, " +
 		QString::number(data_model_->teams().size()) + " matches";
 	data_model_display_->setText(msg);
+
+	QMessageBox::information(this, "Success", "The tablet has been reset");
 }
 
 void PCScoutApp::removeAllScoutingFormsFromViews()
@@ -983,9 +985,6 @@ void PCScoutApp::createTeamScoutingForms()
 	{
 		if (t->teamScoutingData() != nullptr)
 		{
-			Alliance c;
-			int slot;
-
 			QString title = generateTeamTitle(t);
 			int index = startScouting(t->key(), FormView::FormType::Team, title, Alliance::Red, data_model_->teamScoutingForm());
 

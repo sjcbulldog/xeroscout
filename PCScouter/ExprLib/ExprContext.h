@@ -45,16 +45,16 @@ namespace xero
 				return false;
 			}
 
-			virtual QVariant getVariable(const QString& name) {
+			virtual QVariant getVariable(const QString&) {
 				QVariant v;
 				return v;
 			}
 
-			virtual bool isValidFunction(const QString& name) {
+			virtual bool isValidFunction(const QString&) {
 				return false;
 			}
 
-			virtual QVariant evalFunction(const QString &name, std::vector<std::shared_ptr<ExprNode>> values) {
+			virtual QVariant evalFunction(const QString &, std::vector<std::shared_ptr<ExprNode>>) {
 				QVariant v;
 				return v;
 			}

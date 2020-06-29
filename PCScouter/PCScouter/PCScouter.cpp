@@ -798,8 +798,6 @@ void PCScouter::setupViews()
 	}
 	else
 	{
-		FormView* view;
-
 		view_frame_->setDataModel(data_model_);
 		view_frame_->needsRefreshAll();
 
@@ -1040,7 +1038,7 @@ void PCScouter::newEventBA()
 	if (settings_.contains("tablets"))
 		tablets = settings_.value("tablets").toStringList();
 
-	auto ctlr = new NewEventAppController(blue_alliance_, tablets, year_);
+	auto ctlr = new NewEventAppController(images_, blue_alliance_, tablets, year_);
 	app_controller_ = ctlr;
 
 	TestDataInjector& injector = TestDataInjector::getInstance();

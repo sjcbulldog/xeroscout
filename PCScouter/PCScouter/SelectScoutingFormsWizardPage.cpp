@@ -21,6 +21,7 @@
 //
 
 #include "SelectScoutingFormsWizardPage.h"
+#include "NewEventBlueAllianceWizard.h"
 #include <QLabel>
 #include <QBoxLayout>
 #include <QPushButton>
@@ -34,6 +35,7 @@ SelectScoutingFormsWizardPage::SelectScoutingFormsWizardPage(NewEventBlueAllianc
 	QWidget* row;
 	QPushButton* button;
 	QHBoxLayout* rowlayout;
+
 
 	setTitle("Select Forms");
 
@@ -82,6 +84,14 @@ SelectScoutingFormsWizardPage::SelectScoutingFormsWizardPage(NewEventBlueAllianc
 
 SelectScoutingFormsWizardPage::~SelectScoutingFormsWizardPage()
 {
+}
+
+void SelectScoutingFormsWizardPage::initializePage()
+{
+	QWizardPage::initializePage();
+
+	NewEventBlueAllianceWizard* w = dynamic_cast<NewEventBlueAllianceWizard*>(wizard());
+	w->setTitle();
 }
 
 void SelectScoutingFormsWizardPage::resizeEvent(QResizeEvent* ev)

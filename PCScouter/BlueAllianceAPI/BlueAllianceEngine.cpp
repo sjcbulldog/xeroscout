@@ -107,7 +107,7 @@ namespace xero
 			auto it = events_by_key_.find(key);
 			if (it == events_by_key_.end())
 			{
-				ret = std::make_shared<Event>(key, name, city, state, country, sdate, edate, year);
+				ret = std::make_shared<Event>(key, name, city, state, country, sdate, edate);
 				events_by_key_.insert(std::make_pair(key, ret));
 			}
 			else
@@ -212,12 +212,11 @@ namespace xero
 
 		void BlueAllianceEngine::processControllerResult(std::shared_ptr<QJsonDocument> doc, BlueAllianceResult::Status st, int code)
 		{
-			bool err = false;
 			std::shared_ptr<BlueAllianceResult> result;
 
 			if (st != BlueAllianceResult::Status::Success && code != 404)
 			{
-				std::shared_ptr<BlueAllianceResult> result = std::make_shared<BlueAllianceResult>(st);
+				result = std::make_shared<BlueAllianceResult>(st);
 				addResult(result);
 				controller_ = nullptr;
 				return;
@@ -228,7 +227,7 @@ namespace xero
 				st = controller_->processDocNotFound();
 				if (st != BlueAllianceResult::Status::Success)
 				{
-					std::shared_ptr<BlueAllianceResult> result = std::make_shared<BlueAllianceResult>(st);
+					result = std::make_shared<BlueAllianceResult>(st);
 					addResult(result);
 					controller_ = nullptr;
 					return;
@@ -239,7 +238,7 @@ namespace xero
 				st = controller_->processJson(code, doc);
 				if (st != BlueAllianceResult::Status::Success)
 				{
-					std::shared_ptr<BlueAllianceResult> result = std::make_shared<BlueAllianceResult>(st);
+					result = std::make_shared<BlueAllianceResult>(st);
 					addResult(result);
 					controller_ = nullptr;
 					return;
@@ -248,12 +247,11 @@ namespace xero
 
 			if (controller_->isDone())
 			{
-				std::shared_ptr<BlueAllianceResult> result = controller_->finishedResult();
+				result = controller_->finishedResult();
 				controller_ = nullptr;
 				addResult(result);
 				return;
 			}
-
 
 			result = controller_->progressResult();
 			if (result != nullptr)

@@ -58,6 +58,8 @@ namespace xero
 
 		BlueAllianceResult::Status FetchEventTeamsController::processJson(int code, std::shared_ptr<QJsonDocument> doc)
 		{
+			Q_UNUSED(code);
+
 			QJsonArray array = doc->array();
 
 			std::shared_ptr<Event> ev;

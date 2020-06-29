@@ -37,7 +37,7 @@ namespace xero
 		class Event
 		{
 		public:
-			Event(QString key, QString name, QString city, QString state, QString country, QString sdate, QString edate, int year)
+			Event(QString key, QString name, QString city, QString state, QString country, QString sdate, QString edate)
 			{
 				key_ = key;
 				name_ = name;

@@ -24,12 +24,13 @@
 
 #include "ApplicationController.h"
 #include "ScoutingDataModel.h"
+#include "ImageManager.h"
 #include <QStringList>
 
 class NewEventAppController : public ApplicationController
 {
 public:
-	NewEventAppController(std::shared_ptr<xero::ba::BlueAlliance> ba, const QStringList &tablets, int year);
+	NewEventAppController(xero::scouting::datamodel::ImageManager &mgr, std::shared_ptr<xero::ba::BlueAlliance> ba, const QStringList &tablets, int year);
 	virtual ~NewEventAppController();
 
 	bool isDone() override;
@@ -74,4 +75,5 @@ private:
 	QStringList tablets_;
 	QStringList team_keys_;
 	bool sim_no_matches_;
+	xero::scouting::datamodel::ImageManager& images_;
 };
