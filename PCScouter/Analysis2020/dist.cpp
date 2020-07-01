@@ -86,6 +86,8 @@ Dist to_dist(std::vector<unsigned> const& a){
 
 Dist min(unsigned a,Dist b){
 	Dist r;
+
+	r.erase(0);
 	for(auto [val,p]:b){
 		r[std::min(a,val)]+=p;
 	}
@@ -97,7 +99,8 @@ Px operator>=(Dist const& a,unsigned u){
 		[u](auto p){ return p.first>=u; },
 		to_vec(a)
 	);
-	return sum(seconds(f));
+	auto ret = sum(seconds(f));
+	return ret;
 }
 
 double mean(Dist const& a){

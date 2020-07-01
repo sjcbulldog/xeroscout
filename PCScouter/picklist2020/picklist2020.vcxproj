@@ -145,11 +145,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AllianceGroup.cpp" />
+    <ClCompile Include="CapabilityExtractor.cpp" />
+    <ClCompile Include="CapabilityExtractor2020.cpp" />
+    <ClCompile Include="ClimbingStrategies.cpp" />
+    <ClCompile Include="Const2020.cpp" />
     <ClCompile Include="CsvReader.cpp" />
+    <ClCompile Include="MatchAlliance.cpp" />
+    <ClCompile Include="MatchSimulator2020.cpp" />
     <ClCompile Include="picklist2020.cpp" />
+    <ClCompile Include="PickListFormatter.cpp" />
+    <ClCompile Include="Result.cpp" />
+    <ClCompile Include="RobotCapabilities.cpp" />
+    <ClCompile Include="TeamPicker.cpp" />
+    <ClCompile Include="TeamPicker2020.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Alliance.h" />
+    <ClInclude Include="AllianceGroup.h" />
+    <ClInclude Include="CapabilityExtractor.h" />
+    <ClInclude Include="CapabilityExtractor2020.h" />
+    <ClInclude Include="ClimbingStrategies.h" />
+    <ClInclude Include="Const2020.h" />
     <ClInclude Include="CsvReader.h" />
+    <ClInclude Include="Data.h" />
+    <ClInclude Include="Distribution.h" />
+    <ClInclude Include="Pick.h" />
+    <ClInclude Include="MatchAlliance.h" />
+    <ClInclude Include="MatchSimulator.h" />
+    <ClInclude Include="MatchSimulator2020.h" />
+    <ClInclude Include="PickListFormatter.h" />
+    <ClInclude Include="Result.h" />
+    <ClInclude Include="RobotCapabilities.h" />
+    <ClInclude Include="TeamPicker.h" />
+    <ClInclude Include="TeamPicker2020.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -106,7 +106,8 @@ std::ostream& operator<<(std::ostream& o,Climb_capabilities const& a){
 	return o<<")";
 }
 
-double climb_points(Alliance_climb_capabilities const& cap,Alliance_climb_strategy const& strat){
+double climb_points(Alliance_climb_capabilities const& cap,Alliance_climb_strategy const& strat)
+{
 	auto z=zip(cap,strat);
 	double park_points=0;
 	std::vector<double> assists_available;
@@ -131,14 +132,23 @@ double climb_points(Alliance_climb_capabilities const& cap,Alliance_climb_strate
 				assert(0);
 		}
 	}
-	for(auto [a,b]:zip(
-		reversed(sorted(assists_available)),
-		reversed(sorted(assists_req))
-	)){
+
+	auto setof = zip(reversed(sorted(assists_available)), reversed(sorted(assists_req)));
+	for(auto [a,b]:setof)
+	{
 		climbed+=mean(a,b);//geometric mean might be better
 	}
-	auto balance_points=balancers.empty()?0:(15*geomean(balancers));
-	return park_points+climbed*25+balance_points;
+
+	double balance_points = 0.0;
+
+	if (balancers.size() != 0)
+	{
+		double gm = geomean(balancers);
+		balance_points = gm * 15;
+	}
+
+	double total = park_points+climbed*25+balance_points;
+	return total;
 }
 
 double climb_points(Alliance_climb_capabilities const& cap){
@@ -191,15 +201,13 @@ double expected_score(Alliance_capabilities const& a,Alliance_strategy const& st
 		mapf([](auto x){ return x.tele_ball_dist; },a)
 	);
 
-	auto spin_points=[&]()->double{
-		auto p=max(mapf([](auto x){ return x.wheel_spin; },a));
-		return 10*p*p_spin_available;
-	}();
+	auto allspin = mapf([](auto x) { return x.wheel_spin; }, a);
+	auto spinmax = max(allspin);
+	auto spin_points= 10 * spinmax * p_spin_available;
 
-	auto color_pick_points=[&]()->double{
-		auto p=max(mapf([](auto x){ return x.wheel_color; },a));
-		return 20*p*p_color_available;
-	}();
+	auto allcolor = mapf([](auto x) { return x.wheel_color; }, a);
+	auto colormax = max(allcolor);
+	auto color_pick_points = 20 * colormax * p_color_available;
 
 	//hang points
 	//hang strategies:
@@ -225,10 +233,11 @@ double expected_score(Alliance_capabilities const& a,Alliance_strategy const& st
 }
 
 double expected_score(Alliance_capabilities const& a){
-	return max(mapf(
+	auto setof = mapf(
 		[=](auto x){ return expected_score(a,x); },
 		alliance_climb_strategies()
-	));
+	);
+	return max(setof);
 }
 
 void show(std::map<Team,Robot_capabilities> const& data){
@@ -362,7 +371,10 @@ Picklist make_picklist(Team picking_team,std::map<Team,Robot_capabilities> a){
 
 	//PRINT(first_picks);
 
-	auto second_picks=to_map(mapf(
+	auto k = keys(others);
+	auto kv = to_vec(k);
+
+	auto tmp = mapf(
 		[&](auto t1)->std::pair<Team,std::vector<std::pair<double,Team>>>{
 			auto t1_cap=a[t1];
 			auto left=without_key(t1,others);
@@ -376,14 +388,18 @@ Picklist make_picklist(Team picking_team,std::map<Team,Robot_capabilities> a){
 			)));
 			return std::make_pair(t1,result);
 		},
-		to_vec(keys(others))
-	));
+		kv
+	) ;
 
-	return mapf(
+	auto second_picks=to_map(tmp);
+
+	auto xyz = mapf(
 		[&](auto p){
 			return std::make_pair(p,second_picks[p.second]);
 		},
 		first_picks
 	);
+
+	return xyz ;
 }
 

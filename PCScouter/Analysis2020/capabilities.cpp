@@ -26,14 +26,26 @@
 // 
 
 #include "capabilities.h"
+#include <iostream>
 
 int teleop_length(){ return 135; }
 int endgame_length(){ return 20; }
 
-std::pair<Px,Px> bonus_balls_hit(std::array<Dist,3> const& auto_dist,std::array<Dist,3> const& tele_dist){
-	auto auto_dist_trun=min(9,sum(auto_dist));
-	auto total=auto_dist_trun+sum(tele_dist);
-	return std::make_pair(total>=29,total>=49);
+std::pair<Px,Px> bonus_balls_hit(std::array<Dist,3> const& auto_dist,std::array<Dist,3> const& tele_dist) 
+{
+	auto one = sum(auto_dist);
+	assertDistValid(one);
+
+	auto auto_dist_trun = min(9, one);
+	assertDistValid(auto_dist_trun);
+
+	auto two = sum(tele_dist);
+	assertDistValid(two);
+
+	auto total = auto_dist_trun + two;
+	assertDistValid(total);
+
+	return std::make_pair(total >= 29, total >= 49);
 }
 
 std::ostream& operator<<(std::ostream& o,Robot_capabilities const& a){
@@ -153,7 +165,7 @@ double assisted2(Team team,std::vector<std::vector<Input_row>> const& alliance_r
 				},
 				x
 			);
-			auto available=others_could_take.size()>2;
+			auto available=others_could_take.size()>=2;
 			auto f=filter([=](auto x){ return x.team==team; },x);
 
 			//There is a seperate diagnostic that will warn about the same robot appearing more than once in a match, so just arbitrarily choose one if it shows up more than once.
@@ -219,6 +231,14 @@ bool attempted_endgame(Input_row const& a){
 static const int TELEOP_LENGTH=135;
 static const int ENDGAME_LENGTH=20;//going to assume that people only spend 20 of the 30 seconds trying to climb.
 
+void doit(int team, double eg, double conv)
+{
+	double x = 1.0;
+
+	if (team == 360)
+		x = eg;
+}
+
 std::map<Team,Robot_capabilities> robot_capabilities(std::vector<Input_row> const& in) {
 	auto gr = group([](auto x) { return std::make_pair(x.match, x.alliance); },	in);
 	std::vector<std::vector<Input_row>> alliance_results = values(gr);
@@ -245,8 +265,10 @@ std::map<Team,Robot_capabilities> robot_capabilities(std::vector<Input_row> cons
 			auto tele_inner=tele_high*inner_odds;
 
 			auto px_endgame=mean_d(mapf(attempted_endgame,f));
+
 			//so that we calculate what we think they would score if they didn't take up the time in doing the endgame.
 			auto time_conversion_factor=TELEOP_LENGTH/(TELEOP_LENGTH*(1-px_endgame)+(TELEOP_LENGTH-ENDGAME_LENGTH)*px_endgame);
+			doit(team, px_endgame, time_conversion_factor);
 
 			return std::make_pair(
 				team,

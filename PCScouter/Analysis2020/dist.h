@@ -28,7 +28,9 @@
 #ifndef DIST_H
 #define DIST_H
 
-#include<map>
+#include <map>
+#include <cassert>
+#include <cmath>
 #include "util.h"
 
 using Px=double;//probability; should be 0-1.
@@ -37,6 +39,15 @@ struct Dist:public std::map<unsigned,Px>{
 	//models a probability distribution with discrete outcomes.
 	Dist();
 };
+
+inline void assertDistValid(const Dist& dist)
+{
+	double total = 0.0;
+	for (auto pair : dist) {
+		total += pair.second;
+	}
+	assert(std::fabs(total - 1.0) < 0.1);
+}
 
 Dist mean(std::vector<Dist> const&);
 Dist operator+(Dist const&,Dist const&);

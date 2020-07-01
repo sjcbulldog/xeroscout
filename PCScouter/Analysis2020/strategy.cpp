@@ -24,8 +24,9 @@
 // This work we create by the named individual(s) above in support of the
 // FRC robotics team Error Code Xero.
 //
-#include<functional>
-#include<cmath>
+#include <functional>
+#include <cmath>
+#include <chrono>
 #include "util.h"
 #include "int_limited.h"
 #include "dist.h"
@@ -217,9 +218,23 @@ int main1(int argc,char **argv){
 }
 
 int main(int argc,char **argv){
+
+	std::cout << "Running ... \n";
+
+	auto start = std::chrono::high_resolution_clock::now();
+
 	try{
-		return main1(argc,argv);
+		main1(argc,argv);
 	}catch(std::string const& a){
 		cout<<"Caught:"<<a<<"\n";
 	}
+
+	auto elapsed = std::chrono::high_resolution_clock::now() - start;
+	auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
+
+	std::cout << "========================================" << "\n";
+	std::cout << "Duration " << dur.count() << " millisecond" << "\n";
+	std::cout << "========================================" << "\n";
+
+	return 0;
 }

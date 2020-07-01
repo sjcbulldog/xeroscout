@@ -126,12 +126,6 @@ QString PickListGenerator::genInputFile()
 	return file.fileName();
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-//
-// End year specific code
-//
-/////////////////////////////////////////////////////////////////////////////////////////////
-
 void PickListGenerator::started()
 {
 }
@@ -170,6 +164,7 @@ void PickListGenerator::finished(int exitcode, QProcess::ExitStatus status)
 		picks_ = "<p>analysis program crashed</p>";
 	}
 
+	QFile::copy(dir_->filePath("input.csv"), "C:/cygwin64/home/ButchGriffin/projects/scouting/files/data.csv");
 	done_ = true;
 }
 
