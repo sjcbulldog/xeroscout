@@ -70,6 +70,8 @@ private:
 	static constexpr const char* DebugSetting = "debug";
 
 private:
+	void readPreferences();
+
 	void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
 	void setAppController(ApplicationController* ctrl);
 
@@ -216,6 +218,11 @@ private:
 	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> data_model_;
 
 	QStringList team_keys_;
+
+	//
+	// The name of the picklist program
+	//
+	QString picklist_program_;
 
 	QUdpSocket* socket_;
 	QTcpServer* server_;

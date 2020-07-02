@@ -28,11 +28,11 @@
 
 using namespace xero::scouting::datamodel;
 
-PickListGenerator::PickListGenerator(int team, std::shared_ptr<ScoutingDataModel> dm, int year)
+PickListGenerator::PickListGenerator(int team, std::shared_ptr<ScoutingDataModel> dm, const QString &name)
 {
 	team_ = team;
 	dm_ = dm;
-	year_ = year;
+	picklist_pgm_name_ = name;
 
 	dir_ = nullptr;
 	process_ = nullptr;
@@ -164,7 +164,6 @@ void PickListGenerator::finished(int exitcode, QProcess::ExitStatus status)
 		picks_ = "<p>analysis program crashed</p>";
 	}
 
-	QFile::copy(dir_->filePath("input.csv"), "C:/cygwin64/home/ButchGriffin/projects/scouting/files/data.csv");
 	done_ = true;
 }
 
@@ -191,7 +190,7 @@ void PickListGenerator::start()
 {
 	done_ = false;
 
-	QString binfile = QCoreApplication::applicationDirPath() + "/analysis" + QString::number(year_) + ".exe";
+	QString binfile = QCoreApplication::applicationDirPath() + "/" + picklist_pgm_name_;
 	if (!QFile::exists(binfile))
 	{
 		picks_ = "<p>The executable file '" + binfile + "' is not present";
@@ -214,16 +213,14 @@ void PickListGenerator::start()
 	if (done_ == true)
 		return;
 
-#ifdef _DEBUG
-	QString dest = "C:/cygwin64/home/ButchGriffin/projects/scouting/input.csv";
+	QString dest = "C:/cygwin64/home/ButchGriffin/projects/scouting/PCScouter/files/input.csv";
 	QFile::copy(filename, dest);
-#endif
 
 	emit logMessage("Generated Input File: " + filename);
 	emit logMessage("Directory: " + dir_->path());
 
 	QStringList args;
-	args << "--team" << "1425" << "--file" << filename;
+	args << "1425" << filename;
 	process_ = new QProcess();
 	process_->setWorkingDirectory(dir_->path());
 

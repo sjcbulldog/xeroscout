@@ -15,7 +15,7 @@ public:
 	CapabilityExtractor(const Headers& headers, const DataArray& data);
 	virtual ~CapabilityExtractor();
 
-	RobotCapabilities* robot(int team) {
+	const RobotCapabilities* robot(int team) const {
 		auto it = robots_.find(team);
 		if (it == robots_.end())
 			return nullptr;
@@ -48,6 +48,17 @@ public:
 		auto it = team_results_.find(team);
 		if (it != team_results_.end())
 			list = it->second;
+
+		return list;
+	}
+
+	std::list<const RobotCapabilities*> robots() const {
+		std::list<const RobotCapabilities*> list;
+
+		for (auto pair : robots_)
+		{
+			list.push_back(pair.second);
+		}
 
 		return list;
 	}
@@ -113,16 +124,6 @@ protected:
 		robot->addDouble(colname, average(res, col));
 	}
 
-	std::list<RobotCapabilities*> robots() const {
-		std::list<RobotCapabilities*> list;
-
-		for (auto pair : robots_)
-		{
-			list.push_back(pair.second);
-		}
-
-		return list;
-	}
 
 	static double sum(const std::list<Result*>& list, int col) {
 		double ret = 0.0;

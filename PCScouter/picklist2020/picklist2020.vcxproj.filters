@@ -54,7 +54,7 @@
     <ClCompile Include="CapabilityExtractor2020.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PickListFormatter.cpp">
+    <ClCompile Include="OutputFormatter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,7 +110,7 @@
     <ClInclude Include="Pick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PickListFormatter.h">
+    <ClInclude Include="OutputFormatter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

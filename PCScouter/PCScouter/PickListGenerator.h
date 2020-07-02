@@ -32,7 +32,7 @@ class PickListGenerator : public QObject
 	Q_OBJECT
 
 public:
-	PickListGenerator(int team_, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, int year);
+	PickListGenerator(int team_, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, const QString &pgm);
 	virtual ~PickListGenerator();
 
 	void start();
@@ -65,7 +65,6 @@ private:
 	void errorOccurred(QProcess::ProcessError err);
 
 private:
-	int year_;
 	int team_;
 	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	QProcess* process_;
@@ -73,4 +72,5 @@ private:
 	QString caps_;
 	bool done_;
 	QTemporaryDir* dir_;
+	QString picklist_pgm_name_;
 };

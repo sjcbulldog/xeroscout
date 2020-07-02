@@ -46,6 +46,10 @@ public:
 	{
 	}
 
+	const std::map<int, double>& data() const {
+		return dist_;
+	}
+
 	void clear() {
 		dist_.clear();
 	}

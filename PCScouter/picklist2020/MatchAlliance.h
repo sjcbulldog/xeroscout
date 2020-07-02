@@ -12,8 +12,8 @@ class RobotCapabilities;
 class MatchAlliance
 {
 public:
-	MatchAlliance(std::vector<RobotCapabilities*>&& robots);
-	MatchAlliance(const std::vector<RobotCapabilities*>& robots);
+	MatchAlliance(std::vector<const RobotCapabilities*>&& robots);
+	MatchAlliance(const std::vector<const RobotCapabilities*>& robots);
 	virtual ~MatchAlliance();
 
 	const RobotCapabilities* robot(size_t index) const {
@@ -41,7 +41,7 @@ public:
 		return ret;
 	}
 
-	double sum(int col, std::function<double(int index, RobotCapabilities *r)> cb) const {
+	double sum(int col, std::function<double(int index, const RobotCapabilities *r)> cb) const {
 		double ret = 0;
 
 		int index = 0;
@@ -63,6 +63,6 @@ public:
 	}
 
 private:
-	std::vector<RobotCapabilities*> robots_;
+	std::vector<const RobotCapabilities*> robots_;
 };
 

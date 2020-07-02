@@ -180,7 +180,6 @@ namespace xero
 				bool hasExtraData() const {
 					return hasExtraData(Alliance::Red, 1) &&
 						hasExtraData(Alliance::Red, 2) &&
-						hasExtraData(Alliance::Red, 2) &&
 						hasExtraData(Alliance::Red, 3) &&
 						hasExtraData(Alliance::Blue, 1) &&
 						hasExtraData(Alliance::Blue, 2) &&
@@ -211,7 +210,6 @@ namespace xero
 
 				bool hasExtraField(const QString& name) const {
 					return hasExtraField(Alliance::Red, 1, name) &&
-						hasExtraField(Alliance::Red, 2, name) &&
 						hasExtraField(Alliance::Red, 2, name) &&
 						hasExtraField(Alliance::Red, 3, name) &&
 						hasExtraField(Alliance::Blue, 1, name) &&

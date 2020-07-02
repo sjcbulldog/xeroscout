@@ -20,6 +20,10 @@ public:
 		return picks_;
 	}
 
+	std::list<const RobotCapabilities*> robots() {
+		return extractor_.robots();
+	}
+
 protected:
 	bool isDataOk() override;
 

@@ -1,6 +1,6 @@
 #include "CsvReader.h"
 #include "TeamPicker2020.h"
-#include "PickListFormatter.h"
+#include "OutputFormatter.h"
 #include <iostream>
 #include <string>
 #include <chrono>
@@ -15,6 +15,9 @@ int main(int ac, char **av)
 {
 	int team;
 	bool noisy = false;
+	std::string pickfile = "picklist.html";
+	std::string capfile = "robot_capabilities.html";
+	std::string infile = "data.csv";
 
 	ac--;
 	av++;
@@ -27,7 +30,7 @@ int main(int ac, char **av)
 		noisy = true;
 	}
 
-	if (ac != 3)
+	if (ac < 2)
 	{
 		usage();
 		return 1;
@@ -36,6 +39,7 @@ int main(int ac, char **av)
 	size_t pos;
 	bool parsed = false;
 	arg = *av++;
+	ac--;
 
 	try {
 		team = std::stoi(arg, &pos);
@@ -55,9 +59,26 @@ int main(int ac, char **av)
 
 	auto start = std::chrono::high_resolution_clock::now();
 
-	arg = *av++;
+	if (ac > 0)
+	{
+		infile = *av++;
+		ac--;
+	}
+
+	if (ac > 0)
+	{
+		pickfile = *av++;
+		ac--;
+	}
+
+	if (ac > 0)
+	{
+		capfile = *av++;
+		ac--;
+	}
+
 	CsvReader reader(true);
-	if (!reader.readFile(std::filesystem::path(arg), CsvReader::HeaderType::Headers))
+	if (!reader.readFile(std::filesystem::path(infile), CsvReader::HeaderType::Headers))
 	{
 		usage();
 		return 1;
@@ -71,9 +92,16 @@ int main(int ac, char **av)
 		return 1;
 	}
 
-	if (!PickListFormatter::outputData(team, *av, picker.picks(), PickListFormatter::OutputType::CSV))
+	if (!OutputFormatter::outputPicklist(team, pickfile, picker.picks(), OutputFormatter::OutputType::HTML))
 	{
-		std::cerr << "picklist2020: cannout write output file" << std::endl;
+		std::cerr << "picklist2020: cannout write picklist output file" << std::endl;
+		return 1;
+	}
+
+	std::list<const RobotCapabilities*> robots = picker.robots();
+	if (!OutputFormatter::outputRobotCapabilities(capfile, robots, OutputFormatter::OutputType::HTML))
+	{
+		std::cerr << "picklist2020: cannout write robot capabilities output file" << std::endl;
 		return 1;
 	}
 

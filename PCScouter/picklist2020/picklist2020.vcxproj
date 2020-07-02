@@ -154,7 +154,7 @@
     <ClCompile Include="MatchAlliance.cpp" />
     <ClCompile Include="MatchSimulator2020.cpp" />
     <ClCompile Include="picklist2020.cpp" />
-    <ClCompile Include="PickListFormatter.cpp" />
+    <ClCompile Include="OutputFormatter.cpp" />
     <ClCompile Include="Result.cpp" />
     <ClCompile Include="RobotCapabilities.cpp" />
     <ClCompile Include="TeamPicker.cpp" />
@@ -174,7 +174,7 @@
     <ClInclude Include="MatchAlliance.h" />
     <ClInclude Include="MatchSimulator.h" />
     <ClInclude Include="MatchSimulator2020.h" />
-    <ClInclude Include="PickListFormatter.h" />
+    <ClInclude Include="OutputFormatter.h" />
     <ClInclude Include="Result.h" />
     <ClInclude Include="RobotCapabilities.h" />
     <ClInclude Include="TeamPicker.h" />

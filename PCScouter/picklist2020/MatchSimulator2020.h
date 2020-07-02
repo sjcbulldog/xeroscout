@@ -19,7 +19,7 @@ public:
 private:
 	double simulate(const MatchAlliance& alliance, const std::vector<ClimbingStrategy>& climbing);
 
-	double scale(int index, RobotCapabilities* robot, const std::vector<ClimbingStrategy>& climbing);
+	double scale(int index, const RobotCapabilities* robot, const std::vector<ClimbingStrategy>& climbing);
 	double climbPoints(const MatchAlliance& alliance, const std::vector<ClimbingStrategy>& climbing);
 
 	std::pair<double, double> bonusBallsHit(const MatchAlliance& alliancs);

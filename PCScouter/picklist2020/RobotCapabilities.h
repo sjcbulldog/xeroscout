@@ -15,6 +15,28 @@ public:
 		return team_;
 	}
 
+	static std::vector<std::string> doubleColumnNames() {
+		std::vector<std::string> ret;
+
+		for (auto pair : double_columns_)
+		{
+			ret.push_back(pair.first);
+		}
+
+		return ret;
+	}
+
+	static std::vector<std::string> distColumnNames() {
+		std::vector<std::string> ret;
+
+		for (auto pair : dist_columns_)
+		{
+			ret.push_back(pair.first);
+		}
+
+		return ret;
+	}
+
 	void addDouble(const std::string& name, double value);
 	void addDistribution(const std::string& name, const Distribution& dist);
 

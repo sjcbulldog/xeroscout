@@ -31,7 +31,7 @@ class PickListController : public ApplicationController
 {
 public:
 	PickListController(std::shared_ptr<xero::ba::BlueAlliance> ba, int team, int year,
-		std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm,
+		std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, const QString &name, 
 		xero::scouting::views::PickListView* view);
 	~PickListController();
 

@@ -133,7 +133,7 @@ double MatchSimulator2020::simulate(const MatchAlliance& alliance)
 	return score;
 }
 
-double MatchSimulator2020::scale(int index, RobotCapabilities* robot, const std::vector<ClimbingStrategy>& climbing)
+double MatchSimulator2020::scale(int index, const RobotCapabilities* robot, const std::vector<ClimbingStrategy>& climbing)
 {
 	assert(index < climbing.size());
 	if (climbing[index] == ClimbingStrategy::None)

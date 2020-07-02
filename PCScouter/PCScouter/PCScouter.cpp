@@ -107,6 +107,8 @@ PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_
 	if (injector.hasData("year") && injector.data("year").type() == QVariant::Int)
 		year_ = injector.data("year").toInt();
 
+	readPreferences();
+
 	createWindows();
 	createMenus();
 
@@ -151,6 +153,14 @@ PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_
 	setWindowIcon(icon);
 
 	shutdown_client_connection_ = false;
+}
+
+void PCScouter::readPreferences()
+{
+	if (settings_.contains("picklist") && settings_.value("picklist").type() == QVariant::Type::String)
+		picklist_program_ = settings_.value("picklist").toString();
+	else
+		picklist_program_ = "picklist" + QString::number(year_) + ".exe";
 }
 
 void PCScouter::showEvent(QShowEvent* ev)
@@ -1254,7 +1264,7 @@ void PCScouter::updateCurrentView()
 				}
 				else
 				{
-					auto ctrl = new PickListController(blue_alliance_, team_number_, year_, data_model_, ds);
+					auto ctrl = new PickListController(blue_alliance_, team_number_, year_, data_model_, picklist_program_, ds);
 					setAppController(ctrl);
 					(void)connect(ctrl, &ApplicationController::complete, this, &PCScouter::pickListComplete);
 				}

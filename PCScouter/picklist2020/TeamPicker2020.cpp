@@ -68,7 +68,7 @@ std::vector<std::pair<int, double>> TeamPicker2020::generateTwoTeamScores(int te
 
 	for (auto pick : teams)
 	{
-		MatchAlliance ma(std::vector<RobotCapabilities*> { extractor_.robot(team), extractor_.robot(pick) });
+		MatchAlliance ma(std::vector<const RobotCapabilities*> { extractor_.robot(team), extractor_.robot(pick) });
 
 		if (noisy_)
 		{
@@ -97,7 +97,7 @@ std::vector<std::pair<int, double>> TeamPicker2020::generateThreeTeamScores(int 
 
 	for (auto pick : teams)
 	{
-		MatchAlliance ma(std::vector<RobotCapabilities*> { extractor_.robot(team), extractor_.robot(pick), &third_robot_ });
+		MatchAlliance ma(std::vector<const RobotCapabilities*> { extractor_.robot(team), extractor_.robot(pick), &third_robot_ });
 
 		if (noisy_)
 		{
@@ -186,7 +186,7 @@ bool TeamPicker2020::createPickList(int team)
 				std::cout << "Simulating " << team << " " << pair.first << " " << third << " ... ";
 			}
 
-			MatchAlliance ma(std::vector<RobotCapabilities*> { extractor_.robot(team), extractor_.robot(pair.first), extractor_.robot(third) });
+			MatchAlliance ma(std::vector<const RobotCapabilities*> { extractor_.robot(team), extractor_.robot(pair.first), extractor_.robot(third) });
 			double score = simulator_.simulate(ma);
 			pick.addScore(third, score);
 
