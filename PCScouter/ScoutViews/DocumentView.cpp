@@ -37,6 +37,7 @@
 #include "ZebraPatternView.h"
 #include "ZebraRegionEditor.h"
 #include "IntroView.h"
+#include "PickListEditor.h"
 #include <QLabel>
 #include <QDebug>
 #include <QFont>
@@ -118,6 +119,8 @@ namespace xero
 				else
 					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebrareplay", PathFieldView::ViewMode::Replay));		// 23
 
+				addWidget(new PickListEditor(this, "picklisteditor"));																// 24
+
 				setCurrentIndex(0);
 				view_ = ViewType::NoModelView;
 
@@ -128,8 +131,6 @@ namespace xero
 
 				tree = dynamic_cast<QTreeWidget*>(getWidget(ViewType::MatchView));
 				(void)connect(tree, &QTreeWidget::itemDoubleClicked, this, &DocumentView::matchItemDoubleClicked);
-
-
 			}
 
 			DocumentView::~DocumentView()

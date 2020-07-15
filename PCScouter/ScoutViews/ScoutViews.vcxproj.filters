@@ -146,6 +146,15 @@
     <ClCompile Include="EquationLineEdit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PickListEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PickListEditorWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PickListRowWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MatchViewWidget.h">
@@ -282,6 +291,15 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="DataSetFieldPopup.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="PickListEditorWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="PickListEditor.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="PickListRowWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

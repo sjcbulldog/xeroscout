@@ -64,7 +64,7 @@ ScoutingDataMapPtr KPIController::evToData(const QString& tkey, const QString& e
 	auto model = it->second;
 
 	auto team = model->findTeamByKey(tkey);
-	if (team->hasExtraData())
+	if (team != nullptr && team->hasExtraData())
 	{
 		auto data = team->extraData();
 		auto it = data->find(DataModelTeam::OPRName);

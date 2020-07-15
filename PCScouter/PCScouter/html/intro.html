@@ -1,15 +1,194 @@
 <html>
 <body>
-    <b>Introduction</b><hr>
-    This application is a scouting application.  It is built to help with the following:
-    <ul>
-        <li>Create a scouting schedule for both matches and pits</li>
-        <li>Track the collection of scouting data</li>
-        <li>Integrate match scoring and zebra data from the Blue Alliance</li>
-        <li>View the raw collected data and look for data integrity problems</li>
-        <li>Visualize data to assist in match stratergy or alliance selection</li>
-    </ul>
+    <h1>Using the Xero Scouting System</h1>
+    <h4>Xero Scouting System Devices</h4>
+    There are three types of devices in the Xero Scouting System.  These are the XeroCentral,
+    the XeroScout, and the XeroCoach.
+    <h5>XeroCentral</h5>
+    This is the central device that contains all of the scouting data.  This device creates and
+    manages the event, including sychronization with all of the other types of devices.
+    <br>
+    <h5>XeroScout</h5>
+    This is the device a scouter uses.  A XeroScout device can be used to scout another team or used
+    to scout a match.  Scouting assignments are given when a XeroScout device is first synchronized with the
+    XeroCentral device.  Subsequent synchronization operations moves the scouting data from the XeroScout
+    device into the database on the XeroCentral device.
+    <br>
+    <h5>XeroCoach</h5>
+    The XeroCoach device contains a complete copy of the scouting data, like the XeroCentral device.  However
+    this data is (mostly) read only.  The XeroCoach device is used by the team coach when reviewing strategy
+    with other alliances about how to approach a match.  Note, the XeroCoach device can connect to the Blue Alliance
+    site to download match scoring data or zebra data.  If this data is downloaded, it is transferred to the
+    XereCentral device the next time these device synchronize.
+    <br>
+    <h4>Synchronization</h4>
+    Synchronization is the process of moving data from one device in the Xero Scouting System to another.  Synchronization
+    can occur over BlueTooth, TCP/IP, or USB.  Before running synchronization, be sure to set the Team Number of the team using
+    the Settings/Set Team Number menu item.
+    <h5>USB</h5>
+    USB synchronization happens over a special data transfer cable.  This cable can be found on amazon via the link below.  Once
+    the two devices are connected via the USB cable, they can be syncronized via the Synchronize/USB Sync menu item.
+
     <br><br>
+    <a href="https://www.amazon.com/gp/product/B005OTPVMY/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1">Pluggable Cable</a>"
+    <br>
+    <h5>TCP/IP</h5>
+    TCP synchronization does data transfer using the machines TCP/IP network.  This could be WIFI or a hardwired Ethernet
+    connection.  There are two options here. Network Synchronization (Automatic) works on most environments.  With automoatic
+    synchronization, the XeroScout device is constantly looking for a beacon that is broadcast from the XeroCentral device
+    advertizing that it is a central devices for the desired team.  This beacon provides the IP address of the XeroCentral
+    device and the XeroScouting device can connect.
+    <br>
+    If the XeroScout device does not see the XeroCentral beacon, the Network Synchronization (Direct) can be used.  With direct
+    synchronization, an IP address must be entered.  This IP address can be found at the bottom status bar of the XeroCentral
+    application.
+    <br>
+    Note, WIFI is illegal in the stands at an event.  It interfers with the robots or the FTA systems on the field.  If TCP/IP
+    synchronization is to be used in the stands, it must be hardwired Ethernet.  This generally requires a router of some type
+    serving DHCP addresses (or statically assigned IP addresses for devices).  This in turn requires some way to power a router
+    in the stands.  This gets to be complicated and prone to failures.  The USB cable method is highly recommended for synchronization
+    in the stands of an event.
+    <br>
+
+    <h5>BlueTooth</h5>
+    For two devices to synchronize using Bluetooth, the devices must first be paried.  Under Windows 10 this is accomplished
+    using the Settings/Devices window.  Select "Add Bluetooth or other device" and follow the prompts.  Once the two devices
+    are paried, Bluetooth synchronization is started using the Synchronization/Bluetooth menu item.
+    <br>
+    Note, Bluetooth synchronization is the least reliable way to synchronize.  In addition, Bluetooth operates on the 2.4 GHz
+    frequency range which, while can interfer with the 2.4 Ghz WIFI at an event.  Currently, there is no explicit rule against
+    Bluetooth (that I have seen), but its used in less than ideal.  It is highly recommended that the USB synchronization be used
+    at events.
+    <br>
+    <h4>Getting Started</h4>
+    <ol>
+        <li><a href="#create_event">Create a new event (downloads team)</a></li>
+        <li><a href="#download_kpi">Getting Key Performance Indicators</a></li>
+        <li><a href="#download_matches">Download Match Schedule</a></li>
+        <li><a href="#sync_scouting">Sychronize with scouting tablets</a></li>
+        <li><a href="#scouting">Scout a Team Or Match</a></li>
+        <li><a href="#sync_coach">Sychronize with coaches tablets</a></li>
+        <li><a href="#pre_match">View data prior to a match</a></li>
+        <li><a href="#view_zebra">View Zebra Data</a></li>
+        <li><a href="#add_ba_scoring">Add Blue Alliance Scoring Data</a></li>
+        <li><a href="#add_ba_zebra">Add Blue Alliance Zebra Data</a></li>
+        <li><a href="#pre_alliance">View data prior to alliance selection</a></li>
+        <li><a href="#experimental">Experimental features</a></li>
+    </ol>
+    <br>
+    <small>
+        If you want to play with years other than the current year, set the environment
+        varaible XEROYEAR to the year of interest (e.g. XEROYEAR=2019)
+    </small>
+    <br>
+    <hr>
+    <a name="create_event"></a>
+    <h2>Create A New Event</h2>
+    A new event is created via the File/New Event menu item.  Selecting this menu item
+    will display a New Event Wizard.  You must be connected to the internet to create a
+    new event as the initial event data is downloaded from the Blue Alliance web site.
+    <h4>Select Event</h4>
+    On this page, select an event from the Blue Alliance database. Double click on the
+    event to select it.
+    <h4>Select Forms</h4>
+    On this page, select the team scouting and the match scouting forms.  These files are
+    scouting forms defined in XeroScout JSON format.  This format should be described in
+    an accompying document.
+    <h4>Tablet Scouting Pool</h4>
+    On this page the set of tablets used for scouting is defined. In the Table Pool column
+    you can add a new table by pressing the Insert key.  You can delete a table by selecting
+    the table and pressing the Delete key.<br>
+    Once a set of tables is defined, drag tables from the Tablet Pool column to the Team Scout
+    List column and the Match Scout List Column. You must have at least one tablet in the Team
+    Scout List and six tablets in the Match Scout List to move forward.
+    <br>
+    Once the wizard is complete, the program reads the team list from the Blue Alliance web site.
+    If the match schedule is available, it will also be downloaded, but this is not required at this
+    stage.
+    <br>
+    At this point, the tablets assigned to team scouting are assigned to their respective teams.  The
+    Team Scouting Status window will show the team scouting tablet assignments.
+    <br>
+    Once all data is downloaded from the Blue Alliance site, you will be prompted to save the event.  At
+    this point, no more internet access is required unless you are getting Key Performance Indicators,
+    Blue Alliance scoring data or Blue Alliance Zebra data.
+    <br>
+    <hr>
+    <a name="download_kpi"></a>
+    <h2>Getting Key Performance Indicators From Blue Alliance</h2>
+    Key Performance Indicators is data about the performance of each robot in the current event, based
+    on previous events in the same year.  Getting this data involves determining every event a team has
+    participated in for each team in the current event.  Then all of the event data for each of these
+    additional events is retreived.  Finally all of this previou data is processed.  For each entry
+    in the scoring breakdown data from Blue Alliance, an average value is calculcated and added to the
+    team data for each team.
+
+    <br>
+    <hr>
+    <a name="download_matches"></a>
+    <h2>Download Match Schedule</h2>
+    Once the match schedule is made available on the Blue Alliance, the match schedule can be downloaded.
+    The match schedule is generally made available (at least for the PNW district events) the night of
+    load-in as soon as all teams have checked in.  It does no harm to try and download the match schedule
+    and if the schedule it not available, a message is displayed.
+    <br>
+    At this point, the tablets assigned to match scouting are assigned to their respective matches.  The
+    Match Scouting Status window will show the match scouting tablet assignments.
+
+    <br>
+    <hr>
+    <a name="sync_scouting"></a>
+    <h2>Synchronizing with a Scouting Tablet</h2>
+    To start the scouting process, a XeroScout tablet must be sychronized with the XeroCentral device.
+    Devices can be sychronized via USB, TCP/IP or Bluetooth.  The first time a XeroScout devices is synchronized
+    with the XeroCentral device, the XeroScout devices picks a table identity.  This identity was established
+    on the XeroCentral device when the event being scouted was created.  Each tablet identity is assigned a set
+    scouting assignments, either team scouting assignments or match scouting assignments.  After the initial
+    synchronization, these assignments are avaiable on the XeroScout device.
+
+    <br>
+    <hr>
+    <a name="scouting"></a>
+    <h2>Scout A Team Or Match</h2>
+    Scouting is performed on the XeroScout device.  
+
+    <br>
+    <hr>
+    <a name="sync_coach"></a>
+    <h2>Synchronizing with a Coaches Tablet</h2>
+    TBD
+
+    <br>
+    <hr>
+    <a name="pre_match"></a>
+    <h2>Viewing Data Prior To A Match</h2>
+    TBD
+
+    <br>
+    <hr>
+    <a name="view_zebra"></a>
+    <h2>Viewing Zebra Data</h2>
+    TBD
+
+    <br>
+    <hr>
+    <a name="add_ba_scoring"></a>
+    <h2>Adding Blue Alliance Scoring Data</h2>
+    TBD
+
+    <br>
+    <hr>
+    <a name="pre_alliance"></a>
+    <h2>Viewing Data Prior To Alliance Selection</h2>
+    TBD
+
+    <br>
+    <hr>
+    <a name="experimental"></a>
+    <h2>Experimental Features</h2>
+    TBD
+
+    <br>
     <hr>
     <h1>Windows</h1>
     <h2>View Windows</h2>

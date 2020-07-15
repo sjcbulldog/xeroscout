@@ -130,7 +130,7 @@ namespace xero
 				QString html;
 
 				printSequences(html);
-				html += "<hr><br><br>";
+				html += "<hr><br>";
 
 				report_txt_->setHtml(html);
 			}

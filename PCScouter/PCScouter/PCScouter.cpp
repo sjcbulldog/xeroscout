@@ -39,6 +39,7 @@
 #include "AllianceGraphView.h"
 #include "TeamSummaryWidget.h"
 #include "PickListView.h"
+#include "PickListEditor.h"
 #include "ZebraPatternView.h"
 #include "ZebraRegionEditor.h"
 #include "IntroView.h"
@@ -90,7 +91,7 @@ using namespace xero::scouting::transport;
 // Initialization ...
 ////////////////////////////////////////////////////////////
 
-PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_(true)
+PCScouter::PCScouter(bool coach, QWidget* parent) : QMainWindow(parent), images_(true)
 {
 	coach_ = coach;
 	sync_mgr_ = nullptr;
@@ -104,8 +105,39 @@ PCScouter::PCScouter(bool coach, QWidget *parent) : QMainWindow(parent), images_
 	QDate now = QDate::currentDate();
 	year_ = now.year();
 
-	if (injector.hasData("year") && injector.data("year").type() == QVariant::Int)
-		year_ = injector.data("year").toInt();
+
+	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+	QString value = env.value("XEROYEAR", "");
+	QString msg;
+	if (value.length() > 0)
+	{
+		bool ok;
+		int v;
+
+		v = value.toInt(&ok);
+
+		if (ok && v >= 1992 && v < 2100)
+		{
+			msg = "Year set to " + QString::number(v) + " due to the XEROYEAR environment variable";
+			year_ = v;
+		}
+		else
+		{
+			msg = "XEROYEAR environment variable contains '" + value;
+			msg += "' which was invalid, using the current year (" + QString::number(year_) + ")";
+		}
+
+	}
+	else {
+		if (injector.hasData("year") && injector.data("year").type() == QVariant::Int)
+		{
+			year_ = injector.data("year").toInt();
+			msg = "Year set to " + QString::number(year_) + " because of command line override '--inject year=YYYY'";
+		}
+	}
+
+	if (msg.length() > 0)
+		QMessageBox::information(this, "Year Override", msg);
 
 	readPreferences();
 
@@ -375,8 +407,12 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::AllianceGraphView)));
 	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("picklist.png"), "Pick List", view_selector_);
+	item = new QListWidgetItem(loadIcon("picklist.png"), "Pick List Program", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PickListView)));
+	view_selector_->addItem(item);
+
+	item = new QListWidgetItem(loadIcon("picklist.png"), "Pick List Editor", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PickListEditor)));
 	view_selector_->addItem(item);
 
 	item = new QListWidgetItem("---------- Zebra ------------------------------------------");
@@ -427,6 +463,7 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::CustomDataSet)));
 	view_selector_->addItem(item);
 
+#ifdef INCLUDE_EXPERIMENTAL
 	item = new QListWidgetItem("---------- Experimental ------------------------------------------");
 	item->setFlags(Qt::ItemFlag::NoItemFlags);
 	view_selector_->addItem(item);
@@ -434,6 +471,7 @@ void PCScouter::createWindows()
 	item = new QListWidgetItem(loadIcon("history.png"), "Predictions", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::Predictions)));
 	view_selector_->addItem(item);
+#endif
 
 	view_selector_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 
@@ -492,13 +530,17 @@ void PCScouter::createMenus()
 
 	file_menu_->addSeparator();
 
-	file_load_picklist_ = file_menu_->addAction(tr("Load Picklist JSON"));
-	(void)connect(file_load_picklist_, &QAction::triggered, this, &PCScouter::loadPicklist);
-
 	file_menu_->addSeparator();
 
 	file_close_ = file_menu_->addAction(tr("Close Event"));
 	(void)connect(file_close_, &QAction::triggered, this, &PCScouter::closeEventHandler);
+
+	run_menu_ = new QMenu(tr("&Run"));
+	menuBar()->addMenu(run_menu_);
+	(void)connect(run_menu_, &QMenu::aboutToShow, this, &PCScouter::showingRunMenu);
+
+	run_picklist_program_ = run_menu_->addAction(tr("Run Picklist Program"));
+	(void)connect(run_picklist_program_, &QAction::triggered, this, &PCScouter::runPicklistProgram);
 
 	import_menu_ = new QMenu(tr("&Import"));
 	menuBar()->addMenu(import_menu_);
@@ -510,10 +552,10 @@ void PCScouter::createMenus()
 		(void)connect(import_match_schedule_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
 	}
 
-	import_match_data_ = import_menu_->addAction(tr("BlueAlliance Match Results"));
+	import_match_data_ = import_menu_->addAction(tr("Match Results"));
 	(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchData);
 
-	import_zebra_data_ = import_menu_->addAction(tr("BlueAlliance Zebra Data"));
+	import_zebra_data_ = import_menu_->addAction(tr("Zebra Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importZebraData);
 
 	if (coach_)
@@ -522,7 +564,7 @@ void PCScouter::createMenus()
 		(void)connect(sync_with_central_, &QAction::triggered, this, &PCScouter::syncWithCentral);
 	}
 
-	import_kpi_ = import_menu_->addAction(tr("Historical Team Performance"));
+	import_kpi_ = import_menu_->addAction(tr("Key Performance Indicators"));
 	(void)connect(import_kpi_, &QAction::triggered, this, &PCScouter::importKPIData);
 
 	export_menu_ = new QMenu(tr("&Export"));
@@ -863,6 +905,43 @@ void PCScouter::setDataModelStatus()
 // Menu Related
 ////////////////////////////////////////////////////////////
 
+void PCScouter::runPicklistProgram()
+{
+	//
+	// Load the picklist descriptor JSON
+	//
+	QString path;
+	if (settings_.contains("FormsDir"))
+		path = settings_.value("FormsDir").toString();
+	else
+		path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
+
+	QString filename = QFileDialog::getOpenFileName(this, "Open Picklist File", path, "JSON Files (*.json);;All Files (*.*)");
+	if (filename.length() == 0)
+		return;
+
+	std::shared_ptr<PickListTranslator> pl = std::make_shared<PickListTranslator>();
+	if (!pl->load(filename))
+	{
+		QMessageBox::critical(this, "Error", pl->error());
+		logwin_->append(pl->error());
+	}
+	else
+	{
+		data_model_->setPickListTranslator(pl);
+	}
+
+	auto answer = QMessageBox::information(this, "Replace Picklist?", 
+		"This action will replace the current picklist, is this ok?", 
+		QMessageBox::StandardButton::Yes, QMessageBox::StandardButton::No);
+	if (answer == QMessageBox::StandardButton::No)
+		return;
+
+	auto ctrl = new PickListController(blue_alliance_, team_number_, year_, data_model_, picklist_program_);
+	setAppController(ctrl);
+	(void)connect(ctrl, &ApplicationController::complete, this, &PCScouter::pickListComplete);
+}
+
 void PCScouter::setDebug()
 {
 	settings_.setValue(DebugSetting, debug_act_->isChecked());
@@ -896,8 +975,14 @@ void PCScouter::showingFileMenu()
 
 	file_save_->setEnabled(state);
 	file_save_as_->setEnabled(state);
-	file_load_picklist_->setEnabled(state);
 	file_close_->setEnabled(state);
+}
+
+void PCScouter::showingRunMenu()
+{
+	bool state = (data_model_ != nullptr);
+
+	run_picklist_program_->setEnabled(state);
 }
 
 void PCScouter::showingImportMenu()
@@ -1060,30 +1145,6 @@ void PCScouter::newEventBA()
 	(void)connect(app_controller_, &ApplicationController::errorMessage, this, &PCScouter::errorMessage);
 }
 
-void PCScouter::loadPicklist()
-{
-	QString path;
-	if (settings_.contains("FormsDir"))
-		path = settings_.value("FormsDir").toString();
-	else
-		path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
-
-	QString filename = QFileDialog::getOpenFileName(this, "Open Picklist File", path, "JSON Files (*.json);;All Files (*.*)");
-	if (filename.length() == 0)
-		return;
-
-	std::shared_ptr<PickListTranslator> pl = std::make_shared<PickListTranslator>();
-	if (!pl->load(filename))
-	{
-		QMessageBox::critical(this, "Error", pl->error());
-		logwin_->append(pl->error());
-	}
-	else
-	{
-		data_model_->setPickListTranslator(pl);
-	}
-}
-
 void PCScouter::openEvent()
 {
 	if (data_model_ != nullptr && data_model_->isDirty())
@@ -1167,11 +1228,16 @@ void PCScouter::pickListComplete(bool err)
 	PickListView* ds = dynamic_cast<PickListView*>(view_frame_->getWidget(DocumentView::ViewType::PickListView));
 	assert(ds != nullptr);
 
+	PickListEditor* edit = dynamic_cast<PickListEditor*>(view_frame_->getWidget(DocumentView::ViewType::PickListEditor));
+	assert(edit != nullptr);
+
 	PickListController* ctrl = dynamic_cast<PickListController*>(app_controller_);
 	if (ctrl != nullptr)
 	{
 		ds->setHTML(ctrl->htmlPicklist(), ctrl->htmlRobotCapabilities());
 		ds->clearNeedRefresh();
+
+		edit->needsRefresh();
 	}
 }
 
@@ -1250,28 +1316,6 @@ void PCScouter::updateCurrentView()
 		}
 		break;
 
-		case DocumentView::ViewType::PickListView:
-		{
-			PickListView* ds = dynamic_cast<PickListView*>(view_frame_->getWidget(view));
-			assert(ds != nullptr);
-			if (ds->needsRefresh())
-			{
-				if (data_model_->pickListTranslator() == nullptr)
-				{
-					QString html = "<b>No Picklist Configuration Loaded</b>";
-					ds->setHTML(html, html);
-					ds->clearNeedRefresh();
-				}
-				else
-				{
-					auto ctrl = new PickListController(blue_alliance_, team_number_, year_, data_model_, picklist_program_, ds);
-					setAppController(ctrl);
-					(void)connect(ctrl, &ApplicationController::complete, this, &PCScouter::pickListComplete);
-				}
-			}
-		}
-		break;
-
 		case DocumentView::ViewType::MatchView:
 		{
 			MatchViewWidget* ds = dynamic_cast<MatchViewWidget*>(view_frame_->getWidget(view));
@@ -1346,6 +1390,16 @@ void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 	{
 		view_frame_->needsRefreshAll();
 		updateCurrentView();
+	}
+
+	if (type == ScoutingDataModel::ChangeType::PickListChanged)
+	{
+		auto* ds = dynamic_cast<PickListEditor*>(view_frame_->getWidget(DocumentView::ViewType::PickListEditor));
+		assert(ds != nullptr);
+		ds->needsRefresh();
+
+		if (vtype == DocumentView::ViewType::PickListEditor)
+			updateCurrentView();
 	}
 }
 

@@ -305,9 +305,15 @@ namespace xero
 				QMenu* menu = new QMenu();
 				QAction* act;
 
+				QItemSelectionModel* select = table_->selectionModel();
+				QModelIndexList columns = select->selectedColumns();
+
 				pt_ = pt;
 				act = menu->addAction(tr("Hide Column(s)"));
 				connect(act, &QAction::triggered, this, &DataSetViewWidget::hideColumn);
+
+				if (columns.size() == 0)
+					act->setEnabled(false);
 
 				act = menu->addAction(tr("Unhide All Columns"));
 				connect(act, &QAction::triggered, this, &DataSetViewWidget::unhideColumns);

@@ -207,6 +207,9 @@
     <ClInclude Include="DataSetExprContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PickListEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ScoutingDatabase.cpp">
@@ -303,6 +306,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DataSetExprContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PickListEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

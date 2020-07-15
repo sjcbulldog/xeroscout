@@ -21,18 +21,24 @@
 //
 
 #include "PickListController.h"
+#include <QSettings>
 
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
 PickListController::PickListController(std::shared_ptr<BlueAlliance> ba, int team, int year,
-	std::shared_ptr<ScoutingDataModel> dm, const QString &name, xero::scouting::views::PickListView* view) : ApplicationController(ba, dm)
+	std::shared_ptr<ScoutingDataModel> dm, const QString &name) : ApplicationController(ba, dm)
 {
-	view_ = view;
-
 	gen_ = new PickListGenerator(team, dm, name);
 	connect(gen_, &PickListGenerator::logMessage, this, &PickListController::logMessage);
 	started_ = false;
+
+	total_time_ = 60.0;
+	QSettings settings;
+	if (settings.contains("picklisttime") && settings.contains("picklistcount"))
+	{
+		total_time_ = settings.value("picklisttime").toDouble() / settings.value("picklistcount").toInt();
+	}
 }
 
 PickListController::~PickListController()
@@ -48,6 +54,21 @@ bool PickListController::isDone()
 		emit logMessage(elapsed);
 		emit complete(false);
 		return true;
+
+		QSettings settings;
+		double total;
+		int count;
+		if (settings.contains("picklisttime") && settings.contains("picklistcount"))
+		{
+			total = settings.value("picklisttime").toDouble();
+			count = settings.value("picklistcount").toInt();
+		}
+
+		total += timer_.elapsed() / 1000.0;
+		count++;
+
+		settings.setValue("picklisttime", total);
+		settings.setValue("picklistcount", count);
 	}
 
 	return false;
@@ -63,8 +84,7 @@ void PickListController::run()
 	}
 	else
 	{
-		qint64 total = 60 * 1000;
-		pcnt_ = (timer_.elapsed() * 100) / total;
+		pcnt_ = (timer_.elapsed() * 100) / (total_time_ * 1000);
 
 		if (pcnt_ > 99)
 			pcnt_ = 99;

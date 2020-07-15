@@ -9,7 +9,6 @@ namespace xero
 	{
 		namespace views
 		{
-
 			class DataSetFieldPopup : public QWidget
 			{
 				Q_OBJECT

@@ -16,16 +16,19 @@ bool OutputFormatter::outputRobotCapabilities(const std::string& filename, std::
 
 bool OutputFormatter::outputRobotCapabilitiesCSV(const std::string& filename, std::list<const RobotCapabilities*>& robots)
 {
+	//
+	// TODO: figure out how to store distributions in CSV files
+	//
 	return false;
 }
 
 bool OutputFormatter::outputRobotCapabilitiesHTML(const std::string& filename, std::list<const RobotCapabilities*>& robots)
 {
-	std::ofstream out(filename);
-	if (!out.is_open())
+	if (robots.size() == 0)
 		return false;
 
-	if (robots.size() == 0)
+	std::ofstream out(filename);
+	if (!out.is_open())
 		return false;
 
 	auto doubleColumns = RobotCapabilities::doubleColumnNames();
@@ -131,7 +134,7 @@ bool OutputFormatter::outputPicklistCSV(int team, const std::string& filename, c
 	for (int i = 0; i < 22; i++)
 	{
 		out << "," << i + 1;
-		out << ",Score";
+		out << ",Score_" << i + 1;
 	}
 	out << std::endl;
 

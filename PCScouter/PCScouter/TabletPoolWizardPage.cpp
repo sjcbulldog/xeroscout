@@ -154,7 +154,7 @@ QWidget* TabletPoolWizardPage::createMatchScoutList(QWidget *parent)
 	l->addWidget(match_list_);
 	match_list_->setDragDropMode(QAbstractItemView::DragDropMode::DropOnly);
 
-	label = new QLabel("drag from tablet pool");
+	label = new QLabel("drag from tablet pool (minimum 6)");
 	QFont f = label->font();
 	f.setPointSizeF(6.0);
 	label->setFont(f);
@@ -189,7 +189,7 @@ QWidget* TabletPoolWizardPage::createPitScoutList(QWidget* parent)
 	l->addWidget(pit_list_);
 	pit_list_->setDragDropMode(QAbstractItemView::DragDropMode::DropOnly);
 
-	label = new QLabel("drag from tablet pool");
+	label = new QLabel("drag from tablet pool (minimum 1)");
 	QFont f = label->font();
 	f.setPointSizeF(6.0);
 	label->setFont(f);

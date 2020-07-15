@@ -121,6 +121,9 @@
     <ClCompile Include="MathUtils.cpp" />
     <ClCompile Include="PathFieldView.cpp" />
     <ClCompile Include="PatternListWidget.cpp" />
+    <ClCompile Include="PickListEditor.cpp" />
+    <ClCompile Include="PickListEditorWidget.cpp" />
+    <ClCompile Include="PickListRowWidget.cpp" />
     <ClCompile Include="PickListView.cpp" />
     <ClCompile Include="PreMatchGraphView.cpp" />
     <ClCompile Include="RobotActivityEditWidget.cpp" />
@@ -158,6 +161,9 @@
     <QtMoc Include="MatchTeamSelector.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="PatternListWidget.h" />
+    <QtMoc Include="PickListEditor.h" />
+    <QtMoc Include="PickListEditorWidget.h" />
+    <QtMoc Include="PickListRowWidget.h" />
     <ClInclude Include="PickListView.h" />
     <ClInclude Include="PreMatchGraphView.h" />
     <QtMoc Include="TimeBoundWidget.h" />

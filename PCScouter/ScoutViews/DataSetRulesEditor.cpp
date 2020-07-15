@@ -143,6 +143,8 @@ namespace xero
 			void DataSetRulesEditor::ruleRowChanged(int row)
 			{
 				current_ = row;
+				if (current_ >= rules_.size())
+					current_ = static_cast<int>(rules_.size() - 1);
 				initRule();
 			}
 

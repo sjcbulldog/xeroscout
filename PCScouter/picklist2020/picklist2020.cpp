@@ -15,8 +15,8 @@ int main(int ac, char **av)
 {
 	int team;
 	bool noisy = false;
-	std::string pickfile = "picklist.html";
-	std::string capfile = "robot_capabilities.html";
+	std::string pickfile = "picklist";
+	std::string capfile = "robot_capabilities";
 	std::string infile = "data.csv";
 
 	ac--;
@@ -92,14 +92,20 @@ int main(int ac, char **av)
 		return 1;
 	}
 
-	if (!OutputFormatter::outputPicklist(team, pickfile, picker.picks(), OutputFormatter::OutputType::HTML))
+	if (!OutputFormatter::outputPicklist(team, pickfile + ".html", picker.picks(), OutputFormatter::OutputType::HTML))
+	{
+		std::cerr << "picklist2020: cannout write picklist output file" << std::endl;
+		return 1;
+	}
+
+	if (!OutputFormatter::outputPicklist(team, pickfile + ".csv", picker.picks(), OutputFormatter::OutputType::CSV))
 	{
 		std::cerr << "picklist2020: cannout write picklist output file" << std::endl;
 		return 1;
 	}
 
 	std::list<const RobotCapabilities*> robots = picker.robots();
-	if (!OutputFormatter::outputRobotCapabilities(capfile, robots, OutputFormatter::OutputType::HTML))
+	if (!OutputFormatter::outputRobotCapabilities(capfile + ".html", robots, OutputFormatter::OutputType::HTML))
 	{
 		std::cerr << "picklist2020: cannout write robot capabilities output file" << std::endl;
 		return 1;

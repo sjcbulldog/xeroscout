@@ -194,7 +194,7 @@ namespace xero
 				auto t = dataModel()->findTeamByKey(current_team_);
 				if (t == nullptr)
 				{
-					html = "<center><h1>invalid team key '" + current_team_ + "'</h1></center><br><br>";
+					html = "<center><h1>invalid team key '" + current_team_ + "'</h1></center><br>";
 				}
 				else
 				{

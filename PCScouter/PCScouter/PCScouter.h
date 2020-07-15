@@ -98,9 +98,11 @@ private:
 	void saveEventAs();
 	void closeEventHandler();
 
+	// Run Menu
+	void showingRunMenu();
+
 	// Import Menu
 	void showingImportMenu();
-	void loadPicklist();
 	void importMatchSchedule();
 	void importMatchScheduleComplete(bool err);
 	void importMatchData();
@@ -145,6 +147,7 @@ private:
 	void pickListComplete(bool err);
 
 	void processAppController();
+	void runPicklistProgram();
 
 	void switchView(xero::scouting::views::DocumentView::ViewType vt, const QString& key);
 	void logMessage(const QString& msg);
@@ -188,8 +191,10 @@ private:
 	QAction* file_open_event_;
 	QAction* file_save_;
 	QAction* file_save_as_;
-	QAction* file_load_picklist_;
 	QAction* file_close_;
+
+	QMenu* run_menu_;
+	QAction* run_picklist_program_;
 
 	QMenu* import_menu_;
 	QAction *import_calc_opr_;

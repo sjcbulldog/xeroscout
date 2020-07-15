@@ -49,8 +49,8 @@ void ImportMatchScheduleController::run()
 {
 	if (blueAlliance()->state() == BlueAlliance::EngineState::Down)
 	{
-		emit errorMessage("cannot create a new event, cannot reach the blue alliance");
-		emit logMessage("cannot create a new event, cannot reach the blue alliance");
+		emit errorMessage("cannot download match schedule, cannot reach the blue alliance");
+		emit logMessage("cannot download match schedule, cannot reach the blue alliance");
 
 		emit complete(true);
 
@@ -68,8 +68,8 @@ void ImportMatchScheduleController::run()
 		//
 		// The network went down in the middle
 		//
-		emit errorMessage("The BlueAlliance failed during the operation");
-		emit logMessage("The BlueAlliance failed during the operation");
+		emit errorMessage("The BlueAlliance site went down during the operation");
+		emit logMessage("The BlueAlliance site went down during the operation");
 		state_ = State::Error;
 		emit complete(true);
 	}
@@ -128,7 +128,8 @@ void ImportMatchScheduleController::gotTeams()
 
 void ImportMatchScheduleController::noMatches()
 {
-	emit errorMessage("The match schedule is no available (yet)");
+	emit errorMessage("The match schedule is not available (yet)");
+	emit logMessage("The match schedule is not available (yet)");
 
 	emit complete(false);
 	state_ = State::Done;

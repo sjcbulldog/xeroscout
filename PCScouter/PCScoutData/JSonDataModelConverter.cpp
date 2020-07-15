@@ -526,6 +526,8 @@ namespace xero
 				obj[JsonFieldRegionsName] = encodeFieldRegions();
 				obj[JsonActivitiesName] = encodeActivities();
 				obj[JsonRulesName] = encodeRules();
+				obj[JsonOriginalPickListDataName] = encodePickList(dm_->original_picklist_);
+				obj[JsonPickListDataName] = encodePickList(dm_->picklist_);
 				doc.setObject(obj);
 				return doc;
 			}
@@ -1447,7 +1449,82 @@ namespace xero
 				if (obj.contains(JsonRulesName) && obj.value(JsonRulesName).isArray())
 					decodeRules(obj.value(JsonRulesName).toArray());
 
+				if (obj.contains(JsonPickListDataName) && obj.value(JsonPickListDataName).isArray())
+					decodePickList(obj.value(JsonPickListDataName).toArray(), dm_->picklist_);
+
+				if (obj.contains(JsonOriginalPickListDataName) && obj.value(JsonOriginalPickListDataName).isArray())
+					decodePickList(obj.value(JsonPickListDataName).toArray(), dm_->original_picklist_);
+
 				return true;
+			}
+
+
+			QJsonArray JSonDataModelConverter::encodePickList(const std::vector<PickListEntry> &picklist)
+			{
+				QJsonArray array;
+
+				for (const PickListEntry& entry : picklist)
+				{
+					QJsonObject obj;
+					obj[JsonTeamName] = entry.team();
+					obj[JsonScoreName] = entry.score();
+
+					QJsonArray thirds;
+					for (size_t i = 0; i < entry.count(); i++)
+					{
+						QJsonObject tobj;
+						tobj[JsonTeamName] = entry.thirdTeam(i);
+						tobj[JsonScoreName] = entry.thirdScore(i);
+
+						thirds.push_back(tobj);
+					}
+
+					obj[JsonThirdsName] = thirds;
+					array.push_back(obj);
+				}
+
+				return array;
+			}
+
+			void JSonDataModelConverter::decodePickList(const QJsonArray& array, std::vector<PickListEntry>& picklist)
+			{
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (!array[i].isObject())
+						continue;
+
+					QJsonObject obj = array[i].toObject();
+
+					if (!obj.contains(JsonTeamName) || !obj.value(JsonTeamName).isDouble())
+						continue;
+
+					if (!obj.contains(JsonScoreName) || !obj.value(JsonScoreName).isDouble())
+						continue;
+
+					if (!obj.contains(JsonThirdsName) || !obj.value(JsonThirdsName).isArray())
+						continue;
+
+					PickListEntry entry(obj.value(JsonTeamName).toInt(), obj.value(JsonScoreName).toDouble());
+					QJsonArray tarray = obj.value(JsonThirdsName).toArray();
+
+					for (int j = 0; j < tarray.size(); j++)
+					{
+						if (!tarray[j].isObject())
+							continue;
+
+						QJsonObject tobj = tarray[j].toObject();
+
+						if (!tobj.contains(JsonTeamName) || !tobj.value(JsonTeamName).isDouble())
+							continue;
+
+						if (!tobj.contains(JsonScoreName) || !tobj.value(JsonScoreName).isDouble())
+							continue;
+
+						entry.addThird(tobj.value(JsonTeamName).toInt(), tobj.value(JsonScoreName).toDouble());
+					}
+
+					picklist.push_back(entry);
+				}
 			}
 
 			QJsonArray JSonDataModelConverter::encodeRules()

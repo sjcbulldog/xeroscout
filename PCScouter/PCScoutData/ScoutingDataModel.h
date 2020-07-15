@@ -39,6 +39,7 @@
 #include "GraphDescriptor.h"
 #include "FieldRegion.h"
 #include "SequencePattern.h"
+#include "PickListEntry.h"
 #include <QString>
 #include <QJsonDocument>
 #include <QFile>
@@ -88,6 +89,7 @@ namespace xero
 					ActivityRemoved,				///< an activity was removed
 					ActivityChanged,				///< an activity was changed
 					RulesChanged,					///< the rules for a data set changed
+					PickListChanged,				///< the picklist changed
 				};
 
 			public:
@@ -368,11 +370,40 @@ namespace xero
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				void setRules(const QString& name, const std::list<std::shared_ptr<DataSetHighlightRules>>& rules) {
+				void resetPicklist() {
+					picklist_ = original_picklist_;
+				}
+
+				void clearPickList() {
+					picklist_.clear();
+					original_picklist_.clear();
 
 					dirty_ = true;
-					emitChangedSignal(ChangeType::RulesChanged);
+					emitChangedSignal(ChangeType::PickListChanged);
+				}
+
+				void replacePickList(const std::vector<PickListEntry> &picklist) {
+					picklist_ = picklist;
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::PickListChanged);
+				}
+
+				void addPickListEntry(const PickListEntry& entry) {
+					original_picklist_.push_back(entry);
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::PickListChanged);
+				}
+
+				const std::vector<PickListEntry>& picklist() const {
+					return picklist_;
+				}
+
+				void setRules(const QString& name, const std::list<std::shared_ptr<DataSetHighlightRules>>& rules) {
 					rules_.insert_or_assign(name, rules);
+					dirty_ = true;
+					emitChangedSignal(ChangeType::RulesChanged);
 				}
 
 				bool addActivity(std::shared_ptr<const RobotActivity> p) {
@@ -1147,6 +1178,9 @@ namespace xero
 				std::vector<std::shared_ptr<RobotActivity>> activities_;
 
 				std::map<QString, std::list<std::shared_ptr<DataSetHighlightRules>>> rules_;
+
+				std::vector<PickListEntry> picklist_;
+				std::vector<PickListEntry> original_picklist_;
 			};
 
 		}

@@ -24,6 +24,7 @@
 
 #include "ScoutingDataMap.h"
 #include "FieldDesc.h"
+#include "PickListEntry.h"
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QStringList>
@@ -76,6 +77,8 @@ namespace xero
 				static QJsonArray encodeFields(std::list<std::shared_ptr<FieldDesc>> list);
 				std::list<std::shared_ptr<FieldDesc>> decodeFields(const QJsonArray& array);
 
+
+
 				static bool peekUUID(const QJsonDocument &doc, QUuid& uuid);
 
 			private:
@@ -120,6 +123,9 @@ namespace xero
 
 				QJsonArray encodeRules();
 				void decodeRules(const QJsonArray& array);
+
+				QJsonArray encodePickList(const std::vector<PickListEntry>& picklist);
+				void decodePickList(const QJsonArray& array, std::vector<PickListEntry>& picklist);
 
 			private:
 				ScoutingDataModel* dm_;

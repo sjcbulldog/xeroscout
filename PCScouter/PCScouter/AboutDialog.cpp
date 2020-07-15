@@ -19,7 +19,6 @@
 // This work we create by the named individual(s) above in support of the
 // FRC robotics team Error Code Xero.
 //
-
 #include "AboutDialog.h"
 #include "build.h"
 #include <QCoreApplication>

@@ -21,6 +21,7 @@
 //
 
 #include "PickListGenerator.h"
+#include "CsvReader.h"
 #include <QTemporaryFile>
 #include <QTemporaryDir>
 #include <QProcess>
@@ -153,6 +154,70 @@ void PickListGenerator::finished(int exitcode, QProcess::ExitStatus status)
 			read2.open(QIODevice::ReadOnly);
 			QTextStream strm2(&read2);
 			caps_ = strm2.readAll();
+
+			QString datafile = dir_->path() + "/picklist.csv";
+			CsvReader reader(true);
+			if (!reader.readFile(std::filesystem::path(datafile.toStdString()), CsvReader::HeaderType::Headers))
+			{
+				picks_ = "<p>error reading CSV data file";
+			}
+			else
+			{
+				dm_->clearPickList();
+				for (size_t row = 0; row < reader.rowCount(); row++)
+				{
+					DataElem data = reader.get(row, 1);
+					if (!std::holds_alternative<double>(data))
+					{
+						picks_ = "<p>bad data read from picklist CSV file";
+						break;
+					}
+
+					int team = static_cast<int>(std::get<double>(data));
+
+					data = reader.get(row, 2);
+					if (!std::holds_alternative<double>(data))
+					{
+						picks_ = "<p>bad data read from picklist CSV file";
+						break;
+					}
+
+					double score = std::get<double>(data);
+
+					PickListEntry entry(team, score);
+
+					size_t col = 3;
+					while (col + 1 < reader.colCount())
+					{
+						data = reader.get(row, col);
+						if (!std::holds_alternative<double>(data))
+						{
+							picks_ = "<p>bad data read from picklist CSV file";
+							break;
+						}
+
+						team = static_cast<int>(std::get<double>(data));
+
+						data = reader.get(row, col + 1 );
+						if (!std::holds_alternative<double>(data))
+						{
+							picks_ = "<p>bad data read from picklist CSV file";
+							break;
+						}
+
+						score = std::get<double>(data);
+
+						entry.addThird(team, score);
+
+						col += 2;
+					}
+
+					dm_->addPickListEntry(entry);
+				}
+
+				dm_->resetPicklist();
+			}
+
 		}
 		else
 		{

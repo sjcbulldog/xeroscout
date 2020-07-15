@@ -108,6 +108,7 @@
     <ClInclude Include="DataSetHighlightRules.h" />
     <ClInclude Include="DPRCalculator.h" />
     <ClInclude Include="FieldRegion.h" />
+    <ClInclude Include="PickListEntry.h" />
     <ClInclude Include="PolygonFieldRegion.h" />
     <ClInclude Include="RectFieldRegion.h" />
     <ClInclude Include="resource.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="JSonDataModelConverter.cpp" />
     <ClCompile Include="NumericItemDisplay.cpp" />
     <ClCompile Include="OPRCalculator.cpp" />
+    <ClCompile Include="PickListEntry.cpp" />
     <ClCompile Include="PickListTranslator.cpp" />
     <ClCompile Include="SequenceAnalyzer.cpp" />
     <ClCompile Include="SequenceEnterExitPattern.cpp" />

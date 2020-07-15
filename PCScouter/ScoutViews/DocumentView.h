@@ -70,7 +70,8 @@ namespace xero
 					Predictions = 21,
 					ZebraHeatmapView = 22,
 					ZebraReplayView = 23,
-					FirstFormView = 24
+					PickListEditor = 24,
+					FirstFormView = 25
 				};
 
 			public:
