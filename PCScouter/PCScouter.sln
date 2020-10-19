@@ -55,6 +55,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Generator2020", "Generator2
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "picklist2020", "picklist2020\picklist2020.vcxproj", "{97BAF733-E99B-4A06-AD8A-3161AA7D28C0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2020", "2020", "{0843666D-22F8-4FBD-8F3C-30ED7A2510A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -142,6 +144,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D9A20352-97A3-4B72-BB40-03C35DE791F2} = {0843666D-22F8-4FBD-8F3C-30ED7A2510A2}
+		{97BAF733-E99B-4A06-AD8A-3161AA7D28C0} = {0843666D-22F8-4FBD-8F3C-30ED7A2510A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F018A77D-93CC-4D05-A704-62EDBD0C6A9D}

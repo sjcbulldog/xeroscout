@@ -25,6 +25,7 @@
 #include "ScoutingDataMap.h"
 #include "FieldDesc.h"
 #include "PickListEntry.h"
+#include "RobotCapabilities.h"
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QStringList>
@@ -126,6 +127,12 @@ namespace xero
 
 				QJsonArray encodePickList(const std::vector<PickListEntry>& picklist);
 				void decodePickList(const QJsonArray& array, std::vector<PickListEntry>& picklist);
+
+				QJsonArray encodeRobotCapablities(const std::vector<RobotCapabilities>& picklist);
+				void decodeRobotCapablities(const QJsonArray& array, std::vector<RobotCapabilities>& picklist);
+
+				QJsonArray encodeDist(const Distribution& dist);
+				bool decodeDist(const QJsonArray &array, Distribution& dist);
 
 			private:
 				ScoutingDataModel* dm_;

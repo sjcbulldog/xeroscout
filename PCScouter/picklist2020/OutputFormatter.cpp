@@ -16,10 +16,65 @@ bool OutputFormatter::outputRobotCapabilities(const std::string& filename, std::
 
 bool OutputFormatter::outputRobotCapabilitiesCSV(const std::string& filename, std::list<const RobotCapabilities*>& robots)
 {
-	//
-	// TODO: figure out how to store distributions in CSV files
-	//
-	return false;
+	if (robots.size() == 0)
+		return false;
+
+	std::ofstream out(filename);
+	if (!out.is_open())
+		return false;
+
+	out << "Team";
+
+	auto doubleColumns = RobotCapabilities::doubleColumnNames();
+	auto distColumns = RobotCapabilities::distColumnNames();
+
+	for (const std::string& name : doubleColumns)
+	{
+		out << "," << name;
+	}
+
+	for (const std::string& name : distColumns)
+	{
+		out << "," << name;
+	}
+	out << std::endl;
+
+	for (auto r : robots)
+	{
+		out << r->team();
+
+		for (const std::string& name : doubleColumns)
+		{
+			int col = r->doubleColumn(name);
+			double d = r->doubleValue(col);
+			out <<"," << d;
+		}
+
+		for (const std::string& name : distColumns)
+		{
+			int col = r->distColumn(name);
+			auto d = r->distValue(col);
+			const auto& data = d.data();
+
+			std::string diststr;
+			bool first = true;
+			for (auto pair : data)
+			{
+				if (!first)
+					diststr += ",";
+
+				diststr += std::to_string(pair.first) + "," + std::to_string(pair.second);
+
+				first = false;
+			}
+
+			out << "," << '"' << diststr << '"';
+		}
+
+		out << std::endl;
+	}
+
+	return true;
 }
 
 bool OutputFormatter::outputRobotCapabilitiesHTML(const std::string& filename, std::list<const RobotCapabilities*>& robots)

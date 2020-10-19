@@ -39,6 +39,8 @@ namespace xero
 	{
 		namespace views
 		{
+			class ImageView;
+
 			class SCOUTVIEWS_EXPORT DocumentView : public QStackedWidget
 			{
 				Q_OBJECT
@@ -138,6 +140,8 @@ namespace xero
 					emit switchView(vtype, key);
 				}
 
+				int createImageView(const QString& name, std::shared_ptr<QImage> image);
+
 			signals:
 				void itemDoubleClicked(ViewType type, const QString& key);
 				void logMessage(const QString& msg);
@@ -150,6 +154,7 @@ namespace xero
 			private:
 				ViewType view_;
 				std::map<QString, QWidget*> scouting_forms_;
+				std::map<QString, ImageView*> image_views_;
 				GameFieldManager field_mgr_;
 				xero::scouting::datamodel::ImageManager &images_;
 				std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;

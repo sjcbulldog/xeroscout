@@ -7,6 +7,8 @@
 #include <QDragLeaveEvent>
 #include <QDragMoveEvent>
 #include <QDropEvent>
+#include <QMimeData>
+#include <QDrag>
 #include <QDebug>
 
 using namespace xero::scouting::datamodel;
@@ -17,7 +19,7 @@ namespace xero
 	{
 		namespace views
 		{
-			PickListEditorWidget::PickListEditorWidget(QWidget* parent) : QWidget(parent)
+			PickListEditorWidget::PickListEditorWidget(QWidget* parent) : QWidget(parent), dragging_entry_(-1, -1)
 			{
 				left_margin_ = 8;
 				right_margin_ = 8;
@@ -32,6 +34,24 @@ namespace xero
 
 			PickListEditorWidget::~PickListEditorWidget()
 			{
+			}
+
+			void PickListEditorWidget::teamSelected(int team, bool selected)
+			{
+				for (auto row : rows_)
+				{
+					row->teamSelected(team, selected);
+				}
+
+				if (selected)
+				{
+					if (selected_.count(team) == 0)
+						selected_.insert(team);
+				}
+				else
+				{
+					selected_.erase(team);
+				}
 			}
 
 			void PickListEditorWidget::dragEnterEvent(QDragEnterEvent* ev)
@@ -94,36 +114,8 @@ namespace xero
 
 				if (txt.startsWith("PL:r") && rows_.size() != 0 && droppos_ != -1)
 				{
-					QStringList list = txt.split(',');
-					if (list.size() != 2)
-						return;
-
-					int drag = list[1].toInt();
-					if (drag != droppos_)
-					{
-						if (drag > droppos_)
-						{
-							PickListEntry entry = picklist_[drag];
-							picklist_.erase(picklist_.begin() + drag);
-							picklist_.insert(picklist_.begin() + droppos_, entry);
-						}
-						else if (drag >= picklist_.size())
-						{
-							PickListEntry entry = picklist_[drag];
-							picklist_.erase(picklist_.begin() + drag);
-							picklist_.push_back(entry);
-						}
-						else
-						{
-							PickListEntry entry = picklist_[drag];
-							picklist_.erase(picklist_.begin() + drag);
-							picklist_.insert(picklist_.begin() + droppos_ - 1, entry);
-						}
-
-						emit picklistChanged();
-						droppos_ = -1;
-						recreateChildren();
-					}
+					diddrop_ = true;
+					putDrag(droppos_);
 				}
 			}
 
@@ -140,8 +132,8 @@ namespace xero
 					QWidget* w = rows_[0];
 					int ypos = top_margin_ + (w->height() + between_gap_) * droppos_ + -between_gap_ / 2;
 					QPen pen(QColor(0, 0, 0));
+					pen.setWidth(8);
 					paint.setPen(pen);
-					pen.setWidth(4);
 
 					paint.drawLine(left_margin_, ypos, width() - right_margin_, ypos);
 				}
@@ -160,17 +152,71 @@ namespace xero
 					PickListRowWidget* widget = new PickListRowWidget(entry, rank++, this);
 					rows_.push_back(widget);
 					(void)connect(widget, &PickListRowWidget::rowChanged, this, &PickListEditorWidget::rowChanged);
+					(void)connect(widget, &PickListRowWidget::dragRow, this, &PickListEditorWidget::draggingRow);
+
+					for (auto team : selected_)
+						widget->teamSelected(team, true);
 				}
 				resizeEvent(nullptr);
-				doLayout(width());
+				doLayout();
 			}
 
-			void PickListEditorWidget::rowChanged()
+			void PickListEditorWidget::rowChanged(int row)
 			{
+				picklist_[row] = rows_[row]->entry();
 				emit picklistChanged();
 			}
 
-			void PickListEditorWidget::doLayout(int winwid)
+			void PickListEditorWidget::putDrag(int where)
+			{
+				picklist_.insert(picklist_.begin() + where, dragging_entry_);
+				recreateChildren();
+
+				if (where != dragging_row_)
+					emit picklistChanged();
+			}
+
+			void PickListEditorWidget::draggingRow(QPoint pos, int row)
+			{
+				QMimeData* data = new QMimeData();
+				QDrag* drag = new QDrag(this);
+				QPixmap mp;
+				dragging_row_ = row;
+				dragging_entry_ = rows_[row]->entry();
+
+				auto rowwidget = rows_[row];
+
+				auto it = rows_.begin() + row;
+				rows_.erase(it);
+
+				auto vit = picklist_.begin() + row;
+				picklist_.erase(vit);
+
+				QString d = "PL:r," + QString::number(row);
+				data->setText(d);
+				drag->setHotSpot(pos);
+				mp = QPixmap(rowwidget->width(), rowwidget->height());
+
+				QPainter paint(&mp);
+				paint.setRenderHint(QPainter::Antialiasing);
+				rowwidget->render(&paint);
+
+				drag->setMimeData(data);
+				drag->setPixmap(mp);
+
+				delete rowwidget;
+				doLayout();
+				update();
+
+				Qt::DropAction act = drag->exec(Qt::MoveAction);
+				if (!diddrop_)
+					putDrag(dragging_row_);
+
+				droppos_ = -1;
+				update();
+			}
+
+			void PickListEditorWidget::doLayout()
 			{
 				int xpos = left_margin_;
 				int ypos = top_margin_;

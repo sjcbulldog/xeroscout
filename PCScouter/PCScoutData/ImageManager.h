@@ -44,6 +44,7 @@ namespace xero
 
 				std::shared_ptr<QImage> get(const QString& tag);
 				bool put(const QString& tag, const QByteArray& data);
+				bool put(const QImage& image, QString& name);
 
 			private:
 				std::shared_ptr<QImage> loadImage(const QString &str, const QString& file);

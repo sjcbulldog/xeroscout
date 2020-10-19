@@ -26,6 +26,7 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <QDir>
+#include <QImageWriter>
 
 namespace xero
 {
@@ -63,6 +64,50 @@ namespace xero
 
 				images_.insert_or_assign(str, image);
 				return image;
+			}
+
+			bool ImageManager::put(const QImage& image, QString& name)
+			{
+				QString appdir = QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation).front() + "/images";
+				int index = 0;
+				QString filename;
+
+				QDir dir(appdir);
+				if (!dir.exists(appdir))
+				{
+					if (!dir.mkpath(appdir))
+						return false;
+				}
+
+				while (true)
+				{
+					filename = appdir + "/" + QString::number(index) + ".png";
+					QFileInfo info(filename);
+					if (!info.exists())
+						break;
+
+					index++;
+				}
+
+				QFileInfo info(filename);
+				name = info.fileName();
+
+				QFile file(filename);
+				if (!file.open(QIODevice::WriteOnly))
+				{
+					return false;
+				}
+				QImageWriter writer(&file, "png");
+				if (!writer.write(image))
+				{					
+					auto err = writer.error();
+					QString errstr = writer.errorString();
+					qDebug() << "ImageError: " << errstr;
+
+					return false;
+				}
+
+				return true;
 			}
 
 			bool ImageManager::put(const QString& str, const QByteArray& data)

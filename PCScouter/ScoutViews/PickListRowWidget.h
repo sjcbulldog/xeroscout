@@ -1,7 +1,8 @@
 #pragma once
-#include <qwidget.h>
 
 #include "PickListEntry.h"
+#include <QWidget>
+#include <set>
 
 namespace xero
 {
@@ -21,8 +22,26 @@ namespace xero
 					rank_ = rank;
 				}
 
+				const xero::scouting::datamodel::PickListEntry& entry() const {
+					return entry_;
+				}
+
+				void teamSelected(int team, bool selected) {
+					if (selected)
+					{
+						if(selected_.count(team) == 0)
+							selected_.insert(team);
+					}
+					else
+					{
+						selected_.erase(team);
+					}
+					update();
+				}
+
 			signals:
-				void rowChanged();
+				void rowChanged(int rank);
+				void dragRow(QPoint pos, int rank);
 
 			protected:
 				void paintEvent(QPaintEvent* ev) override;
@@ -42,10 +61,10 @@ namespace xero
 				constexpr static const int TopMargin = 2;
 				constexpr static const int BottomMargin = 6;
 				constexpr static const int NumberThirds = 16;
-				constexpr static const int TeamAreaWidth = 96;
-				constexpr static const int NumberWidth = 22;
-				constexpr static const int ThirdAreaWidth = 48;
-				constexpr static const int MinimumHeight = 36;
+				constexpr static const int TeamAreaWidth = 100;
+				constexpr static const int NumberWidth = 28;
+				constexpr static const int ThirdAreaWidth = 56;
+				constexpr static const int MinimumHeight = 48;
 				constexpr static const int MaximumHeight = MinimumHeight;
 				constexpr static const int MinimumWidth = LeftMargin + TeamAreaWidth + NumberThirds * ThirdAreaWidth + RightMargin;
 				constexpr static const int MaximumWidth = MinimumWidth;
@@ -68,10 +87,15 @@ namespace xero
 				int dragging_index_;
 				int dragging_team_;
 				double dragging_score_;
+				bool diddrop_;
 
 				QColor background_not_selected_;
 				QColor background_selected_;
+				QColor background_not_available_;
 				QColor background_third_;
+				QColor background_third_selected_;
+
+				std::set<int> selected_;
 			};
 		}
 	}

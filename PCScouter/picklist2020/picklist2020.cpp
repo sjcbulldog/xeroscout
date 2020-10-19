@@ -111,6 +111,12 @@ int main(int ac, char **av)
 		return 1;
 	}
 
+	if (!OutputFormatter::outputRobotCapabilities(capfile + ".csv", robots, OutputFormatter::OutputType::CSV))
+	{
+		std::cerr << "picklist2020: cannout write robot capabilities output file" << std::endl;
+		return 1;
+	}
+
 	auto elapsed = std::chrono::high_resolution_clock::now() - start;
 	auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
 

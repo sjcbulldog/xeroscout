@@ -113,6 +113,7 @@
     <ClInclude Include="RectFieldRegion.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RobotActivity.h" />
+    <ClInclude Include="RobotCapabilities.h" />
     <ClInclude Include="RobotTrack.h" />
     <ClInclude Include="SequenceAnalyzer.h" />
     <ClInclude Include="SequenceEnterExitPattern.h" />

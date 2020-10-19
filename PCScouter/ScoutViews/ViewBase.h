@@ -43,6 +43,10 @@ namespace xero
 				virtual ~ViewBase() {
 				}
 
+				const QString& name() const {
+					return name_;
+				}
+
 				virtual void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model) {
 					model_ = model;
 				}
