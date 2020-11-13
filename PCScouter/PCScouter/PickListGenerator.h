@@ -40,21 +40,19 @@ public:
 	bool isDone() {
 		return done_;
 	}
-	QString picklist() {
-		return picks_;
+
+	bool picklistError() {
+		return picks_error_;
 	}
 
-	QString robotCapabilities() const {
-		return caps_;
+	QString robotCapabilitiesError() const {
+		return caps_error_;
 	}
 
 signals:
 	void logMessage(const QString& msg);
 
 private:
-	bool didClimb(xero::scouting::datamodel::ConstScoutingDataMapPtr data);
-	void oneTeam(QTextStream& strm, std::shared_ptr<const xero::scouting::datamodel::DataModelMatch> m, xero::scouting::datamodel::Alliance c, int slot);
-
 	QString genInputFile();
 	QString genQuery();
 
@@ -64,13 +62,21 @@ private:
 	void readReady();
 	void errorOccurred(QProcess::ProcessError err);
 
+	bool readPickList(const QString& filename);
+	bool readRobotCapabilities(const QString& filename);
+
+	bool parseDist(xero::scouting::datamodel::Distribution& dist, const QString& str);
+
 private:
 	int team_;
 	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm_;
 	QProcess* process_;
-	QString picks_;
-	QString caps_;
 	bool done_;
 	QTemporaryDir* dir_;
 	QString picklist_pgm_name_;
+
+	bool picks_error_;
+	QString picks_error_msg_;
+	bool caps_error_;
+	QString caps_error_msg_;
 };

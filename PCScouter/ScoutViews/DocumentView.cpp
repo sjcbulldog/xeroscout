@@ -38,6 +38,7 @@
 #include "ZebraRegionEditor.h"
 #include "IntroView.h"
 #include "PickListEditor.h"
+#include "ImageView.h"
 #include <QLabel>
 #include <QDebug>
 #include <QFont>
@@ -264,6 +265,17 @@ namespace xero
 				// Delete this widget
 				delete w;
 			}
+
+			int DocumentView::createImageView(const QString& name, std::shared_ptr<QImage> image)
+			{
+				ImageView* view = new ImageView(name, image, this);
+				int index = addWidget(view);
+				view->setNumber(index);
+
+
+				return index;
+			}
+
 		}
 	}
 }

@@ -45,16 +45,15 @@ public:
 		return pcnt_;
 	}
 
-	QString htmlPicklist() const {
-		return gen_->picklist();
+	QString htmlPicklistError() const {
+		return gen_->picklistError();
 	}
 
 	QString htmlRobotCapabilities() const {
-		return gen_->robotCapabilities();
+		return gen_->robotCapabilitiesError();
 	}
 
 private:
-	void computeOneTeam(const QString& key);
 	void logGenMessage(const QString& msg);
 
 private:

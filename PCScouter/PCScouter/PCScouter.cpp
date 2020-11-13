@@ -61,6 +61,7 @@
 #include "OPRCalculator.h"
 #include "DPRCalculator.h"
 #include "TestDataInjector.h"
+#include "PicklistHTMLGenerator.h"
 
 #include <QSqlDatabase>
 #include <QMessageBox>
@@ -516,6 +517,10 @@ void PCScouter::createMenus()
 
 		file_menu_->addSeparator();
 	}
+	else
+	{
+		file_new_event_ = nullptr;
+	}
 
 	file_open_event_ = file_menu_->addAction(tr("Open Event"));
 	(void)connect(file_open_event_, &QAction::triggered, this, &PCScouter::openEvent);
@@ -535,12 +540,43 @@ void PCScouter::createMenus()
 	file_close_ = file_menu_->addAction(tr("Close Event"));
 	(void)connect(file_close_, &QAction::triggered, this, &PCScouter::closeEventHandler);
 
-	run_menu_ = new QMenu(tr("&Run"));
+	run_menu_ = new QMenu(tr("&Create"));
 	menuBar()->addMenu(run_menu_);
 	(void)connect(run_menu_, &QMenu::aboutToShow, this, &PCScouter::showingRunMenu);
 
-	run_picklist_program_ = run_menu_->addAction(tr("Run Picklist Program"));
-	(void)connect(run_picklist_program_, &QAction::triggered, this, &PCScouter::runPicklistProgram);
+	if (!coach_)
+	{
+		run_picklist_program_ = run_menu_->addAction(tr("Picklist (Run Picklist Program)"));
+		(void)connect(run_picklist_program_, &QAction::triggered, this, &PCScouter::runPicklistProgram);
+	}
+	else
+	{
+		run_picklist_program_ = nullptr;
+	}
+
+	reset_picklist_ = run_menu_->addAction(tr("Reset Picklist To Original Data"));
+	(void)connect(reset_picklist_, &QAction::triggered, this, &PCScouter::resetPicklist);
+
+	run_menu_->addSeparator();
+
+	create_image_view_ = run_menu_->addAction(tr("Create Image View"));
+	(void)connect(create_image_view_, &QAction::triggered, this, &PCScouter::createImageView);
+	if (settings_.contains("recent_image_list"))
+	{
+		recent_image_views_ = settings_.value("recent_image_list").toStringList();
+	}
+
+	if (recent_image_views_.size() > 0)
+	{
+		QMenu* menu = new QMenu("Recent Image Views");
+		for (const QString& str : recent_image_views_)
+		{
+			QAction *act = menu->addAction(str);
+			auto cb = std::bind(&PCScouter::recentImage, this, str);
+			(void)connect(act, &QAction::triggered, cb);
+		}
+		run_menu_->addMenu(menu);
+	}
 
 	import_menu_ = new QMenu(tr("&Import"));
 	menuBar()->addMenu(import_menu_);
@@ -550,6 +586,10 @@ void PCScouter::createMenus()
 	{
 		import_match_schedule_ = import_menu_->addAction(tr("Match Schedule"));
 		(void)connect(import_match_schedule_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
+	}
+	else
+	{
+		import_match_schedule_ = nullptr;
 	}
 
 	import_match_data_ = import_menu_->addAction(tr("Match Results"));
@@ -562,6 +602,10 @@ void PCScouter::createMenus()
 	{
 		sync_with_central_ = import_menu_->addAction(tr("Sync With Central"));
 		(void)connect(sync_with_central_, &QAction::triggered, this, &PCScouter::syncWithCentral);
+	}
+	else
+	{
+		sync_with_central_ = nullptr;
 	}
 
 	import_kpi_ = import_menu_->addAction(tr("Key Performance Indicators"));
@@ -592,6 +636,11 @@ void PCScouter::createMenus()
 
 	about_ = help_menu_->addAction(tr("About"));
 	(void)connect(about_, &QAction::triggered, this, &PCScouter::about);
+}
+
+void PCScouter::recentImage(const QString &str)
+{
+	createImageView2(str, false);
 }
 
 /////////////////////////////////////////////////////////////
@@ -905,6 +954,64 @@ void PCScouter::setDataModelStatus()
 // Menu Related
 ////////////////////////////////////////////////////////////
 
+void PCScouter::createImageView2(const QString& filename, bool addrecent)
+{
+	if (image_views_created_.contains(filename))
+	{
+		QMessageBox::information(this, "Exists", "This image view already exists");
+		return;
+	}
+
+	std::shared_ptr<QImage> image = std::make_shared<QImage>();
+	if (!image->load(filename))
+	{
+		QMessageBox::critical(this, "Load Error", "Could not load file '" + filename + "' as an image");
+		return;
+	}
+
+	QFileInfo info(filename);
+
+	int index = view_frame_->createImageView(info.fileName(), image);
+	QListWidgetItem* item;
+
+	if (image_views_created_.size() == 0)
+	{
+		item = new QListWidgetItem("---------- Image Views ------------------------------------------");
+		item->setFlags(Qt::ItemFlag::NoItemFlags);
+		view_selector_->addItem(item);
+	}
+
+	item = new QListWidgetItem(loadIcon("history.png"), info.fileName(), view_selector_);
+	item->setData(Qt::UserRole, QVariant(index));
+	view_selector_->addItem(item);
+
+	image_views_created_.push_back(filename);
+
+	if (addrecent)
+	{
+		if (!recent_image_views_.contains(filename))
+		{
+			recent_image_views_.push_back(filename);
+			settings_.setValue("recent_image_list", recent_image_views_);
+		}
+	}
+}
+
+void PCScouter::createImageView()
+{
+	QString images = "PNG Files (*.png);;JPEG Files (*.jpg);;All Files (*.*);;";
+	QString filename = QFileDialog::getOpenFileName(this, "Open Picklist File", "", images);
+	if (filename.length() == 0)
+		return;
+
+	createImageView2(filename, true);
+}
+
+void PCScouter::resetPicklist()
+{
+	data_model_->resetPicklist();
+}
+
 void PCScouter::runPicklistProgram()
 {
 	//
@@ -968,10 +1075,13 @@ void PCScouter::showingFileMenu()
 {
 	bool state = (data_model_ != nullptr);
 
-	if (blue_alliance_->state() == BlueAlliance::EngineState::Down)
-		file_new_event_->setEnabled(false);
-	else
-		file_new_event_->setEnabled(true);
+	if (file_new_event_ != nullptr)
+	{
+		if (blue_alliance_->state() == BlueAlliance::EngineState::Down)
+			file_new_event_->setEnabled(false);
+		else
+			file_new_event_->setEnabled(true);
+	}
 
 	file_save_->setEnabled(state);
 	file_save_as_->setEnabled(state);
@@ -982,7 +1092,10 @@ void PCScouter::showingRunMenu()
 {
 	bool state = (data_model_ != nullptr);
 
-	run_picklist_program_->setEnabled(state);
+	if (run_picklist_program_ != nullptr)
+		run_picklist_program_->setEnabled(state);
+
+	reset_picklist_->setEnabled(state);
 }
 
 void PCScouter::showingImportMenu()
@@ -994,7 +1107,8 @@ void PCScouter::showingImportMenu()
 
 	import_match_data_->setEnabled(state);
 	import_zebra_data_->setEnabled(state);
-	import_match_schedule_->setEnabled(state);
+	if (import_match_schedule_ != nullptr)
+		import_match_schedule_->setEnabled(state);
 	import_kpi_->setEnabled(state);
 }
 
@@ -1234,9 +1348,7 @@ void PCScouter::pickListComplete(bool err)
 	PickListController* ctrl = dynamic_cast<PickListController*>(app_controller_);
 	if (ctrl != nullptr)
 	{
-		ds->setHTML(ctrl->htmlPicklist(), ctrl->htmlRobotCapabilities());
-		ds->clearNeedRefresh();
-
+		ds->needsRefresh();
 		edit->needsRefresh();
 	}
 }
@@ -1346,6 +1458,24 @@ void PCScouter::updateCurrentView()
 		}
 		break;
 
+		case DocumentView::ViewType::PickListView:
+		{
+			PickListView* ds = dynamic_cast<PickListView*>(view_frame_->getWidget(view));
+			if (ds != nullptr)
+			{
+				if (ds->needsRefresh())
+				{
+					QString picks = PicklistHTMLGenerator::genPicklistHTML(team_number_, data_model_->picklist(), 22, 15);
+					QString robots = PicklistHTMLGenerator::genRobotCapabilitiesHTML(data_model_->robotCapablities());
+
+					ds->setHTML(picks, robots);
+					ds->refreshView();
+					ds->clearNeedRefresh();
+				}
+			}
+		}
+		break;
+
 		default:
 		{
 			ViewBase* vb = dynamic_cast<ViewBase*>(view_frame_->getWidget(view));
@@ -1390,16 +1520,6 @@ void PCScouter::dataModelChanged(ScoutingDataModel::ChangeType type)
 	{
 		view_frame_->needsRefreshAll();
 		updateCurrentView();
-	}
-
-	if (type == ScoutingDataModel::ChangeType::PickListChanged)
-	{
-		auto* ds = dynamic_cast<PickListEditor*>(view_frame_->getWidget(DocumentView::ViewType::PickListEditor));
-		assert(ds != nullptr);
-		ds->needsRefresh();
-
-		if (vtype == DocumentView::ViewType::PickListEditor)
-			updateCurrentView();
 	}
 }
 

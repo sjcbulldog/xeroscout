@@ -72,8 +72,8 @@ QString PickListGenerator::genInputFile()
 	QFile file(dir_->filePath("input.csv"));
 	if (!file.open(QIODevice::WriteOnly))
 	{
-		picks_ = "<p>cannot open temporary file '" + file.fileName() + "' for the event information";
-		caps_ = picks_;
+		picks_error_msg_ =  "<p>cannot open temporary file '" + file.fileName() + "' for the event information";
+		caps_error_msg_ = picks_error_msg_;
 		done_ = true;
 		return "";
 	}
@@ -131,8 +131,211 @@ void PickListGenerator::started()
 {
 }
 
+bool PickListGenerator::readPickList(const QString& datafile)
+{
+	CsvReader reader(true);
+	if (!reader.readFile(std::filesystem::path(datafile.toStdString()), CsvReader::HeaderType::Headers))
+	{
+		picks_error_msg_ = "cannot open file '" + datafile + "' for reading";
+		return false;
+	}
+
+	if (reader.rowCount() == 0)
+	{
+		picks_error_msg_ = "no data found in file '" + datafile + "' for reading";
+		return false;
+	}
+
+	dm_->blockSignals(true);
+	dm_->clearPickList();
+	for (size_t row = 0; row < reader.rowCount(); row++)
+	{
+		DataElem data = reader.get(row, 1);
+		if (!std::holds_alternative<double>(data))
+		{
+			picks_error_msg_ = "bad data read from picklist CSV file";
+			break;
+		}
+
+		int team = static_cast<int>(std::get<double>(data));
+
+		data = reader.get(row, 2);
+		if (!std::holds_alternative<double>(data))
+		{
+			picks_error_msg_ = "bad data read from picklist CSV file";
+			break;
+		}
+
+		double score = std::get<double>(data);
+
+		PickListEntry entry(team, score);
+
+		size_t col = 3;
+		while (col + 1 < reader.colCount())
+		{
+			data = reader.get(row, col);
+			if (!std::holds_alternative<double>(data))
+			{
+				picks_error_msg_ = "bad data read from picklist CSV file";
+				break;
+			}
+
+			team = static_cast<int>(std::get<double>(data));
+
+			data = reader.get(row, col + 1);
+			if (!std::holds_alternative<double>(data))
+			{
+				picks_error_msg_ = "bad data read from picklist CSV file";
+				break;
+			}
+
+			score = std::get<double>(data);
+
+			entry.addThird(team, score);
+
+			col += 2;
+		}
+
+		dm_->addPickListEntry(entry);
+	}
+	dm_->resetPicklist();
+	dm_->blockSignals(false);
+	dm_->emitChangedSignal(ScoutingDataModel::ChangeType::PickListChanged);
+
+	return true;
+}
+
+bool PickListGenerator::readRobotCapabilities(const QString& datafile)
+{
+	CsvReader reader(true);
+	if (!reader.readFile(std::filesystem::path(datafile.toStdString()), CsvReader::HeaderType::Headers))
+	{
+		caps_error_msg_ = "cannot open file '" + datafile + "' for reading";
+		return false;
+	}
+
+	if (reader.rowCount() == 0)
+	{
+		caps_error_msg_ = "no data found in file '" + datafile + "' for reading";
+		return false;
+	}
+
+	//
+	// First extract the types for each column
+	//
+	std::vector<bool> types;
+	for (int col = 0; col < reader.colCount(); col++)
+	{
+		auto value = reader.get(0, col);
+		if (std::holds_alternative<double>(value))
+		{
+			types.push_back(false);
+		}
+		else if (std::holds_alternative<std::string>(value))
+		{
+			types.push_back(true);
+		}
+		else
+		{
+			caps_error_msg_ = "bad CSV data in file '" + datafile + "'";
+			return false;
+		}
+	}
+
+	if (types[0])
+	{
+		caps_error_msg_ = "invalid CSV data in file '" + datafile + "' - expected team field in first column";
+		return false;
+	}
+
+	dm_->blockSignals(true);
+	for (int row = 0; row < reader.rowCount(); row++)
+	{
+		auto value = reader.get(row, 0);
+		if (!std::holds_alternative<double>(value))
+		{
+			caps_error_msg_ = "invalid CSV data in file '" + datafile + "'";
+			caps_error_msg_ += ", row " + QString::number(row + 1);
+			caps_error_msg_ += " - expected team field in first column";
+			return false;
+		}
+
+		RobotCapabilities caps(static_cast<int>(std::get<double>(value) + 0.5));
+		for (int col = 1; col < reader.colCount(); col++)
+		{
+			QString name = (reader.headers())[col].c_str();
+			value = reader.get(row, col);
+
+			if (types[col])
+			{
+				if (!std::holds_alternative<std::string>(value))
+				{
+					caps_error_msg_ = "invalid CSV data in file '" + datafile + "'";
+					caps_error_msg_ += ", row " + QString::number(row + 1);
+					caps_error_msg_ += ", col " + QString::number(col + 1);
+					caps_error_msg_ += " - expected string representation of a distrubution";
+					return false;
+				}
+
+				Distribution dist;
+
+				if (!parseDist(dist, QString(std::get<std::string>(value).c_str())))
+				{
+					caps_error_msg_ = "invalid CSV data in file '" + datafile + "'";
+					caps_error_msg_ += ", row " + QString::number(row + 1);
+					caps_error_msg_ += ", col " + QString::number(col + 1);
+					caps_error_msg_ += " - expected string representation of a distrubution";
+					return false;
+				}
+				caps.addDistParam(name, dist);
+			}
+			else
+			{
+				if (!std::holds_alternative<double>(value))
+				{
+					caps_error_msg_ = "invalid CSV data in file '" + datafile + "'";
+					caps_error_msg_ += ", row " + QString::number(row + 1);
+					caps_error_msg_ += ", col " + QString::number(col + 1);
+					caps_error_msg_ += " - expected floating point number";
+					return false;
+				}
+
+				caps.addDoubleParam(name, std::get<double>(value));
+			}
+		}
+
+		dm_->addRobotCapability(caps);
+	}
+
+	dm_->blockSignals(false);
+	dm_->emitChangedSignal(ScoutingDataModel::ChangeType::PickListChanged);
+
+	return true;
+}
+
+bool PickListGenerator::parseDist(Distribution& dist, const QString& str)
+{
+	QStringList list = str.split(',');
+	if ((list.size() % 2) != 0)
+		return false;
+
+	int i = 0; 
+	while (i < list.size())
+	{
+		int bucket = list[i].toInt();
+		double value = list[i + 1].toDouble();
+
+		dist.push_back(std::make_pair(bucket, value));
+		i += 2;
+	}
+
+	return true;
+}
+
 void PickListGenerator::finished(int exitcode, QProcess::ExitStatus status)
 {
+	QString datafile;
+
 	while (process_->canReadLine())
 	{
 		QString line = process_->readLine();
@@ -143,90 +346,20 @@ void PickListGenerator::finished(int exitcode, QProcess::ExitStatus status)
 	{
 		if (exitcode == 0)
 		{
-			QString htmlfile = dir_->path() + "/picklist.html";
-			QFile read(htmlfile);
-			read.open(QIODevice::ReadOnly);
-			QTextStream strm(&read);
-			picks_ = strm.readAll();
+			datafile = dir_->path() + "/picklist.csv";
+			readPickList(datafile);
 
-			htmlfile = dir_->path() + "/robot_capabilities.html";
-			QFile read2(htmlfile);
-			read2.open(QIODevice::ReadOnly);
-			QTextStream strm2(&read2);
-			caps_ = strm2.readAll();
-
-			QString datafile = dir_->path() + "/picklist.csv";
-			CsvReader reader(true);
-			if (!reader.readFile(std::filesystem::path(datafile.toStdString()), CsvReader::HeaderType::Headers))
-			{
-				picks_ = "<p>error reading CSV data file";
-			}
-			else
-			{
-				dm_->clearPickList();
-				for (size_t row = 0; row < reader.rowCount(); row++)
-				{
-					DataElem data = reader.get(row, 1);
-					if (!std::holds_alternative<double>(data))
-					{
-						picks_ = "<p>bad data read from picklist CSV file";
-						break;
-					}
-
-					int team = static_cast<int>(std::get<double>(data));
-
-					data = reader.get(row, 2);
-					if (!std::holds_alternative<double>(data))
-					{
-						picks_ = "<p>bad data read from picklist CSV file";
-						break;
-					}
-
-					double score = std::get<double>(data);
-
-					PickListEntry entry(team, score);
-
-					size_t col = 3;
-					while (col + 1 < reader.colCount())
-					{
-						data = reader.get(row, col);
-						if (!std::holds_alternative<double>(data))
-						{
-							picks_ = "<p>bad data read from picklist CSV file";
-							break;
-						}
-
-						team = static_cast<int>(std::get<double>(data));
-
-						data = reader.get(row, col + 1 );
-						if (!std::holds_alternative<double>(data))
-						{
-							picks_ = "<p>bad data read from picklist CSV file";
-							break;
-						}
-
-						score = std::get<double>(data);
-
-						entry.addThird(team, score);
-
-						col += 2;
-					}
-
-					dm_->addPickListEntry(entry);
-				}
-
-				dm_->resetPicklist();
-			}
-
+			datafile = dir_->path() + "/robot_capabilities.csv";
+			readRobotCapabilities(datafile);
 		}
 		else
 		{
-			picks_ = "<p>analysis program exited with non-zero exit code, " + QString::number(exitcode) + "</p>";
+			picks_error_msg_ =  "<p>analysis program exited with non-zero exit code, " + QString::number(exitcode) + "</p>";
 		}
 	}
 	else
 	{
-		picks_ = "<p>analysis program crashed</p>";
+		picks_error_msg_ =  "<p>analysis program crashed</p>";
 	}
 
 	done_ = true;
@@ -258,7 +391,7 @@ void PickListGenerator::start()
 	QString binfile = QCoreApplication::applicationDirPath() + "/" + picklist_pgm_name_;
 	if (!QFile::exists(binfile))
 	{
-		picks_ = "<p>The executable file '" + binfile + "' is not present";
+		picks_error_msg_ =  "<p>The executable file '" + binfile + "' is not present";
 		done_ = true;
 		return;
 	}
@@ -266,7 +399,7 @@ void PickListGenerator::start()
 	dir_ = new QTemporaryDir();
 	if (!dir_->isValid())
 	{
-		picks_ = "<p>cannot create a temporary directory to run the application";
+		picks_error_msg_ =  "<p>cannot create a temporary directory to run the application";
 		done_ = true;
 		return;
 	}

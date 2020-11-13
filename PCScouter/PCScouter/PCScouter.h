@@ -100,6 +100,7 @@ private:
 
 	// Run Menu
 	void showingRunMenu();
+	void recentImage(const QString& name);
 
 	// Import Menu
 	void showingImportMenu();
@@ -148,6 +149,9 @@ private:
 
 	void processAppController();
 	void runPicklistProgram();
+	void resetPicklist();
+	void createImageView();
+	void createImageView2(const QString& filename, bool addrecent);
 
 	void switchView(xero::scouting::views::DocumentView::ViewType vt, const QString& key);
 	void logMessage(const QString& msg);
@@ -195,6 +199,9 @@ private:
 
 	QMenu* run_menu_;
 	QAction* run_picklist_program_;
+	QAction* reset_picklist_;
+	QAction* create_image_view_;
+	QMenu* recent_image_view_;
 
 	QMenu* import_menu_;
 	QAction *import_calc_opr_;
@@ -252,4 +259,7 @@ private:
 	bool coach_;
 
 	QString datafile_;
+
+	QStringList recent_image_views_;
+	QStringList image_views_created_;
 };

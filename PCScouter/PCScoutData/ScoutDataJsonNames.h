@@ -87,6 +87,7 @@ namespace xero
 			constexpr const char* JsonColorName = "color";
 			constexpr const char* JsonSlotName = "slot";
 			constexpr const char* JsonValueName = "value";
+			constexpr const char* JsonDistBucketName = "bucket";
 			constexpr const char* JsonIntName = "int";
 			constexpr const char* JsonBoolName = "bool";
 			constexpr const char* JsonStringName = "string";
@@ -134,6 +135,11 @@ namespace xero
 			constexpr const char* JsonHighlightListName = "highlight";
 			constexpr const char* JsonPickListDataName = "picklist";
 			constexpr const char* JsonOriginalPickListDataName = "originalpicklist";
+			constexpr const char* JsonDoubleParamNameListName = "doublenames";
+			constexpr const char* JsonDoubleParamValueListName = "doublevalues";
+			constexpr const char* JsonDistParamNameListName = "distnames";
+			constexpr const char* JsonDistParamValueListName = "distvalues";
+			constexpr const char* JsonRobotCapablitiesDataName = "robotcapablities";
 		}
 	}
 }

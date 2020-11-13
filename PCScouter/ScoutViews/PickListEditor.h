@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PickListEditorWidget.h"
+#include "TeamSelectedWidget.h"
 #include "ViewBase.h"
 #include <QWidget>
 #include <QScrollArea>
@@ -24,9 +25,12 @@ namespace xero
 
 			private:
 				void picklistDataChanged();
+				void teamChanged(int team, bool selected);
 
 			private:
-				QScrollArea* area_;
+				QScrollArea* picklist_area_;
+				QScrollArea* teamlist_area_;
+				TeamSelectedWidget* teams_;
 				PickListEditorWidget* editor_;
 			};
 		}

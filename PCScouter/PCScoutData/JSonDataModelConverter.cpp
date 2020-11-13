@@ -233,6 +233,10 @@ namespace xero
 				payload[JsonStartDateName] = QString::number(dm_->startDate().toJulianDay());
 				payload[JsonEndDateName] = QString::number(dm_->startDate().toJulianDay());
 
+				payload[JsonOriginalPickListDataName] = encodePickList(dm_->original_picklist_);
+				payload[JsonPickListDataName] = encodePickList(dm_->picklist_);
+				payload[JsonRobotCapablitiesDataName] = encodeRobotCapablities(dm_->robot_capablities_);
+
 				payload[JsonTeamExtraFieldsName] = encodeFields(dm_->teamExtraFields());
 				payload[JsonMatchExtraFieldsName] = encodeFields(dm_->matchExtraFields());
 
@@ -526,8 +530,6 @@ namespace xero
 				obj[JsonFieldRegionsName] = encodeFieldRegions();
 				obj[JsonActivitiesName] = encodeActivities();
 				obj[JsonRulesName] = encodeRules();
-				obj[JsonOriginalPickListDataName] = encodePickList(dm_->original_picklist_);
-				obj[JsonPickListDataName] = encodePickList(dm_->picklist_);
 				doc.setObject(obj);
 				return doc;
 			}
@@ -583,6 +585,15 @@ namespace xero
 
 				if (!extractTabletLists(obj, 1))
 					return false;
+
+				if (obj.contains(JsonPickListDataName) && obj.value(JsonPickListDataName).isArray())
+					decodePickList(obj.value(JsonPickListDataName).toArray(), dm_->picklist_);
+
+				if (obj.contains(JsonOriginalPickListDataName) && obj.value(JsonOriginalPickListDataName).isArray())
+					decodePickList(obj.value(JsonOriginalPickListDataName).toArray(), dm_->original_picklist_);
+
+				if (obj.contains(JsonRobotCapablitiesDataName) && obj.value(JsonRobotCapablitiesDataName).isArray())
+					decodeRobotCapablities(obj.value(JsonRobotCapablitiesDataName).toArray(), dm_->robot_capablities_);
 
 				return true;
 			}
@@ -1449,11 +1460,6 @@ namespace xero
 				if (obj.contains(JsonRulesName) && obj.value(JsonRulesName).isArray())
 					decodeRules(obj.value(JsonRulesName).toArray());
 
-				if (obj.contains(JsonPickListDataName) && obj.value(JsonPickListDataName).isArray())
-					decodePickList(obj.value(JsonPickListDataName).toArray(), dm_->picklist_);
-
-				if (obj.contains(JsonOriginalPickListDataName) && obj.value(JsonOriginalPickListDataName).isArray())
-					decodePickList(obj.value(JsonPickListDataName).toArray(), dm_->original_picklist_);
 
 				return true;
 			}
@@ -1525,6 +1531,143 @@ namespace xero
 
 					picklist.push_back(entry);
 				}
+			}
+
+			QJsonArray JSonDataModelConverter::encodeRobotCapablities(const std::vector<RobotCapabilities>& robotlist)
+			{
+				QJsonArray array;
+
+				for (const RobotCapabilities& robot : robotlist)
+				{
+					QJsonObject obj;
+					QJsonArray dnamearray;
+					QJsonArray dvaluearray;
+
+					obj[JsonTeamName] = robot.team();
+					for (auto pair : robot.doubleParams())
+					{
+						dnamearray.push_back(pair.first);
+						dvaluearray.push_back(pair.second);
+					}
+					obj[JsonDoubleParamNameListName] = dnamearray;
+					obj[JsonDoubleParamValueListName] = dvaluearray;
+
+					QJsonArray xnamearray;
+					QJsonArray xvaluearray;
+					for (auto pair : robot.distParams())
+					{
+						xnamearray.push_back(pair.first);
+						xvaluearray.push_back(encodeDist(pair.second));
+					}
+
+					obj[JsonDistParamNameListName] = xnamearray;
+					obj[JsonDistParamValueListName] = xvaluearray;
+
+					array.push_back(obj);
+				}
+
+				return array;
+			}
+
+			void JSonDataModelConverter::decodeRobotCapablities(const QJsonArray& array, std::vector<RobotCapabilities>& robotlist)
+			{
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (!array[i].isObject())
+						continue;
+
+					QJsonObject obj = array[i].toObject();
+					if (!obj.contains(JsonTeamName) || !obj.value(JsonTeamName).isDouble())
+						continue;
+
+					if (!obj.contains(JsonDoubleParamNameListName) || !obj.value(JsonDoubleParamNameListName).isArray())
+						continue;
+
+					if (!obj.contains(JsonDoubleParamValueListName) || !obj.value(JsonDoubleParamValueListName).isArray())
+						continue;
+
+					if (!obj.contains(JsonDistParamNameListName) || !obj.value(JsonDistParamNameListName).isArray())
+						continue;
+
+					if (!obj.contains(JsonDistParamValueListName) || !obj.value(JsonDistParamValueListName).isArray())
+						continue;
+
+					QJsonArray dnamearray = obj.value(JsonDoubleParamNameListName).toArray();
+					QJsonArray dvaluearray = obj.value(JsonDoubleParamValueListName).toArray();
+					QJsonArray xnamearray = obj.value(JsonDistParamNameListName).toArray();
+					QJsonArray xvaluearray = obj.value(JsonDistParamValueListName).toArray();
+
+					if (dnamearray.size() != dvaluearray.size())
+						continue;
+
+					if (xnamearray.size() != xvaluearray.size())
+						continue;
+
+					RobotCapabilities robot(obj.value(JsonTeamName).toInt());
+
+					for (int i = 0; i < dnamearray.size(); i++)
+					{
+						if (dnamearray[i].isString() && dvaluearray[i].isDouble())
+						{
+							robot.addDoubleParam(dnamearray[i].toString(), dvaluearray[i].toDouble());
+						}
+					}
+
+					for (int i = 0; i < xnamearray.size(); i++)
+					{
+						if (xnamearray[i].isString() && xvaluearray[i].isArray())
+						{
+							Distribution dist;
+
+							if (decodeDist(xvaluearray[i].toArray(), dist))
+							{
+								robot.addDistParam(xnamearray[i].toString(), dist);
+							}
+						}
+					}
+
+					dm_->robot_capablities_.push_back(robot);
+				}
+			}
+
+			QJsonArray JSonDataModelConverter::encodeDist(const Distribution& dist)
+			{
+				QJsonArray distarray;
+
+				for (auto pair : dist)
+				{
+					QJsonObject obj;
+					obj[JsonDistBucketName] = pair.first;
+					obj[JsonValueName] = pair.second;
+
+					distarray.push_back(obj);
+				}
+
+				return distarray;
+			}
+
+			bool JSonDataModelConverter::decodeDist(const QJsonArray& array, Distribution& dist)
+			{
+				dist.clear();
+
+				for (int i = 0; i < array.size(); i++)
+				{
+					if (!array[i].isObject())
+						continue;
+
+					QJsonObject obj = array[i].toObject();
+					if (!obj.contains(JsonDistBucketName) || !obj.value(JsonDistBucketName).isDouble())
+						continue;
+
+					if (!obj.contains(JsonValueName) || !obj.value(JsonValueName).isDouble())
+						continue;
+
+					int bucket = obj.value(JsonDistBucketName).toInt();
+					double value = obj.value(JsonValueName).toDouble();
+					dist.push_back(std::make_pair(bucket, value));
+				}
+
+				return true;
 			}
 
 			QJsonArray JSonDataModelConverter::encodeRules()

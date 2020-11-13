@@ -2,7 +2,6 @@
 #include <QPainter>
 #include <QFontMetrics>
 #include <QMouseEvent>
-#include <QDebug>
 #include <QDrag>
 #include <QMimeData>
 #include <QPixmap>
@@ -25,7 +24,9 @@ namespace xero
 				setMinimumSize(QSize(MinimumWidth, MinimumHeight));
 				background_not_selected_ = QColor(242, 222, 167);
 				background_selected_ = QColor(240, 240, 255);
+				background_not_available_ = QColor(164, 164, 164);
 				background_third_ = QColor(192, 192, 255);
+				background_third_selected_ = QColor(164, 164, 164);
 				setMouseTracking(true);
 				setAcceptDrops(true);
 				third_ = -1;
@@ -110,15 +111,17 @@ namespace xero
 			{
 				if (droppos_ != -1)
 				{
+					diddrop_ = true;
 					putDrag(droppos_);
 					ev->acceptProposedAction();
-					emit rowChanged();
+					ev->accept();
+					emit rowChanged(rank_ - 1);
 				}
 			}
 
 			void PickListRowWidget::mousePressEvent(QMouseEvent* ev)
 			{
-				bool draggingthird = false;
+				diddrop_ = false;
 
 				if (ev->button() == Qt::LeftButton)
 				{
@@ -129,38 +132,38 @@ namespace xero
 					assert(current_ == true);
 					if (third_ == -1)
 					{
-						QString d = "PL:r," + QString::number(rank_ - 1);
-						data->setText(d);
-						mp = QPixmap(width(), height());
-						QPainter paint(&mp);
-						paint.setRenderHint(QPainter::Antialiasing);
-						paintBackground(paint, true);
-						paintContent(paint);
+						//
+						// Let the parent handle the drag event
+						//
+						emit dragRow(ev->pos(), rank_ - 1);
+						return;
 					}
-					else
-					{
-						QString d = "PL:t," + QString::number(rank_) + "," + QString::number(third_);
-						data->setText(d);
 
-						mp = QPixmap(ThirdAreaWidth, height());
-						QPainter paint(&mp);
-						paintThirdArea(paint, third_, false);
+					QString d = "PL:t," + QString::number(rank_) + "," + QString::number(third_);
+					data->setText(d);
 
-						dragging_index_ = third_;
-						third_ = -1;
-						dragging_team_ = entry_.thirdTeam(dragging_index_);
-						dragging_score_ = entry_.thirdScore(dragging_index_);
+					mp = QPixmap(ThirdAreaWidth, height());
+					QPainter paint(&mp);
+					paintThirdArea(paint, third_, false);
 
-						entry_.removeThird(dragging_index_);
-						update();
-						draggingthird = true;
-					}
+					dragging_index_ = third_;
+					third_ = -1;
+					dragging_team_ = entry_.thirdTeam(dragging_index_);
+					dragging_score_ = entry_.thirdScore(dragging_index_);
+
+					entry_.removeThird(dragging_index_);
+					update();
+
+					int xpos = TeamAreaWidth + LeftMargin + static_cast<int>(dragging_index_) * ThirdAreaWidth;
+					int ypos = TopMargin;
 
 					drag->setMimeData(data);
 					drag->setPixmap(mp);
+					QPoint pt(ev->pos().x() - xpos, ev->pos().y() - ypos);
+					drag->setHotSpot(pt);
 
 					Qt::DropAction act = drag->exec(Qt::MoveAction);
-					if (act == Qt::IgnoreAction && draggingthird)
+					if (!diddrop_)
 						putDrag(dragging_index_);
 				}
 			}
@@ -202,11 +205,13 @@ namespace xero
 				if (droppos_ == -1)
 					return;
 
+				paint.save();
 				int xpos = TeamAreaWidth + LeftMargin + droppos_ * ThirdAreaWidth;
 				QPen pen(QColor(0, 0, 0));
-				pen.setWidth(4);
-
+				pen.setWidth(6);
+				paint.setPen(pen);
 				paint.drawLine(xpos, 0, xpos, height());
+				paint.restore();
 			}
 
 			void PickListRowWidget::paintThirdArea(QPainter& paint, int i, bool window)
@@ -216,6 +221,8 @@ namespace xero
 				int teamwidth;
 				int scorewidth;
 				QPoint pt;
+				bool paintback = false;
+				QColor backcolor;
 
 				QFont bigf = paint.font();
 				bigf.setPointSizeF(9.0);
@@ -234,18 +241,29 @@ namespace xero
 				else
 					xpos = 0;
 
-				if (i == third_ && window)
+				int team = entry_.thirdTeam(i);
+				if (selected_.count(team) > 0)
+				{
+					paintback = true;
+					backcolor = background_third_selected_;
+				}
+				else if ((i == third_ && window) || !window)
+				{
+					paintback = true;
+					backcolor = background_third_;
+				}
+
+				if (paintback)
 				{
 					paint.save();
-					QRect r(xpos, TopMargin, ThirdAreaWidth, height() - BottomMargin);
-					QBrush b(background_third_);
+					QRect r(xpos, TopMargin, ThirdAreaWidth, height() - TopMargin * 2);
+					QBrush b(backcolor);
 					paint.setBrush(b);
 					paint.setPen(Qt::PenStyle::NoPen);
 					paint.drawRect(r);
 					paint.restore();
 				}
 
-				int team = entry_.thirdTeam(i);
 				double score = entry_.thirdScore(i);
 
 				str = QString::number(team);
@@ -314,7 +332,9 @@ namespace xero
 				QPen pen = QPen(QColor(0, 0, 0));
 				QBrush b;
 				
-				if (current_ && !forceoff)
+				if (selected_.count(entry_.team()))
+					b = QBrush(background_not_available_);
+				else if (current_ && !forceoff)
 					b = QBrush(background_selected_);
 				else
 					b = QBrush(background_not_selected_);

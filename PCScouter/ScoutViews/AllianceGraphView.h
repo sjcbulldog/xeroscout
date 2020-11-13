@@ -58,6 +58,7 @@ namespace xero
 
 			private:
 				QLabel* teams_;
+				QLabel* msg_;
 			};
 		}
 	}

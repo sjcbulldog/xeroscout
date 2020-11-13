@@ -50,6 +50,10 @@ namespace xero
 				QSizePolicy p(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed);
 				teams_->setSizePolicy(p);
 
+				msg_ = new QLabel(this);
+				msg_->setText("Select teams to see graphs");
+				hlay->addWidget(msg_);
+
 				QPushButton* button = new QPushButton("Select Teams", this);
 				hlay->addWidget(button);
 				connect(button, &QPushButton::pressed, this, &AllianceGraphView::selectTeams);
@@ -67,6 +71,7 @@ namespace xero
 				{
 					setTeams(dialog.keys());
 					refreshCharts();
+					msg_->setText("");
 				}
 			}
 

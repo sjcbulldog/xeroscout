@@ -40,6 +40,7 @@
 #include "FieldRegion.h"
 #include "SequencePattern.h"
 #include "PickListEntry.h"
+#include "RobotCapabilities.h"
 #include <QString>
 #include <QJsonDocument>
 #include <QFile>
@@ -370,13 +371,28 @@ namespace xero
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+				void addRobotCapability(const RobotCapabilities& cap) {
+					robot_capablities_.push_back(cap);
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::PickListChanged);
+				}
+
+				const std::vector<RobotCapabilities>& robotCapablities() const {
+					return robot_capablities_;
+				}
+
 				void resetPicklist() {
 					picklist_ = original_picklist_;
+
+					dirty_ = true;
+					emitChangedSignal(ChangeType::PickListChanged);
 				}
 
 				void clearPickList() {
 					picklist_.clear();
 					original_picklist_.clear();
+					robot_capablities_.clear();
 
 					dirty_ = true;
 					emitChangedSignal(ChangeType::PickListChanged);
@@ -943,6 +959,14 @@ namespace xero
 				//
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+				void addImageView(const QString& username, const QString &imname) {
+					image_view_list_.push_back(std::make_pair(username, imname));
+				}
+
+				const std::list<std::pair<QString, QString>> & imageViews() const {
+					return image_view_list_;
+				}
+
 				void changeTeamData(const QString& tkey, const QString& field, const QVariant& value);
 				void changeMatchData(const QString &mkey, const QString& tkey, const QString& field, const QVariant& value);
 
@@ -1181,8 +1205,11 @@ namespace xero
 
 				std::vector<PickListEntry> picklist_;
 				std::vector<PickListEntry> original_picklist_;
-			};
 
+				std::vector<RobotCapabilities> robot_capablities_;
+
+				std::list<std::pair<QString, QString>> image_view_list_;
+			};
 		}
 	}
 }

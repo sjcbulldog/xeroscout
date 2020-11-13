@@ -28,13 +28,6 @@
 
 int main(int argc, char *argv[])
 {
-#ifndef _DEBUG
-	SingleInstanceGuard guard("SingleInstance-PCScouter");
-	if (!guard.tryToRun()) {
-		return 0;
-	}
-#endif
-
 	QCoreApplication::setOrganizationName("ErrorCodeXero");
 	QCoreApplication::setOrganizationDomain("www.wilsonvillerobotics.com");
 	QCoreApplication::setApplicationName("PCScouter");
@@ -85,6 +78,20 @@ int main(int argc, char *argv[])
 			datafile = arg;
 		}
 	}
+
+#ifndef _DEBUG
+	QString guardname;
+
+	if (coach)
+		guardname = "SingleInstance-Coach";
+	else
+		guardname = "SingleInstance-Central";
+
+	SingleInstanceGuard guard(guardname);
+	if (!guard.tryToRun()) {
+		return 0;
+	}
+#endif
 
 	try {
 		PCScouter w(coach);

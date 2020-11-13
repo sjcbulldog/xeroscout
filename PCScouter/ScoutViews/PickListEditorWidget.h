@@ -2,6 +2,7 @@
 
 #include "PickListRowWidget.h"
 #include <QWidget>
+#include <set>
 
 namespace xero
 {
@@ -31,6 +32,8 @@ namespace xero
 					return picklist_;
 				}
 
+				void teamSelected(int team, bool selected);
+
 			signals:
 				void picklistChanged();
 
@@ -43,10 +46,12 @@ namespace xero
 				void dropEvent(QDropEvent* ev) override;
 
 			private:
-				void doLayout(int winwidth);
+				void doLayout();
 				void recreateChildren();
 
-				void rowChanged();
+				void rowChanged(int row);
+				void draggingRow(QPoint pos, int row);
+				void putDrag(int row);
 
 			private:
 				std::vector<PickListRowWidget*> rows_;
@@ -57,6 +62,11 @@ namespace xero
 				int bottom_margin_;
 				int between_gap_;
 				int droppos_;
+				std::set<int> selected_;
+
+				bool diddrop_;
+				int dragging_row_;
+				xero::scouting::datamodel::PickListEntry dragging_entry_;
 			};
 		}
 	}
