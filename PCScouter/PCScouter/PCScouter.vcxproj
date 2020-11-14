@@ -80,14 +80,15 @@ if not exist "$(OutDir)html" mkdir $(OutDir)html
 copy $(ProjectDir)html\*.* $(OutDir)\html
 $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe
 copy $(QTDIR)\bin\Qt5Sql.dll $(OutDir)
+copy $(QTDIR)\bin\Qt5Sqld.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Charts.dll $(OutDir)
+copy $(QTDIR)\bin\Qt5Chartsd.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Bluetooth.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Bluetoothd.dll $(OutDir)
 mkdir $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlite.dll $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
-copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
-</Command>
+copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>D:\cygwin64\bin\bash incver.sh</Command>
@@ -120,17 +121,18 @@ if not exist "$(OutDir)html" mkdir $(OutDir)html
 copy $(ProjectDir)html\*.* $(OutDir)\html
 $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe
 copy $(QTDIR)\bin\Qt5Sql.dll $(OutDir)
+copy $(QTDIR)\bin\Qt5Sqld.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Charts.dll $(OutDir)
+copy $(QTDIR)\bin\Qt5Chartsd.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Bluetooth.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Bluetoothd.dll $(OutDir)
 mkdir $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlite.dll $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
-copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)
-</Command>
+copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>c:\cygwin64\bin\bash incver.sh</Command>
+      <Command>D:\cygwin64\bin\bash incver.sh</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

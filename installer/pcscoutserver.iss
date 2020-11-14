@@ -5,13 +5,13 @@
 #define MyCoachName "XeroCoach"
 #define MyScoutName "XeroScout"
 #define MyViewerName "XeroView"
-#define MyAppVersion "0.3.26"
+#define MyAppVersion "0.3.27"
 #define MyAppPublisher "ErrorCodeXero"
 #define MyAppURL "http://www.wilsonvillerobotics.com/"
 #define MyAppExeName "PCScouter.exe"
 #define MyScoutAppExeName "PCScoutApp.exe"
 #define MyFormViewerExeName "PCFormViewer.exe"
-#define MyUserName "ButchGriffin"
+#define MyAppSourceDir "d:\cygwin64\home\bwg\robottools\scouting"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -25,10 +25,10 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=C:\cygwin64\home\{#MyUserName}\projects\scouting\LICENSE
+LicenseFile={#MyAppSourceDir}\LICENSE
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
-OutputDir=C:\cygwin64\home\{#MyUserName}\projects\scouting\installer
+OutputDir={#MyAppSourceDir}\installer
 OutputBaseFilename=xeroscout-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
@@ -45,9 +45,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "C:\cygwin64\home\ButchGriffin\projects\scouting\PCScouter\x64\Release\*.*"; DestDir: "{app}"; Flags: ignoreversion 64bit recursesubdirs
-Source: "C:\cygwin64\home\ButchGriffin\projects\scouting\forms\2019\*.*"; DestDir: "{userdocs}\forms\2019"; Flags: ignoreversion 64bit recursesubdirs
-Source: "C:\cygwin64\home\ButchGriffin\projects\scouting\forms\2020\*.*"; DestDir: "{userdocs}\forms\2020"; Flags: ignoreversion 64bit recursesubdirs
+Source: "{#MyAppSourceDir}\PCScouter\x64\Release\*.*"; DestDir: "{app}"; Flags: ignoreversion 64bit recursesubdirs
+Source: "{#MyAppSourceDir}\forms\2019\*.*"; DestDir: "{userdocs}\forms\2019"; Flags: ignoreversion 64bit recursesubdirs
+Source: "{#MyAppSourceDir}\forms\2020\*.*"; DestDir: "{userdocs}\forms\2020"; Flags: ignoreversion 64bit recursesubdirs
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
