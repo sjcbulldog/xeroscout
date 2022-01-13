@@ -69,18 +69,6 @@ void NewEventAppController::run()
 		// in the blue alliance
 		//
 	}
-	else if (blueAlliance()->state() == BlueAlliance::EngineState::Down)
-	{
-		//
-		// The network went down in the middle
-		//
-		state_ = State::Error;
-
-		emit errorMessage("The BlueAlliance failed during the operation");
-		emit logMessage("The BlueAlliance failed during the operation");
-		emit complete(true);
-
-	}
 	else if (blueAlliance()->isIdle())
 	{
 		//

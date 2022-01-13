@@ -1,0 +1,371 @@
+{
+  "form": "match",
+  "sections": [
+    {
+      "name": "PreMatch",
+      "items": [
+        {
+          "type": "text",
+          "name": "Scouter",
+          "tag": "match_scouter",
+          "maxlen": 32
+        }
+      ]
+    },
+    {
+      "name": "Autonomous",
+      "items": [
+        {
+          "alliance": "red",
+          "type": "image",
+          "image": "2022-rapid-react.png",
+          "tag": "auto",
+          "name": "AutoMode",
+          "scale": 0.50,
+          "imageitems" : [
+            {
+              "imageitemtype": "onoff",
+              "tag": "tarmac",
+              "position": [ "centersize", 2018, 532, 60, 60 ]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "starting_position",
+              "value" : "1",
+              "position" : [ "centersize", 1475, 700, 120, 120]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "starting_position",
+              "value" : "2",
+              "position" : [ "centersize", 1520, 560, 120, 120]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "starting_position",
+              "value" : "3",
+              "position" : [ "centersize", 1430, 370, 120, 120]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "starting_position",
+              "value" : "4",
+              "position" : [ "centersize", 1300, 300, 120, 120]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ball1",
+              "position": [ "centersize", 1693, 790, 30, 30 ]
+            },  
+            {
+              "imageitemtype": "onoff",
+              "tag": "ball2",
+              "position": [ "centersize", 1680, 280, 30, 30 ]
+            },   
+            {
+              "imageitemtype": "onoff",
+              "tag": "ball3",
+              "position": [ "centersize", 1382, 82, 30, 30 ]
+            },   
+            {
+              "imageitemtype": "onoff",
+              "tag": "ball4",
+              "position": [ "centersize", 2150, 188, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ball5",
+              "position": [ "centersize", 2350, 188, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "inrobot",
+              "position": [ "centersize", 1290, 520, 120, 40 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "highhub",
+              "minimum": 0,
+              "maximum": 50,
+              "minlimit" : 0,
+              "maxlimit" : 8,
+              "position": [ "centersize", 1280, 420, 100, 100 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "lowhub",
+              "minimum": 0,
+              "maximum": 50,
+              "minlimit" : 0,
+              "maxlimit" : 8,
+              "position": [ "centersize", 1280, 620, 100, 100 ]
+            }            
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2022-rapid-react.png",
+          "tag": "auto",
+          "name": "AutoMode",
+          "scale": 0.50,
+          "imageitems" : [
+            {
+              "imageitemtype": "onoff",
+              "tag": "tarmac",
+              "position": [ "centersize", 524, 550, 60, 60 ]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "starting_position",
+              "value" : "1",
+              "position" : [ "centersize", 1095, 390, 120, 120]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "starting_position",
+              "value" : "2",
+              "position" : [ "centersize", 1052, 512, 120, 120]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "starting_position",
+              "value" : "3",
+              "position" : [ "centersize", 1184, 712, 120, 120]            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "starting_position",
+              "value" : "4",
+              "position" : [ "centersize", 1280, 786, 120, 120]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ball1",
+              "position": [ "centersize", 912, 294, 30, 30 ]
+            },  
+            {
+              "imageitemtype": "onoff",
+              "tag": "ball2",
+              "position": [ "centersize", 927, 811, 30, 30 ]
+            },   
+            {
+              "imageitemtype": "onoff",
+              "tag": "ball3",
+              "position": [ "centersize", 1236, 1000, 30, 30 ]
+            },   
+            {
+              "imageitemtype": "onoff",
+              "tag": "ball4",
+              "position": [ "centersize", 451, 901, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "ball5",
+              "position": [ "centersize", 261, 901, 30, 30 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "inrobot",
+              "position": [ "centersize", 1290, 520, 120, 40 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "highhub",
+              "minimum": 0,
+              "maximum": 8,
+              "minlimit" : 0,
+              "maxlimit" : 8,
+              "position": [ "centersize", 1290, 420, 100, 100 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "lowhub",
+              "minimum": 0,
+              "maximum": 8,
+              "minlimit" : 0,
+              "maxlimit" : 8,
+              "position": [ "centersize", 1290, 620, 100, 100 ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Teleop",
+      "items": [
+        {
+          "alliance": "red",
+          "type": "image",
+          "image": "2022-rapid-react.png",
+          "tag": "teleop",
+          "name": "AutoMode",
+          "scale": 0.50,
+          "imageitems" : [
+            {
+              "imageitemtype": "count",
+              "tag": "highhub",
+              "minimum": 0,
+              "maximum": 50,
+              "minlimit" : 0,
+              "maxlimit" : 8,
+              "position": [ "centersize", 1290, 440, 100, 100 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "lowhub",
+              "minimum": 0,
+              "maximum": 50,
+              "minlimit" : 0,
+              "maxlimit" : 8,
+              "position": [ "centersize", 1290, 600, 100, 100 ]
+            }        
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2022-rapid-react.png",
+          "tag": "teleop",
+          "name": "AutoMode",
+          "scale": 0.50,
+          "imageitems" : [
+            {
+              "imageitemtype": "count",
+              "tag": "highhub",
+              "minimum": 0,
+              "maximum": 8,
+              "minlimit" : 0,
+              "maxlimit" : 8,
+              "position": [ "centersize", 1290, 440, 100, 100 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "lowhub",
+              "minimum": 0,
+              "maximum": 8,
+              "minlimit" : 0,
+              "maxlimit" : 8,
+              "position": [ "centersize", 1290, 600, 100, 100 ]
+            }
+          ]
+        }        
+      ]
+    },
+    {
+      "name": "End Game",
+      "items": [
+        {
+          "alliance": "red",
+          "type": "image",
+          "image": "2022-rapid-react.png",
+          "tag": "endgame",
+          "name": "EndGame",
+          "scale": 0.50,
+          "imageitems" : [
+            {
+              "imageitemtype" : "choice",
+              "tag" : "climb_position",
+              "value" : "none",
+              "position" : [ "centersize", 1696, 852, 45, 45]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "climb_position",
+              "value" : "low",
+              "position" : [ "centersize", 1896, 852, 45, 45]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "climb_position",
+              "value" : "mid",
+              "position" : [ "centersize", 2018, 852, 45, 45]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "climb_position",
+              "value" : "high",
+              "position" : [ "centersize", 2092, 852, 45, 45]            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "climb_position",
+              "value" : "traverse",
+              "position" : [ "centersize", 2166, 852, 45, 45]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "climbtime",
+              "minimum": 0,
+              "maximum": 60,
+              "minlimit" : 0,
+              "maxlimit" : 60,
+              "position": [ "centersize", 1290, 520, 200, 140 ]
+            }
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2022-rapid-react.png",
+          "tag": "endgame",
+          "name": "EndGame",
+          "scale": 0.50,
+          "imageitems" : [
+            {
+              "imageitemtype" : "choice",
+              "tag" : "climb_position",
+              "value" : "none",
+              "position" : [ "centersize", 912, 224, 45, 45]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "climb_position",
+              "value" : "low",
+              "position" : [ "centersize", 712, 224, 45, 45]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "climb_position",
+              "value" : "mid",
+              "position" : [ "centersize", 586, 224, 45, 45]
+            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "climb_position",
+              "value" : "high",
+              "position" : [ "centersize", 516, 224, 45, 45]            },
+            {
+              "imageitemtype" : "choice",
+              "tag" : "climb_position",
+              "value" : "traverse",
+              "position" : [ "centersize", 442, 224, 45, 45]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "climbtime",
+              "minimum": 0,
+              "maximum": 60,
+              "minlimit" : 0,
+              "maxlimit" : 60,
+              "position": [ "centersize", 1290, 520, 200, 140 ]
+            }
+          ]
+        }        
+      ]
+    },
+    {
+      "name": "General",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "brownout",
+          "name": "Brownout"
+        },
+        {
+          "type": "boolean",
+          "tag": "breakdown",
+          "name": "Breakdown"
+        }
+      ]
+    }
+  ]
+}

@@ -12,6 +12,10 @@
 	"image" : "2020-field-official.jpg"
     },
     {
+	"descriptor" : "2021-infinte-official.json",
+	"image" : "2021-field-official.jpg"
+    },
+    {
 	"descriptor" : "empty-field.json",
 	"image" : "empty-field.jpg"
     }

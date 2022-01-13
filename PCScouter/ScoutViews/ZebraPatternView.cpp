@@ -79,7 +79,8 @@ namespace xero
 
 			void ZebraPatternView::madeActive()
 			{
-				patterns_->setRegions(dataModel()->fieldRegions());
+				auto regions = dataModel()->fieldRegions();
+				patterns_->setRegions(regions);
 				int width = patterns_->minimumWidth() + 2 * patterns_scroll_->frameWidth() + patterns_scroll_->verticalScrollBar()->sizeHint().width();
 				patterns_scroll_->setMinimumWidth(width);
 

@@ -104,7 +104,7 @@ namespace xero
 
 			void FormView::setScale(double s)
 			{
-				auto& sections = form_->sections();
+				const auto& sections = form_->sections();
 				for (auto section : sections) {
 					for (auto item : section->items()) {
 						auto disp = instance_->displayItem(item->tag());
@@ -140,7 +140,7 @@ namespace xero
 				if (form_ != nullptr)
 				{
 					instance_ = std::make_shared<FormInstance>(form);
-					auto& sections = form_->sections();
+					const auto& sections = form_->sections();
 					for (auto section : sections) {
 						createSection(section);
 					}

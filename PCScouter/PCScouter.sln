@@ -37,6 +37,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScoutTransport", "ScoutTran
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PCScoutData", "PCScoutData\PCScoutData.vcxproj", "{B70DF2C8-843D-4373-BD18-E6B91E73EAE4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C4ED72E8-3A6E-4315-92ED-6C934B7387AA} = {C4ED72E8-3A6E-4315-92ED-6C934B7387AA}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExprLib", "ExprLib\ExprLib.vcxproj", "{4C701381-AE3C-4A78-B372-9920849B81C5}"
 EndProject

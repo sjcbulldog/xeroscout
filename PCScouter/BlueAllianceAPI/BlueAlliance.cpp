@@ -152,7 +152,8 @@ namespace xero
 		void BlueAlliance::init()
 		{
 			QString server = "https://www.thebluealliance.com/api/v3";
-			QString authkey = "b9OfKDfqHf2Es0e4UAcpCsO4NZ3PUIQWMBHtQ145hhE4jakPJa1pdMVJSPDStcrT";
+			// QString authkey = "b9OfKDfqHf2Es0e4UAcpCsO4NZ3PUIQWMBHtQ145hhE4jakPJa1pdMVJSPDStcrT";
+			QString authkey = "cgbzLmpXlA5GhIew3E4xswwLqHOm4j0hQ1Mizvg71zkuQZIazcXgf3dd8fguhpxC";
 
 			engine_ = new BlueAllianceEngine(server, authkey);
 			busy_ = true;

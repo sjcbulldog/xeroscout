@@ -176,7 +176,7 @@ namespace xero
 				if (obj.contains(IsDataFeedDownKey))
 				{
 					QJsonValue v = obj[IsDataFeedDownKey];
-					if (v.isBool() && v.toBool() == true)
+					if (v.isBool() && v.toBool() == true && false)
 					{
 						std::shared_ptr<BlueAllianceResult> result = std::make_shared<BlueAllianceResult>(BlueAllianceResult::Status::SiteDown);
 						addResult(result);

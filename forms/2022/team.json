@@ -1,0 +1,168 @@
+{
+  "form": "team",
+  "sections": [
+    {
+      "name": "General",
+      "items": [
+        {
+          "type": "text",
+          "tag": "team_scouter",
+          "name": "Scouter",
+          "maxlen": 32
+        },
+        {
+          "type": "numeric",
+          "tag": "weight",
+          "name": "Weight (w/ bumpers)",
+          "minimum": 0,
+          "maximum": 200,
+          "minlimit":120,
+          "maxlimit":150
+        },
+        {
+          "type": "choice",
+          "choices": [ "C++", "Java", "LV", "Python", "Other" ],
+          "tag": "language",
+          "name": "Programming Language"
+        }
+      ]
+    },
+    {
+      "name": "Collecting & Scoring",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "collect_ground",
+          "name": "Ground Collect"
+        },
+        {
+          "type": "boolean",
+          "tag": "hub_high",
+          "name": "Shoot Hub High"
+        },
+        {
+          "type": "numeric",
+          "tag": "hub_high_accuracy",
+          "name": "Hub High Accuracy",
+          "minimum": 0,
+          "maximum": 100,
+          "minlimit":0,
+          "maxlimit":100
+        },
+        {
+          "type": "boolean",
+          "tag": "hub_low",
+          "name": "Shoot Hub Low"
+        },
+        {
+          "type": "numeric",
+          "tag": "hub_low_accuracy",
+          "name": "Hub Low Accuracy",
+          "minimum": 0,
+          "maximum": 100,
+          "minlimit":0,
+          "maxlimit":100
+        }
+      ]
+    },
+    {
+      "name": "DriveBase",
+      "items": [
+        {
+          "type": "choice",
+          "choices": [ "West Coast", "Mecanum", "Swerve", "Other" ],
+          "tag": "db_type",
+          "name": "Drive Base"
+        },
+        {
+          "type": "updown",
+          "tag": "db_wheels",
+          "name": "Wheels",
+          "minimum": 4,
+          "maximum": 12
+        },
+        {
+          "type": "updown",
+          "tag": "db_cims",
+          "name": "CIMs",
+          "minimum": 0,
+          "maximum": 8
+        },
+        {
+          "type": "updown",
+          "tag": "db_neos",
+          "name": "NEOs",
+          "minimum": 0,
+          "maximum": 8
+        },
+        {
+          "type": "updown",
+          "tag": "db_falcons",
+          "name": "Falcons",
+          "minimum": 0,
+          "maximum": 8
+        },
+        {
+          "type": "updown",
+          "tag": "db_others",
+          "name": "Other Motors",
+          "minimum": 0,
+          "maximum": 8
+        }
+      ]
+    },
+    {
+      "name": "Auto",
+      "items": [
+        {
+          "type": "updown",
+          "tag": "auto_max_low",
+          "name": "Max Auto Balls Low",
+          "minimum": 0,
+          "maximum": 5
+        },
+        {
+          "type": "updown",
+          "tag": "auto_max_high",
+          "name": "Max Auto Balls High",
+          "minimum": 0,
+          "maximum": 5
+        }
+      ]
+    },
+    {
+      "name": "Endgame",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "climb_low",
+          "name": "Climb Low Bar"
+        },
+        {
+          "type": "boolean",
+          "tag": "climb_mid",
+          "name": "Climb Mid Bar"
+        },
+        {
+          "type": "boolean",
+          "tag": "climb_high",
+          "name": "Climb High Bar"
+        },
+        {
+          "type": "boolean",
+          "tag": "climb_traversal",
+          "name": "Climb Traversal Bar"
+        },
+        {
+          "type": "numeric",
+          "tag": "climb_time",
+          "name": "Climb time for highest climb",
+          "minimum": 0,
+          "maximum": 60,
+          "minlimit":0,
+          "maxlimit":60
+        }        
+      ]
+    }
+  ]
+}

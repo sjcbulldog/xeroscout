@@ -110,6 +110,7 @@ namespace xero
 				// Get the data from the reply
 				//
 				QByteArray bdata = reply_->readAll();
+				QString result = QString::fromUtf8(bdata);
 
 				//
 				// Now, convert the result to a JSON document and hand to the post processor

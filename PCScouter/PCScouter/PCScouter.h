@@ -92,6 +92,7 @@ private:
 	// File Menu
 	void showingFileMenu();
 	void newEventBA();
+	void newEventOffSeason();
 	void newEventComplete(bool err);
 	void openEvent();
 	void saveEvent();
@@ -192,6 +193,7 @@ private:
 	//
 	QMenu *file_menu_;
 	QAction* file_new_event_;
+	QAction* file_new_offseason_event_;
 	QAction* file_open_event_;
 	QAction* file_save_;
 	QAction* file_save_as_;

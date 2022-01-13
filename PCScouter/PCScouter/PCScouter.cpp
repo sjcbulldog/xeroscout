@@ -51,6 +51,7 @@
 #include "BluetoothServer.h"
 
 #include "NewEventAppController.h"
+#include "NewOffseasonEventAppController.h"
 #include "ImportMatchDataController.h"
 #include "ImportZebraDataController.h"
 #include "AllTeamSummaryController.h"
@@ -512,8 +513,11 @@ void PCScouter::createMenus()
 
 	if (!coach_)
 	{
-		file_new_event_ = file_menu_->addAction(tr("New Event"));
+		file_new_event_ = file_menu_->addAction(tr("New Blue Alliance Event"));
 		(void)connect(file_new_event_, &QAction::triggered, this, &PCScouter::newEventBA);
+
+		//file_new_offseason_event_ = file_menu_->addAction(tr("New Offseason Event"));
+		//(void)connect(file_new_event_, &QAction::triggered, this, &PCScouter::newEventOffSeason);
 
 		file_menu_->addSeparator();
 	}
@@ -1253,6 +1257,25 @@ void PCScouter::newEventBA()
 	TestDataInjector& injector = TestDataInjector::getInstance();
 	if (injector.hasData("nomatches") && injector.data("nomatches").toBool())
 		ctlr->simNoMatches();
+
+	(void)connect(app_controller_, &NewEventAppController::complete, this, &PCScouter::newEventComplete);
+	(void)connect(app_controller_, &ApplicationController::logMessage, this, &PCScouter::logMessage);
+	(void)connect(app_controller_, &ApplicationController::errorMessage, this, &PCScouter::errorMessage);
+}
+
+void PCScouter::newEventOffSeason()
+{
+	if (data_model_ != nullptr && data_model_->isDirty()) {
+		QMessageBox::warning(this, "Warning", "Cannot create new event, current event has unsaved changes");
+		return;
+	}
+
+	QStringList tablets;
+	if (settings_.contains("tablets"))
+		tablets = settings_.value("tablets").toStringList();
+
+	auto ctlr = new NewOffseasonEventAppController(images_, tablets, year_);
+	app_controller_ = ctlr;
 
 	(void)connect(app_controller_, &NewEventAppController::complete, this, &PCScouter::newEventComplete);
 	(void)connect(app_controller_, &ApplicationController::logMessage, this, &PCScouter::logMessage);

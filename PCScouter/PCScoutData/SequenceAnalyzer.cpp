@@ -75,7 +75,8 @@ namespace xero
 					if (track == nullptr && !track->hasData())
 						continue;
 
-					std::shared_ptr<ZebraSequence> seq = std::make_shared<ZebraSequence>(m->key(), t->key(), track, dm_->fieldRegions(), idle);
+					auto regions = dm_->fieldRegions();
+					std::shared_ptr<ZebraSequence> seq = std::make_shared<ZebraSequence>(m->key(), t->key(), track, regions, idle);
 					sequences.push_back(seq);
 				}
 

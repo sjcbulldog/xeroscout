@@ -189,7 +189,7 @@ namespace xero
 					}
 
 					auto pane = desc.addPane(obj.value("title").toString());
-					QJsonArray& x = obj.value("x").toArray();
+					QJsonArray x = obj.value("x").toArray();
 					for (const QJsonValue& xitem : x)
 						pane->addX(xitem.toString());
 
