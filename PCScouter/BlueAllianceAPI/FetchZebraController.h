@@ -34,6 +34,12 @@ namespace xero
 			FetchZebraController(BlueAllianceEngine& engine, const QStringList& keys);
 			virtual ~FetchZebraController();
 
+
+			QString name() override {
+				return "FetchZebra";
+			}
+
+
 			virtual QString query();
 			virtual BlueAllianceResult::Status processJson(int code, std::shared_ptr<QJsonDocument> doc);
 		};

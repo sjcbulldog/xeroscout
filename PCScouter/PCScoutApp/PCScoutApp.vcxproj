@@ -85,7 +85,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)XeroUSBTransport;$(SolutionDir)ScoutViews;$(SolutionDir)PCScoutData;$(SolutionDir)ScoutTransport;$(Qt_INCLUDEPATH_);.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>

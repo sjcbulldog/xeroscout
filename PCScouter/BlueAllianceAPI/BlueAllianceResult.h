@@ -27,8 +27,6 @@ namespace xero
 {
 	namespace ba
 	{
-
-
 		class BlueAllianceResult
 		{
 		public:

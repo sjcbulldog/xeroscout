@@ -80,7 +80,7 @@
       <PreprocessorDefinitions>BLUEALLIANCEAPI_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>

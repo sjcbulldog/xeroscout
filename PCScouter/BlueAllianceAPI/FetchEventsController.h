@@ -33,6 +33,10 @@ namespace xero
 			FetchEventsController(BlueAllianceEngine& engine, int year);
 			virtual ~FetchEventsController();
 
+			QString name() override {
+				return "FetchEvents";
+			}
+
 			virtual QString query();
 			virtual BlueAllianceResult::Status processJson(int code, std::shared_ptr<QJsonDocument> doc);
 			virtual bool isDone();

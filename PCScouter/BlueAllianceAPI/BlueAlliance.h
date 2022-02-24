@@ -26,6 +26,7 @@
 #include "BlueAllianceResult.h"
 #include <QString>
 #include <vector>
+#include <iostream>
 
 namespace xero
 {
@@ -64,6 +65,13 @@ namespace xero
 
 			void run();
 
+			void log(const QString& line) {
+				if (logfile_ != nullptr)
+				{
+					(*logfile_) << line.toStdString() << std::endl;
+				}
+			}
+
 			QString getStatus();
 
 			bool requestEvents(int year);
@@ -79,6 +87,7 @@ namespace xero
 			void init();
 
 		private:
+			std::ostream* logfile_;
 			bool busy_;
 			EngineState engine_state_;
 			BlueAllianceEngine* engine_;

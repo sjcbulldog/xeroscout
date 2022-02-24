@@ -28,6 +28,7 @@
 #include <QDir>
 #include <QDebug>
 #include <thread>
+#include <fstream>
 
 namespace xero
 {
@@ -37,6 +38,20 @@ namespace xero
 		{
 			engine_state_ = EngineState::Initializing;
 			busy_ = false;
+			logfile_ = nullptr;
+			QString logfiledir = QStandardPaths::standardLocations(QStandardPaths::StandardLocation::AppConfigLocation).first();
+			QDir dir(logfiledir);
+			if (dir.mkpath("."))
+			{
+				QString logfile = logfiledir + "/log.txt";
+				std::ofstream *strm = new std::ofstream(logfile.toStdString());
+				if (!strm->is_open())
+				{
+					strm = nullptr;
+				}
+
+				logfile_ = strm;
+			}
 			init();
 		}
 
@@ -152,10 +167,11 @@ namespace xero
 		void BlueAlliance::init()
 		{
 			QString server = "https://www.thebluealliance.com/api/v3";
-			// QString authkey = "b9OfKDfqHf2Es0e4UAcpCsO4NZ3PUIQWMBHtQ145hhE4jakPJa1pdMVJSPDStcrT";
 			QString authkey = "cgbzLmpXlA5GhIew3E4xswwLqHOm4j0hQ1Mizvg71zkuQZIazcXgf3dd8fguhpxC";
 
-			engine_ = new BlueAllianceEngine(server, authkey);
+			log(QString("Initializing the build alliance API - key ") + authkey);
+
+			engine_ = new BlueAllianceEngine(logfile_, server, authkey);
 			busy_ = true;
 			engine_->requestStatus();
 		}

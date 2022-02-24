@@ -5,13 +5,13 @@
 #define MyCoachName "XeroCoach"
 #define MyScoutName "XeroScout"
 #define MyViewerName "XeroView"
-#define MyAppVersion "0.3.27"
+#define MyAppVersion "0.4.3"
 #define MyAppPublisher "ErrorCodeXero"
 #define MyAppURL "http://www.wilsonvillerobotics.com/"
 #define MyAppExeName "PCScouter.exe"
 #define MyScoutAppExeName "PCScoutApp.exe"
 #define MyFormViewerExeName "PCFormViewer.exe"
-#define MyAppSourceDir "d:\cygwin64\home\bwg\robottools\scouting"
+#define MyAppSourceDir "d:\cygwin64\home\bwg\robottools\xeroscout"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -46,8 +46,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "{#MyAppSourceDir}\PCScouter\x64\Release\*.*"; DestDir: "{app}"; Flags: ignoreversion 64bit recursesubdirs
-Source: "{#MyAppSourceDir}\forms\2019\*.*"; DestDir: "{userdocs}\forms\2019"; Flags: ignoreversion 64bit recursesubdirs
-Source: "{#MyAppSourceDir}\forms\2020\*.*"; DestDir: "{userdocs}\forms\2020"; Flags: ignoreversion 64bit recursesubdirs
+Source: "{#MyAppSourceDir}\forms\*.*"; DestDir: "{userdocs}\forms"; Flags: ignoreversion 64bit recursesubdirs
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

@@ -122,7 +122,7 @@ namespace xero
 					!obj.contains("school_name") || !obj.contains("city") || !obj.contains("state_prov") || !obj.contains("country") ||
 					!obj.contains("address") || !obj.contains("postal_code") || !obj.contains("gmaps_place_id") || !obj.contains("gmaps_url") ||
 					!obj.contains("lat") || !obj.contains("lng") || !obj.contains("location_name") || !obj.contains("website") ||
-					!obj.contains("rookie_year") || !obj.contains("motto") || !obj.contains("home_championship"))
+					!obj.contains("rookie_year") || !obj.contains("motto"))
 				{
 					return BlueAllianceResult::Status::JSONError;
 				}

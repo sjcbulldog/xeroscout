@@ -33,6 +33,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <map>
+#include <ostream>
 
 namespace xero
 {
@@ -41,7 +42,7 @@ namespace xero
 		class BLUEALLIANCEAPI_EXPORT BlueAllianceEngine
 		{
 		public:
-			BlueAllianceEngine(const QString& server, const QString& authkey);
+			BlueAllianceEngine(std::ostream *logfile, const QString& server, const QString& authkey);
 			virtual ~BlueAllianceEngine();
 
 			bool hasResult();
@@ -77,6 +78,12 @@ namespace xero
 
 			bool assignEventToTeam(const QString& team, const QString& evkey);
 
+			void log(const QString& line) {
+				if (logfile_ != nullptr) {
+					(*logfile_) << line.toStdString() << std::endl;
+				}
+			}
+
 		private:
 			static constexpr const char* IsDataFeedDownKey = "is_datafeed_down";
 
@@ -102,6 +109,8 @@ namespace xero
 			std::map<QString, std::shared_ptr<Match>> matches_by_key_;
 
 			QString error_message_;
+
+			std::ostream* logfile_;
 		};
 
 	}

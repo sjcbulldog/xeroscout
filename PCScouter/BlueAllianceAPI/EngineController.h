@@ -41,6 +41,7 @@ namespace xero
 			virtual ~EngineController()
 			{
 			}
+			virtual QString name() = 0;
 
 			virtual QString query() = 0;
 			virtual BlueAllianceResult::Status processJson(int code, std::shared_ptr<QJsonDocument> doc) = 0;

@@ -34,6 +34,12 @@ namespace xero
 			FetchMatchController(BlueAllianceEngine& engine, const QStringList& keys);
 			virtual ~FetchMatchController();
 
+
+			QString name() override {
+				return "FetchMatch";
+			}
+
+
 			virtual QString query();
 			virtual BlueAllianceResult::Status processJson(int code, std::shared_ptr<QJsonDocument> doc);
 

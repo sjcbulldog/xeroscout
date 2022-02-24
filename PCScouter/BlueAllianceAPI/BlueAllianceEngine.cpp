@@ -37,8 +37,9 @@ namespace xero
 {
 	namespace ba
 	{
-		BlueAllianceEngine::BlueAllianceEngine(const QString& server, const QString& authkey) : transport_(server, authkey)
+		BlueAllianceEngine::BlueAllianceEngine(std::ostream *strm, const QString& server, const QString& authkey) : transport_(server, authkey)
 		{
+			logfile_ = strm;
 		}
 
 		BlueAllianceEngine::~BlueAllianceEngine()
@@ -165,6 +166,8 @@ namespace xero
 
 			if (st != BlueAllianceResult::Status::Success || code != 200)
 			{
+				log("RequestStatus: remote request failed: " + BlueAllianceResult::toString(st) + " " + QString::number(code));
+
 				std::shared_ptr<BlueAllianceResult> result = std::make_shared<BlueAllianceResult>(st);
 				addResult(result);
 				return;
@@ -183,6 +186,7 @@ namespace xero
 					}
 					else
 					{
+						log("RequestStatus: remote request sucessful: remote site is up and ready");
 						std::shared_ptr<BlueAllianceResult> result = std::make_shared<BlueAllianceResult>(BlueAllianceResult::Status::Success);
 						addResult(result);
 					}
@@ -190,6 +194,7 @@ namespace xero
 			}
 			else
 			{
+				log("remote request failed: invalid JSON data, expected an object");
 				err = true;
 			}
 
@@ -202,11 +207,17 @@ namespace xero
 
 		void BlueAllianceEngine::requestStatus()
 		{
+			log("RequestStatus: calling requestStatus to get site status");
 			auto cb = std::bind(&BlueAllianceEngine::processStatusResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			if (!transport_.request("/status", cb))
 			{
+				log("RequestStatus: transport connection failed");
 				std::shared_ptr<BlueAllianceResult> result = std::make_shared<BlueAllianceResult>(BlueAllianceResult::Status::ConnectionError);
 				addResult(result);
+			}
+			else
+			{
+				log("RequestStatus: transport sent request to remote site");
 			}
 		}
 
@@ -224,6 +235,7 @@ namespace xero
 
 			if (code == 404)
 			{
+				log("Requested document not found - returned code 404");
 				st = controller_->processDocNotFound();
 				if (st != BlueAllianceResult::Status::Success)
 				{
@@ -235,9 +247,11 @@ namespace xero
 			}
 			else if (doc != nullptr)
 			{
+				log("Sending JSON document to the controller '" + controller_->name() + "'");
 				st = controller_->processJson(code, doc);
 				if (st != BlueAllianceResult::Status::Success)
 				{
+					log("ProcessResult: controller processJson failed - " + BlueAllianceResult::toString(st));
 					result = std::make_shared<BlueAllianceResult>(st);
 					addResult(result);
 					controller_ = nullptr;
@@ -268,6 +282,7 @@ namespace xero
 
 		void BlueAllianceEngine::requestTeams(const std::vector<int>& years)
 		{
+			log("RequestTeams (" + QString::number(years.front()) + ") : calling");
 			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchTeamsController>(*this, years.front());
 			auto result = controller_->startResult();
@@ -279,6 +294,8 @@ namespace xero
 
 		void BlueAllianceEngine::requestTeams(const QStringList& teams)
 		{
+			log("RequestTeams (list): calling");
+
 			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchTeamsController>(*this, teams);
 			auto result = controller_->startResult();
@@ -290,6 +307,8 @@ namespace xero
 
 		void BlueAllianceEngine::requestEvents(const std::vector<int>& years)
 		{
+			log("RequestEvents (" + QString::number(years.front()) + ") : calling");
+
 			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchEventsController>(*this, years.front());
 			auto result = controller_->startResult();
@@ -301,6 +320,8 @@ namespace xero
 
 		void BlueAllianceEngine::requestMatches(const QString& evid)
 		{
+			log("RequestMatches (" + evid + ") : calling");
+
 			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchMatchesController>(*this, evid);
 			auto result = controller_->startResult();
@@ -312,6 +333,8 @@ namespace xero
 
 		void BlueAllianceEngine::requestZebra(const QStringList& keys)
 		{
+			log("RequestZebra: calling");
+
 			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchZebraController>(*this, keys);
 			auto result = controller_->startResult();
@@ -323,6 +346,8 @@ namespace xero
 
 		void BlueAllianceEngine::requestTeamEvents(const QStringList& keys, int year)
 		{
+			log("RequestTeamEvents: calling");
+
 			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchTeamEventsController>(*this, keys, year);
 			auto result = controller_->startResult();
@@ -334,6 +359,8 @@ namespace xero
 
 		void BlueAllianceEngine::requestMatchesDetail(const QStringList& keys)
 		{
+			log("RequestMatchesDetails: calling");
+
 			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchMatchController>(*this, keys);
 			auto result = controller_->startResult();
@@ -345,6 +372,8 @@ namespace xero
 
 		void BlueAllianceEngine::requestRankings(const QString& evkey)
 		{
+			log("RequestRankings: calling");
+
 			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchRankingController>(*this, evkey);
 			auto result = controller_->startResult();
@@ -356,6 +385,8 @@ namespace xero
 
 		void BlueAllianceEngine::requestEventTeams(const QString& evkey)
 		{
+			log("RequestEventTeams: calling");
+
 			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchEventTeamsController>(*this, evkey);
 			auto result = controller_->startResult();

@@ -470,13 +470,13 @@ namespace xero
 				int minv, maxv;
 				if (!obj.contains("minimum") || !obj.value("minimum").isDouble()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
-						+ " type type 'updown' requires a double named 'minimum' as a field");
+						+ " type type 'timercnt' requires a double named 'minimum' as a field");
 					return false;
 				}
 
 				if (!obj.contains("maximum") || !obj.value("maximum").isDouble()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
-						+ " type type 'updown' requires a double named 'maximum' as a field");
+						+ " type type 'timercnt' requires a double named 'maximum' as a field");
 					return false;
 				}
 

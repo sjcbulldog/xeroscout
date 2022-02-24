@@ -33,6 +33,12 @@ namespace xero
 			FetchRankingController(BlueAllianceEngine& engine, const QString &evkey);
 			virtual ~FetchRankingController();
 
+
+			QString name() override {
+				return "Ranking";
+			}
+
+
 			virtual QString query();
 			virtual BlueAllianceResult::Status processJson(int code, std::shared_ptr<QJsonDocument> doc);
 			virtual bool isDone();

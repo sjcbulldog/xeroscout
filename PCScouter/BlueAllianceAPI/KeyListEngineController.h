@@ -42,6 +42,12 @@ namespace xero
 			virtual ~KeyListEngineController()	{
 			}
 
+
+			QString name() override {
+				return "KeyListEngine";
+			}
+
+
 			std::shared_ptr<BlueAllianceResult> finishedResult()
 			{
 				return std::make_shared<BACountResult>(size(), size(), true);

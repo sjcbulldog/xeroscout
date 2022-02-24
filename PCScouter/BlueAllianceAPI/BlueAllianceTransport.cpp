@@ -34,8 +34,6 @@ namespace xero
 {
 	namespace ba
 	{
-
-
 		BlueAllianceTransport::BlueAllianceTransport(const QString& server, const QString& authkey)
 		{
 			server_ = server;
@@ -92,6 +90,8 @@ namespace xero
 
 		void BlueAllianceTransport::finished()
 		{
+			QString result;
+
 			if (reply_ == nullptr)
 				return;
 
@@ -110,7 +110,7 @@ namespace xero
 				// Get the data from the reply
 				//
 				QByteArray bdata = reply_->readAll();
-				QString result = QString::fromUtf8(bdata);
+				result = QString::fromUtf8(bdata);
 
 				//
 				// Now, convert the result to a JSON document and hand to the post processor
