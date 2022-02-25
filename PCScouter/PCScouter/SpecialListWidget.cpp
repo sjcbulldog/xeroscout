@@ -54,4 +54,9 @@ void SpecialListWidget::keyPressEvent(QKeyEvent* ev)
 		emit magicWord(Word::DPR);
 		keyword_.clear();
 	}
+	else if (keyword_.length() >= 5 && keyword_.right(5) == "match")
+	{
+		emit magicWord(Word::MATCH);
+		keyword_.clear();
+	}
 }

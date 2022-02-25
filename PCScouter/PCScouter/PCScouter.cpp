@@ -44,6 +44,7 @@
 #include "ZebraRegionEditor.h"
 #include "IntroView.h"
 #include "DataGenerator.h"
+#include "MatchScheduleGenerator.h"
 
 #include "USBServer.h"
 #include "TcpServer.h"
@@ -1625,6 +1626,16 @@ void PCScouter::magicWordTyped(SpecialListWidget::Word w)
 		{
 			QMessageBox::warning(this, "No Generator", "There is no data generator for the year '" + QString::number(year_) + "'");
 		}
+	}
+	else if (w == SpecialListWidget::Word::MATCH)
+	{
+		if (data_model_ == nullptr)
+			return;
+
+		MatchScheduleGenerator gen(data_model_, 34);
+		gen.generate();
+
+		view_frame_->needsRefreshAll();
 	}
 }
 
