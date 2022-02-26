@@ -86,10 +86,8 @@ void USBUnitTest::runClient()
 	QByteArray write;
 	write.fill(0x42, 64);
 
-	for(int i = 0 ; i < 100 ; i++) {
-		usb_client_transport_->run();
+	while (true) {
 		usb_client_transport_->write(write);
-		usb_client_transport_->run();
 		while (!usb_client_transport_->hasData()) {
 			QByteArray read = usb_client_transport_->readAll();
 		}
