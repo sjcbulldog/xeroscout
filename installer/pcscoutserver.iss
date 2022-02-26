@@ -5,13 +5,13 @@
 #define MyCoachName "XeroCoach"
 #define MyScoutName "XeroScout"
 #define MyViewerName "XeroView"
-#define MyAppVersion "0.4.3"
+#define MyAppVersion "0.5.0"
 #define MyAppPublisher "ErrorCodeXero"
 #define MyAppURL "http://www.wilsonvillerobotics.com/"
 #define MyAppExeName "PCScouter.exe"
 #define MyScoutAppExeName "PCScoutApp.exe"
 #define MyFormViewerExeName "PCFormViewer.exe"
-#define MyAppSourceDir "d:\cygwin64\home\bwg\robottools\xeroscout"
+#define MyAppSourceDir "c:\cygwin64\home\bwg\robottools\xeroscout"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.

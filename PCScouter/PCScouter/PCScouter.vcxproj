@@ -103,7 +103,7 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
       <AdditionalIncludeDirectories>$(SolutionDir)eigen;$(SolutionDir)ExprLib;$(SolutionDir)XeroUSBTransport;$(SolutionDir)ScoutViews;$(SolutionDir)PCScoutData;$(SolutionDir)BlueAllianceAPI;$(SolutionDir)ScoutTransport;$(Qt_INCLUDEPATH_);.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>

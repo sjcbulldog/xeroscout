@@ -84,7 +84,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)PCScoutData;$(SolutionDir)BlueAllianceAPI;$(Qt_INCLUDEPATH_);$(QtDir)\include\QtCharts;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>

@@ -62,7 +62,7 @@ namespace xero
 
 				static PCSCOUTDATA_EXPORT void jsonToPropMap(const QJsonObject& obj, const QString& alliance, xero::scouting::datamodel::ScoutingDataMapPtr map);
 
-				static PCSCOUTDATA_EXPORT std::shared_ptr<xero::scouting::datamodel::RobotTrack> DataModelBuilder::createTrack(
+				static PCSCOUTDATA_EXPORT std::shared_ptr<xero::scouting::datamodel::RobotTrack> createTrack(
 					std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model,
 					const QString& mkey, const QString& tkey);
 
@@ -76,7 +76,7 @@ namespace xero
 
 				static bool extractOneAlliance(const QJsonArray& arr, int index, std::shared_ptr<xero::scouting::datamodel::RobotTrack> track);
 
-				static void DataModelBuilder::getTimes(const QJsonArray& array, std::shared_ptr<RobotTrack> track);
+				static void getTimes(const QJsonArray& array, std::shared_ptr<RobotTrack> track);
 			};
 		}
 	}

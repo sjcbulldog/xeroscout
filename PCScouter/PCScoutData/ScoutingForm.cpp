@@ -31,12 +31,12 @@
 #include "ImageFormCountSubItem.h"
 #include "ImageFormOnOffSubItem.h"
 #include "ImageItemPublishInfo.h"
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QJsonParseError>
-#include <QTextCodec>
+#include <QtCore/QFile>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonParseError>
+#include <QtCore/QTextCodec>
 #include <vector>
 
 namespace xero
@@ -471,13 +471,13 @@ namespace xero
 				if (!obj.contains("minimum") || !obj.value("minimum").isDouble()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 						+ " type type 'timercnt' requires a double named 'minimum' as a field");
-					return false;
+					return nullptr;
 				}
 
 				if (!obj.contains("maximum") || !obj.value("maximum").isDouble()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 						+ " type type 'timercnt' requires a double named 'maximum' as a field");
-					return false;
+					return nullptr;
 				}
 
 				minv = obj.value("minimum").toInt();
@@ -495,13 +495,13 @@ namespace xero
 				if (!obj.contains("minimum") || !obj.value("minimum").isDouble()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 						+ " type type 'updown' requires a double named 'minimum' as a field");
-					return false;
+					return nullptr;
 				}
 
 				if (!obj.contains("maximum") || !obj.value("maximum").isDouble()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 						+ " type type 'updown' requires a double named 'maximum' as a field");
-					return false;
+					return nullptr;
 				}
 
 				minv = obj.value("minimum").toInt();
@@ -518,7 +518,7 @@ namespace xero
 				if (!obj.contains("choices") || !obj.value("choices").isArray()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 						+ " type type 'choices' requires an array named 'choices' as a field");
-					return false;
+					return nullptr;
 				}
 				QStringList choices;
 
@@ -527,7 +527,7 @@ namespace xero
 					if (!charr[i].isString()) {
 						errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 							+ " the 'choices' array must contain only strings");
-						return false;
+						return nullptr;
 					}
 
 					choices.push_back(charr[i].toString());
@@ -546,13 +546,13 @@ namespace xero
 				if (!obj.contains("minimum") || !obj.value("minimum").isDouble()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 						+ " type type 'numeric' requires a double named 'minimum' as a field");
-					return false;
+					return nullptr;
 				}
 
 				if (!obj.contains("maximum") || !obj.value("maximum").isDouble()) {
 					errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 						+ " type type 'numeric' requires a double named 'maximum' as a field");
-					return false;
+					return nullptr;
 				}
 
 				minv = obj.value("minimum").toInt();
@@ -689,13 +689,13 @@ namespace xero
 						if (!iobj.contains("minimum") || !iobj.value("minimum").isDouble()) {
 							errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 								+ " subtype item 'count' requires a double named 'minimum' as a field");
-							return false;
+							return nullptr;
 						}
 
 						if (!iobj.contains("maximum") || !iobj.value("maximum").isDouble()) {
 							errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 								+ " subtype item 'count' requires a double named 'maximum' as a field");
-							return false;
+							return nullptr;
 						}
 
 						minv = iobj.value("minimum").toInt();
