@@ -39,8 +39,15 @@ void USBUnitTest::clientConnected(ScoutTransport *trans)
 
 	while (running_) {
 		QByteArray arr = trans->readAll();
+		if (arr.size() == 0)
+			continue;
+
 		if (arr.size() != 64) {
 			std::cerr << "USBUnitTest: client: invalid data size, got " << arr.size() << ", expected 64" << std::endl;
+		}
+		else {
+			std::cout << "USBUnitTest: client: read 64 bytes" << std::endl;
+			trans->write(arr);
 		}
 	}
 }
