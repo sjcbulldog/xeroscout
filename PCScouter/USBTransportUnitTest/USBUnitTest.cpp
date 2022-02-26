@@ -32,6 +32,7 @@ void USBUnitTest::clientDisconnected()
 
 void USBUnitTest::clientConnected(ScoutTransport *trans)
 {
+	std::cout << "USBUnitTest: server: client connected" << std::endl;
 	running_ = true;
 	usb_server_transport_ = static_cast<USBTransport*>(trans);
 	(void)connect(trans, &ScoutTransport::transportDisconnected, this, &USBUnitTest::clientDisconnected);
@@ -47,8 +48,14 @@ void USBUnitTest::clientConnected(ScoutTransport *trans)
 void USBUnitTest::runServer() 
 {
 	usb_server_ = new USBServer(nullptr);
-
 	(void)connect(usb_server_, &ScoutServer::connected, this, &USBUnitTest::clientConnected);
+
+	std::cout << "USBUnitTest: server: waiting on connection from client" << std::endl;
+
+	while (true) {
+		usb_server_->run();
+		QCoreApplication::processEvents();
+	}
 }
 
 void USBUnitTest::runClient()
@@ -58,6 +65,9 @@ void USBUnitTest::runClient()
 	{
 		std::cerr << "USBUnitTest: client: trasnport initialization failed" << std::endl;
 		return;
+	}
+	else {
+		std::cout << "USBUnitTest: client: hardware " << usb_client_transport_->description().toStdString() << std::endl;
 	}
 
 	QByteArray write;
