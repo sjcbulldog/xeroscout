@@ -63,7 +63,7 @@ namespace xero
 
 			QString USBServer::hwinfo()
 			{
-				return QString(usb_->description().c_str());
+				return QString(QString::fromStdString(usb_->description()));
 			}
 
 			bool USBServer::init()
@@ -83,6 +83,7 @@ namespace xero
 			void USBServer::closing(USBTransport* trans)
 			{
 				assert(trans == active_child_);
+				assert(dead_child_ == nullptr);
 
 				dead_child_ = active_child_;
 				active_child_ = nullptr;

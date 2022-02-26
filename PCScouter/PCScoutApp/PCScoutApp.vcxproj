@@ -73,7 +73,7 @@
       <AdditionalDependencies>ScoutViews.lib;PCScoutData.lib;ScoutTransport.lib;$(Qt_LIBS_);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>c:\cygwin64\bin\bash incver.sh</Command>
+      <Command>d:\cygwin64\bin\bash incver.sh</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -96,7 +96,7 @@
       <AdditionalDependencies>ScoutViews.lib;PCScoutData.lib;ScoutTransport.lib;$(Qt_LIBS_);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>c:\cygwin64\bin\bash incver.sh</Command>
+      <Command>d:\cygwin64\bin\bash incver.sh</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
