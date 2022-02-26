@@ -95,7 +95,8 @@ void USBUnitTest::runClient()
 		for (int i = 0; i < size; i++) {
 			write[i] = contents(engine);
 		}
-		std::cout << "USBUnitTest: client: sending data packet " << which++ << std::endl;
+		std::cout << "USBUnitTest: client: sending data packet " << which++ << 
+			", length " << write.size() << std::endl;
 		usb_client_transport_->write(write);
 
 		do {
