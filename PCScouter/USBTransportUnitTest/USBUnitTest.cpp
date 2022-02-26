@@ -1,6 +1,7 @@
 #include "USBUnitTest.h"
 #include <QtCore/QCoreApplication>
 #include <iostream>
+#include <random>
 
 using namespace xero::scouting::transport;
 
@@ -32,6 +33,8 @@ void USBUnitTest::clientDisconnected()
 
 void USBUnitTest::clientConnected(ScoutTransport *trans)
 {
+	int which = 1;
+
 	std::cout << "USBUnitTest: server: client connected" << std::endl;
 	running_ = true;
 	usb_server_transport_ = static_cast<USBTransport*>(trans);
@@ -42,13 +45,9 @@ void USBUnitTest::clientConnected(ScoutTransport *trans)
 		if (arr.size() == 0)
 			continue;
 
-		if (arr.size() != 64) {
-			std::cerr << "USBUnitTest: client: invalid data size, got " << arr.size() << ", expected 64" << std::endl;
-		}
-		else {
-			std::cout << "USBUnitTest: client: read 64 bytes" << std::endl;
-			trans->write(arr);
-		}
+		std::cout << "USBUnitTest: server: received packet " << which++ << std::endl;
+
+		trans->write(arr);
 	}
 }
 
@@ -73,6 +72,10 @@ void USBUnitTest::runServer()
 
 void USBUnitTest::runClient()
 {
+	std::default_random_engine engine;
+	std::uniform_int_distribution<int> length(4, 512);
+	std::uniform_int_distribution<int> contents(0, 255);
+
 	usb_client_transport_ = new USBTransport();
 	if (!usb_client_transport_->init())
 	{
@@ -84,15 +87,30 @@ void USBUnitTest::runClient()
 	}
 
 	QByteArray write, read;
-	write.fill(0x42, 64);
+	int which = 1;
 
 	while (true) {
+		int size = length(engine);
+		write.resize(size);
+		for (int i = 0; i < size; i++) {
+			write[i] = contents(engine);
+		}
+		std::cout << "USBUnitTest: client: sending data packet " << which++ << std::endl;
 		usb_client_transport_->write(write);
 
 		do {
 			read = usb_client_transport_->readAll();
 		} while (read.size() == 0);
 
-		std::cout << "USBUnitTest: client: data read " << read.size() << std::endl;
+		if (read.size() != write.size()) {
+			std::cerr << "USBUnitTest: client: error, returned data length did not match, got " <<
+				read.size() << ", send " << write.size() << std::endl;
+		}
+		else {
+			// Sizes match, check contents
+			if (write != read) {
+				std::cerr << "USBUnitTest: client: error, returned data did not match" << std::endl;
+			}
+		}
 	}
 }
