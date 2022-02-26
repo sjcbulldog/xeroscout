@@ -31,6 +31,8 @@ void MatchScheduleGenerator::generate()
 			model_->addTeamToMatch(key, a, (j % 3) + 1, t->key(), team);
 		}
 	}
+
+	model_->assignMatches();
 }
 
 void MatchScheduleGenerator::createInitialSchedule()

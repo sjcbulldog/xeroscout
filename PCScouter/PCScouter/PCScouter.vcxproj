@@ -78,7 +78,7 @@ copy $(ProjectDir)fields\*.* $(OutDir)\fields
 copy $(ProjectDir)images\*.* $(OutDir)
 if not exist "$(OutDir)html" mkdir $(OutDir)html
 copy $(ProjectDir)html\*.* $(OutDir)\html
-$(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe
+$(QTDIR)\bin\windeployqt  --compiler-runtime --force --verbose 2 $(OutDir)$(ProjectName).exe
 copy $(QTDIR)\bin\Qt5Sql.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Sqld.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Charts.dll $(OutDir)
@@ -91,7 +91,7 @@ copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
 copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>D:\cygwin64\bin\bash incver.sh</Command>
+      <Command>C:\cygwin64\bin\bash incver.sh</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -119,7 +119,7 @@ copy $(ProjectDir)fields\*.* $(OutDir)\fields
 copy $(ProjectDir)images\*.* $(OutDir)
 if not exist "$(OutDir)html" mkdir $(OutDir)html
 copy $(ProjectDir)html\*.* $(OutDir)\html
-$(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe
+$(QTDIR)\bin\windeployqt  --compiler-runtime --force --verbose 2 $(OutDir)$(ProjectName).exe
 copy $(QTDIR)\bin\Qt5Sql.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Sqld.dll $(OutDir)
 copy $(QTDIR)\bin\Qt5Charts.dll $(OutDir)
@@ -132,7 +132,7 @@ copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
 copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>D:\cygwin64\bin\bash incver.sh</Command>
+      <Command>C:\cygwin64\bin\bash incver.sh</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
