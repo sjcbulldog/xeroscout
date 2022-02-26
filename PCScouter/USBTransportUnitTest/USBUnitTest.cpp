@@ -48,6 +48,11 @@ void USBUnitTest::clientConnected(ScoutTransport *trans)
 void USBUnitTest::runServer() 
 {
 	usb_server_ = new USBServer(nullptr);
+	if (!usb_server_->init()) 
+	{
+		std::cerr << "USBUnitTest: server: transport initialization failed" << std::endl;
+		return;
+	}
 	(void)connect(usb_server_, &ScoutServer::connected, this, &USBUnitTest::clientConnected);
 
 	std::cout << "USBUnitTest: server: hardware " << usb_server_->hwinfo().toStdString() << std::endl;
@@ -64,7 +69,7 @@ void USBUnitTest::runClient()
 	usb_client_transport_ = new USBTransport();
 	if (!usb_client_transport_->init())
 	{
-		std::cerr << "USBUnitTest: client: trasnport initialization failed" << std::endl;
+		std::cerr << "USBUnitTest: client: transport initialization failed" << std::endl;
 		return;
 	}
 	else {
