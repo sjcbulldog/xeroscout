@@ -90,6 +90,7 @@ void USBUnitTest::runClient()
 		usb_client_transport_->write(write);
 		while (!usb_client_transport_->hasData()) {
 			QByteArray read = usb_client_transport_->readAll();
+			std::cout << "USBUnitTest: client: data read " << read.size() << std::endl;
 		}
 	}
 }
