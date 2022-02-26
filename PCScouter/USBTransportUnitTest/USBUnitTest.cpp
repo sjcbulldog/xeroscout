@@ -50,6 +50,7 @@ void USBUnitTest::runServer()
 	usb_server_ = new USBServer(nullptr);
 	(void)connect(usb_server_, &ScoutServer::connected, this, &USBUnitTest::clientConnected);
 
+	std::cout << "USBUnitTest: server: hardware " << usb_server_->hwinfo().toStdString() << std::endl;
 	std::cout << "USBUnitTest: server: waiting on connection from client" << std::endl;
 
 	while (true) {
@@ -74,7 +75,9 @@ void USBUnitTest::runClient()
 	write.fill(0x42, 64);
 
 	for(int i = 0 ; i < 100 ; i++) {
+		usb_client_transport_->run();
 		usb_client_transport_->write(write);
+		usb_client_transport_->run();
 		while (!usb_client_transport_->hasData()) {
 			QByteArray read = usb_client_transport_->readAll();
 		}
