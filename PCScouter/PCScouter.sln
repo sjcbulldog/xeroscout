@@ -61,6 +61,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2020", "2020", "{0843666D-22F8-4FBD-8F3C-30ED7A2510A2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "USBTransportUnitTest", "USBTransportUnitTest\USBTransportUnitTest.vcxproj", "{FFF42926-5A9D-4761-A612-64E71A886BC3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F5D443D-FCDE-4C20-90F9-C68A57119021} = {4F5D443D-FCDE-4C20-90F9-C68A57119021}
+		{22BDD97F-6EEA-4D4F-A4E3-69EDB2D3A21F} = {22BDD97F-6EEA-4D4F-A4E3-69EDB2D3A21F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

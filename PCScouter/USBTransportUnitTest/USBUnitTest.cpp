@@ -83,14 +83,16 @@ void USBUnitTest::runClient()
 		std::cout << "USBUnitTest: client: hardware " << usb_client_transport_->description().toStdString() << std::endl;
 	}
 
-	QByteArray write;
+	QByteArray write, read;
 	write.fill(0x42, 64);
 
 	while (true) {
 		usb_client_transport_->write(write);
-		while (!usb_client_transport_->hasData()) {
-			QByteArray read = usb_client_transport_->readAll();
-			std::cout << "USBUnitTest: client: data read " << read.size() << std::endl;
-		}
+
+		do {
+			read = usb_client_transport_->readAll();
+		} while (read.size() == 0);
+
+		std::cout << "USBUnitTest: client: data read " << read.size() << std::endl;
 	}
 }
