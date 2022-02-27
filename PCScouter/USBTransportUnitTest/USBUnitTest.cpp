@@ -72,7 +72,7 @@ QByteArray USBUnitTest::readpacket(USBTransport *t)
 	QByteArray ret, temp;
 	int size = -1;
 
-	while (size < ret.size()) {
+	while (ret.size() < size ) {
 		do {
 			temp = t->readAll();
 		} while (temp.size() == 0);
