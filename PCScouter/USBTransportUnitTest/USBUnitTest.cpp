@@ -95,6 +95,7 @@ void USBUnitTest::runClient()
 		}
 
 		usb_client_transport_->write(write);
+		std::cout << "." << std::flush;
 
 		do {
 			read = usb_client_transport_->readAll();
