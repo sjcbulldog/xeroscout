@@ -23,6 +23,7 @@
 #include "USBTransport.h"
 #include "USBServer.h"
 #include <QDebug>
+#include <iostream>
 
 using namespace xero::device::usb;
 
@@ -169,6 +170,7 @@ namespace xero
 					data_to_write_ = data_to_write_.remove(0, remaining);
 				}
 
+				std::cout << "USBTransport writing " << last_data_.size() << " bytes" << std::endl;
 				write_time_ = std::chrono::high_resolution_clock::now();
 				waiting_handshake_ = true;
 				if (!usb_->send(last_data_))
@@ -201,7 +203,7 @@ namespace xero
 					}
 					else {
 						if (data.size() == 0)
-							continue;
+							break;
 
 						int b1 = (uint8_t)data[0];
 						int b2 = (uint8_t)data[1];
