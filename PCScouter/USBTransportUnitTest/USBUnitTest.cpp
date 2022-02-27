@@ -89,7 +89,6 @@ QByteArray USBUnitTest::readpacket(USBTransport *t)
 			size |= (b2 << 8);
 			size |= (b3 << 16);
 			size |= (b4 << 24);
-			assert(size >= 0 && size <= MaxPacketSize);
 		}
 	}
 
