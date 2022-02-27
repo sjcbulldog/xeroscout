@@ -43,7 +43,7 @@ void USBUnitTest::clientConnected(ScoutTransport *trans)
 	(void)connect(trans, &ScoutTransport::transportDisconnected, this, &USBUnitTest::clientDisconnected);
 
 	while (running_) {
-		QByteArray arr = readpacket();
+		QByteArray arr = readpacket(usb_server_transport_);
 		trans->write(arr);
 	}
 }
@@ -67,14 +67,14 @@ void USBUnitTest::runServer()
 	}
 }
 
-QByteArray USBUnitTest::readpacket()
+QByteArray USBUnitTest::readpacket(USBTransport *t)
 {
 	QByteArray ret, temp;
 	int size = -1;
 
 	while (size < ret.size()) {
 		do {
-			temp = usb_client_transport_->readAll();
+			temp = t->readAll();
 		} while (temp.size() == 0);
 
 		ret.append(temp);
@@ -120,7 +120,7 @@ void USBUnitTest::runClient()
 		std::cout << "[" << size << "]" << std::flush;
 		usb_client_transport_->write(write);
 
-		read = readpacket();
+		read = readpacket(usb_client_transport_);
 
 		if (read.size() != write.size()) {
 			std::cerr << "USBUnitTest: client: error, returned data length did not match, got " <<

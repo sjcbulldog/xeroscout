@@ -29,7 +29,7 @@ private:
 	void clientConnected(xero::scouting::transport::ScoutTransport* trans);
 	void clientDisconnected();
 
-	QByteArray readpacket();
+	QByteArray readpacket(xero::scouting::transport::USBTransport *t);
 
 	static constexpr const int MaxPacketSize = 32768;
 
