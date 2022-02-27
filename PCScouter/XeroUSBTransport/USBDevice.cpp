@@ -143,6 +143,9 @@ namespace xero
             {
                 UINT xfer;
 
+                if (!resetPipe(pipe))
+                    return false;
+
                 if (!UsbK_WritePipe(handle_, pipe, (PUCHAR)&data[0], (UINT)data.size(), &xfer, NULL)) {
                     std::cerr << "write failed" << std::endl;
                     return false;
@@ -160,6 +163,9 @@ namespace xero
 
                 if (len == 0)
                     len = buffer_.size();
+
+                if (!resetPipe(pipe))
+                    return false;
 
                 if (!UsbK_ReadPipe(handle_, pipe, (PUCHAR)&buffer_[0], (UINT)len, &xfer, NULL))
                 {
