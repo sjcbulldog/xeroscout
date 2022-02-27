@@ -172,7 +172,6 @@ namespace xero
                 if (data.size() > 0)
                     memcpy(&data[0], &buffer_[0], xfer);
 
-                std::cout << "read " << xfer << std::endl;
                 return true;
             }
         }
