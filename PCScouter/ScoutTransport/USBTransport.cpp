@@ -135,8 +135,10 @@ namespace xero
 				auto elapsed = std::chrono::high_resolution_clock::now() - write_time_;
 				auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
 
-				if (waiting_handshake_ && ms.count() > 1000)
+				if (waiting_handshake_ && ms.count() > 1000) {
 					usb_->reset();
+					usb_->send(last_data_);
+				}
 
 				while (!waiting_handshake_ && getWriteDataSize())
 				{
