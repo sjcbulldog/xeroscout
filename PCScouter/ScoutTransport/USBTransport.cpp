@@ -141,7 +141,7 @@ namespace xero
 			int USBTransport::writeDataBlock()
 			{
 				int remaining;
-				std::vector<uint8_t> d;
+				std::vector<uint8_t> d(512);
 
 				{
 					std::lock_guard<std::mutex> guard(write_mutex_);
@@ -149,7 +149,6 @@ namespace xero
 					if (remaining > USBDataSize)
 						remaining = USBDataSize;
 
-					d.resize(512);
 					memcpy(d.data() + USBHeaderSize, data_to_write_.data(), remaining);
 					d[0] = remaining & 0xFF;
 					d[1] = (remaining >> 8) & 0xFF;
@@ -168,8 +167,8 @@ namespace xero
 				{
 					std::lock_guard<std::mutex> guard(read_mutex_);
 					int oldsize = data_read_.size();
-					data_read_.resize(static_cast<int>(oldsize + data.size() - 2));
-					memcpy(data_read_.data() + oldsize, data.data() + 2, data.size() - 2);
+					data_read_.resize(static_cast<int>(oldsize + len);
+					memcpy(data_read_.data() + oldsize, data.data() + 2, len);
 				}
 			}
 
