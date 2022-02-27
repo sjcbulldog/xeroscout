@@ -33,6 +33,8 @@ namespace xero
         {
             USBDevice::USBDevice(int vid, int pid, int ba, int da)
             {
+                packet_no_ = 0;
+
                 pid_ = pid;
                 vid_ = vid;
                 ba_ = ba;
@@ -40,7 +42,7 @@ namespace xero
                 handle_ = NULL;
                 memset(&api_, 0, sizeof(api_));
 
-                buffer_.resize(512);
+                read_buffer_.resize(512);
             }
 
             USBDevice::~USBDevice()
@@ -139,39 +141,72 @@ namespace xero
                 return true;
             }
 
-            bool USBDevice::write(uint8_t pipe, const std::vector<uint8_t>& data)
+            bool USBDevice::write(uint8_t sendpipe, uint8_t recvpipe, const std::vector<uint8_t>& data)
             {
                 UINT xfer;
+                bool reading = true;
+                char rdbuf[4];
+                int sentpkt = packet_no_++;
 
-                if (!UsbK_WritePipe(handle_, pipe, (PUCHAR)&data[0], (UINT)data.size(), &xfer, NULL)) {
+                write_buffer_.resize(data.size() + 4);
+                memcpy(write_buffer_.data() + 4, data.data(), data.size());
+                *((int*)(write_buffer_.data())) = sentpkt;
+
+                if (!UsbK_WritePipe(handle_, sendpipe, (PUCHAR)&write_buffer_[0], (UINT)write_buffer_.size(), &xfer, NULL)) {
                     std::cerr << "write failed" << std::endl;
                     return false;
                 }
 
-                if (xfer != data.size())
+                if (xfer != write_buffer_.size())
                     return false;
 
-                std::cout << "wrote patcket length " << xfer << " error " << GetLastError() << std::endl;
+                while (reading) {
+                    if (!UsbK_ReadPipe(handle_, recvpipe, (PUCHAR)&rdbuf[0], (UINT)4, &xfer, NULL))
+                    {
+                        DWORD err = GetLastError();
+                        if (err != ERROR_SEM_TIMEOUT)
+                            return false;
+                    }
+
+                    if (xfer == 4) {
+                        int pkt = *(int*)(rdbuf);
+                        if (pkt != sentpkt)
+                            return false;
+                        break;
+                    }
+                    else if (xfer > 0)
+                    {
+                        return false;
+                    }
+                }
+
+
                 return true;
             }
 
-            bool USBDevice::read(uint8_t pipe, std::vector<uint8_t>& data, size_t len)
+            bool USBDevice::read(uint8_t sendpipe, uint8_t recvpipe, std::vector<uint8_t>& data, size_t len)
             {
                 UINT xfer;
+                char pkbuf[4];
 
                 if (len == 0)
-                    len = buffer_.size();
+                    len = read_buffer_.size();
 
-                if (!UsbK_ReadPipe(handle_, pipe, (PUCHAR)&buffer_[0], (UINT)len, &xfer, NULL))
+                if (!UsbK_ReadPipe(handle_, recvpipe, (PUCHAR)&read_buffer_[0], (UINT)len, &xfer, NULL))
                 {
                     DWORD err = GetLastError();
                     if (err != ERROR_SEM_TIMEOUT)
                         return false;
                 }
 
-                data.resize(xfer);
-                if (data.size() > 0)
-                    memcpy(&data[0], &buffer_[0], xfer);
+                data.resize(xfer - 4);
+                if (data.size() - 4 > 0)
+                    memcpy(&data[0], &read_buffer_[4], xfer);
+
+                *((int*)pkbuf) = *((int*)data.data());
+                if (!UsbK_WritePipe(handle_, sendpipe, (PUCHAR)pkbuf, (UINT)4, &xfer, NULL)) {
+                    return false;
+                }
 
                 return true;
             }

@@ -144,8 +144,8 @@ namespace xero
 				{
 					std::lock_guard<std::mutex> guard(write_mutex_);
 					remaining = data_to_write_.size();
-					if (remaining > 512)
-						remaining = 512;
+					if (remaining > MaxUSBPacketSize)
+						remaining = MaxUSBPacketSize;
 
 					d.resize(remaining);
 					memcpy(d.data(), data_to_write_.data(), remaining);

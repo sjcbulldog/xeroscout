@@ -44,8 +44,8 @@ namespace xero
 				}
 
 				bool init();
-				bool write(uint8_t pipe, const std::vector<uint8_t>& data);
-				bool read(uint8_t pipe, std::vector<uint8_t>& data, size_t len = 0);
+				bool write(uint8_t sendpipe, uint8_t recvpipe, const std::vector<uint8_t>& data);
+				bool read(uint8_t sendpipe, uint8_t recvpipe, std::vector<uint8_t>& data, size_t len = 0);
 				bool setTimeout(uint8_t pipe, int ms);
 				bool setShortPacketTerminate(uint8_t pipe, bool value);
 				bool setAutoClearStall(uint8_t pipe, bool value);
@@ -60,9 +60,12 @@ namespace xero
 				KUSB_DRIVER_API api_;
 				KUSB_HANDLE handle_;
 
-				std::vector<uint8_t> buffer_;
+				std::vector<uint8_t> read_buffer_;
+				std::vector<uint8_t> write_buffer_;
 
 				std::string desc_;
+
+				int packet_no_;
 			};
 		}
 	}

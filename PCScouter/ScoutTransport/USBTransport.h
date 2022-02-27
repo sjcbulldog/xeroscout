@@ -59,6 +59,8 @@ namespace xero
 					return error_;
 				}
 
+				static constexpr const int MaxUSBPacketSize = 504;
+
 			private:
 				void doWork();
 				void writeData();
