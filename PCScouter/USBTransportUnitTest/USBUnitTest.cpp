@@ -79,7 +79,14 @@ QByteArray USBUnitTest::readpacket(USBTransport *t)
 
 		ret.append(temp);
 		if (size == -1 && ret.size() > 4) {
-			size = ret[0] | (ret[1] >> 8) | (ret[2] >> 16) | (ret[3] >> 24);
+			int b1 = (uint8_t)ret[0];
+			int b2 = (uint8_t)ret[1];
+			int b3 = (uint8_t)ret[2];
+			int b4 = (uint8_t)ret[3];
+			size = b1;
+			size |= (b2 << 8);
+			size |= (b3 << 16);
+			size |= (b4 << 24);
 			assert(size >= 0 && size <= MaxPacketSize);
 		}
 	}
