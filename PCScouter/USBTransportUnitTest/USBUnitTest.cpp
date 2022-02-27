@@ -74,7 +74,7 @@ void USBUnitTest::runServer()
 void USBUnitTest::runClient()
 {
 	std::default_random_engine engine;
-	std::uniform_int_distribution<int> length(4, 504);
+	std::uniform_int_distribution<int> length(4, 512);
 	std::uniform_int_distribution<int> contents(0, 255);
 
 	usb_client_transport_ = new USBTransport();
@@ -102,7 +102,6 @@ void USBUnitTest::runClient()
 			", length " << write.size() << std::endl;
 
 		do {
-			usb_client_transport_->run();
 			read = usb_client_transport_->readAll();
 		} while (read.size() == 0);
 

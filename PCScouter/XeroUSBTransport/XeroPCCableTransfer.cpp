@@ -111,13 +111,13 @@ namespace xero
 			bool XeroPCCableTransfer::send(const std::vector<uint8_t>& data)
 			{
 				USBDevice* dev = reinterpret_cast<USBDevice*>(dev_);
-				return dev->write(sendPipe, recvPipe, data);
+				return dev->write(sendPipe, data);
 			}
 
 			bool XeroPCCableTransfer::receive(std::vector<uint8_t>& data)
 			{
 				USBDevice* dev = reinterpret_cast<USBDevice*>(dev_);
-				return dev->read(sendPipe, recvPipe, data);
+				return dev->read(recvPipe, data);
 			}
 
 
