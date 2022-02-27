@@ -132,21 +132,18 @@ namespace xero
 			{
 				int count;
 
+				auto elapsed = std::chrono::high_resolution_clock::now() - write_time_;
+				auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
 
-				while (getWriteDataSize() > 0)
+				if (waiting_handshake_ && ms.count() > 1000)
+					usb_->reset();
+
+				while (!waiting_handshake_ && getWriteDataSize())
 				{
-					auto elapsed = std::chrono::high_resolution_clock::now() - write_time_;
-					auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
-
-					if (waiting_handshake_ &&  ms.count() > 1000) {
-						usb_->reset();
-					}
-					else if (!waiting_handshake_) {
-						count = writeDataBlock();
-						if (count == -1) {
-							error_ = true;
-							break;
-						}
+					count = writeDataBlock();
+					if (count == -1) {
+						error_ = true;
+						break;
 					}
 				}
 			}
