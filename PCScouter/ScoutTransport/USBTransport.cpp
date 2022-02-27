@@ -109,6 +109,7 @@ namespace xero
 			{
 				std::lock_guard<std::mutex> guard(init_mutex_);
 				inited_ = usb_->init();
+				usb_->reset();
 				return inited_;
 			}
 
