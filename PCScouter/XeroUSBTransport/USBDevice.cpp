@@ -143,7 +143,6 @@ namespace xero
             {
                 UINT xfer;
 
-                UsbK_ResetPipe(handle_, pipe);
                 if (!UsbK_WritePipe(handle_, pipe, (PUCHAR)&data[0], (UINT)data.size(), &xfer, NULL))
                     return false;
 
@@ -160,7 +159,6 @@ namespace xero
                 if (len == 0)
                     len = buffer_.size();
 
-                UsbK_ResetPipe(handle_, pipe);
                 if (!UsbK_ReadPipe(handle_, pipe, (PUCHAR)&buffer_[0], (UINT)len, &xfer, NULL))
                 {
                     DWORD err = GetLastError();
