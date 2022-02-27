@@ -199,6 +199,9 @@ namespace xero
                         return false;
                 }
 
+                if (data.size() == 0)
+                    return true;
+
                 data.resize(xfer - 4);
                 if (data.size() - 4 > 0)
                     memcpy(&data[0], &read_buffer_[4], xfer);
