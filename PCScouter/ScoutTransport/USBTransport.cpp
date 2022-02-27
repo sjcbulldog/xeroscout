@@ -209,9 +209,11 @@ namespace xero
 						int b2 = (uint8_t)data[1];
 						int len = b1 | (b2 << 8);
 
-						b1 = (uint8_t)data[0];
-						b2 = (uint8_t)data[1];
+						b1 = (uint8_t)data[2];
+						b2 = (uint8_t)data[3];
 						int magic = b1 | (b2 << 8);
+
+						std::cout << "read data, raw length " << len << ", magic " << magic << std::endl;
 						
 						if (magic == 0x8888) {
 							appendReadData(data, len);
