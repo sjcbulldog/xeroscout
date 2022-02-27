@@ -43,10 +43,7 @@ void USBUnitTest::clientConnected(ScoutTransport *trans)
 	(void)connect(trans, &ScoutTransport::transportDisconnected, this, &USBUnitTest::clientDisconnected);
 
 	while (running_) {
-		QByteArray arr = trans->readAll();
-		if (arr.size() == 0)
-			continue;
-
+		QByteArray arr = readpacket();
 		trans->write(arr);
 	}
 }
