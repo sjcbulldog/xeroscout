@@ -139,9 +139,6 @@ void USBUnitTest::runClient()
 			if (write != read) {
 				std::cerr << "USBUnitTest: client: error, returned data did not match" << std::endl;
 			}
-			else {
-				std::cout << "USBUnitTest: client: received return packet " << read.size() << std::endl;
-			}
 		}
 	}
 }
