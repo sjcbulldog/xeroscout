@@ -42,6 +42,7 @@ namespace xero
 				thread_ = std::thread(&USBTransport::doWork, this);
 				packet_no_ = 0;
 				waiting_handshake_ = false;
+				last_data_.resize(512);
 			}
 
 			USBTransport::USBTransport(USBServer *server, xero::device::usb::XeroPCCableTransfer* dev)
@@ -130,12 +131,21 @@ namespace xero
 			{
 				int count;
 
-				while (getWriteDataSize() > 0 && !waiting_handshake_)
+
+				while (getWriteDataSize() > 0)
 				{
-					count = writeDataBlock();
-					if (count == -1) {
-						error_ = true;
-						break;
+					auto elapsed = std::chrono::high_resolution_clock::now() - write_time_;
+					auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
+
+					if (waiting_handshake_ &&  ms.count() > 1000) {
+						usb_->reset();
+					}
+					else if (!waiting_handshake_) {
+						count = writeDataBlock();
+						if (count == -1) {
+							error_ = true;
+							break;
+						}
 					}
 				}
 			}
@@ -143,7 +153,6 @@ namespace xero
 			int USBTransport::writeDataBlock()
 			{
 				int remaining;
-				std::vector<uint8_t> d(512);
 
 				{
 					std::lock_guard<std::mutex> guard(write_mutex_);
@@ -151,18 +160,19 @@ namespace xero
 					if (remaining > USBDataSize)
 						remaining = USBDataSize;
 
-					memcpy(d.data() + USBHeaderSize, data_to_write_.data(), remaining);
-					d[0] = remaining & 0xFF;
-					d[1] = (remaining >> 8) & 0xFF;
-					d[2] = 0x88;
-					d[3] = 0x88;
+					memcpy(last_data_.data() + USBHeaderSize, data_to_write_.data(), remaining);
+					last_data_[0] = remaining & 0xFF;
+					last_data_[1] = (remaining >> 8) & 0xFF;
+					last_data_[2] = 0x88;
+					last_data_[3] = 0x88;
 					data_to_write_ = data_to_write_.remove(0, remaining);
 				}
 
 				waiting_handshake_ = true;
-				if (!usb_->send(d))
+				if (!usb_->send(last_data_))
 					return -1;
 
+				write_time_ = std::chrono::high_resolution_clock::now();
 				return remaining;
 			}
 

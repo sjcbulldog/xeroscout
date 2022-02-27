@@ -90,6 +90,8 @@ namespace xero
 				bool waiting_handshake_;
 
 				int packet_no_;
+				std::chrono::high_resolution_clock::time_point write_time_;
+				std::vector<uint8_t> last_data_;
 
 				xero::device::usb::XeroPCCableTransfer* usb_;
 				USBServer* server_;

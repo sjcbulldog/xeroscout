@@ -120,6 +120,20 @@ namespace xero
 				return dev->read(recvPipe, data);
 			}
 
+			bool XeroPCCableTransfer::reset()
+			{
+				USBDevice* dev = reinterpret_cast<USBDevice*>(dev_);
+				if (!dev->abortPipe(sendPipe))
+					return false;
+				if (!dev->resetPipe(sendPipe))
+					return false;
+				if (!dev->abortPipe(recvPipe))
+					return false;
+				if (!dev->resetPipe(recvPipe))
+					return false;
+
+				return true;
+			}
 
 			const std::string& XeroPCCableTransfer::description()
 			{

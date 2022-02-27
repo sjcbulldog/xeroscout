@@ -50,6 +50,8 @@ namespace xero
 				bool send(const std::vector<uint8_t>& data);
 				bool receive(std::vector<uint8_t>& data);
 
+				bool reset();
+
 				const std::string& description();
 
 			private:

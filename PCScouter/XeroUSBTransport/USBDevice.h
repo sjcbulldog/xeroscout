@@ -52,6 +52,7 @@ namespace xero
 				bool resetPipe(uint8_t pipe);
 				bool abortPipe(uint8_t pipe);
 
+
 			private:
 				int pid_;
 				int vid_;
