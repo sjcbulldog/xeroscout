@@ -45,10 +45,7 @@ void USBUnitTest::clientConnected(ScoutTransport *trans)
 		if (arr.size() == 0)
 			continue;
 
-		std::cout << "USBUnitTest: server: received packet " << which++ << std::endl;
-
 		trans->write(arr);
-		std::cout << "USBUnitTest: server: wrote packet " << arr.size() << std::endl;
 	}
 }
 
@@ -98,8 +95,6 @@ void USBUnitTest::runClient()
 		}
 
 		usb_client_transport_->write(write);
-		std::cout << "USBUnitTest: client: sent data packet " << which++ <<
-			", length " << write.size() << std::endl;
 
 		do {
 			read = usb_client_transport_->readAll();
