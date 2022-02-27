@@ -40,6 +40,7 @@ namespace xero
 				running_ = true;
 				inited_ = false;
 				thread_ = std::thread(&USBTransport::doWork, this);
+				packet_no_ = 0;
 			}
 
 			USBTransport::USBTransport(USBServer *server, xero::device::usb::XeroPCCableTransfer* dev)
@@ -50,6 +51,7 @@ namespace xero
 				running_ = true;
 				inited_ = true;
 				thread_ = std::thread(&USBTransport::doWork, this);
+				packet_no_ = 0;
 			}
 
 			USBTransport::~USBTransport()
@@ -144,11 +146,13 @@ namespace xero
 				{
 					std::lock_guard<std::mutex> guard(write_mutex_);
 					remaining = data_to_write_.size();
-					if (remaining > 512)
-						remaining = 512;
+					if (remaining > USBDataSize)
+						remaining = USBDataSize;
 
-					d.resize(remaining);
-					memcpy(d.data(), data_to_write_.data(), remaining);
+					d.resize(512);
+					memcpy(d.data() + USBHeaderSize, data_to_write_.data(), remaining);
+					d[0] = remaining & 0xFF;
+					d[1] = (remaining >> 8) & 0xFF;
 					data_to_write_ = data_to_write_.remove(0, remaining);
 				}
 
@@ -158,14 +162,14 @@ namespace xero
 				return remaining;
 			}
 
-			void USBTransport::appendReadData(const std::vector<uint8_t>& data)
+			void USBTransport::appendReadData(const std::vector<uint8_t>& data, int len)
 			{
 				if (data.size() > 0)
 				{
 					std::lock_guard<std::mutex> guard(read_mutex_);
 					int oldsize = data_read_.size();
-					data_read_.resize(static_cast<int>(oldsize + data.size()));
-					memcpy(data_read_.data() + oldsize, data.data(), data.size());
+					data_read_.resize(static_cast<int>(oldsize + data.size() - 2));
+					memcpy(data_read_.data() + oldsize, data.data() + 2, data.size() - 2);
 				}
 			}
 
@@ -181,10 +185,12 @@ namespace xero
 						break;
 					}
 					else {
-						if (data.size() == 0)
+						if (data.size() < 2)
 							break;
 
-						appendReadData(data);
+						int len = data[0] | (data[1] << 8);
+						
+						appendReadData(data, len);
 					}
 				}
 			}

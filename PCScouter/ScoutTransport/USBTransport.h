@@ -64,11 +64,14 @@ namespace xero
 				void writeData();
 				void readData();
 
-				void appendReadData(const std::vector<uint8_t>& data);
+				void appendReadData(const std::vector<uint8_t>& data, int len);
 				int writeDataBlock();
 
 				int getWriteDataSize();
 				int getReadDataSize();
+
+				static constexpr const int USBDataSize = 510;
+				static constexpr const int USBHeaderSize = 2;
 
 			private:
 				std::thread thread_;
@@ -85,6 +88,8 @@ namespace xero
 				bool error_;
 				bool debug_;
 				bool inited_;
+
+				int packet_no_;
 
 				xero::device::usb::XeroPCCableTransfer* usb_;
 				USBServer* server_;
