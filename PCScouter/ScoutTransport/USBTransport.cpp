@@ -170,7 +170,6 @@ namespace xero
 					data_to_write_ = data_to_write_.remove(0, remaining);
 				}
 
-				std::cout << "USBTransport writing " << last_data_.size() << " bytes" << std::endl;
 				write_time_ = std::chrono::high_resolution_clock::now();
 				waiting_handshake_ = true;
 				if (!usb_->send(last_data_))
