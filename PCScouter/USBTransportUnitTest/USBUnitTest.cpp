@@ -117,8 +117,6 @@ void USBUnitTest::runClient()
 
 	while (true) {
 		int size = length(engine);
-		size = 535;
-
 		write.resize(size);
 		for (int i = 4; i < size; i++) {
 			write[0] = (size & 0xff);
