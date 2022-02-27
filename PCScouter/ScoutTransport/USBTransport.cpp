@@ -55,6 +55,7 @@ namespace xero
 				thread_ = std::thread(&USBTransport::doWork, this);
 				packet_no_ = 0;
 				waiting_handshake_ = false;
+				last_data_.resize(512);
 			}
 
 			USBTransport::~USBTransport()
