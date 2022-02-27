@@ -48,6 +48,7 @@ void USBUnitTest::clientConnected(ScoutTransport *trans)
 		std::cout << "USBUnitTest: server: received packet " << which++ << std::endl;
 
 		trans->write(arr);
+		std::cout << "USBUnitTest: server: wrote packet " << arr.size() << std::endl;
 	}
 }
 
@@ -95,9 +96,10 @@ void USBUnitTest::runClient()
 		for (int i = 0; i < size; i++) {
 			write[i] = contents(engine);
 		}
-		std::cout << "USBUnitTest: client: sending data packet " << which++ << 
-			", length " << write.size() << std::endl;
+
 		usb_client_transport_->write(write);
+		std::cout << "USBUnitTest: client: sent data packet " << which++ <<
+			", length " << write.size() << std::endl;
 
 		do {
 			read = usb_client_transport_->readAll();
@@ -111,6 +113,9 @@ void USBUnitTest::runClient()
 			// Sizes match, check contents
 			if (write != read) {
 				std::cerr << "USBUnitTest: client: error, returned data did not match" << std::endl;
+			}
+			else {
+				std::cout << "USBUnitTest: client: received return packet " << read.size() << std::endl;
 			}
 		}
 	}
