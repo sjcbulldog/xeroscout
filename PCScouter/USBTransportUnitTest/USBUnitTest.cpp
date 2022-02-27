@@ -43,7 +43,7 @@ void USBUnitTest::clientConnected(ScoutTransport *trans)
 	(void)connect(trans, &ScoutTransport::transportDisconnected, this, &USBUnitTest::clientDisconnected);
 
 	while (running_) {
-		QByteArray arr = readpacket(usb_server_transport_);
+ 		QByteArray arr = readpacket(usb_server_transport_);
 		trans->write(arr);
 	}
 }
@@ -72,7 +72,7 @@ QByteArray USBUnitTest::readpacket(USBTransport *t)
 	QByteArray ret, temp;
 	int size = -1;
 
-	while (ret.size() < size ) {
+	while (size == -1 || ret.size() < size ) {
 		do {
 			temp = t->readAll();
 		} while (temp.size() == 0);
