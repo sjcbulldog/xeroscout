@@ -128,7 +128,7 @@ namespace xero
 			{
 				int count;
 
-				while (getWriteDataSize() > 0)
+				while (getWriteDataSize() > 0 && !waiting_handshake_)
 				{
 					count = writeDataBlock();
 					if (count == -1) {
@@ -152,9 +152,12 @@ namespace xero
 					memcpy(d.data() + USBHeaderSize, data_to_write_.data(), remaining);
 					d[0] = remaining & 0xFF;
 					d[1] = (remaining >> 8) & 0xFF;
+					d[2] = 0x88;
+					d[3] = 0x88;
 					data_to_write_ = data_to_write_.remove(0, remaining);
 				}
 
+				waiting_handshake_ = true;
 				if (!usb_->send(d))
 					return -1;
 
@@ -184,12 +187,25 @@ namespace xero
 						break;
 					}
 					else {
-						if (data.size() < 2)
+						if (data.size() < USBHeaderSize)
 							break;
 
 						int len = data[0] | (data[1] << 8);
+						int magic = data[2] | (data[3] << 8);
 						
-						appendReadData(data, len);
+						if (magic == 0x8888) {
+							appendReadData(data, len);
+
+							data.resize(4);
+							data[0] = 0;
+							data[1] = 0;
+							data[2] = 0x11;
+							data[3] = 0x11;
+							usb_->send(data);
+						}
+						else if (magic == 0x1111) {
+							waiting_handshake_ = false;
+						}
 					}
 				}
 			}

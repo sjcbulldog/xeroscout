@@ -70,8 +70,8 @@ namespace xero
 				int getWriteDataSize();
 				int getReadDataSize();
 
-				static constexpr const int USBDataSize = 510;
-				static constexpr const int USBHeaderSize = 2;
+				static constexpr const int USBDataSize = 508;
+				static constexpr const int USBHeaderSize = 4;
 
 			private:
 				std::thread thread_;
@@ -84,10 +84,10 @@ namespace xero
 				QByteArray data_to_write_;
 
 				bool running_;
-				bool data_flowing_;
 				bool error_;
 				bool debug_;
 				bool inited_;
+				bool waiting_handshake_;
 
 				int packet_no_;
 
