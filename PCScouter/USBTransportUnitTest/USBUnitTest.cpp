@@ -102,6 +102,7 @@ void USBUnitTest::runClient()
 			", length " << write.size() << std::endl;
 
 		do {
+			usb_client_transport_->run();
 			read = usb_client_transport_->readAll();
 		} while (read.size() == 0);
 
