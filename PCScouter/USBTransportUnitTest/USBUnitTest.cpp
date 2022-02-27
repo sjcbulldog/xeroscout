@@ -10,6 +10,8 @@ USBUnitTest::USBUnitTest(QObject *parent) : QObject(parent)
 	server_ = false;
 	usb_server_ = nullptr;
 	running_ = false;
+	usb_client_transport_ = nullptr;
+	usb_server_transport_ = nullptr;
 }
 
 USBUnitTest::~USBUnitTest()
@@ -68,10 +70,30 @@ void USBUnitTest::runServer()
 	}
 }
 
+QByteArray USBUnitTest::readpacket()
+{
+	QByteArray ret, temp;
+	int size = -1;
+
+	while (size < ret.size()) {
+		do {
+			temp = usb_client_transport_->readAll();
+		} while (temp.size() == 0);
+
+		ret.append(temp);
+		if (size == -1 && ret.size() > 4) {
+			size = ret[0] | (ret[1] >> 8) | (ret[2] >> 16) | (ret[3] >> 24);
+			assert(size >= 0 && size <= MaxPacketSize);
+		}
+	}
+
+	return ret;
+}
+
 void USBUnitTest::runClient()
 {
 	std::default_random_engine engine;
-	std::uniform_int_distribution<int> length(4, 508);
+	std::uniform_int_distribution<int> length(4, MaxPacketSize);
 	std::uniform_int_distribution<int> contents(0, 255);
 
 	usb_client_transport_ = new USBTransport();
@@ -84,22 +106,24 @@ void USBUnitTest::runClient()
 		std::cout << "USBUnitTest: client: hardware " << usb_client_transport_->description().toStdString() << std::endl;
 	}
 
-	QByteArray write, read;
+	QByteArray write, temp, read;
 	int which = 1;
 
 	while (true) {
 		int size = length(engine);
 		write.resize(size);
-		for (int i = 0; i < size; i++) {
+		for (int i = 4; i < size; i++) {
+			write[0] = (size & 0xff);
+			write[1] = (size >> 8) & 0xff;
+			write[2] = (size >> 16) & 0xff;
+			write[3] = (size >> 24) & 0xff;
 			write[i] = contents(engine);
 		}
 
+		std::cout << "[" << size << "]" << std::flush;
 		usb_client_transport_->write(write);
-		std::cout << "." << std::flush;
 
-		do {
-			read = usb_client_transport_->readAll();
-		} while (read.size() == 0);
+		read = readpacket();
 
 		if (read.size() != write.size()) {
 			std::cerr << "USBUnitTest: client: error, returned data length did not match, got " <<
