@@ -77,6 +77,8 @@ QByteArray USBUnitTest::readpacket(USBTransport *t)
 			temp = t->readAll();
 		} while (temp.size() == 0);
 
+		std::cout << "Read USB data " << temp.size() << " bytes" << std::endl;
+
 		ret.append(temp);
 		if (size == -1 && ret.size() > 4) {
 			int b1 = (uint8_t)ret[0];

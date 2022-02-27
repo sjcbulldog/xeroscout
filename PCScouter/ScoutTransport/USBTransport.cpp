@@ -136,7 +136,7 @@ namespace xero
 				auto elapsed = std::chrono::high_resolution_clock::now() - write_time_;
 				auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
 
-				if (waiting_handshake_ && ms.count() > 1000) {
+				if (waiting_handshake_ && ms.count() > 500) {
 					usb_->reset();
 					usb_->send(last_data_);
 				}
@@ -169,11 +169,11 @@ namespace xero
 					data_to_write_ = data_to_write_.remove(0, remaining);
 				}
 
+				write_time_ = std::chrono::high_resolution_clock::now();
 				waiting_handshake_ = true;
 				if (!usb_->send(last_data_))
 					return -1;
 
-				write_time_ = std::chrono::high_resolution_clock::now();
 				return remaining;
 			}
 
@@ -200,11 +200,16 @@ namespace xero
 						break;
 					}
 					else {
-						if (data.size() < USBHeaderSize)
-							break;
+						if (data.size() == 0)
+							continue;
 
-						int len = data[0] | (data[1] << 8);
-						int magic = data[2] | (data[3] << 8);
+						int b1 = (uint8_t)data[0];
+						int b2 = (uint8_t)data[1];
+						int len = b1 | (b2 << 8);
+
+						b1 = (uint8_t)data[0];
+						b2 = (uint8_t)data[1];
+						int magic = b1 | (b2 << 8);
 						
 						if (magic == 0x8888) {
 							appendReadData(data, len);
