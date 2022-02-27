@@ -41,6 +41,7 @@ namespace xero
 				inited_ = false;
 				thread_ = std::thread(&USBTransport::doWork, this);
 				packet_no_ = 0;
+				waiting_handshake_ = false;
 			}
 
 			USBTransport::USBTransport(USBServer *server, xero::device::usb::XeroPCCableTransfer* dev)
@@ -52,6 +53,7 @@ namespace xero
 				inited_ = true;
 				thread_ = std::thread(&USBTransport::doWork, this);
 				packet_no_ = 0;
+				waiting_handshake_ = false;
 			}
 
 			USBTransport::~USBTransport()
