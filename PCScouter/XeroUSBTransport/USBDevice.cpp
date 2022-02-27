@@ -151,7 +151,6 @@ namespace xero
                 if (xfer != data.size())
                     return false;
 
-                std::cout << "wrote patcket length " << xfer << " error " << GetLastError() << std::endl;
                 return true;
             }
 
