@@ -351,7 +351,7 @@ void ClientProtocolHandler::handleTabletIDSync(const QJsonObject&obj)
 	emit tabletAttached(identity_);
 	emit displayLogMessage("Sending 'core' data to tablet ...");
 
-	if (obj.contains(JsonCompressionName) && replyobj.value(JsonCompressionName).isDouble())
+	if (obj.contains(JsonCompressionName) && obj.value(JsonCompressionName).isDouble())
 	{
 		comp_type_ = obj.value(JsonCompressionName).toInt();
 	}
