@@ -44,6 +44,7 @@ namespace xero
 				packet_no_ = 0;
 				waiting_handshake_ = false;
 				last_data_.resize(512);
+				syncing_ = false;
 			}
 
 			USBTransport::USBTransport(USBServer *server, xero::device::usb::XeroPCCableTransfer* dev)
@@ -57,6 +58,7 @@ namespace xero
 				packet_no_ = 0;
 				waiting_handshake_ = false;
 				last_data_.resize(512);
+				syncing_ = false;
 			}
 
 			USBTransport::~USBTransport()
@@ -109,9 +111,20 @@ namespace xero
 			bool USBTransport::init()
 			{
 				std::lock_guard<std::mutex> guard(init_mutex_);
-				inited_ = usb_->init();
 				usb_->reset();
+
 				return inited_;
+			}
+
+			bool USBTransport::reset()
+			{
+				usb_->reset();
+				return true;
+			}
+
+			void USBTransport::syncTwoEnds()
+			{
+				syncing_ = true;
 			}
 
 			void USBTransport::doWork()
@@ -135,7 +148,7 @@ namespace xero
 				auto elapsed = std::chrono::high_resolution_clock::now() - write_time_;
 				auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed);
 
-				if (waiting_handshake_ && ms.count() > 500) {
+				if (waiting_handshake_ && ms.count() > 2000) {
 					usb_->reset();
 					usb_->send(last_data_);
 				}
@@ -149,6 +162,7 @@ namespace xero
 					}
 				}
 			}
+
 
 			int USBTransport::writeDataBlock()
 			{

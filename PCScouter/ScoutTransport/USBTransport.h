@@ -45,6 +45,7 @@ namespace xero
 				virtual ~USBTransport();
 
 				bool init() override ;
+				bool reset();
 				bool write(const QByteArray& data) override;
 				QByteArray readAll() override;
 				void flush() override;
@@ -70,6 +71,8 @@ namespace xero
 				int getWriteDataSize();
 				int getReadDataSize();
 
+				void syncTwoEnds();
+
 				static constexpr const int USBDataSize = 508;
 				static constexpr const int USBHeaderSize = 4;
 
@@ -88,6 +91,7 @@ namespace xero
 				bool debug_;
 				bool inited_;
 				bool waiting_handshake_;
+				bool syncing_;
 
 				int packet_no_;
 				std::chrono::high_resolution_clock::time_point write_time_;

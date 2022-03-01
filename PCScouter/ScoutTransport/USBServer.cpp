@@ -38,6 +38,7 @@ namespace xero
 				active_child_ = nullptr;
 				future_child_ = nullptr;
 				dead_child_ = nullptr;
+				inited_ = false;
 			}
 
 			USBServer::~USBServer()
@@ -76,6 +77,7 @@ namespace xero
 					return false;
 
 				future_child_ = new USBTransport(this, usb_);
+				future_child_->reset();
 
 				return true;
 			}
@@ -88,6 +90,7 @@ namespace xero
 				dead_child_ = active_child_;
 				active_child_ = nullptr;
 				future_child_ = new USBTransport(this, usb_);
+				future_child_->init();
 			}
 
 			void USBServer::run()
