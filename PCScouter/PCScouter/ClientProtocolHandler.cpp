@@ -54,6 +54,7 @@ ClientProtocolHandler::ClientProtocolHandler(ScoutTransport* s, xero::scouting::
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestScoutingData, std::bind(&ClientProtocolHandler::handleScoutingRequest, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::SyncDone, std::bind(&ClientProtocolHandler::handleSyncDone, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestImageData, std::bind(&ClientProtocolHandler::handleImageRequest, this, std::placeholders::_1)));
+	handlers_.insert(std::make_pair(ClientServerProtocol::RequestNextImageData, std::bind(&ClientProtocolHandler::handleNextImagePacketRequest, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestMatchDetailData, std::bind(&ClientProtocolHandler::handleMatchDetailDataRequest, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::RequestZebraData, std::bind(&ClientProtocolHandler::handleZebraDataRequest, this, std::placeholders::_1)));
 	handlers_.insert(std::make_pair(ClientServerProtocol::CompleteButListening, std::bind(&ClientProtocolHandler::handleCompleteButListening, this, std::placeholders::_1)));
@@ -101,6 +102,48 @@ void ClientProtocolHandler::handleUnxpectedPacket(const QJsonDocument& doc)
 	emit errorMessage("protocol error - unexpected packet received");
 }
 
+void ClientProtocolHandler::handleNextImagePacketRequest(const QJsonDocument& doc)
+{
+	QJsonDocument reply;
+	QJsonObject obj;
+	QJsonObject replyobj;
+
+	if (!doc.isObject())
+	{
+		emit errorMessage("protocol error - TabletID packet should have contained JSON object");
+		return;
+	}
+
+	obj = doc.object();
+	if (!obj.contains(JsonImageName) || !obj.value(JsonImageName).isString())
+	{
+		emit errorMessage("protocol error - JSON image name is missing");
+		return;
+	}
+
+	QString imname = obj.value(JsonImageName).toString();
+	if (imname != image_name_) 
+	{
+		emit errorMessage("protocol error - JSON image name is mismatched between first packet and subsequent packets");
+		return;
+	}
+
+	replyobj[JsonImageName] = imname;
+
+	if (image_data_str_ > 16384) {
+		replyobj[JsonImageDataName] = image_data_str_.left(16384);
+		image_data_str_ = image_data_str_.mid(16384);
+		replyobj[JsonImageDataStatus] = "more";
+	}
+	else {
+		replyobj[JsonImageDataName];
+		replyobj[JsonImageDataStatus] = "done";
+	}
+
+	reply.setObject(replyobj);
+	client_->sendJson(ClientServerProtocol::ProvideImageData, reply, comp_type_);
+}
+
 void ClientProtocolHandler::handleImageRequest(const QJsonDocument& doc)
 {
 	QJsonDocument reply;
@@ -121,7 +164,7 @@ void ClientProtocolHandler::handleImageRequest(const QJsonDocument& doc)
 	}
 
 	QString imname = obj.value(JsonImageName).toString();
-	auto image = images_.get(imname);
+	std::shared_ptr<QImage> image = images_.get(imname);
 
 	if (image == nullptr)
 	{
@@ -131,13 +174,26 @@ void ClientProtocolHandler::handleImageRequest(const QJsonDocument& doc)
 	}
 	else
 	{
-		QByteArray ba;
-		QBuffer buffer(&ba);
+		QByteArray data;
+		QBuffer buffer(&data);
 		image->save(&buffer, "PNG");
 
-		QByteArray a = ba.toBase64();
+		QByteArray b64 = data.toBase64();
+		image_data_str_ = QTextCodec::codecForMib(106)->toUnicode(b64);
+		image_name_ = imname;
+
 		replyobj[JsonImageName] = imname;
-		replyobj[JsonImageDataName] = QTextCodec::codecForMib(106)->toUnicode(a);
+
+		if (image_data_str_ > 16384) {
+			replyobj[JsonImageDataName] = image_data_str_.left(16384);
+			image_data_str_ = image_data_str_.mid(16384);
+			replyobj[JsonImageDataStatus] = "more";
+		}
+		else {
+			replyobj[JsonImageDataName];
+			replyobj[JsonImageDataStatus] = "done";
+		}
+
 		reply.setObject(replyobj);
 		client_->sendJson(ClientServerProtocol::ProvideImageData, reply, comp_type_);
 	}

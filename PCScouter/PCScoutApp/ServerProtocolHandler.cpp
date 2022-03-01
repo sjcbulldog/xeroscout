@@ -253,6 +253,16 @@ void ServerProtocolHandler::handleTabletList(const QJsonDocument& doc)
 	}
 }
 
+void ServerProtocolHandler::requestNextImagePart(const QString& imname)
+{
+	QJsonObject obj;
+	QJsonDocument doc;
+
+	obj[JsonImageName] = imname;
+	doc.setObject(obj);
+	server_->sendJson(ClientServerProtocol::RequestNextImageData, doc, comp_type_);
+}
+
 void ServerProtocolHandler::requestImage()
 {
 	QJsonObject obj;
@@ -322,9 +332,16 @@ void ServerProtocolHandler::handleImage(const QJsonDocument& doc)
 	QByteArray a = obj.value(JsonImageDataName).toString().toUtf8();
 	QByteArray data = QByteArray::fromBase64(a);
 
-	images_.put(obj.value(JsonImageName).toString(), data);
+	current_image_.append(data);
+	if (obj.contains(JsonImageDataStatus) && obj.value(JsonImageDataStatus).isString() && obj.value(JsonImageDataStatus).toString() == "done") {
+		images_.put(obj.value(JsonImageName).toString(), data);
+		requestImage();
 
-	requestImage();
+		current_image_.clear();
+	}
+	else {
+		requestNextImagePart(obj.value(JsonImageName).toString());
+	}
 }
 
 void ServerProtocolHandler::handleCoreData(const QJsonDocument& doc)

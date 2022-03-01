@@ -34,11 +34,9 @@ namespace xero
 		{
 			USBServer::USBServer(QObject *parent) : ScoutServer(parent)
 			{
-				usb_ = new XeroPCCableTransfer(-1, -1);
 				active_child_ = nullptr;
-				future_child_ = nullptr;
-				dead_child_ = nullptr;
 				inited_ = false;
+				connect_signaled_ = false;
 			}
 
 			USBServer::~USBServer()
@@ -48,71 +46,44 @@ namespace xero
 					delete active_child_;
 					active_child_ = nullptr;
 				}
-
-				if (future_child_ != nullptr)
-				{
-					delete future_child_;
-					future_child_ = nullptr;
-				}
-
-				if (usb_ != nullptr)
-				{
-					delete usb_;
-					usb_ = nullptr;
-				}
 			}
 
 			QString USBServer::hwinfo()
 			{
-				return QString(QString::fromStdString(usb_->description()));
+				QString ret = "USBServer - no USB hardware open";
+
+				if (active_child_ != nullptr)
+					ret = active_child_->description();
+
+				return ret;
 			}
 
 			bool USBServer::init()
 			{
-				active_child_ = nullptr;
-				future_child_ = nullptr;
-				dead_child_ = nullptr;
-
-				if (!usb_->init())
-					return false;
-
-				future_child_ = new USBTransport(this, usb_);
-				future_child_->reset();
-
-				return true;
+				active_child_ = new USBTransport(this);
+				return active_child_->init();
 			}
 
 			void USBServer::closing(USBTransport* trans)
 			{
 				assert(trans == active_child_);
-				assert(dead_child_ == nullptr);
 
-				dead_child_ = active_child_;
-				active_child_ = nullptr;
-				future_child_ = new USBTransport(this, usb_);
-				future_child_->init();
+				delete active_child_;
+
+				active_child_ = new USBTransport(this);
+				active_child_->init();
+				connect_signaled_ = false;
 			}
 
 			void USBServer::run()
 			{
-				if (dead_child_ != nullptr)
-				{
-					dead_child_ = nullptr;
-				}
-
 				if (active_child_ != nullptr)
 				{
 					active_child_->run();
-				}
-				else if (future_child_ != nullptr)
-				{
-					future_child_->run();
-					if (future_child_->hasData())
+					if (active_child_->hasData() && connect_signaled_ == false)
 					{
-						active_child_ = future_child_;
-						future_child_ = nullptr;
-
 						emit connected(active_child_);
+						connect_signaled_ = true;
 					}
 				}
 			}

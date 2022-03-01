@@ -81,6 +81,7 @@ private:
 	void handleScoutingRequest(const QJsonDocument& doc);
 	void handleSyncDone(const QJsonDocument& doc);
 	void handleImageRequest(const QJsonDocument& doc);
+	void handleNextImagePacketRequest(const QJsonDocument& doc);
 	void handleMatchDetailDataRequest(const QJsonDocument& doc);
 	void handleZebraDataRequest(const QJsonDocument& doc);
 	void handleCompleteButListening(const QJsonDocument& doc);
@@ -107,5 +108,8 @@ private:
 
 	QStringList needed_zebra_;
 	QStringList needed_match_detail_;
+
+	QString image_name_;
+	QString image_data_str_;
 };
 

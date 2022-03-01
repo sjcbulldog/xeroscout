@@ -690,7 +690,7 @@ void PCScoutApp::syncWithCentralNetwork()
 
 void PCScoutApp::startSync(ScoutTransport* trans)
 {
-	server_ = new ServerProtocolHandler(identity_, images_, data_model_, trans, 0, debug_act_->isChecked());
+	server_ = new ServerProtocolHandler(identity_, images_, data_model_, trans, 1, debug_act_->isChecked());
 
 	server_complete_connect_ = connect(server_, &ServerProtocolHandler::complete, this, &PCScoutApp::complete);
 	server_display_connect_ = connect(server_, &ServerProtocolHandler::displayLogMessage, this, &PCScoutApp::displayLogMessage);

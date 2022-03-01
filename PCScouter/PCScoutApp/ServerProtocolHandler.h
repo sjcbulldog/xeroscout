@@ -67,6 +67,7 @@ private:
 	void disconnected();
 	void displayProtcolLogMessage(const QString& msg);
 	void requestImage();
+	void requestNextImagePart(const QString& imname);
 
 private:
 	void handleUnxpectedPacket(const QJsonDocument& doc);
@@ -126,5 +127,7 @@ private:
 	QStringList needed_images_;
 
 	xero::scouting::datamodel::ImageManager& images_;
+
+	QByteArray current_image_;
 };
 

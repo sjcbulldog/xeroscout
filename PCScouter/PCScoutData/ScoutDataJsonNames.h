@@ -112,6 +112,7 @@ namespace xero
 			constexpr const char* JsonEditableName = "editable";
 			constexpr const char* JsonImageName = "image";
 			constexpr const char* JsonImageDataName = "imagedata";
+			constexpr const char* JsonImageDataStatus = "status";
 			constexpr const char* JsonXName = "x";
 			constexpr const char* JsonYName = "y";
 			constexpr const char* JsonPointsName = "points";

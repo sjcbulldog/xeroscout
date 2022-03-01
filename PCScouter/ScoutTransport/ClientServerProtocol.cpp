@@ -188,7 +188,6 @@ namespace xero
 					disconnect(errorReceived_);
 
 					transport_->close();
-					delete transport_;
 
 					transport_ = nullptr;
 				}

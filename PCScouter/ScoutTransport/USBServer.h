@@ -51,11 +51,9 @@ namespace xero
 
 			private:
 				bool inited_;
-				xero::device::usb::XeroPCCableTransfer* usb_;
+				bool connect_signaled_;
 
-				USBTransport* future_child_;
 				USBTransport* active_child_;
-				USBTransport* dead_child_;
 			};
 		}
 	}
