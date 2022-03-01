@@ -11,7 +11,7 @@
 #define MyAppExeName "PCScouter.exe"
 #define MyScoutAppExeName "PCScoutApp.exe"
 #define MyFormViewerExeName "PCFormViewer.exe"
-#define MyAppSourceDir "c:\cygwin64\home\bwg\robottools\xeroscout"
+#define MyAppSourceDir "d:\cygwin64\home\bwg\robottools\xeroscout"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.

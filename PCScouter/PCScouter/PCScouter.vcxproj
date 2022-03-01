@@ -91,7 +91,8 @@ copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
 copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>D:\cygwin64\bin\bash incver.sh</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -132,7 +133,8 @@ copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
 copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>D:\cygwin64\bin\bash incver.sh</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
