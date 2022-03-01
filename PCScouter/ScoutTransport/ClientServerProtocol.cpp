@@ -277,6 +277,9 @@ namespace xero
 				if (data_.size() < total)
 					return;
 
+				if (total > 18650)
+					total = total;
+
 				// Now we have an entire packet
 				quint16 calcsum = CRCCCITT::checksum(data_, 0, total - sizeof(uint16_t));
 
