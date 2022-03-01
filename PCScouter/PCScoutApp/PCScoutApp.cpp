@@ -698,6 +698,7 @@ void PCScoutApp::startSync(ScoutTransport* trans)
 	server_choose_tablet_connect_ = connect(server_, &ServerProtocolHandler::chooseTabletName, this, &PCScoutApp::chooseTabletName);
 
 	state_ = State::Synchronizing;
+	server_->startSync();
 }
 
 void PCScoutApp::syncWithCentralBluetooth()

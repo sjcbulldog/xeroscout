@@ -52,6 +52,7 @@ public:
 	}
 
 	void run();
+	void startSync();
 
 signals:
 	void complete(bool reset);
@@ -60,7 +61,7 @@ signals:
 	void chooseTabletName(const QString &evkey, const QStringList& list, const QStringList &registered, QString& name);
 
 private:
-	void startSync();
+
 	void jsonReceived(uint32_t ptype, const QJsonDocument& doc);
 	void protocolAbort(const QString &errmsg);
 	void disconnected();
