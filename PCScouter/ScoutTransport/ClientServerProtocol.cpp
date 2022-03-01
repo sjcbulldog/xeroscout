@@ -153,12 +153,22 @@ namespace xero
 
 			void ClientServerProtocol::transportDisconnected()
 			{
+				if (debug_) {
+					QString msg = "transport '" + transport_->description() + "' disconnected";
+					emit displayLogMessage(msg);
+				}
+
 				shutdown();
 				emit disconnected();
 			}
 
 			void ClientServerProtocol::transportError(const QString& errmsg)
 			{
+				if (debug_) {
+					QString msg = "transport '" + transport_->description() + "' returned error message - " + errmsg;
+					emit displayLogMessage(msg);
+				}
+
 				shutdown();
 				emit errorDetected(errmsg);
 			}
@@ -167,13 +177,20 @@ namespace xero
 			{
 				if (transport_ != nullptr)
 				{
+					if (debug_) {
+						QString msg = "transport '" + transport_->description() + "' is being shutdown";
+						emit displayLogMessage(msg);
+					}
+
 					transport_->flush();
 					disconnect(dataReceived_);
 					disconnect(streamDisconnected_);
 					disconnect(errorReceived_);
 
 					transport_->close();
-					delete transport_;
+					if (free_trans_)
+						delete transport_;
+
 					transport_ = nullptr;
 				}
 			}
@@ -212,9 +229,15 @@ namespace xero
 				{
 				case 0:
 					// Uncompressed, to nothing
+					if (debug_) {
+						emit displayLogMessage("JSON packet data is NOT compressed, " + QString::number(data.size()) + " bytes");
+					}
 					break;
 
 				case 1:
+					if (debug_) {
+						emit displayLogMessage("JSON packet data is compressed, " + QString::number(data.size()) + " bytes");
+					}
 					data = qCompress(data);
 					break;
 
@@ -249,6 +272,9 @@ namespace xero
 				data.push_back(bl);
 				data.push_back(bh);
 
+				if (debug_) {
+					emit displayLogMessage("sending " + QString::number(data.size()) + " total bytes of JSON data including packet wrapper");
+				}
 				transport_->write(data);
 			}
 
@@ -257,9 +283,12 @@ namespace xero
 				QByteArray data = transport_->readAll();
 				data_.append(data);
 
-#ifdef _TRANSPORT_DEBUG_
-				emit displayLogMessage("read " + QString::number(data.size()) + " bytes from transport '" + transport_->type() + "'");
-#endif
+				if (debug_) {
+					QString msg;
+					msg = "read " + QString::number(data.size()) + " bytes of data from transport";
+					msg += ", there is now " + QString::number(data_.size()) + " bytes of data total";
+					emit displayLogMessage(msg);
+				}
 
 				// Reading a new packet
 				if (data_.size() < 8)
@@ -272,13 +301,16 @@ namespace xero
 
 				length_ = static_cast<uint32_t>(b0 | (b1 << 8) | (b2 << 16) | (b3 << 24));
 
+				if (debug_) {
+					QString msg;
+					msg = "packet length is " + QString::number(length_);
+					emit displayLogMessage(msg);
+				}
+
 				// See if we have the complete packet, if not wait for more data
 				int total = length_ + sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint16_t) + sizeof(uint8_t);
 				if (data_.size() < total)
 					return;
-
-				if (total > 18650)
-					total = total;
 
 				// Now we have an entire packet
 				quint16 calcsum = CRCCCITT::checksum(data_, 0, total - sizeof(uint16_t));
@@ -289,6 +321,10 @@ namespace xero
 
 				recvsum = calcsum;
 				if (calcsum != recvsum) {
+					if (debug_) {
+						emit displayLogMessage("packet with invalid checksum detected");
+					}
+
 					//
 					// Checksum error, fail
 					//
@@ -313,10 +349,16 @@ namespace xero
 				switch (comp_type) {
 				case 0:
 					// Not compressed - do nothing
+					if (debug_) {
+						emit displayLogMessage("received uncompressed packet, " + QString::number(length_) + " of JSON data");
+					}
 					break;
 
 				case 1:
 					// ZLib compression
+					if (debug_) {
+						emit displayLogMessage("received compressed packet, " + QString::number(length_) + " of JSON data");
+					}
 					data = qUncompress(data);
 					break;
 
@@ -332,12 +374,18 @@ namespace xero
 					doc = QJsonDocument::fromJson(data);
 					if (doc.isNull())
 					{
+						if (debug_) {
+							emit displayLogMessage("invalid JSON packet recewived - could not be parsed");
+						}
+
 						shutdown();
 						emit errorDetected("invalid JSON document received in packet");
 					}
 				}
 
-				// logJsonPacket("jsonReceived", type, doc);
+				if (debug_) {
+					logJsonPacket("jsonReceived", type, doc);
+				}
 				emit jsonReceived(type, doc);
 			}
 		}
