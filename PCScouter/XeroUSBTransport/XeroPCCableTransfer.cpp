@@ -80,7 +80,11 @@ namespace xero
 					return false;
 				}
 
+				dev_ = dev ;
+
 				reset();
+
+				return true;
 			}
 
 			bool XeroPCCableTransfer::send(const std::vector<uint8_t>& data)
