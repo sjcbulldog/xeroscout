@@ -51,8 +51,6 @@ ServerProtocolHandler::ServerProtocolHandler(const TabletIdentity& id, xero::sco
 	connect(server_, &ClientServerProtocol::errorDetected, this, &ServerProtocolHandler::protocolAbort);
 	connect(server_, &ClientServerProtocol::disconnected, this, &ServerProtocolHandler::disconnected);
 	connect(server_, &ClientServerProtocol::displayLogMessage, this, &ServerProtocolHandler::displayProtcolLogMessage);
-
-	startSync();
 }
 
 ServerProtocolHandler::~ServerProtocolHandler()
