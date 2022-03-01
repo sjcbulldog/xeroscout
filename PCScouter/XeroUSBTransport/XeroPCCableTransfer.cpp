@@ -56,30 +56,6 @@ namespace xero
 					return false;
 				}
 
-				if (!dev->resetPipe(recvPipe))
-				{
-					delete dev;
-					return false;
-				}
-
-				if (!dev->resetPipe(sendPipe))
-				{
-					delete dev;
-					return false;
-				}
-
-				if (!dev->abortPipe(recvPipe))
-				{
-					delete dev;
-					return false;
-				}
-
-				if (!dev->abortPipe(sendPipe))
-				{
-					delete dev;
-					return false;
-				}
-
 				if (!dev->setTimeout(recvPipe, 1))
 				{
 					delete dev;
@@ -104,8 +80,7 @@ namespace xero
 					return false;
 				}
 
-				dev_ = dev;
-				return true;
+				reset();
 			}
 
 			bool XeroPCCableTransfer::send(const std::vector<uint8_t>& data)
@@ -122,6 +97,8 @@ namespace xero
 
 			bool XeroPCCableTransfer::reset()
 			{
+				std::vector<uint8_t> data;
+
 				USBDevice* dev = reinterpret_cast<USBDevice*>(dev_);
 				if (!dev->abortPipe(sendPipe))
 					return false;
@@ -131,6 +108,11 @@ namespace xero
 					return false;
 				if (!dev->resetPipe(recvPipe))
 					return false;
+
+				do {
+					if (!dev->read(recvPipe, data))
+						break;
+				} while (data.size() > 0);				
 
 				return true;
 			}
