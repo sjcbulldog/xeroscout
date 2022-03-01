@@ -21,7 +21,7 @@
           "image": "2022-rapid-react.png",
           "tag": "auto",
           "name": "AutoMode",
-          "scale": 0.50,
+          "scale": 0.350,
           "imageitems" : [
             {
               "imageitemtype": "onoff",
@@ -108,7 +108,7 @@
           "image": "2022-rapid-react.png",
           "tag": "auto",
           "name": "AutoMode",
-          "scale": 0.50,
+          "scale": 0.350,
           "imageitems" : [
             {
               "imageitemtype": "onoff",
@@ -199,7 +199,7 @@
           "image": "2022-rapid-react.png",
           "tag": "teleop",
           "name": "AutoMode",
-          "scale": 0.50,
+          "scale": 0.350,
           "imageitems" : [
             {
               "imageitemtype": "count",
@@ -227,7 +227,7 @@
           "image": "2022-rapid-react.png",
           "tag": "teleop",
           "name": "AutoMode",
-          "scale": 0.50,
+          "scale": 0.350,
           "imageitems" : [
             {
               "imageitemtype": "count",
@@ -260,7 +260,7 @@
           "image": "2022-rapid-react.png",
           "tag": "endgame",
           "name": "EndGame",
-          "scale": 0.50,
+          "scale": 0.350,
           "imageitems" : [
             {
               "imageitemtype" : "choice",
@@ -308,7 +308,7 @@
           "image": "2022-rapid-react.png",
           "tag": "endgame",
           "name": "EndGame",
-          "scale": 0.50,
+          "scale": 0.350,
           "imageitems" : [
             {
               "imageitemtype" : "choice",
