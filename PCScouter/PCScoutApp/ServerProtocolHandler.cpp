@@ -334,7 +334,7 @@ void ServerProtocolHandler::handleImage(const QJsonDocument& doc)
 
 	current_image_.append(data);
 	if (obj.contains(JsonImageDataStatus) && obj.value(JsonImageDataStatus).isString() && obj.value(JsonImageDataStatus).toString() == "done") {
-		images_.put(obj.value(JsonImageName).toString(), data);
+		images_.put(obj.value(JsonImageName).toString(), current_image_);
 		requestImage();
 
 		current_image_.clear();

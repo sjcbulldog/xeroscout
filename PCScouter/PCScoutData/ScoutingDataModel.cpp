@@ -696,7 +696,10 @@ namespace xero
 				m->teamToAllianceSlot(tkey, a, slot);
 
 				ScoutingDataMapPtr data = std::make_shared<ScoutingDataMap>();
-				*data = *m->scoutingData(a, slot);
+				auto md = m->scoutingData(a, slot);
+				if (md != nullptr) {
+					*data = *md;
+				}
 				data->insert_or_assign(field, value);
 				m->setScoutingData(a, slot, data, true);
 
