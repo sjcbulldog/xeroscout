@@ -130,14 +130,15 @@ void ClientProtocolHandler::handleNextImagePacketRequest(const QJsonDocument& do
 
 	replyobj[JsonImageName] = imname;
 
-	if (image_data_str_ > 16384) {
+	if (image_data_str_.length() > 16384) {
 		replyobj[JsonImageDataName] = image_data_str_.left(16384);
 		image_data_str_ = image_data_str_.mid(16384);
 		replyobj[JsonImageDataStatus] = "more";
 	}
 	else {
-		replyobj[JsonImageDataName];
+		replyobj[JsonImageDataName] = image_data_str_;
 		replyobj[JsonImageDataStatus] = "done";
+		image_data_str_.clear();
 	}
 
 	reply.setObject(replyobj);
@@ -184,14 +185,15 @@ void ClientProtocolHandler::handleImageRequest(const QJsonDocument& doc)
 
 		replyobj[JsonImageName] = imname;
 
-		if (image_data_str_ > 16384) {
+		if (image_data_str_.length() > 16384) {
 			replyobj[JsonImageDataName] = image_data_str_.left(16384);
 			image_data_str_ = image_data_str_.mid(16384);
 			replyobj[JsonImageDataStatus] = "more";
 		}
 		else {
-			replyobj[JsonImageDataName];
+			replyobj[JsonImageDataName] = image_data_str_;
 			replyobj[JsonImageDataStatus] = "done";
+			image_data_str_.clear();
 		}
 
 		reply.setObject(replyobj);
@@ -739,6 +741,7 @@ void ClientProtocolHandler::receivedJSON(uint32_t ptype, const QJsonDocument& do
 	auto it = handlers_.find(ptype);
 	if (it != handlers_.end())
 	{
+		QString pkt = ClientServerProtocol::pktTypeToString(ptype);
 		it->second(doc);
 	}
 	else {

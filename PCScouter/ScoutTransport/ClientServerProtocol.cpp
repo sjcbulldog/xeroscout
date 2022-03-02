@@ -94,7 +94,11 @@ namespace xero
 					break;
 
 				case RequestImageData:
-					ret = "RequestScoutingData";
+					ret = "RequestImageData";
+					break;
+
+				case RequestNextImageData:
+					ret = "RequestNextImageData";
 					break;
 
 				case ProvideImageData:
@@ -189,6 +193,7 @@ namespace xero
 
 					transport_->close();
 
+					delete transport_;
 					transport_ = nullptr;
 				}
 			}
