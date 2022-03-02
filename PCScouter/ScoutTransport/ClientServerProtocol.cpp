@@ -181,6 +181,8 @@ namespace xero
 			{
 				if (transport_ != nullptr)
 				{
+					bool isServer = transport_->isServer();
+
 					if (debug_) {
 						QString msg = "transport '" + transport_->description() + "' is being shutdown";
 						emit displayLogMessage(msg);
@@ -193,7 +195,8 @@ namespace xero
 
 					transport_->close();
 
-					delete transport_;
+					if (!isServer)
+						delete transport_;
 					transport_ = nullptr;
 				}
 			}
