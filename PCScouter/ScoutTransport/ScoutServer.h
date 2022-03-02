@@ -37,7 +37,7 @@ namespace xero
 				Q_OBJECT
 
 			public:
-				ScoutServer(QObject *parent);
+				ScoutServer(bool server, QObject *parent);
 				virtual ~ScoutServer();
 
 				virtual bool init() = 0;

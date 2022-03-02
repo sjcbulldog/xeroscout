@@ -31,7 +31,7 @@ namespace xero
 	{
 		namespace transport
 		{
-			BluetoothTransport::BluetoothTransport(QBluetoothSocket *socket)
+			BluetoothTransport::BluetoothTransport(QBluetoothSocket *socket) : ScoutTransport(false)
 			{
 				socket_ = socket;
 

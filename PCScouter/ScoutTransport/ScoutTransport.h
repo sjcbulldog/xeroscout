@@ -38,7 +38,8 @@ namespace xero
 				Q_OBJECT;
 
 			public:
-				ScoutTransport() {
+				ScoutTransport(bool server) {
+					server_ = server;
 				}
 
 				virtual ~ScoutTransport() {
@@ -53,7 +54,6 @@ namespace xero
 				virtual QString description() = 0;
 				virtual void close() = 0;
 
-				void setServer(bool v) { server_ = v; }
 				bool isServer() const { return server_; }
 
 			signals:

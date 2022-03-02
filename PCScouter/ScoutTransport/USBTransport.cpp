@@ -33,7 +33,7 @@ namespace xero
 	{
 		namespace transport
 		{
-			USBTransport::USBTransport()
+			USBTransport::USBTransport() : ScoutTransport(false)
 			{
 				server_ = nullptr;
 				usb_ = new XeroPCCableTransfer(-1, -1);
@@ -46,7 +46,7 @@ namespace xero
 				last_data_.resize(512);
 			}
 
-			USBTransport::USBTransport(USBServer *server)
+			USBTransport::USBTransport(USBServer *server) : ScoutTransport(true)
 			{
 				server_ = server;
 				usb_ = new XeroPCCableTransfer(-1, -1);

@@ -29,7 +29,7 @@ namespace xero
 	{
 		namespace transport
 		{
-			TcpTransport::TcpTransport(QTcpSocket* s)
+			TcpTransport::TcpTransport(QTcpSocket* s) : ScoutTransport(false)
 			{
 				socket_ = s;
 				server_ = nullptr;
@@ -39,7 +39,7 @@ namespace xero
 				error_connection_ = connect(socket_, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::errorOccurred), this, &TcpTransport::errorReceived);
 			}
 
-			TcpTransport::TcpTransport(TcpServer *server, QTcpSocket* s)
+			TcpTransport::TcpTransport(TcpServer *server, QTcpSocket* s) : ScoutTransport(true)
 			{
 				server_ = server;
 				socket_ = s;
