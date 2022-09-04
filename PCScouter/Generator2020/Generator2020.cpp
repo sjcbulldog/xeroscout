@@ -82,7 +82,7 @@ ScoutingDataMapPtr generateTeam(std::shared_ptr<const DataModelTeam> team, std::
 
     std::normal_distribution<double> dist(140.0, 20.0);
     data->insert_or_assign("weight", static_cast<int>(dist(random)));
-    
+
     value = random.bounded(name_count);
     data->insert_or_assign("team_scouter", names[value]);
 
@@ -224,7 +224,7 @@ ScoutingDataMapPtr generateTeam(std::shared_ptr<const DataModelTeam> team, std::
     return data;
 }
 
-static void generateAutoHigh(ScoutingDataMapPtr data, const QString &pos)
+static void generateAutoHigh(ScoutingDataMapPtr data, const QString& pos)
 {
     int value = 0;
     int high = 0;
@@ -487,15 +487,15 @@ static void generateEndgame(std::vector<ScoutingDataMapPtr> data, std::shared_pt
     else if (value < 200)
     {
         // Triple climb without level
-        data[0]->insert_or_assign("endgame__position","endgame__pneg3");
-        data[1]->insert_or_assign("endgame__position","endgame__pzero");
-        data[2]->insert_or_assign("endgame__position","endgame__ppos3");
+        data[0]->insert_or_assign("endgame__position", "endgame__pneg3");
+        data[1]->insert_or_assign("endgame__position", "endgame__pzero");
+        data[2]->insert_or_assign("endgame__position", "endgame__ppos3");
     }
     else if (value < 300)
     {
         // Double climb with level
-        data[0]->insert_or_assign("endgame__position","endgame__pneg2");
-        data[1]->insert_or_assign("endgame__position","endgame__ppos2");
+        data[0]->insert_or_assign("endgame__position", "endgame__pneg2");
+        data[1]->insert_or_assign("endgame__position", "endgame__ppos2");
         data[0]->insert_or_assign("endgame__level", true);
         data[1]->insert_or_assign("endgame__level", true);
         data[2]->insert_or_assign("endgame__level", true);

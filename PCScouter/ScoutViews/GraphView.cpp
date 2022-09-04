@@ -41,7 +41,6 @@
 #include <QKeyEvent>
 #include <list>
 
-using namespace QtCharts;
 using namespace xero::expr;
 using namespace xero::scouting::datamodel;
 
@@ -240,7 +239,7 @@ namespace xero
 				if (ev->button() == Qt::RightButton && dataModel() != nullptr)
 				{
 					QAction* act;
-					std::shared_ptr<QtCharts::QChartView> view;
+					std::shared_ptr<QChartView> view;
 					std::shared_ptr<GraphDescriptor::GraphPane> pane;
 
 					for (auto chart : charts_)

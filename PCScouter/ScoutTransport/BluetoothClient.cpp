@@ -20,11 +20,14 @@
 // FRC robotics team Error Code Xero.
 //
 
+#ifdef _XERO_BLUETOOTH_CLIENT
+
 #include "BluetoothClient.h"
 #include "BluetoothIDS.h"
 #include <QBluetoothLocalDevice>
 #include <QTimer>
 #include <QDebug>
+
 
 namespace xero
 {
@@ -153,3 +156,5 @@ namespace xero
 		}
 	}
 }
+
+#endif

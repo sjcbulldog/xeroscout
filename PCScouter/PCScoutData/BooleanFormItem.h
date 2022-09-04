@@ -23,7 +23,7 @@
 #pragma once
 
 #include "FormItemDesc.h"
-#include <QCheckBox>
+#include <QtWidgets/QCheckBox>
 #include "BooleanItemDisplay.h"
 
 namespace xero

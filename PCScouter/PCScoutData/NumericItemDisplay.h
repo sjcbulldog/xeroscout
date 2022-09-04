@@ -22,7 +22,7 @@
 
 #pragma once
 #include "FormItemDisplay.h"
-#include <QLineEdit>
+#include <QtWidgets/QLineEdit>
 
 namespace xero
 {

@@ -350,7 +350,7 @@ namespace xero
 				paint.restore();
 			}
 
-			void PickListRowWidget::enterEvent(QEvent* ev)
+			void PickListRowWidget::enterEvent(QEnterEvent* ev)
 			{
 				current_ = true;
 				update();

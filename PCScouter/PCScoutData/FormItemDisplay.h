@@ -25,7 +25,7 @@
 #include "ImageSupplier.h"
 #include "DataCollection.h"
 #include "FormItemDesc.h"
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 namespace xero
 {

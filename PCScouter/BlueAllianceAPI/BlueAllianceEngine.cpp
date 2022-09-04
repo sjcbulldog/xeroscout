@@ -335,7 +335,7 @@ namespace xero
 		{
 			log("RequestZebra: calling");
 
-			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+			// auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchZebraController>(*this, keys);
 			auto result = controller_->startResult();
 			if (result != nullptr)

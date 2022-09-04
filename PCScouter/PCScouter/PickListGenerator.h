@@ -45,7 +45,7 @@ public:
 		return picks_error_;
 	}
 
-	QString robotCapabilitiesError() const {
+	bool robotCapabilitiesError() const {
 		return caps_error_;
 	}
 

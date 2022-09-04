@@ -27,6 +27,7 @@
 #include <QJsonArray>
 #include <QJsonValue>
 #include <QJsonObject>
+#include <QDebug>
 #include <memory>
 
 namespace xero
@@ -45,6 +46,7 @@ namespace xero
 		{
 			QString str;
 			str = "/match/" + getKey() + "/zebra_motionworks";
+			qDebug() << "zebrakey: " << str;
 			return str;
 		}
 

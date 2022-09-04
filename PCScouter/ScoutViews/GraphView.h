@@ -102,7 +102,7 @@ namespace xero
 				void editTitle(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
 				void titleChanged(std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane, const QString& text);
 
-				void setTheme(QtCharts::QChart::ChartTheme theme);
+				void setTheme(QChart::ChartTheme theme);
 
 			private:
 				QGroupBox* top_;
@@ -118,9 +118,9 @@ namespace xero
 
 				int count_;
 				bool changed_triggered_;
-				QtCharts::QChart::ChartTheme theme_;
+				QChart::ChartTheme theme_;
 
-				static std::list<std::pair<QString, QtCharts::QChart::ChartTheme>> themes_;
+				static std::list<std::pair<QString, QChart::ChartTheme>> themes_;
 
 
 			};

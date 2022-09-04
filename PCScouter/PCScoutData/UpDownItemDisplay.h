@@ -23,11 +23,11 @@
 #pragma once
 
 #include "FormItemDisplay.h"
-#include <QPushButton>
-#include <QLineEdit>
-#include <QWidget>
-#include <QLabel>
-#include <QIntValidator>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
+#include <QtGui/QIntValidator>
 
 namespace xero
 {

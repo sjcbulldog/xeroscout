@@ -36,7 +36,7 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonParseError>
-#include <QtCore/QTextCodec>
+#include <QTextCodec>
 #include <vector>
 
 namespace xero

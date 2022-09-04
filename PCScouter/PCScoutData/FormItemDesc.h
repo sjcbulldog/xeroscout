@@ -26,7 +26,7 @@
 #include "DataCollection.h"
 #include "FieldDesc.h"
 #include <QString>
-#include <QWidget>
+#include <QtWidgets/QWidget>
 #include <QVariant>
 #include <QRandomGenerator>
 

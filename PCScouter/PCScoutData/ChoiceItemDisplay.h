@@ -22,8 +22,8 @@
 
 #pragma once
 #include "FormItemDisplay.h"
-#include <QStringList>
-#include <QComboBox>
+#include <QtCore/QStringList>
+#include <QtWidgets/QComboBox>
 
 namespace xero
 {

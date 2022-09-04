@@ -90,10 +90,15 @@ namespace xero
 
 		void BlueAllianceTransport::finished()
 		{
-			QString result;
-
 			if (reply_ == nullptr)
 				return;
+
+			QString url = reply_->url().toString();
+
+			if (url.contains("2022orwil_qf4m2")) {
+				int bytes = reply_->bytesAvailable();
+				qDebug() << "This match";
+			}
 
 			std::shared_ptr<QJsonDocument> doc;
 			BlueAllianceResult::Status st = BlueAllianceResult::Status::Success;
@@ -110,18 +115,20 @@ namespace xero
 				// Get the data from the reply
 				//
 				QByteArray bdata = reply_->readAll();
-				result = QString::fromUtf8(bdata);
-
-				//
-				// Now, convert the result to a JSON document and hand to the post processor
-				//
-				QJsonParseError perr;
+				QString str = QString::fromUtf8(bdata).trimmed();
 				doc = std::make_shared<QJsonDocument>();
-				*doc = QJsonDocument::fromJson(bdata, &perr);
-				if (perr.error != QJsonParseError::NoError)
-				{
-					doc = nullptr;
-					st = BlueAllianceResult::Status::JSONError;
+				if (str != "null") {
+					//
+					// Now, convert the result to a JSON document and hand to the post processor
+					//
+					QJsonParseError perr;
+
+					*doc = QJsonDocument::fromJson(bdata, &perr);
+					if (perr.error != QJsonParseError::NoError)
+					{
+						doc = nullptr;
+						st = BlueAllianceResult::Status::JSONError;
+					}
 				}
 			}
 

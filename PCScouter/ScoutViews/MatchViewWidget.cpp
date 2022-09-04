@@ -177,15 +177,17 @@ namespace xero
 						item->setTextAlignment(col, Qt::AlignHCenter);
 						item->setToolTip(col, tt);
 
-						if (txt.at(0) == "Y")
+						if (txt.at(0) == 'Y')
 						{
 							item->setText(col, txt);
-							item->setBackgroundColor(col, QColor(0, 255, 0, 255));
+							// TODO
+							// item->setBackgroundColor(col, QColor(0, 255, 0, 255));
 						}
 						else
 						{
 							item->setText(col, txt);
-							item->setBackgroundColor(col, QColor(255, 0, 0, 255));
+							// TODO
+							//item->setBackgroundColor(col, QColor(255, 0, 0, 255));
 						}
 					}
 				}
@@ -214,12 +216,14 @@ namespace xero
 						if (m->hasScoutingData(a, slot))
 						{
 							i->setText(index, txt);
-							i->setBackgroundColor(index, QColor(0, 255, 0, 255));
+							// TODO
+							// i->setBackgroundColor(index, QColor(0, 255, 0, 255));
 						}
 						else
 						{
 							i->setText(index, txt);
-							i->setBackgroundColor(index, QColor(255, 0, 0, 255));
+							// TODO
+							// i->setBackgroundColor(index, QColor(255, 0, 0, 255));
 						}
 					}
 					else
@@ -259,12 +263,14 @@ namespace xero
 				if (m->hasScoutingData(color, slot)) 
 				{
 					i->setText(index, "Y");
-					i->setBackgroundColor(index, QColor(0, 255, 0, 255));
+					// TODO
+					// i->setBackgroundColor(index, QColor(0, 255, 0, 255));
 				}
 				else
 				{
 					i->setText(index, "N");
-					i->setBackgroundColor(index, QColor(255, 0, 0, 255));
+					// TODO
+					// i->setBackgroundColor(index, QColor(255, 0, 0, 255));
 				}
 				index++;
 

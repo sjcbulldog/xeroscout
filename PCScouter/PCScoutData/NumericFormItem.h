@@ -24,7 +24,7 @@
 
 #include "FormItemDesc.h"
 #include "NumericItemDisplay.h"
-#include <QLineEdit>
+#include <QtWidgets/QLineEdit>
 
 namespace xero
 {

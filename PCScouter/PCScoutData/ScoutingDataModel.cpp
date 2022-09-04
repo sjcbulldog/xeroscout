@@ -244,7 +244,7 @@ namespace xero
 				QJsonDocument doc;
 				
 				if (filename_.endsWith(".evd"))
-					doc = QJsonDocument::fromBinaryData(data);
+					doc = QJsonDocument::fromJson(data);
 				else
 					doc = QJsonDocument::fromJson(data, &err);
 
@@ -278,7 +278,7 @@ namespace xero
 				QJsonDocument doc;
 				
 				if (filename_.endsWith(".evd"))
-					doc = QJsonDocument::fromBinaryData(data);
+					doc = QJsonDocument::fromJson(data);
 				else
 					doc = QJsonDocument::fromJson(data, &err);
 

@@ -116,7 +116,7 @@ namespace xero
 				tree_->resizeColumnToContents(0);
 				tree_->resizeColumnToContents(1);
 				tree_->resizeColumnToContents(2);
-				tree_->sortByColumn(1);
+				tree_->sortByColumn(1, Qt::AscendingOrder);
 				tree_->blockSignals(false);
 			}
 		}

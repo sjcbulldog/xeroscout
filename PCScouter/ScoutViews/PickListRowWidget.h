@@ -45,7 +45,7 @@ namespace xero
 
 			protected:
 				void paintEvent(QPaintEvent* ev) override;
-				void enterEvent(QEvent* ev) override;
+				void enterEvent(QEnterEvent* ev) override;
 				void leaveEvent(QEvent* ev) override;
 				void mouseMoveEvent(QMouseEvent* ev) override;
 				void mousePressEvent(QMouseEvent* ev) override;

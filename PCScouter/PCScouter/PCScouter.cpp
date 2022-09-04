@@ -1595,9 +1595,9 @@ void PCScouter::magicWordTyped(SpecialListWidget::Word w)
 {
 	if (w == SpecialListWidget::Word::XYZZY)
 	{
-		const char* redpropname = "redrandmaxmatch";
-		const char* bluepropname = "bluerandmaxmatch";
-		const char* teampropname = "randmaxteam";
+		const char* redpropname = "redmaxmatch";
+		const char* bluepropname = "bluemaxmatch";
+		const char* teampropname = "maxteam";
 
 		TestDataInjector& injector = TestDataInjector::getInstance();
 		int redmaxmatch = std::numeric_limits<int>::max();

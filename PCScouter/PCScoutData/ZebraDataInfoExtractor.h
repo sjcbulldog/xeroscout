@@ -2,7 +2,8 @@
 
 #include "pcscoutdata_global.h"
 #include "ScoutingDataMap.h"
-#include <QObject>
+#include <QtCore/QObject>
+#include <QtCore/QPointF>
 #include <memory>
 #include <cmath>
 

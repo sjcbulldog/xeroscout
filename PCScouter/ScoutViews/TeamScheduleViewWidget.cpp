@@ -60,12 +60,14 @@ namespace xero
 						if (value)
 						{
 							item->setText(col, "Y");
-							item->setBackgroundColor(col, QColor(0, 255, 0, 255));
+							// TODO
+							// item->setBackgroundColor(col, QColor(0, 255, 0, 255));
 						}
 						else
 						{
 							item->setText(col, "N");
-							item->setBackgroundColor(col, QColor(255, 0, 0, 255));
+							// TODO
+							// item->setBackgroundColor(col, QColor(255, 0, 0, 255));
 						}
 					}
 				}
@@ -93,12 +95,14 @@ namespace xero
 						if (team->teamScoutingData() != nullptr)
 						{
 							item->setText(index, "Y");
-							item->setBackgroundColor(index, QColor(0, 255, 0, 255));
+							// TODO
+							// item->setBackgroundColor(index, QColor(0, 255, 0, 255));
 						}
 						else
 						{
 							item->setText(index, "N");
-							item->setBackgroundColor(index, QColor(255, 0, 0, 255));
+							// TODO
+							// item->setBackgroundColor(index, QColor(255, 0, 0, 255));
 						}
 					}
 					else
@@ -119,7 +123,7 @@ namespace xero
 				resizeColumnToContents(2);
 				resizeColumnToContents(3);
 
-				sortByColumn(0);
+				sortByColumn(0, Qt::AscendingOrder);
 			}
 
 

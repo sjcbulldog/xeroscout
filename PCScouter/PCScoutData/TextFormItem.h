@@ -24,10 +24,10 @@
 
 #include "FormItemDesc.h"
 #include "TextItemDisplay.h"
-#include <QString>
-#include <QBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
+#include <QtCore/QString>
+#include <QtWidgets/QBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 
 namespace xero
 {

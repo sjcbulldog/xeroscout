@@ -22,6 +22,8 @@
 
 #pragma once
 
+#ifdef _XERO_BLUETOOTH_CLIENT
+
 #include "ScoutTransport.h"
 #include <QBluetoothUuid>
 
@@ -53,5 +55,4 @@ namespace xero
 		}
 	}
 }
-
-
+#endif

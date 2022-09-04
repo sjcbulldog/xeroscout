@@ -34,7 +34,7 @@ namespace xero
 	{
 		namespace views
 		{
-			class ChartViewWrapper : public QtCharts::QChartView
+			class ChartViewWrapper : public QChartView
 			{
 				Q_OBJECT
 
@@ -42,7 +42,7 @@ namespace xero
 				ChartViewWrapper(QWidget* parent, std::shared_ptr<xero::scouting::datamodel::GraphDescriptor::GraphPane> pane);
 				virtual ~ChartViewWrapper();
 
-				void mouseHovered(bool status, int index, QtCharts::QBarSet* set);
+				void mouseHovered(bool status, int index, QBarSet* set);
 				void editTitle();
 
 			signals:

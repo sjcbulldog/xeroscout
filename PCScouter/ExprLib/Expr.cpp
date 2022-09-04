@@ -26,7 +26,7 @@
 #include "ExprConst.h"
 #include "ExprVariable.h"
 #include "ExprFunction.h"
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QDebug>
 #include <stack>
 
@@ -174,13 +174,12 @@ namespace xero
 			}
 			else if (ch == '+' || ch == '-' || ch.isDigit())
 			{
-				QRegExp exp("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
-				exp.exactMatch(txt.mid(index));
-				int len = exp.matchedLength();
-				if (len > 0)
+				QRegularExpression exp("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+				QRegularExpressionMatch m = exp.match(txt.mid(index));
+				if (m.hasMatch())
 				{
-					index += len;
-					QString str = exp.cap(0);
+					index += m.captured(0).length();
+					QString str = m.captured(0);
 					bool ok;
 
 					int v = str.toInt(&ok);

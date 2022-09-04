@@ -917,9 +917,13 @@ namespace xero
 					QByteArray data;
 
 					if (filename_.endsWith(".evd"))
-						data = doc.toBinaryData();
-					else
+					{
 						data = doc.toJson(QJsonDocument::JsonFormat::Indented);
+					}
+					else
+					{
+						data = doc.toJson(QJsonDocument::JsonFormat::Indented);
+					}
 
 					if (file.write(data) != data.size())
 					{

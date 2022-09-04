@@ -22,10 +22,14 @@
 
 #pragma once
 
+#ifdef _XERO_BLUETOOTH_CLIENT
+
+
 #include "scouttransport_global.h"
 #include "BluetoothTransport.h"
 #include <QObject>
 #include <QBluetoothServiceDiscoveryAgent>
+
 
 namespace xero
 {
@@ -70,3 +74,5 @@ namespace xero
 		}
 	}
 }
+
+#endif

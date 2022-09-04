@@ -25,7 +25,6 @@
 #include <QDebug>
 #include <QToolTip>
 
-using namespace QtCharts;
 using namespace xero::scouting::datamodel;
 
 namespace xero

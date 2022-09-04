@@ -20,6 +20,9 @@
 // FRC robotics team Error Code Xero.
 //
 
+#ifdef _XERO_BLUETOOTH_CLIENT
+
+
 #include "BluetoothIDS.h"
 
 namespace xero
@@ -41,3 +44,5 @@ namespace xero
 		}
 	}
 }
+
+#endif

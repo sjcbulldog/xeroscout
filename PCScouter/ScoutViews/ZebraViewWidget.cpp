@@ -407,8 +407,6 @@ namespace xero
 				track->setColor(matchRobotColor(c, slot));
 				track->setAlliance(c);
 
-				track->setRange(slider_->rangeStart(), slider_->rangeEnd());
-
 				TrackEntry te(mkey, tkey, track);
 				entries_.push_back(te);
 

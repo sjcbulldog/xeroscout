@@ -45,11 +45,11 @@ public:
 		return pcnt_;
 	}
 
-	QString htmlPicklistError() const {
+	bool htmlPicklistError() const {
 		return gen_->picklistError();
 	}
 
-	QString htmlRobotCapabilities() const {
+	bool htmlRobotCapabilities() const {
 		return gen_->robotCapabilitiesError();
 	}
 

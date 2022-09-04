@@ -72,6 +72,7 @@ void SyncManager::createTransports()
 		emit logMessage("Synchronization transport '" + server->name() + "' failed to initialized");
 	}
 
+#ifdef _XERO_BLUETOOTH_CLIENT
 	server = std::make_shared<BluetoothServer>(team_number_, this);
 	if (server->init())
 	{
@@ -83,6 +84,7 @@ void SyncManager::createTransports()
 	{
 		emit logMessage("Synchronization transport '" + server->name() + "' failed to initialized");
 	}
+#endif
 }
 
 void SyncManager::run()

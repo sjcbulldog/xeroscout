@@ -24,10 +24,10 @@
 
 #include "FormItemDesc.h"
 #include "ChoiceItemDisplay.h"
-#include <QStringList>
-#include <QComboBox>
-#include <QBoxLayout>
-#include <QLabel>
+#include <QtCore/QStringList>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QBoxLayout>
+#include <QtWidgets/QLabel>
 
 namespace xero
 {

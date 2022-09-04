@@ -24,8 +24,8 @@
 
 #include "FormItemDesc.h"
 #include "UpDownItemDisplay.h"
-#include <QSpinBox>
-#include <QDebug>
+#include <QtWidgets/QSpinBox>
+#include <QtCore/QDebug>
 
 namespace xero
 {
