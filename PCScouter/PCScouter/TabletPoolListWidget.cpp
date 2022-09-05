@@ -118,7 +118,7 @@ void TabletPoolListWidget::mouseDoubleClickEvent(QMouseEvent* ev)
 	}
 }
 
-QMimeData* TabletPoolListWidget::mimeData(const QList<QListWidgetItem*> items) const
+QMimeData* TabletPoolListWidget::mimeData(const QList<QListWidgetItem*>& items) const
 {
 	QMimeData* data = new QMimeData();
 	QString str;

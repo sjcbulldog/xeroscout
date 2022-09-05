@@ -85,7 +85,7 @@ void ServerProtocolHandler::startSync()
 	//
 	// This is the common sync scouting data case.
 	//
-	if (id_.name() == 0 || data_model_->evkey().length() == 0)
+	if (id_.name().length() == 0 || data_model_->evkey().length() == 0)
 	{
 		pkt[JsonUuidName] = id_.uid().toString();
 		pkt[JsonCompressionName] = comp_type_;

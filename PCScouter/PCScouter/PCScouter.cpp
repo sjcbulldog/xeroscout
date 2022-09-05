@@ -916,11 +916,11 @@ void PCScouter::setupViews()
 
 QIcon PCScouter::loadIcon(const QString& filename)
 {
-	QIcon default;
+	QIcon def;
 
 	auto image = images_.get(filename);
 	if (image == nullptr)
-		return default;
+		return def;
 
 	return QIcon(QPixmap::fromImage(*image));
 }

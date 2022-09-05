@@ -180,14 +180,12 @@ namespace xero
 						if (txt.at(0) == 'Y')
 						{
 							item->setText(col, txt);
-							// TODO
-							// item->setBackgroundColor(col, QColor(0, 255, 0, 255));
+							item->setBackground(col, QBrush(QColor(0, 255, 0, 255)));
 						}
 						else
 						{
 							item->setText(col, txt);
-							// TODO
-							//item->setBackgroundColor(col, QColor(255, 0, 0, 255));
+							item->setBackground(col, QBrush(QColor(255, 0, 0, 255)));
 						}
 					}
 				}
@@ -216,14 +214,12 @@ namespace xero
 						if (m->hasScoutingData(a, slot))
 						{
 							i->setText(index, txt);
-							// TODO
-							// i->setBackgroundColor(index, QColor(0, 255, 0, 255));
+							i->setBackground(index, QBrush(QColor(0, 255, 0, 255)));
 						}
 						else
 						{
 							i->setText(index, txt);
-							// TODO
-							// i->setBackgroundColor(index, QColor(255, 0, 0, 255));
+							i->setBackground(index, QBrush(QColor(255, 0, 0, 255)));
 						}
 					}
 					else
@@ -263,14 +259,12 @@ namespace xero
 				if (m->hasScoutingData(color, slot)) 
 				{
 					i->setText(index, "Y");
-					// TODO
-					// i->setBackgroundColor(index, QColor(0, 255, 0, 255));
+					i->setBackground(index, QBrush(QColor(0, 255, 0, 255)));
 				}
 				else
 				{
 					i->setText(index, "N");
-					// TODO
-					// i->setBackgroundColor(index, QColor(255, 0, 0, 255));
+					i->setBackground(index, QBrush(QColor(255, 0, 0, 255)));
 				}
 				index++;
 

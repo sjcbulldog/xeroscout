@@ -57,7 +57,7 @@ SelectEventWizardPage::SelectEventWizardPage(NewEventBlueAllianceWizard::Propert
 	tree->resizeColumnToContents(1);
 	tree->resizeColumnToContents(2);
 
-	tree->sortByColumn(0);
+	tree->sortByColumn(0, Qt::AscendingOrder);
 
 	QVBoxLayout* layout = new QVBoxLayout();
 	layout->addWidget(tree);

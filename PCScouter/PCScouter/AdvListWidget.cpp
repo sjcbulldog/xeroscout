@@ -72,7 +72,7 @@ void AdvListWidget::dragEnterEvent(QDragEnterEvent* ev)
 
 void AdvListWidget::dragLeaveEvent(QDragLeaveEvent* ev)
 {
-	setBackgroundRole(QPalette::Background);
+	setBackgroundRole(QPalette::Window);
 }
 
 void AdvListWidget::dragMoveEvent(QDragMoveEvent* ev)

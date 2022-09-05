@@ -28,8 +28,10 @@
 #include "USBTransport.h"
 #include "AboutDialog.h"
 #include "ClientServerProtocol.h"
+#ifdef _XERO_BLUETOOTH_CLIENT
 #include "BluetoothClient.h"
 #include "BluetoothTransport.h"
+#endif
 #include "SelectMatch.h"
 #include <QMenuBar>
 #include <QMenu>
@@ -165,7 +167,10 @@ PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
 	if (settings_.contains(DebugParamName) && settings_.value(DebugParamName).toBool())
 		debug_act_->setChecked(true);
 
+#ifdef _XERO_BLUETOOTH_CLIENT
 	bt_client_ = nullptr;
+#endif
+
 	host_addr_valid_ = false;
 }
 
@@ -449,8 +454,10 @@ void PCScoutApp::createMenus()
 	act = sync_menu_->addAction(tr("USB Sync"));
 	(void)connect(act, &QAction::triggered, this, &PCScoutApp::syncWithCentralUSB);
 
+#ifdef _XERO_BLUETOOTH_CLIENT
 	act = sync_menu_->addAction(tr("Bluetooth Sync"));
 	(void)connect(act, &QAction::triggered, this, &PCScoutApp::syncWithCentralBluetooth);
+#endif
 
 	settings_menu_ = new QMenu(tr("&Settings"));
 	f = menuBar()->font();
@@ -701,6 +708,7 @@ void PCScoutApp::startSync(ScoutTransport* trans)
 	server_->startSync();
 }
 
+#ifdef _XERO_BLUETOOTH_CLIENT
 void PCScoutApp::syncWithCentralBluetooth()
 {
 	if (team_number_ == -1)
@@ -726,20 +734,26 @@ void PCScoutApp::syncWithCentralBluetooth()
 		return;
 	}
 }
+#endif
 
 void PCScoutApp::serverConnectionError(const QString& err)
 {
+#ifdef _XERO_BLUETOOTH_CLIENT
 	delete bt_client_;
 	bt_client_ = nullptr;
+#endif
+
 	QMessageBox::critical(this, "Error", "Could not connect to selected central machine - " + err);
 }
 
+#ifdef _XERO_BLUETOOTH_CLIENT
 void PCScoutApp::serverConnected(BluetoothTransport *trans)
 {
 	delete bt_client_;
 	bt_client_ = nullptr;
 	startSync(trans);
 }
+#endif
 
 void PCScoutApp::syncWithCentralUSB()
 {
@@ -786,7 +800,7 @@ void PCScoutApp::syncWithCentralNetworkDirect()
 	tcp_socket_ = new QTcpSocket(this);
 
 	tcp_connect_ = connect(tcp_socket_, &QTcpSocket::connected, this, &PCScoutApp::streamConnected);
-	tcp_error_ = connect(tcp_socket_, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, &PCScoutApp::connectError);
+	tcp_error_ = connect(tcp_socket_,&QAbstractSocket::errorOccurred, this, &PCScoutApp::connectError);
 
 	tcp_socket_->connectToHost(server_ip_, ClientServerProtocol::ScoutStreamPort);
 	state_ = State::WaitingForConnection;

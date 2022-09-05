@@ -81,7 +81,8 @@ void SelectMatch::indexChanged(int index)
 		auto t = dm_->findTeamByKey(tm);
 		QListWidgetItem* item = new QListWidgetItem(QString::number(t->number()) + " - " + t->name());
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		item->setBackgroundColor(QColor(0xFF, 0xCC, 0xCC));
+		QBrush br(QColor(0xFF, 0xCC, 0xCC));
+		item->setBackground(br);
 		item->setData(Qt::UserRole, toString(c) + ":" + QString::number(slot));
 		ui.scout_list_->addItem(item);
 	}
@@ -93,7 +94,8 @@ void SelectMatch::indexChanged(int index)
 		auto t = dm_->findTeamByKey(tm);
 		QListWidgetItem* item = new QListWidgetItem(QString::number(t->number()) + " - " + t->name());
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		item->setBackgroundColor(QColor(0xCC, 0xCC, 0xFF));
+		QBrush br(QColor(0xCC, 0xCC, 0xFF));
+		item->setBackground(br);
 		item->setData(Qt::UserRole, toString(c) + ":" + QString::number(slot));
 		ui.scout_list_->addItem(item);
 	}

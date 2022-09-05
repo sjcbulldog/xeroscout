@@ -39,7 +39,7 @@ signals:
 protected:
 	void mouseDoubleClickEvent(QMouseEvent* ev) override;
 	void keyPressEvent(QKeyEvent* ev) override;
-	QMimeData* mimeData(const QList<QListWidgetItem*> items) const;
+	QMimeData* mimeData(const QList<QListWidgetItem*>& items) const override;
 
 
 private:

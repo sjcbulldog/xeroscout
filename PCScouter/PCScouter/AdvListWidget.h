@@ -21,7 +21,9 @@
 //
 
 #pragma once
-#include <qlistwidget.h>
+
+#include <QtWidgets/QListWidget>
+
 class AdvListWidget : public QListWidget
 {
 public:

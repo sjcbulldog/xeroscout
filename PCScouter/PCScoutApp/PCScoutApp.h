@@ -26,8 +26,10 @@
 #include "DocumentView.h"
 #include "ScoutingDataModel.h"
 #include "TabletIdentity.h"
+#ifdef _XERO_BLUETOOTH_CLIENT
 #include "BluetoothTransport.h"
 #include "BluetoothClient.h"
+#endif
 #include "FormInstance.h"
 #include "ImageManager.h"
 #include "FormView.h"
@@ -69,7 +71,9 @@ private:
 	void syncWithCentralNetwork();
 	void syncWithCentralUSB();
 	void syncWithCentralNetworkDirect();
+#ifdef _XERO_BLUETOOTH_CLIENT
 	void syncWithCentralBluetooth();
+#endif
 	void about();
 
 	void readBroadcast();
@@ -119,7 +123,10 @@ private:
 	void addTeam();
 	void addMatch();
 
+#ifdef _XERO_BLUETOOTH_CLIENT
 	void serverConnected(xero::scouting::transport::BluetoothTransport* trans);
+#endif
+
 	void serverConnectionError(const QString& err);
 
 private:
@@ -193,7 +200,10 @@ private:
 
 	QString server_ip_;
 
+#ifdef _XERO_BLUETOOTH_CLIENT
 	xero::scouting::transport::BluetoothClient* bt_client_;
+#endif
+
 	std::map<QString, std::shared_ptr<xero::scouting::datamodel::FormInstance>> form_instances_;
 	xero::scouting::datamodel::ImageManager images_;
 
