@@ -26,15 +26,18 @@ private:
 		Start,
 		NeedTeams,
 		NeedMatches,
-		Done
+		Done,
+		Error
 	};
+
+	void promptUser();
+	bool addTeamFromRoster(QString roster);
 
 private:
 	int year_;
 	State state_;
 	QStringList tablets_;
 	QStringList team_keys_;
-	bool sim_no_matches_;
 	xero::scouting::datamodel::ImageManager& images_;
 };
 

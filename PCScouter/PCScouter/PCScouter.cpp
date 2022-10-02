@@ -517,14 +517,15 @@ void PCScouter::createMenus()
 		file_new_event_ = file_menu_->addAction(tr("New Blue Alliance Event"));
 		(void)connect(file_new_event_, &QAction::triggered, this, &PCScouter::newEventBA);
 
-		//file_new_offseason_event_ = file_menu_->addAction(tr("New Offseason Event"));
-		//(void)connect(file_new_event_, &QAction::triggered, this, &PCScouter::newEventOffSeason);
+		file_new_offseason_event_ = file_menu_->addAction(tr("New Offseason Event"));
+		(void)connect(file_new_offseason_event_, &QAction::triggered, this, &PCScouter::newEventOffSeason);
 
 		file_menu_->addSeparator();
 	}
 	else
 	{
 		file_new_event_ = nullptr;
+		file_new_offseason_event_ = nullptr;
 	}
 
 	file_open_event_ = file_menu_->addAction(tr("Open Event"));

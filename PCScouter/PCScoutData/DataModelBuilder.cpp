@@ -276,8 +276,8 @@ std::shared_ptr<::ScoutingDataModel>
 		error = "no event with the key '" + evkey + "' exists";
 		return nullptr;
 	}
-	auto ev = evit->second;
 
+	auto ev = evit->second;
 	auto dm = std::make_shared<ScoutingDataModel>(ev->key(), ev->name(), ev->start(), ev->end());
 	QStringList tags;
 	if (!dm->setScoutingForms(team, match, tags)) {
@@ -357,6 +357,31 @@ DataModelBuilder::buildModel(xero::ba::BlueAllianceEngine& engine,
 	std::shared_ptr<ScoutingForm> match = std::make_shared<ScoutingForm>(matchform);
 
 	return DataModelBuilder::buildModel(engine, team, match, evkey, error);
+}
+
+std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
+DataModelBuilder::buildModel(const QString& pitform, const QString& matchform,
+	const QString& evkey, const QString &evname, QString& error)
+{
+	std::shared_ptr<ScoutingForm> team = std::make_shared<ScoutingForm>(pitform);
+	std::shared_ptr<ScoutingForm> match = std::make_shared<ScoutingForm>(matchform);
+
+	auto dm = std::make_shared<ScoutingDataModel>(evkey, evname, QDate::currentDate(), QDate::currentDate());
+	QStringList tags;
+	if (!dm->setScoutingForms(team, match, tags)) {
+		error = "duplicate tags '";
+		for (int i = 0; i < tags.size(); i++)
+		{
+			if (i != 0)
+				error += ", ";
+
+			error += tags.at(i);
+		}
+		error += "' exist across the team scouting form and the match scouting form";
+		return nullptr;
+	}
+
+	return dm;
 }
 
 //

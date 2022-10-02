@@ -71,7 +71,6 @@ QStringList NewEventBlueAllianceWizard::getPitTabletList()
 	return list;
 }
 
-
 QStringList NewEventBlueAllianceWizard::getMatchTabletList()
 {
 	QStringList list;
@@ -82,7 +81,6 @@ QStringList NewEventBlueAllianceWizard::getMatchTabletList()
 
 	return list;
 }
-
 
 QString NewEventBlueAllianceWizard::getEventKey()
 {

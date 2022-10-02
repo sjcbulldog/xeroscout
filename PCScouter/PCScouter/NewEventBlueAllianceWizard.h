@@ -51,7 +51,6 @@ public:
 
 	void setTabletList(const QStringList& tablets);
 	QStringList getTabletList();
-
 	QStringList getPitTabletList();
 	QStringList getMatchTabletList();
 

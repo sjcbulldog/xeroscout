@@ -214,7 +214,7 @@ void NewEventAppController::promptUser()
 		setDataModel(dm);
 		if (dataModel() == nullptr)
 		{
-			dataModel() = nullptr;
+			setDataModel(nullptr);
 
 			emit logMessage("cannot create event data model - " + error);
 			emit errorMessage(error);

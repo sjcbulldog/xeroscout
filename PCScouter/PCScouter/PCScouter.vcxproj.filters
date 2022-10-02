@@ -118,6 +118,12 @@
     <ClCompile Include="MatchScheduleGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NewEventOffseasonWizard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectOffseasonRosterPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="PCScouter.h">
@@ -148,6 +154,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="PickListGenerator.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="NewEventOffseasonWizard.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -215,6 +224,9 @@
       <Filter>AppControllers\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MatchScheduleGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectOffseasonRosterPage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

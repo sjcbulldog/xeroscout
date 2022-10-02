@@ -56,6 +56,10 @@ namespace xero
 					buildModel(xero::ba::BlueAllianceEngine& engine, const QString& pitform, const QString& matchform,
 						const QString& evkey, QString& error);
 
+				static PCSCOUTDATA_EXPORT std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel>
+					buildModel(const QString& pitform, const QString& matchform,
+						const QString& evkey, const QString &evname, QString& error);
+
 				static PCSCOUTDATA_EXPORT bool addTeamsMatches(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
 
 				static PCSCOUTDATA_EXPORT bool addTeams(xero::ba::BlueAllianceEngine& engine, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, const QStringList& keys);

@@ -89,9 +89,6 @@ SelectScoutingFormsWizardPage::~SelectScoutingFormsWizardPage()
 void SelectScoutingFormsWizardPage::initializePage()
 {
 	QWizardPage::initializePage();
-
-	NewEventBlueAllianceWizard* w = dynamic_cast<NewEventBlueAllianceWizard*>(wizard());
-	w->setTitle();
 }
 
 void SelectScoutingFormsWizardPage::resizeEvent(QResizeEvent* ev)
