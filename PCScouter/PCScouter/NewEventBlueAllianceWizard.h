@@ -39,7 +39,7 @@ public:
 	typedef std::map<QString, QVariant> PropertyMap;
 
 public:
-	NewEventBlueAllianceWizard(xero::scouting::datamodel::ImageManager& mgr, xero::ba::BlueAllianceEngine &engine);
+	NewEventBlueAllianceWizard(xero::scouting::datamodel::ImageManager& mgr, xero::ba::BlueAllianceEngine &engine, const QStringList tablets);
 	virtual ~NewEventBlueAllianceWizard();
 
 	QString getEventKey();
@@ -49,7 +49,6 @@ public:
 
 	void setTitle();
 
-	void setTabletList(const QStringList& tablets);
 	QStringList getTabletList();
 	QStringList getPitTabletList();
 	QStringList getMatchTabletList();

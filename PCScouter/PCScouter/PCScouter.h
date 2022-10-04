@@ -93,7 +93,7 @@ private:
 	void showingFileMenu();
 	void newEventBA();
 	void newEventOffSeason();
-	void newEventComplete(bool err);
+
 	void openEvent();
 	void saveEvent();
 	void saveEventAs();
@@ -106,6 +106,7 @@ private:
 	// Import Menu
 	void showingImportMenu();
 	void importMatchSchedule();
+	void loadOffseasonMatchSchedule();
 	void importMatchScheduleComplete(bool err);
 	void importMatchData();
 	void importMatchDataComplete(bool err);
@@ -122,6 +123,9 @@ private:
 
 	// Help menu
 	void about();
+
+	void newBAEventComplete(bool err);
+	void newOffseasonEventComplete(bool err);
 
 	void saveAndBackup();
 	void setDataModelStatus();

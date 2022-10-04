@@ -79,12 +79,14 @@ copy $(ProjectDir)images\*.* $(OutDir)
 if not exist "$(OutDir)html" mkdir $(OutDir)html
 copy $(ProjectDir)html\*.* $(OutDir)\html
 $(QTDIR)\bin\windeployqt  --compiler-runtime --force --verbose 2 $(OutDir)$(ProjectName).exe
-copy $(QTDIR)\bin\Qt5Sql.dll $(OutDir)
-copy $(QTDIR)\bin\Qt5Sqld.dll $(OutDir)
-copy $(QTDIR)\bin\Qt5Charts.dll $(OutDir)
-copy $(QTDIR)\bin\Qt5Chartsd.dll $(OutDir)
-copy $(QTDIR)\bin\Qt5Bluetooth.dll $(OutDir)
-copy $(QTDIR)\bin\Qt5Bluetoothd.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6OpenGL.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6OpenGLWidgets.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Sql.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Sqld.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Charts.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Chartsd.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Bluetooth.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Bluetoothd.dll $(OutDir)
 mkdir $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlite.dll $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers
@@ -121,12 +123,14 @@ copy $(ProjectDir)images\*.* $(OutDir)
 if not exist "$(OutDir)html" mkdir $(OutDir)html
 copy $(ProjectDir)html\*.* $(OutDir)\html
 $(QTDIR)\bin\windeployqt  --compiler-runtime --force --verbose 2 $(OutDir)$(ProjectName).exe
-copy $(QTDIR)\bin\Qt5Sql.dll $(OutDir)
-copy $(QTDIR)\bin\Qt5Sqld.dll $(OutDir)
-copy $(QTDIR)\bin\Qt5Charts.dll $(OutDir)
-copy $(QTDIR)\bin\Qt5Chartsd.dll $(OutDir)
-copy $(QTDIR)\bin\Qt5Bluetooth.dll $(OutDir)
-copy $(QTDIR)\bin\Qt5Bluetoothd.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6OpenGL.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6OpenGLWidgets.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Sql.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Sqld.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Charts.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Chartsd.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Bluetooth.dll $(OutDir)
+copy $(QTDIR)\bin\Qt6Bluetoothd.dll $(OutDir)
 mkdir $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlite.dll $(OutDir)\sqldrivers
 copy $(QTDIR)\plugins\sqldrivers\qsqlited.dll $(OutDir)\sqldrivers

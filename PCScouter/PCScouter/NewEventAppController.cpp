@@ -203,9 +203,7 @@ void NewEventAppController::start()
 
 void NewEventAppController::promptUser()
 {
-	NewEventBlueAllianceWizard wizard(images_, blueAlliance()->getEngine());
-	wizard.setTabletList(tablets_);
-
+	NewEventBlueAllianceWizard wizard(images_, blueAlliance()->getEngine(), tablets_);
 	if (wizard.exec() == QDialog::DialogCode::Accepted) {
 		bool good = true;
 		QString error;
@@ -275,6 +273,7 @@ void NewEventAppController::promptUser()
 		else {
 
 			dataModel()->setTabletLists(wizard.getPitTabletList(), wizard.getMatchTabletList());
+			tablets_ = wizard.getTabletList();
 
 			state_ = State::WaitingForMatches;
 			blueAlliance()->requestMatches(wizard.getEventKey());

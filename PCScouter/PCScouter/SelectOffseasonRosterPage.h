@@ -22,11 +22,11 @@ private:
 	void titleEdited(const QString& text);
 	void selectOffseasonRosterForm();
 	void setLabelText(QLabel* label, const QString& str);
+	bool isValidTeamList(const QString& list, QString& err);
 
 private:
 	QString key_;
 	QString title_;
-	QString roster_;
 	NewEventOffseasonWizard::PropertyMap& map_;
 	QLabel* offseason_roster_form_;
 };

@@ -117,8 +117,11 @@ void NewOffseasonEventAppController::promptUser()
 			addTeamFromRoster(wizard.getRosterForm());
 
 			dataModel()->setTabletLists(wizard.getPitTabletList(), wizard.getMatchTabletList());
-			state_ = State::Done;
+			tablets_ = wizard.getTabletList();
+
 			emit complete(false);
+
+			state_ = State::Done;
 		}
 	}
 	else {
@@ -136,7 +139,7 @@ bool NewOffseasonEventAppController::addTeamFromRoster(QString roster)
 		return false;
 
 	if (reader.colCount() < 2) {
-		emit errorMessage("Invalid roster file - must have at least two columns");
+		emit errorMessage("Invalid teams file - must have at least two columns");
 		return false;
 	}
 
@@ -147,8 +150,40 @@ bool NewOffseasonEventAppController::addTeamFromRoster(QString roster)
 		QString key, nick, name, city, state, country;
 		int number;
 
-		row[0].
+		if (!std::holds_alternative<double>(row[0]))
+		{
+			QString msg("Invalid teams file - row ");
+			msg += QString::number(i + 1) + ": column 1: not an integer value - must be a team number";
+			emit errorMessage(msg);
+			return false;
+		}
+
+		number = static_cast<int>(std::get<double>(row[0]));
+		key = "frc" + QString::number(number);
+
+		nick = QString::fromStdString(std::get<std::string>(row[1]));
+
+		if (row.size() > 2) {
+			name = QString::fromStdString(std::get<std::string>(row[2]));
+		}
+
+		if (row.size() > 3) {
+			city = QString::fromStdString(std::get<std::string>(row[3]));
+		}
+
+		if (row.size() > 4) {
+			state = QString::fromStdString(std::get<std::string>(row[4]));
+		}
+
+		if (row.size() > 5) {
+			country = QString::fromStdString(std::get<std::string>(row[5]));
+		}
+		else {
+			country = "USA";
+		}
 
 		dm->addTeam(key, number, nick, name, city, state, country);
 	}
+
+	return false;
 }

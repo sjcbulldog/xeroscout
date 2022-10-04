@@ -29,24 +29,19 @@
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
-NewEventBlueAllianceWizard::NewEventBlueAllianceWizard(ImageManager &mgr, BlueAllianceEngine &engine)
+NewEventBlueAllianceWizard::NewEventBlueAllianceWizard(ImageManager &mgr, BlueAllianceEngine &engine, const QStringList tablets)
 {
 	addPage(new SelectEventWizardPage(props_, engine));
 
 	addPage(new SelectScoutingFormsWizardPage(props_));
 
 	page_ = new TabletPoolWizardPage(props_);
+	page_->setTabletList(tablets);
 	addPage(page_);
 }
 
 NewEventBlueAllianceWizard::~NewEventBlueAllianceWizard()
 {
-}
-
-void NewEventBlueAllianceWizard::setTabletList(const QStringList& list)
-{
-	props_["tablets"] = QVariant(list);
-	page_->setTabletList(list);
 }
 
 QStringList NewEventBlueAllianceWizard::getTabletList()

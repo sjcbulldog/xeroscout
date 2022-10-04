@@ -10,6 +10,7 @@ NewEventOffseasonWizard::NewEventOffseasonWizard(xero::scouting::datamodel::Imag
 	addPage(new SelectScoutingFormsWizardPage(props_));
 
 	page_ = new TabletPoolWizardPage(props_);
+	page_->setTabletList(tablets_);
 	addPage(page_);
 }
 

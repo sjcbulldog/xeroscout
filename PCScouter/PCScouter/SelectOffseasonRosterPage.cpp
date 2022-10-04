@@ -1,10 +1,12 @@
 #include "SelectOffseasonRosterPage.h"
 #include "NewEventOffseasonWizard.h"
+#include "CsvReader.h"
 #include <QPushButton>
 #include <QLabel>
 #include <QBoxLayout>
 #include <QFileDialog>
 #include <QLineEdit>
+#include <QMessageBox>
 
 SelectOffseasonRosterPage::SelectOffseasonRosterPage(NewEventOffseasonWizard::PropertyMap& map) : map_(map)
 {
@@ -48,7 +50,7 @@ SelectOffseasonRosterPage::SelectOffseasonRosterPage(NewEventOffseasonWizard::Pr
 	layout->addWidget(row);
 
 	l = new QLabel(row);
-	l->setText("Team Roster List: ");
+	l->setText("Teams List: ");
 	rowlayout->addWidget(l);
 
 	offseason_roster_form_ = new QLabel(row);
@@ -65,6 +67,61 @@ SelectOffseasonRosterPage::SelectOffseasonRosterPage(NewEventOffseasonWizard::Pr
 
 SelectOffseasonRosterPage::~SelectOffseasonRosterPage()
 {
+}
+
+bool SelectOffseasonRosterPage::isValidTeamList(const QString& filename, QString& error)
+{
+	bool ret = true;
+
+	QFileInfo info(filename);
+	if (info.exists()) 
+	{
+		if (!info.isFile()) 
+		{
+			error = "the file '" + filename + "' exists, but is not a regular file";
+			ret = false;
+		}
+		else {
+			CsvReader reader(false);
+			std::filesystem::path path(filename.toStdString());
+			if (!reader.readFile(path, CsvReader::HeaderType::Headers))
+			{
+				error = "the file '" + filename + "' is not a valid CSV file";
+				ret = false;
+			}
+			else 
+			{
+				for (int i = 0; i < reader.rowCount(); i++) {
+					const DataRow& row = reader.getRow(i);
+					if (row.size() < 2) {
+						error += info.fileName() + ":" + QString::number(i + 1) + ": less than two entries in row - bad CSV file\n";
+						ret = false;
+					}
+					else
+					{
+						if (!std::holds_alternative<double>(row[0]))
+						{
+							error += info.fileName() + ":" + QString::number(i + 1) + ": expected first column to be a number - bad CSV file\n";
+							ret = false;
+						}
+
+						if (!std::holds_alternative<std::string>(row[1]))
+						{
+							error += info.fileName() + ":" + QString::number(i + 1) + ": expected second column to be a string - bad CSV file\n";
+							ret = false;
+						}
+					}
+				}
+			}
+		}
+	}
+	else 
+	{
+		error = "the file '" + filename + "' does not exist";
+		ret = false;
+	}
+
+	return ret;
 }
 
 void SelectOffseasonRosterPage::keyEdited(const QString& text)
@@ -111,11 +168,20 @@ void SelectOffseasonRosterPage::selectOffseasonRosterForm()
 {
 	QString dir;
 
-	QString filename = QFileDialog::getOpenFileName(this, "Select Pit Scouting Form", dir, "CSV Files (*.csv);;All Files (*.*)");
-	map_[RosterFileName] = QVariant(filename);
+	QString filename = QFileDialog::getOpenFileName(this, "Select Teams List", dir, "CSV Files (*.csv);;All Files (*.*)");
 
-	roster_ = filename;
-	setLabelText(offseason_roster_form_, roster_);
+	if (filename.length()) {
+		QString error;
+		if (!isValidTeamList(filename, error)) {
+			QMessageBox::critical(this, "Error In Teams File", error);
+			map_[RosterFileName] = QVariant("");
+			setLabelText(offseason_roster_form_, "");
+		}
+		else {
+			map_[RosterFileName] = QVariant(filename);
+			setLabelText(offseason_roster_form_, filename);
+		}
+	}
 
 	emit completeChanged();
 }

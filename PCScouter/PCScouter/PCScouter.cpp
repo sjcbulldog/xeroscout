@@ -65,6 +65,8 @@
 #include "TestDataInjector.h"
 #include "PicklistHTMLGenerator.h"
 
+#include "CsvReader.h"
+
 #include <QSqlDatabase>
 #include <QMessageBox>
 #include <QApplication>
@@ -592,6 +594,9 @@ void PCScouter::createMenus()
 	{
 		import_match_schedule_ = import_menu_->addAction(tr("Match Schedule"));
 		(void)connect(import_match_schedule_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
+
+		import_match_schedule_ = import_menu_->addAction(tr("Load Offseason Match Schedule"));
+		(void)connect(import_match_schedule_, &QAction::triggered, this, &PCScouter::loadOffseasonMatchSchedule);
 	}
 	else
 	{
@@ -1169,6 +1174,65 @@ void PCScouter::importMatchScheduleComplete(bool err)
 	updateCurrentView();
 }
 
+void PCScouter::loadOffseasonMatchSchedule()
+{
+	QString filename = QFileDialog::getOpenFileName(this, "Select Match List", "", "CSV Files (*.csv);;All Files (*.*)");
+	if (filename.length())
+	{
+		CsvReader reader(true);
+
+		std::filesystem::path rpath(filename.toStdString());
+		if (!reader.readFile(rpath, CsvReader::HeaderType::Headers))
+		{
+			QMessageBox::critical(this, "Error", "Could not load match file '" + filename + "'");
+			return;
+		}
+
+		if (reader.colCount() < 9) {
+			QMessageBox::critical(this, "Error", "Invalid contents in file '" + filename + "' - expected 9 columns");
+			return;
+		}
+
+		for (int i = 0; i < reader.rowCount(); i++) {
+			int tnum;
+			QString tkey;
+
+			const DataRow& row = reader.getRow(i);
+
+			QString comp = QString::fromStdString(std::get<std::string>(row[0]));
+			int set = static_cast<int>(std::get<double>(row[1]));
+			int match = static_cast<int>(std::get<double>(row[2]));
+
+			QString key = comp + "-" + QString::number(set) + "-" + QString::number(match);
+			auto dm = data_model_->addMatch(key, comp, set, match, 0);
+
+			tnum = static_cast<int>(std::get<double>(row[3]));
+			tkey = "frc" + QString::number(tnum);
+			data_model_->addTeamToMatch(key, Alliance::Red, 1, tkey, tnum);
+
+			tnum = static_cast<int>(std::get<double>(row[4]));
+			tkey = "frc" + QString::number(tnum);
+			data_model_->addTeamToMatch(key, Alliance::Red, 2, tkey, tnum);
+
+			tnum = static_cast<int>(std::get<double>(row[5]));
+			tkey = "frc" + QString::number(tnum);
+			data_model_->addTeamToMatch(key, Alliance::Red, 3, tkey, tnum);
+
+			tnum = static_cast<int>(std::get<double>(row[6]));
+			tkey = "frc" + QString::number(tnum);
+			data_model_->addTeamToMatch(key, Alliance::Blue, 1, tkey, tnum);
+
+			tnum = static_cast<int>(std::get<double>(row[7]));
+			tkey = "frc" + QString::number(tnum);
+			data_model_->addTeamToMatch(key, Alliance::Blue, 2, tkey, tnum);
+
+			tnum = static_cast<int>(std::get<double>(row[8]));
+			tkey = "frc" + QString::number(tnum);
+			data_model_->addTeamToMatch(key, Alliance::Blue, 3, tkey, tnum);
+		}
+	}
+}
+
 void PCScouter::importMatchSchedule()
 {
 	const char* maxmatchprop = "bamaxmatch";
@@ -1220,9 +1284,31 @@ void PCScouter::exportDataSet()
 	}
 }
 
-void PCScouter::newEventComplete(bool err)
+void PCScouter::newBAEventComplete(bool err)
 {
 	NewEventAppController* ctrl = dynamic_cast<NewEventAppController*>(app_controller_);
+	assert(ctrl != nullptr);
+
+	if (err)
+	{
+		view_frame_->setDataModel(nullptr);
+	}
+	else
+	{
+		settings_.setValue(TabletPoolSetting, ctrl->tablets());
+		setDataModel(ctrl->dataModel());
+		setupViews();
+
+		QMessageBox::information(this, "Save File", "The event has been created, please save the data to a file");
+		saveEventAs();
+
+		setDataModelStatus();
+	}
+}
+
+void PCScouter::newOffseasonEventComplete(bool err)
+{
+	NewOffseasonEventAppController* ctrl = dynamic_cast<NewOffseasonEventAppController*>(app_controller_);
 	assert(ctrl != nullptr);
 
 	if (err)
@@ -1250,8 +1336,8 @@ void PCScouter::newEventBA()
 	}
 
 	QStringList tablets;
-	if (settings_.contains("tablets"))
-		tablets = settings_.value("tablets").toStringList();
+	if (settings_.contains(TabletPoolSetting))
+		tablets = settings_.value(TabletPoolSetting).toStringList();
 
 	auto ctlr = new NewEventAppController(images_, blue_alliance_, tablets, year_);
 	app_controller_ = ctlr;
@@ -1260,7 +1346,7 @@ void PCScouter::newEventBA()
 	if (injector.hasData("nomatches") && injector.data("nomatches").toBool())
 		ctlr->simNoMatches();
 
-	(void)connect(app_controller_, &NewEventAppController::complete, this, &PCScouter::newEventComplete);
+	(void)connect(app_controller_, &NewEventAppController::complete, this, &PCScouter::newBAEventComplete);
 	(void)connect(app_controller_, &ApplicationController::logMessage, this, &PCScouter::logMessage);
 	(void)connect(app_controller_, &ApplicationController::errorMessage, this, &PCScouter::errorMessage);
 }
@@ -1279,7 +1365,7 @@ void PCScouter::newEventOffSeason()
 	auto ctlr = new NewOffseasonEventAppController(images_, tablets, year_);
 	app_controller_ = ctlr;
 
-	(void)connect(app_controller_, &NewEventAppController::complete, this, &PCScouter::newEventComplete);
+	(void)connect(app_controller_, &NewOffseasonEventAppController::complete, this, &PCScouter::newOffseasonEventComplete);
 	(void)connect(app_controller_, &ApplicationController::logMessage, this, &PCScouter::logMessage);
 	(void)connect(app_controller_, &ApplicationController::errorMessage, this, &PCScouter::errorMessage);
 }
