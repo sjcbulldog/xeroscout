@@ -595,8 +595,8 @@ void PCScouter::createMenus()
 		import_match_schedule_ = import_menu_->addAction(tr("Match Schedule"));
 		(void)connect(import_match_schedule_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
 
-		import_match_schedule_ = import_menu_->addAction(tr("Load Offseason Match Schedule"));
-		(void)connect(import_match_schedule_, &QAction::triggered, this, &PCScouter::loadOffseasonMatchSchedule);
+		import_offseason_schedule_ = import_menu_->addAction(tr("Load Offseason Match Schedule"));
+		(void)connect(import_offseason_schedule_, &QAction::triggered, this, &PCScouter::loadOffseasonMatchSchedule);
 	}
 	else
 	{
@@ -1193,6 +1193,8 @@ void PCScouter::loadOffseasonMatchSchedule()
 			return;
 		}
 
+		data_model_->blockSignals(true);
+
 		for (int i = 0; i < reader.rowCount(); i++) {
 			int tnum;
 			QString tkey;
@@ -1230,6 +1232,12 @@ void PCScouter::loadOffseasonMatchSchedule()
 			tkey = "frc" + QString::number(tnum);
 			data_model_->addTeamToMatch(key, Alliance::Blue, 3, tkey, tnum);
 		}
+
+		data_model_->blockSignals(false);
+
+		saveAndBackup();
+		view_frame_->needsRefreshAll();
+		updateCurrentView();
 	}
 }
 

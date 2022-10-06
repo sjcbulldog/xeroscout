@@ -214,6 +214,7 @@ private:
 	QAction* import_match_data_;
 	QAction* import_zebra_data_;
 	QAction* import_match_schedule_;
+	QAction* import_offseason_schedule_;
 	QAction* import_kpi_;
 	QAction* sync_with_central_;
 
