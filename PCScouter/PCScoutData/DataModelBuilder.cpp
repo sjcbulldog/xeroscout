@@ -64,8 +64,11 @@ void DataModelBuilder::breakoutBlueAlliancePerRobotData(std::shared_ptr<Scouting
 	for (auto m : dm->matches()) {
 		if (m->match() <= maxmatch)
 		{
-			breakOutBAData(dm, m, Alliance::Red, data[m->key()].first);
-			breakOutBAData(dm, m, Alliance::Blue, data[m->key()].second);
+			auto md = data[m->key()];
+			if (md.first != nullptr)
+				breakOutBAData(dm, m, Alliance::Red, md.first);
+			if (md.second != nullptr)
+				breakOutBAData(dm, m, Alliance::Blue, md.second);
 		}
 	}
 }

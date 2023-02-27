@@ -4,6 +4,7 @@
 #include "ScoutingDataModel.h"
 #include "ImageManager.h"
 #include <QStringList>
+#include <QSettings>
 
 class NewOffseasonEventAppController :  public ApplicationController
 {

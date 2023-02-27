@@ -37,7 +37,7 @@ public:
 		return (data_[row])[col];
 	}
 
-	const DataRow& getRow(size_t row) {
+	const DataRow& getRow(size_t row) const {
 		return data_[row];
 	}
 

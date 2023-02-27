@@ -1,12 +1,14 @@
 #include "SelectOffseasonRosterPage.h"
 #include "NewEventOffseasonWizard.h"
 #include "CsvReader.h"
+#include "PCScouter.h"
 #include <QPushButton>
 #include <QLabel>
 #include <QBoxLayout>
 #include <QFileDialog>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QSettings>
 
 SelectOffseasonRosterPage::SelectOffseasonRosterPage(NewEventOffseasonWizard::PropertyMap& map) : map_(map)
 {
@@ -168,18 +170,36 @@ void SelectOffseasonRosterPage::selectOffseasonRosterForm()
 {
 	QString dir;
 
+	QSettings settings;
+	if (settings.contains(PCScouter::OffseasonDir))
+	{
+		dir = settings.value(PCScouter::OffseasonDir).toString();
+	}
+
 	QString filename = QFileDialog::getOpenFileName(this, "Select Teams List", dir, "CSV Files (*.csv);;All Files (*.*)");
 
-	if (filename.length()) {
-		QString error;
-		if (!isValidTeamList(filename, error)) {
-			QMessageBox::critical(this, "Error In Teams File", error);
+	if (filename.length()) 
+	{
+		QFileInfo info(filename);
+		if (!info.exists())
+		{
+			QMessageBox::critical(this, "Error", "File specified does not exist");
 			map_[RosterFileName] = QVariant("");
 			setLabelText(offseason_roster_form_, "");
 		}
-		else {
-			map_[RosterFileName] = QVariant(filename);
-			setLabelText(offseason_roster_form_, filename);
+		else
+		{
+			settings.setValue(PCScouter::OffseasonDir, info.absolutePath());
+			QString error;
+			if (!isValidTeamList(filename, error)) {
+				QMessageBox::critical(this, "Error", error);
+				map_[RosterFileName] = QVariant("");
+				setLabelText(offseason_roster_form_, "");
+			}
+			else {
+				map_[RosterFileName] = QVariant(filename);
+				setLabelText(offseason_roster_form_, filename);
+			}
 		}
 	}
 

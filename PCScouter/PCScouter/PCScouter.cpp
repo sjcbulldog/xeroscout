@@ -1174,11 +1174,75 @@ void PCScouter::importMatchScheduleComplete(bool err)
 	updateCurrentView();
 }
 
+bool PCScouter::checkOffseasonEvent(const QString &filename, const CsvReader& data, QString& messages)
+{
+	bool ret = true;
+
+	for (int i = 0; i < data.rowCount(); i++)
+	{
+		const DataRow& row = data.getRow(i);
+
+		if (!std::holds_alternative<std::string>(row[0]))
+		{
+			ret = false;
+			messages += filename + ":row " + QString::number(i + 1) + ":col 1: expected a string, got a number\n";
+		}
+
+		if (!std::holds_alternative<double>(row[1]))
+		{
+			ret = false;
+			messages += filename + ":row " + QString::number(i + 1) + ":col 2: expected a number, got a string\n";
+		}
+
+		if (!std::holds_alternative<double>(row[2]))
+		{
+			ret = false;
+			messages += filename + ":row " + QString::number(i + 1) + ":col 3: expected a number, got a string\n";
+		}
+
+		for (int j = 3; j < 9; j++) 
+		{
+			if (!std::holds_alternative<double>(row[j]))
+			{
+				ret = false;
+				messages += filename + ":row " + QString::number(i + 1) + ":col " + QString::number(j) + ": expected a number, got a string\n";
+			}
+
+			int teamno = static_cast<int>(std::get<double>(row[j]));
+			auto team = data_model_->findTeamByNumber(teamno);
+			if (team == nullptr)
+			{
+				ret = false;
+				messages += filename + ":row " + QString::number(i + 1) + ":col " + QString::number(j);
+				messages += ": team number '" + QString::number(teamno) + "' is not a valid team number\n";
+			}
+		}
+	}
+
+	return ret;
+}
+
 void PCScouter::loadOffseasonMatchSchedule()
 {
-	QString filename = QFileDialog::getOpenFileName(this, "Select Match List", "", "CSV Files (*.csv);;All Files (*.*)");
+	QString dir;
+
+	if (settings_.contains(OffseasonDir))
+	{
+		dir = settings_.value(OffseasonDir).toString();
+	}
+
+	QString filename = QFileDialog::getOpenFileName(this, "Select Match List", dir, "CSV Files (*.csv);;All Files (*.*)");
 	if (filename.length())
 	{
+		QFileInfo info(filename);
+		if (!info.exists())
+		{
+			QMessageBox::critical(this, "Error", "Match file '" + filename + "' does not exist");
+			return;
+		}
+
+		settings_.setValue(OffseasonDir, info.absolutePath());
+
 		CsvReader reader(true);
 
 		std::filesystem::path rpath(filename.toStdString());
@@ -1188,8 +1252,16 @@ void PCScouter::loadOffseasonMatchSchedule()
 			return;
 		}
 
-		if (reader.colCount() < 9) {
+		if (reader.colCount() < 9) 
+		{
 			QMessageBox::critical(this, "Error", "Invalid contents in file '" + filename + "' - expected 9 columns");
+			return;
+		}
+
+		QString messages;
+		if (!checkOffseasonEvent(filename, reader, messages))
+		{
+			QMessageBox::critical(this, "Error", messages);
 			return;
 		}
 
@@ -1233,6 +1305,7 @@ void PCScouter::loadOffseasonMatchSchedule()
 			data_model_->addTeamToMatch(key, Alliance::Blue, 3, tkey, tnum);
 		}
 
+		data_model_->assignMatches();
 		data_model_->blockSignals(false);
 
 		saveAndBackup();

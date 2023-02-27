@@ -2,6 +2,7 @@
 #include "NewEventOffseasonWizard.h"
 #include "DataModelBuilder.h"
 #include "CsvReader.h"
+#include "PCScouter.h"
 #include <filesystem>
 
 using namespace xero::ba;

@@ -32,6 +32,7 @@
 #include "ApplicationController.h"
 #include "KPIController.h"
 #include "SyncManager.h"
+#include "CsvReader.h"
 #include <QMainWindow>
 #include <QSplitter>
 #include <QListWidget>
@@ -56,6 +57,8 @@ public:
 		datafile_ = file;
 	}
 
+	static constexpr const char* OffseasonDir = "offseason-dir";
+
 protected:
 	void closeEvent(QCloseEvent* ev);
 	void showEvent(QShowEvent* ev);
@@ -68,6 +71,7 @@ private:
 	static constexpr const char* EventNameEntry = "eventname";
 	static constexpr const char* TabletPoolSetting = "tablets";
 	static constexpr const char* DebugSetting = "debug";
+
 
 private:
 	void readPreferences();
@@ -169,6 +173,8 @@ private:
 
 	void outputExpData(xero::scouting::datamodel::ScoutingDataSet& ds);
 	void findPointFields(QStringList& list);
+
+	bool checkOffseasonEvent(const QString &filename, const CsvReader& row, QString &messages);
 
 private:
 	// 
