@@ -154,7 +154,6 @@ namespace xero
 				}
 			}
 
-
 			int USBTransport::writeDataBlock()
 			{
 				int remaining;
@@ -215,7 +214,7 @@ namespace xero
 						b2 = (uint8_t)data[3];
 						int magic = b1 | (b2 << 8);
 
-						// std::cout << "read data, raw length " << len << ", magic " << magic << std::endl;
+						std::cout << "read data, raw length " << len << ", magic " << magic << std::endl;
 						
 						if (magic == 0x8888) {
 							appendReadData(data, len);
@@ -226,6 +225,7 @@ namespace xero
 							data[2] = 0x11;
 							data[3] = 0x11;
 							usb_->send(data);
+							std::cout << "    wrote handshake" << std::endl;
 						}
 						else if (magic == 0x1111) {
 							waiting_handshake_ = false;
@@ -238,7 +238,6 @@ namespace xero
 			{
 				std::lock_guard<std::mutex> guard(write_mutex_);
 				data_to_write_.append(data);
-
 				return true;
 			}
 

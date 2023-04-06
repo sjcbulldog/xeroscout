@@ -95,6 +95,7 @@ QByteArray USBUnitTest::readpacket(USBTransport *t)
 	return ret;
 }
 
+static int curlen = 5;
 void USBUnitTest::runClient()
 {
 	std::default_random_engine engine;
@@ -116,16 +117,18 @@ void USBUnitTest::runClient()
 
 	while (true) {
 		int size = length(engine);
+		size = curlen++;
 		write.resize(size);
+		write[0] = (size & 0xff);
+		write[1] = (size >> 8) & 0xff;
+		write[2] = (size >> 16) & 0xff;
+		write[3] = (size >> 24) & 0xff;
+
 		for (int i = 4; i < size; i++) {
-			write[0] = (size & 0xff);
-			write[1] = (size >> 8) & 0xff;
-			write[2] = (size >> 16) & 0xff;
-			write[3] = (size >> 24) & 0xff;
 			write[i] = contents(engine);
 		}
 
-		std::cout << "[" << size << "]" << std::flush;
+		std::cout << "[" << size << "]" << std::endl;
 		usb_client_transport_->write(write);
 
 		read = readpacket(usb_client_transport_);
