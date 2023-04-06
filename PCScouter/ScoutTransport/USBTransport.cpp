@@ -170,6 +170,9 @@ namespace xero
 					last_data_[2] = 0x88;
 					last_data_[3] = 0x88;
 					data_to_write_ = data_to_write_.remove(0, remaining);
+					
+
+					std::cout << "Wrote USB data " << remaining << "bytes" << std::endl;
 				}
 
 				write_time_ = std::chrono::high_resolution_clock::now();
