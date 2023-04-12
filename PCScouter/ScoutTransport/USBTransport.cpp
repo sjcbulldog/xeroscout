@@ -176,8 +176,12 @@ namespace xero
 						last_data_[1] = (remaining >> 8) & 0xFF;
 						last_data_[2] = 0x88;
 						last_data_[3] = 0x88;
+						last_data_[4] = (write_packet_no_ >> 0) & 0xff;
+						last_data_[5] = (write_packet_no_ >> 8) & 0xff;
+						last_data_[6] = (write_packet_no_ >> 16) & 0xff;
+						last_data_[7] = (write_packet_no_ >> 24) & 0xff;
 
-						std::cout << "Wrote USB data " << remaining << " bytes" << std::endl;
+						std::cout << "Wrote USB data " << remaining << " bytes, packet no " << write_packet_no_ << std::endl;
 
 						data = data.remove(0, remaining);
 						if (data.size() == 0) {
@@ -230,10 +234,19 @@ namespace xero
 						b2 = (uint8_t)data[3];
 						int magic = b1 | (b2 << 8);
 
-						std::cout << "read data, raw length " << len << ", magic " << magic << std::endl;
+						b1 = (uint8_t)data[4];
+						b2 = (uint8_t)data[5];
+						int b3 = (uint8_t)data[6];
+						int b4 = (uint8_t)data[7];
+						int packno = b1 | (b2 << 8) | (b3 << 16) | (b4 << 24);
+
+						std::cout << "read data, raw length " << len << ", magic " << magic << ", packno " << packno << std::endl;
 						
 						if (magic == 0x8888) {
-							appendReadData(data, len);
+							if (packno == read_packet_no_) {
+								read_packet_no_++;
+								appendReadData(data, len);
+							}
 
 							data.resize(4);
 							data[0] = 0;

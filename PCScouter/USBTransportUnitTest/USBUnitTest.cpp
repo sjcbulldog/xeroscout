@@ -136,11 +136,14 @@ void USBUnitTest::runClient()
 		if (read.size() != write.size()) {
 			std::cerr << "USBUnitTest: client: error, returned data length did not match, got " <<
 				read.size() << ", send " << write.size() << std::endl;
+
+			while (1);
 		}
 		else {
 			// Sizes match, check contents
 			if (write != read) {
 				std::cerr << "USBUnitTest: client: error, returned data did not match" << std::endl;
+				while (1);
 			}
 		}
 	}

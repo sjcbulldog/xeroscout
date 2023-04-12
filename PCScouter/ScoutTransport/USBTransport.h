@@ -72,8 +72,8 @@ namespace xero
 				int getWriteDataSize();
 				int getReadDataSize();
 
-				static constexpr const int USBDataSize = 508;
-				static constexpr const int USBHeaderSize = 4;
+				static constexpr const int USBDataSize = 504;
+				static constexpr const int USBHeaderSize = 8;
 
 			private:
 				std::thread thread_;
