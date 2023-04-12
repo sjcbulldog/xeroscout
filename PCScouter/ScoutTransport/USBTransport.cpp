@@ -234,11 +234,14 @@ namespace xero
 						b2 = (uint8_t)data[3];
 						int magic = b1 | (b2 << 8);
 
-						b1 = (uint8_t)data[4];
-						b2 = (uint8_t)data[5];
-						int b3 = (uint8_t)data[6];
-						int b4 = (uint8_t)data[7];
-						int packno = b1 | (b2 << 8) | (b3 << 16) | (b4 << 24);
+						int packno = -1;
+						if (magic == 0x8888) {
+							b1 = (uint8_t)data[4];
+							b2 = (uint8_t)data[5];
+							int b3 = (uint8_t)data[6];
+							int b4 = (uint8_t)data[7];
+							packno = b1 | (b2 << 8) | (b3 << 16) | (b4 << 24);
+						}
 
 						std::cout << "read data, raw length " << len << ", magic " << magic << ", packno " << packno << std::endl;
 						
