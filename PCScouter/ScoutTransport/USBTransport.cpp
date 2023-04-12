@@ -180,6 +180,7 @@ namespace xero
 						last_data_[5] = (write_packet_no_ >> 8) & 0xff;
 						last_data_[6] = (write_packet_no_ >> 16) & 0xff;
 						last_data_[7] = (write_packet_no_ >> 24) & 0xff;
+						write_packet_no_++;
 
 						std::cout << "Wrote USB data " << remaining << " bytes, packet no " << write_packet_no_ << std::endl;
 
@@ -247,8 +248,12 @@ namespace xero
 						
 						if (magic == 0x8888) {
 							if (packno == read_packet_no_) {
+								std::cout << "recevied data packet " << packno << std::endl;
 								read_packet_no_++;
 								appendReadData(data, len);
+							}
+							else {
+								std::cout << "recevied data packet " << packno << ", expected packet number " << read_packet_no_ << std::endl;
 							}
 
 							data.resize(4);
