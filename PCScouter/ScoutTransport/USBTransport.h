@@ -24,7 +24,8 @@
 
 #include "ScoutTransport.h"
 #include "XeroPCCableTransfer.h"
-#include <QDebug>
+#include <QtCore/QDebug>
+#include <QtCore/QVector>
 #include <thread>
 #include <mutex>
 
@@ -72,7 +73,7 @@ namespace xero
 				int getReadDataSize();
 
 				static constexpr const int USBDataSize = 508;
-				static constexpr const int USBHeaderSize = 4;
+				static constexpr const int USBHeaderSize = 8;
 
 			private:
 				std::thread thread_;
@@ -82,7 +83,7 @@ namespace xero
 				std::mutex init_mutex_;
 
 				QByteArray data_read_;
-				QByteArray data_to_write_;
+				QVector<QByteArray> data_to_write_;
 
 				bool running_;
 				bool error_;
@@ -90,7 +91,8 @@ namespace xero
 				bool inited_;
 				bool waiting_handshake_;
 
-				int packet_no_;
+				int write_packet_no_;
+				int read_packet_no_;
 				std::chrono::high_resolution_clock::time_point write_time_;
 				std::vector<uint8_t> last_data_;
 
