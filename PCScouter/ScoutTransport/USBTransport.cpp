@@ -177,12 +177,11 @@ namespace xero
 						last_data_[2] = 0x88;
 						last_data_[3] = 0x88;
 
-
-						std::cout << "Wrote USB data " << remaining << " bytes" << std::endl;
+						// std::cout << "Wrote USB data " << remaining << " bytes" << std::endl;
 
 						data = data.remove(0, remaining);
 						if (data.size() == 0) {
-							std::cout << "    Removed write request" << std::endl;
+							// std::cout << "    Removed write request" << std::endl;
 							data_to_write_.remove(0);
 						}
 
