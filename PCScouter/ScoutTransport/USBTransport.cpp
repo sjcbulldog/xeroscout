@@ -180,13 +180,16 @@ namespace xero
 						last_data_[5] = (write_packet_no_ >> 8) & 0xff;
 						last_data_[6] = (write_packet_no_ >> 16) & 0xff;
 						last_data_[7] = (write_packet_no_ >> 24) & 0xff;
-						write_packet_no_++;
+						write_packet_no_++ ;
 
+#ifdef WRITE_STUFF
 						std::cout << "Wrote USB data " << remaining << " bytes, packet no " << write_packet_no_ << std::endl;
-
+#endif
 						data = data.remove(0, remaining);
 						if (data.size() == 0) {
+#ifdef WRITE_STUFF
 							std::cout << "    Removed write request" << std::endl;
+#endif
 							data_to_write_.remove(0);
 						}
 
@@ -244,16 +247,22 @@ namespace xero
 							packno = b1 | (b2 << 8) | (b3 << 16) | (b4 << 24);
 						}
 
+#ifdef WRITE_STUFF
 						std::cout << "read data, raw length " << len << ", magic " << magic << ", packno " << packno << std::endl;
+#endif
 						
 						if (magic == 0x8888) {
 							if (packno == read_packet_no_) {
+#ifdef WRITE_STUFF
 								std::cout << "recevied data packet " << packno << std::endl;
+#endif
 								read_packet_no_++;
 								appendReadData(data, len);
 							}
 							else {
+#ifdef WRITE_STUFF
 								std::cout << "recevied data packet " << packno << ", expected packet number " << read_packet_no_ << std::endl;
+#endif
 							}
 
 							data.resize(4);
@@ -262,7 +271,9 @@ namespace xero
 							data[2] = 0x11;
 							data[3] = 0x11;
 							usb_->send(data);
+#ifdef WRITE_STUFF
 							std::cout << "    wrote handshake" << std::endl;
+#endif
 						}
 						else if (magic == 0x1111) {
 							waiting_handshake_ = false;
@@ -275,8 +286,10 @@ namespace xero
 			{
 				std::lock_guard<std::mutex> guard(write_mutex_);
 				data_to_write_.append(data);
+#ifdef WRITE_STUFF
 				std::cout << "USBTransport::write called - new entry " << data.size() << " bytes, ";
 				std::cout << data_to_write_.size() << " entries in the queue" << std::endl;
+#endif
 				return true;
 			}
 

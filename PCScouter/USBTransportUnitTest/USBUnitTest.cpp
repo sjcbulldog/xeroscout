@@ -128,7 +128,7 @@ void USBUnitTest::runClient()
 			write[i] = contents(engine);
 		}
 
-		std::cout << "[" << size << "]" << std::endl;
+		std::cout << "[" << size << "]" << std::flush;
 		usb_client_transport_->write(write);
 
 		read = readpacket(usb_client_transport_);
