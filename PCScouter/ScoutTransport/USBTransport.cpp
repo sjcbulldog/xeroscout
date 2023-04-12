@@ -178,7 +178,7 @@ namespace xero
 						last_data_[3] = 0x88;
 
 
-						std::cout << "Wrote USB data " << remaining << "bytes" << std::endl;
+						std::cout << "Wrote USB data " << remaining << " bytes" << std::endl;
 
 						data = data.remove(0, remaining);
 						if (data.size() == 0) {
@@ -255,7 +255,8 @@ namespace xero
 			{
 				std::lock_guard<std::mutex> guard(write_mutex_);
 				data_to_write_.append(data);
-				std::cout << "USBTransport::write called - " << data_to_write_.size() << " entries in the queue" << std::endl;
+				std::cout << "USBTransport::write called - new entry " << data.size() << " bytes, ";
+				std::cout << data_to_write_.size() << " entries in the queue" << std::endl;
 				return true;
 			}
 
