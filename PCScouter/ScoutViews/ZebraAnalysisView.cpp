@@ -92,7 +92,7 @@ namespace xero
 					for (int slot = 1; slot <= 3; slot++)
 					{
 						QString tkey = m->team(c, slot);
-						auto track = DataModelBuilder::createTrack(dataModel(), key, tkey);
+						auto track = DataModelBuilder::createTrack(dataModel(), key, tkey, 27.0);
 						if (track->hasData())
 							selected.push_back(std::make_pair(key, tkey));
 					}
@@ -101,7 +101,7 @@ namespace xero
 					for (int slot = 1; slot <= 3; slot++)
 					{
 						QString tkey = m->team(c, slot);
-						auto track = DataModelBuilder::createTrack(dataModel(), key, tkey);
+						auto track = DataModelBuilder::createTrack(dataModel(), key, tkey, 27.0);
 						if (track->hasData())
 							selected.push_back(std::make_pair(key, tkey));
 					}
@@ -118,7 +118,7 @@ namespace xero
 
 						if (m->teamToAllianceSlot(key, c, slot))
 						{						
-							auto track = DataModelBuilder::createTrack(dataModel(), m->key(), key);
+							auto track = DataModelBuilder::createTrack(dataModel(), m->key(), key, 27.0);
 							if (track->hasData())
 								selected.push_back(std::make_pair(m->key(), key));
 						}
@@ -126,7 +126,7 @@ namespace xero
 				}
 
 				analyzer_.setDataModel(dataModel());
-				analyzer_.analyze(selected);
+				analyzer_.analyze(selected, 27.0);
 				QString html;
 
 				printSequences(html);

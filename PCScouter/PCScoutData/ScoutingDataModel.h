@@ -107,6 +107,14 @@ namespace xero
 				/// \brief destroy this data model
 				virtual ~ScoutingDataModel();
 
+				void setInvertZebraData(bool b) {
+					invert_zebra_data_ = b;
+				}
+
+				bool invertZebraData() {
+					return invert_zebra_data_;
+				}
+
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
 				// These method query the data model but do not change them.  They will never cause a modelChanged event.
@@ -1213,6 +1221,8 @@ namespace xero
 				std::vector<RobotCapabilities> robot_capablities_;
 
 				std::list<std::pair<QString, QString>> image_view_list_;
+
+				bool invert_zebra_data_;
 			};
 		}
 	}

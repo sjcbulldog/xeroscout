@@ -406,7 +406,7 @@ DataModelBuilder::buildModel(xero::ba::BlueAllianceEngine& engine,
 //
 // Create a new track object
 //
-std::shared_ptr<RobotTrack> DataModelBuilder::createTrack(std::shared_ptr<ScoutingDataModel> model, const QString& mkey, const QString& tkey)
+std::shared_ptr<RobotTrack> DataModelBuilder::createTrack(std::shared_ptr<ScoutingDataModel> model, const QString& mkey, const QString& tkey, double width)
 {
 	Alliance c;
 	int slot;
@@ -450,6 +450,10 @@ std::shared_ptr<RobotTrack> DataModelBuilder::createTrack(std::shared_ptr<Scouti
 
 	QJsonArray tarray = obj.value("times").toArray();
 	getTimes(tarray, t);
+
+	if (model->invertZebraData()) {
+		t->invert(width);
+	}
 
 	return t;
 }

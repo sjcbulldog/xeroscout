@@ -141,11 +141,13 @@ namespace xero
 						break;
 					}
 				}
-				qstr += " )";
+				qstr += " );";
 
 				if (!query.exec(qstr))
 				{
 					QSqlError err = query.lastError();
+					QString s1 = err.driverText();
+					s1 = err.databaseText();
 					return false;
 				}
 

@@ -894,7 +894,9 @@ namespace xero
 				paint.drawLine(pf.x() - 12.0, pf.y() - 12.0, pf.x() + 12.0, pf.y() + 12.0);
 				paint.drawLine(pf.x() - 12.0, pf.y() + 12.0, pf.x() + 12.0, pf.y() - 12.0);
 
-				paintRobotID(paint, t->point(stpt), t);
+				if (stpt != -1) {
+					paintRobotID(paint, t->point(stpt), t);
+				}
 
 				paint.restore();
 			}

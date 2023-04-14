@@ -392,7 +392,7 @@ namespace xero
 					title = m->title(true);
 				}
 
-				auto track = DataModelBuilder::createTrack(dataModel(), mkey, tkey);
+				auto track = DataModelBuilder::createTrack(dataModel(), mkey, tkey, 27.0);
 				if (track == nullptr)
 					return nullptr;
 

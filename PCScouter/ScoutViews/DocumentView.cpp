@@ -86,7 +86,7 @@ namespace xero
 				if (year == -1)
 					addWidget(new QWidget());
 				else
-					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebratrack", PathFieldView::ViewMode::Track));			// 13
+					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebratrack", PathFieldView::ViewMode::Track));		// 13
 
 				GraphView* gview = new PreMatchGraphView(this);
 				gview->create();

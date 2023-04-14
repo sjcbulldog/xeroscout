@@ -642,6 +642,10 @@ void PCScouter::createMenus()
 		debug_act_->setChecked(true);
 	(void)connect(debug_act_, &QAction::triggered, this, &PCScouter::setDebug);
 
+	invert_y_zebra_ = settings_menu_->addAction(tr("Mirror Zebra Tag Data"));
+	invert_y_zebra_->setCheckable(true);
+	(void)connect(invert_y_zebra_, &QAction::triggered, this, &PCScouter::mirrorZebraTag);
+
 	help_menu_ = new QMenu(tr("Help"));
 	menuBar()->addMenu(help_menu_);
 
@@ -1069,6 +1073,13 @@ void PCScouter::about()
 {
 	AboutDialog about;
 	about.exec();
+}
+
+void PCScouter::mirrorZebraTag()
+{
+	data_model_->setInvertZebraData(!data_model_->invertZebraData());
+	invert_y_zebra_->setChecked(data_model_->invertZebraData());
+	view_frame_->refreshAll();
 }
 
 void PCScouter::setTeamNumber()

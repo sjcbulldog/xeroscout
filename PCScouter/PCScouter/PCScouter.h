@@ -124,6 +124,7 @@ private:
 
 	// Settings menu
 	void setTeamNumber();
+	void mirrorZebraTag();
 
 	// Help menu
 	void about();
@@ -230,6 +231,7 @@ private:
 	QMenu* settings_menu_;
 	QAction* debug_act_;
 	QAction* set_team_number_;
+	QAction* invert_y_zebra_;
 
 	QMenu* help_menu_;
 	QAction* about_;

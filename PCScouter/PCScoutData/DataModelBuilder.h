@@ -68,7 +68,7 @@ namespace xero
 
 				static PCSCOUTDATA_EXPORT std::shared_ptr<xero::scouting::datamodel::RobotTrack> createTrack(
 					std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model,
-					const QString& mkey, const QString& tkey);
+					const QString& mkey, const QString& tkey, double width);
 
 			private:
 				static void breakoutBlueAlliancePerRobotData(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm,

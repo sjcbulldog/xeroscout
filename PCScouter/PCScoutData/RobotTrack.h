@@ -47,6 +47,12 @@ namespace xero
                 virtual ~RobotTrack() {
                 }
 
+                void invert(double width) {
+                    for (int i = 0; i < points_.size(); i++) {
+                        QPointF pt(points_[i].x(), width - points_[i].y());
+                    }
+                }
+
                 void setColor(QColor c) {
                     color_ = c;
                 }
