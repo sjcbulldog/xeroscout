@@ -70,6 +70,17 @@ namespace xero
 			{
 			}
 
+			void ScoutingDataModel::getScoutingFormImages(QStringList& imlist)
+			{
+				if (match_scouting_form_ != nullptr) {
+					match_scouting_form_->getImages(imlist);
+				}
+
+				if (team_scouting_form_ != nullptr) {
+					team_scouting_form_->getImages(imlist);
+				}
+			}
+
 			void ScoutingDataModel::addTeamExtraData(const QString &tkey, const QString& name, const QVariant& value)
 			{
 				if (getFieldByName(name) == nullptr)

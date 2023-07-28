@@ -1,0 +1,176 @@
+{
+  "form": "team",
+  "sections": [
+    {
+      "name": "General",
+      "items": [
+        {
+          "type": "text",
+          "tag": "team_scouter",
+          "name": "Scouter",
+          "maxlen": 32
+        },
+        {
+          "type": "numeric",
+          "tag": "weight",
+          "name": "Weight (w/ bumpers)",
+          "minimum": 0,
+          "maximum": 200,
+          "minlimit": 120,
+          "maxlimit": 150
+        },
+        {
+          "type": "numeric",
+          "tag": "dimensions",
+          "name": "Dimensions (w/ bumpers)",
+          "minimum": 0,
+          "maximum": 0,
+          "minlimit": 100,
+          "maxlimit": 100
+
+        }
+      ]
+    },
+    {
+      "name": "Collecting",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "ground_cubes",
+          "name": "Cubes Ground"
+        },
+        {
+          "type": "boolean",
+          "tag": "ground_cones",
+          "name": "Cones Ground"
+        },
+        {
+          "type": "boolean",
+          "tag": "station_cubes",
+          "name": "Cubes Station"
+        },
+        {
+          "type": "boolean",
+          "tag": "station_cones",
+          "name": "Cones Station"
+        },
+        {
+          "type": "boolean",
+          "tag": "tipped_cones",
+          "name": "Tipped Cones"
+        }
+
+      ]
+    },
+    {
+      "name": "Placement",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "bottom_cubes",
+          "name": "Bottom Cubes"
+        },
+        {
+          "type": "boolean",
+          "tag": "bottom_cones",
+          "name": "Bottom Cones"
+        },
+        {
+          "type": "boolean",
+          "tag": "middle_cubes",
+          "name": "Middle Cubes"
+        },
+        {
+          "type": "boolean",
+          "tag": "middle_cones",
+          "name": "Middle Cones"
+        },
+        {
+          "type": "boolean",
+          "tag": "top_cubes",
+          "name": "Top Cubes"
+        },
+        {
+          "type": "boolean",
+          "tag": "top_cones",
+          "name": "Top Cones"
+        }
+      ]
+    },
+    {
+      "name": "DriveBase",
+      "items": [
+        {
+          "type": "choice",
+          "choices": [
+            "Mecanum",
+            "Swerve",
+            "Tank",
+            "Other"
+          ],
+          "tag": "db_type",
+          "name": "Drive Base"
+        }
+      ]
+    },
+    {
+      "name": "Autonomous",
+      "items": [
+         { 
+          "type": "choice",
+          "choices": [
+           "Left",
+           "Middle",
+           "Right"
+          ],
+          "tag": "start_pos",
+          "name": "Starting Position"
+        },
+        { 
+          "type": "boolean",
+          "tag": "dock",
+          "name": "Can Dock"
+        },
+        { 
+          "type": "boolean",
+          "tag": "engage",
+          "name": "Can Engage"
+        },
+        {
+        "type": "boolean",
+        "tag": "mobility",
+        "name": "Mobility"
+        },
+        {
+          "type": "text",
+          "tag": "add_notes",
+          "name": "Additional Notes",
+          "maxlen": 100
+        }
+     ]
+    },
+    {
+          "name": "Endgame",
+          "items": [
+            {
+              "type": "boolean",
+              "tag": "can_dock",
+              "name": "Can Dock"
+            },
+            {
+              "type": "boolean",
+              "tag": "can_engage",
+              "name": "Can Engage"
+            },
+            {
+              "type": "boolean",
+              "tag": "can_park",
+              "name": "Can Park"
+            }
+            
+          ]
+
+    }
+  ]
+}
+

@@ -42,6 +42,12 @@ namespace xero
 					name_ = name;
 				}
 
+				void getImages(QStringList& imlist) {
+					for (auto item : items_) {
+						item->getImages(imlist);
+					}
+				}
+
 				const QString& name() const {
 					return name_;
 				}

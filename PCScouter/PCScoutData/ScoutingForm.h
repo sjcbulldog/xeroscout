@@ -89,6 +89,8 @@ namespace xero
 					return rules_;
 				}
 
+				void getImages(QStringList& imlist);
+
 			private:
 				void parse(const QString& filename);
 				bool parseSection(const QJsonObject& obj, int index);

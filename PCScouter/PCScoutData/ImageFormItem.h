@@ -40,6 +40,10 @@ namespace xero
 				ImageFormItem(const QString& display, const QString& tag, const QString& image, double scale);
 				virtual ~ImageFormItem();
 
+				void getImages(QStringList& imlist) {
+					imlist.push_back(image_);
+				}
+
 				const QString& imageTag() const {
 					return image_;
 				}

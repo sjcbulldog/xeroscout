@@ -115,6 +115,8 @@ namespace xero
 					return invert_zebra_data_;
 				}
 
+				void getScoutingFormImages(QStringList& imlist);
+
 				//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//
 				// These method query the data model but do not change them.  They will never cause a modelChanged event.

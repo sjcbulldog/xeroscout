@@ -79,6 +79,13 @@ namespace xero
 			{
 			}
 
+			void ScoutingForm::getImages(QStringList& imlist)
+			{
+				for (auto s : sections_) {
+					s->getImages(imlist);
+				}
+			}
+
 			bool ScoutingForm::addSection(const QString& name)
 			{
 				for (auto s : sections_)

@@ -1,0 +1,400 @@
+{
+  "form": "match",
+  "sections": [
+    {
+      "name": "PreMatch",
+      "items": [
+        {
+          "type": "text",
+          "name": "Scouter",
+          "tag": "match_scouter",
+          "maxlen": 32
+        },
+        {
+          "type": "text",
+          "name": "Team Number ",
+          "tag": "team_number",
+          "maxlen": 32
+        }
+      ]
+    },
+    {
+      "name": "Autonomous",
+      "items": [
+        {
+          "alliance": "red",
+          "type": "image",
+          "image": "2023-Field.png", 
+          "tag": "auto",
+          "name": "AutoMode", 
+          "scale": 1.33,  
+          "imageitems" : [
+            {
+              "imageitemtype": "onoff",
+              "tag": "close",
+              "position": [ "centersize", 510, 135, 40, 40 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "middle",
+              "position": [ "centersize", 510, 200, 40, 40 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "far",
+              "position": [ "centersize", 510, 265, 40, 40 ]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "piece1",
+              "position": ["centersize", 355, 150, 15,15]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "piece2",
+              "position": ["centersize", 355, 190, 15,15]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "piece3",
+              "position": ["centersize", 355, 230, 15,15]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "piece4",
+              "position": ["centersize", 355, 270, 15, 15]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "docked",
+              "position": ["centersize", 450, 150, 30,30]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "mobility",
+              "position": ["centersize", 450, 190, 30,30]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "engaged",
+              "position": ["centersize", 450, 230, 30,30]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "bottom",
+              "minimum": 0,
+              "maximum": 5,
+              "minlimit" : 0,
+              "maxlimit" : 5,
+              "position": [ "centersize", 325, 100, 40, 40]
+            },
+                        {
+              "imageitemtype": "count",
+              "tag": "middle",
+              "minimum": 0,
+              "maximum": 5,
+              "minlimit" : 0,
+              "maxlimit" : 5,
+              "position": [ "centersize", 380, 100, 40, 40]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "top",
+              "minimum": 0,
+              "maximum": 5,
+              "minlimit" : 0,
+              "maxlimit" : 5,
+              "position": [ "centersize", 435, 100, 40, 40]
+            }
+
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2023-Field.png",
+          "tag": "auto",
+          "name": "AutoMode",
+          "scale": 1.33,
+          "imageitems" : [
+            {
+              "imageitemtype":"onoff",
+              "tag": "piece1",
+              "position": ["centersize", 250, 150, 15,15]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "piece2",
+              "position": ["centersize", 250, 190, 15,15]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "piece3",
+              "position": ["centersize", 250, 230, 15,15]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "piece4",
+              "position": ["centersize", 250, 270, 15, 15]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "close",
+              "position": [ "centersize", 100, 135, 40, 40 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "middle",
+              "position": [ "centersize", 100, 200, 40, 40 ]
+            },
+            {
+              "imageitemtype": "onoff",
+              "tag": "far",
+              "position": [ "centersize", 100, 265, 40, 40 ]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "docked",
+              "position": ["centersize", 145, 150, 30,30]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "mobility",
+              "position": ["centersize", 145, 190, 30,30]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "engaged",
+              "position": ["centersize", 145, 230, 30,30]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "bottom",
+              "minimum": 0,
+              "maximum": 5,
+              "minlimit" : 0,
+              "maxlimit" : 5,
+              "position": [ "centersize", 180, 100, 40, 40]
+            },
+              {
+              "imageitemtype": "count",
+              "tag": "middle",
+              "minimum": 0,
+              "maximum": 5,
+              "minlimit" : 0,
+              "maxlimit" : 5,
+              "position": [ "centersize", 235, 100, 40, 40]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "top",
+              "minimum": 0,
+              "maximum": 5,
+              "minlimit" : 0,
+              "maxlimit" : 5,
+              "position": [ "centersize", 290, 100, 40, 40]
+            }
+
+          ]
+        }
+      ]
+    },
+    
+{
+      "name": "Teleop",
+      "items": [
+        {
+          "alliance": "red",
+          "type": "image",
+          "image": "2023-Field.png", 
+          "tag": "teleop",
+          "name": "Teleoperated", 
+          "scale": 1.33,  
+          "imageitems" : [
+            {
+              "imageitemtype": "count",
+              "tag": "top",
+              "minimum": 0,
+              "maximum": 9,
+              "minlimit" : 0,
+              "maxlimit" : 9,
+              "position": [ "centersize", 510, 135, 40, 40]
+            },
+            
+            {
+              "imageitemtype": "count",
+              "tag": "middle",
+              "minimum": 0,
+              "maximum": 9,
+              "minlimit" : 0,
+              "maxlimit" : 9,
+              "position": [ "centersize", 510, 200, 40, 40 ]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "bottom",
+              "minimum": 0,
+              "maximum": 9,
+              "minlimit" : 0,
+              "maxlimit" : 9,
+              "position": [ "centersize", 510, 265, 40, 40 ]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "defense",
+              "position": [ "centersize", 400, 100, 40, 40]
+            }
+
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2023-Field.png",
+          "tag": "teleop",
+          "name": "Teleoperated",
+          "scale": 1.33,
+          "imageitems" : [
+            {
+              "imageitemtype": "count",
+              "tag": "top",
+              "minimum": 0,
+              "maximum": 9,
+              "minlimit" : 0,
+              "maxlimit" : 9,
+              "position": [ "centersize", 100, 135, 40, 40]
+            },
+            
+            {
+              "imageitemtype": "count",
+              "tag": "middle",
+              "minimum": 0,
+              "maximum": 9,
+              "minlimit" : 0,
+              "maxlimit" : 9,
+              "position": [ "centersize", 100, 200, 40, 40]
+            },
+            {
+              "imageitemtype": "count",
+              "tag": "bottom",
+              "minimum": 0,
+              "maximum": 9,
+              "minlimit" : 0,
+              "maxlimit" : 9,
+              "position": [ "centersize", 100, 265, 40, 40]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "defense",
+              "position": [ "centersize", 200, 100, 40, 40]
+            }
+            
+
+          ]
+        }
+      ]
+    },
+    {
+      "name": "End Game",
+      "items": [
+        {
+          "alliance": "red",
+          "type": "image",
+          "image": "2023-Field.png",
+          "tag": "endgame",
+          "name": "EndGame",
+          "scale": 1.33,
+          "imageitems" : [
+            {
+              "imageitemtype":"onoff",
+              "tag": "docked",
+              "position": ["centersize", 450, 150, 30,30]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "parked",
+              "position": ["centersize", 450, 190, 30,30]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "engaged",
+              "position": ["centersize", 450, 230, 30,30]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "defense",
+              "position": ["centersize", 400, 100, 30,30]
+            }
+          ]
+        },
+        {
+          "alliance": "blue",
+          "type": "image",
+          "image": "2023-Field.png",
+          "tag": "endgame",
+          "name": "EndGame",
+          "scale": 1.33,
+          "imageitems" : [
+            {
+              "imageitemtype":"onoff",
+              "tag": "docked", 
+              "position": ["centersize", 145, 150, 30,30]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "parked",
+              "position": ["centersize", 145, 190, 30,30]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "engaged",
+              "position": ["centersize", 145, 230, 30,30]
+            },
+            {
+              "imageitemtype":"onoff",
+              "tag": "defense",
+              "position": ["centersize", 200, 100, 30,30]
+            }
+
+
+          ]
+        }        
+      ]
+    },
+    {
+      "name": "General",
+      "items": [
+        {
+          "type": "boolean",
+          "tag": "breakdown",
+          "name": "Breakdown"
+        },
+        {
+          "type": "boolean",
+          "tag": "not_show",
+          "name": "No Show"
+        },
+        {
+          "type": "boolean",
+          "tag": "cubes",
+          "name": "Cubes"
+        },
+        {
+          "type": "boolean",
+          "tag": "cones",
+          "name": "Cones"
+        },
+        {
+          "type": "updown",
+          "tag": "links_created",
+          "name": "Links Made",
+          "minimum": 0,
+          "maximum": 10,
+          "minlimit": 0,
+          "maxlimit": 10
+        }
+  
+       ]
+     }
+   ]
+ }

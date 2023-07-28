@@ -189,6 +189,10 @@ PCScouter::PCScouter(bool coach, QWidget* parent) : QMainWindow(parent), images_
 	QIcon icon(image);
 	setWindowIcon(icon);
 
+	if (settings_.contains(LastFileSettings)) {
+		datafile_ = settings_.value(LastFileSettings).toString();
+	}
+
 	shutdown_client_connection_ = false;
 }
 
@@ -198,6 +202,23 @@ void PCScouter::readPreferences()
 		picklist_program_ = settings_.value("picklist").toString();
 	else
 		picklist_program_ = "picklist" + QString::number(year_) + ".exe";
+}
+
+bool PCScouter::verifyScoutingFormImages(std::shared_ptr<ScoutingDataModel> dm)
+{
+	QStringList images;
+
+	dm->getScoutingFormImages(images);
+	for (const QString& image : images) {
+		auto i = images_.get(image);
+		if (i == nullptr) {
+			QString msg = "Could not find image '" + image + "' - operation aborted";
+			QMessageBox::critical(this, "Missing Image", msg);
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void PCScouter::showEvent(QShowEvent* ev)
@@ -257,10 +278,13 @@ void PCScouter::showEvent(QShowEvent* ev)
 			QMessageBox::critical(this, "Error", "Could not load event data file");
 			return;
 		}
+
+		if (!verifyScoutingFormImages(dm)) {
+			return;
+		}
+
 		setDataModel(dm);
 		setupViews();
-
-		datafile_.clear();
 	}
 }
 
@@ -1388,6 +1412,11 @@ void PCScouter::newBAEventComplete(bool err)
 	else
 	{
 		settings_.setValue(TabletPoolSetting, ctrl->tablets());
+
+		if (!verifyScoutingFormImages(ctrl->dataModel())) {
+			return;
+		}
+
 		setDataModel(ctrl->dataModel());
 		setupViews();
 
@@ -1485,6 +1514,17 @@ void PCScouter::openEvent()
 		QMessageBox::critical(this, "Error", "Could not load event data file");
 		return;
 	}
+
+	//
+	// If the data model refers to images, be sure we can find the images
+	//
+	if (!verifyScoutingFormImages(dm)) {
+		return;
+	}
+
+	settings_.setValue(LastFileSettings, filename);
+
+
 	setDataModel(dm);
 	setupViews();
 }
@@ -1503,6 +1543,7 @@ void PCScouter::saveEventAs()
 {
 	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
 	QString filename = QFileDialog::getSaveFileName(this, "Save Event Data File", path, "Event Data Files (*.evd);;JSON Files (*.json);;All Files (*.*)");
+	settings_.setValue(LastFileSettings, filename);
 	data_model_->save(filename);
 }
 

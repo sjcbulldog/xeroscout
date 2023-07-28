@@ -71,6 +71,7 @@ private:
 	static constexpr const char* EventNameEntry = "eventname";
 	static constexpr const char* TabletPoolSetting = "tablets";
 	static constexpr const char* DebugSetting = "debug";
+	static constexpr const char* LastFileSettings = "lastfile";
 
 
 private:
@@ -176,6 +177,7 @@ private:
 	void findPointFields(QStringList& list);
 
 	bool checkOffseasonEvent(const QString &filename, const CsvReader& row, QString &messages);
+	bool verifyScoutingFormImages(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
 
 private:
 	// 

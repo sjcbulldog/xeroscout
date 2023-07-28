@@ -94,6 +94,8 @@ namespace xero
 				}
 
 				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const = 0;
+				virtual void getImages(QStringList& images) {
+				}
 
 				static QString genComplexName(const QString& tag, const QString& field) {
 					return tag + FormItemDesc::FieldSeperator + field;
