@@ -321,7 +321,7 @@ bool CsvReader::readRow(std::istream& in, DataRow& row, bool forcestring)
 				return false;
 
 			ch = in.get();
-			if (ch == '\n')
+			if (ch == '\n' || ch == -1)
 			{
 				break;
 			}
