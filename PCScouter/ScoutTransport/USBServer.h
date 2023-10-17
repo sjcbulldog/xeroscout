@@ -24,6 +24,7 @@
 
 #include "XeroPCCableTransfer.h"
 #include "ScoutServer.h"
+#include <sstream>
 
 namespace xero
 {
@@ -42,7 +43,7 @@ namespace xero
 				virtual ~USBServer();
 
 				void run() override;
-				bool init() override;
+				bool init(std::stringstream &messages) override;
 				QString name() override { return "USB"; }
 				virtual QString hwinfo();
 

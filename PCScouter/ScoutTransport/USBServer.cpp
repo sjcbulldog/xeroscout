@@ -58,20 +58,23 @@ namespace xero
 				return ret;
 			}
 
-			bool USBServer::init()
+			bool USBServer::init(std::stringstream &messages)
 			{
 				active_child_ = new USBTransport(this);
-				return active_child_->init();
+				return active_child_->init(messages);
 			}
 
 			void USBServer::closing(USBTransport* trans)
 			{
+				// TODO: fix me, get the stream from the parent
+				std::stringstream messages;
+
 				assert(trans == active_child_);
 
 				delete active_child_;
 
 				active_child_ = new USBTransport(this);
-				active_child_->init();
+				active_child_->init(messages);
 				connect_signaled_ = false;
 			}
 

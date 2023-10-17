@@ -25,6 +25,7 @@
 #include "scouttransport_global.h"
 #include "ScoutTransport.h"
 #include <QObject>
+#include <sstream>
 
 namespace xero
 {
@@ -40,7 +41,7 @@ namespace xero
 				ScoutServer(QObject *parent);
 				virtual ~ScoutServer();
 
-				virtual bool init() = 0;
+				virtual bool init(std::stringstream &messages) = 0;
 				virtual void run() = 0;
 				virtual QString name() = 0;
 				virtual QString hwinfo() = 0;

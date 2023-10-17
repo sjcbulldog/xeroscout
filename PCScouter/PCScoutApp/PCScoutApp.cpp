@@ -46,6 +46,8 @@
 #include <QStatusBar>
 #include <QStandardPaths>
 
+#include <sstream>
+
 using namespace xero::scouting::datamodel;
 using namespace xero::scouting::views;
 using namespace xero::scouting::transport;
@@ -757,6 +759,8 @@ void PCScoutApp::serverConnected(BluetoothTransport *trans)
 
 void PCScoutApp::syncWithCentralUSB()
 {
+	std::stringstream messages;
+
 	saveAllForms();
 	if (data_model_ != nullptr && data_model_->filename().length() > 0)
 		saveAndBackup();
@@ -764,8 +768,14 @@ void PCScoutApp::syncWithCentralUSB()
 	setEnabled(false);
 	logwin_->append("Starting USB scouting data synchronization");
 	auto* trans = new USBTransport();
-	if (!trans->init())
+	if (!trans->init(messages))
 	{
+		std::string msg;
+		messages.seekg(0);
+		while (std::getline(messages, msg)) {
+			logwin_->append(QString::fromStdString(msg));
+		}
+
 		setEnabled(true);
 		QMessageBox::critical(this, "USB Error", "Cannot initialize USB connection to central");
 		return;

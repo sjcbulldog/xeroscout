@@ -26,6 +26,7 @@
 #include <vector>
 #include <string>
 #include <stdint.h>
+#include <sstream>
 
 namespace xero
 {
@@ -43,7 +44,7 @@ namespace xero
 					return desc_;
 				}
 
-				bool init();
+				bool init(std::stringstream &messages);
 				bool write(uint8_t pipe, const std::vector<uint8_t>& data);
 				bool read(uint8_t pipe, std::vector<uint8_t>& data, size_t len = 0);
 				bool setTimeout(uint8_t pipe, int ms);

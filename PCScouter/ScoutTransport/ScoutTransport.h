@@ -26,6 +26,7 @@
 #include <QObject>
 #include <QByteArray>
 #include <QString>
+#include <sstream>
 
 namespace xero
 {
@@ -45,7 +46,7 @@ namespace xero
 				virtual ~ScoutTransport() {
 				}
 
-				virtual bool init() = 0;
+				virtual bool init(std::stringstream& messages) = 0;
 				virtual bool write(const QByteArray& data) = 0;
 				virtual QByteArray readAll() = 0;
 				virtual void flush() = 0;

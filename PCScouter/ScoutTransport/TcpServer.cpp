@@ -78,7 +78,7 @@ namespace xero
 				}
 			}
 
-			bool TcpServer::init()
+			bool TcpServer::init(std::stringstream &messages)
 			{
 				server_ = new QTcpServer(parent_);
 

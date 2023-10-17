@@ -50,8 +50,9 @@ void USBUnitTest::clientConnected(ScoutTransport *trans)
 
 void USBUnitTest::runServer() 
 {
+	std::stringstream messages;
 	usb_server_ = new USBServer(nullptr);
-	if (!usb_server_->init()) 
+	if (!usb_server_->init(messages)) 
 	{
 		std::cerr << "USBUnitTest: server: transport initialization failed" << std::endl;
 		return;
@@ -98,12 +99,13 @@ QByteArray USBUnitTest::readpacket(USBTransport *t)
 static int curlen = 5;
 void USBUnitTest::runClient()
 {
+	std::stringstream messages;
 	std::default_random_engine engine;
 	std::uniform_int_distribution<int> length(4, MaxPacketSize);
 	std::uniform_int_distribution<int> contents(0, 255);
 
 	usb_client_transport_ = new USBTransport();
-	if (!usb_client_transport_->init())
+	if (!usb_client_transport_->init(messages))
 	{
 		std::cerr << "USBUnitTest: client: transport initialization failed" << std::endl;
 		return;

@@ -28,6 +28,7 @@
 #include <QtCore/QVector>
 #include <thread>
 #include <mutex>
+#include <sstream>
 
 namespace xero
 {
@@ -45,7 +46,7 @@ namespace xero
 
 				virtual ~USBTransport();
 
-				bool init() override ;
+				bool init(std::stringstream &messages) override ;
 				bool reset();
 				bool write(const QByteArray& data) override;
 				QByteArray readAll() override;

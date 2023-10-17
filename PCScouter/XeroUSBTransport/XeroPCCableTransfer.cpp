@@ -24,6 +24,7 @@
 #include "XeroPCCableTransfer.h"
 #include "USBDevice.h"
 #include <iostream>
+#include <sstream>
 
 namespace xero
 {
@@ -46,11 +47,12 @@ namespace xero
 				delete dev;
 			}
 
-			bool XeroPCCableTransfer::init()
+			bool XeroPCCableTransfer::init(std::stringstream &messages)
 			{
 				USBDevice* dev = new USBDevice(vid_, pid_, ba_, da_);
-				if (!dev->init())
+				if (!dev->init(messages))
 				{
+					messages << "XeroPCCableTransfer::init() - cannot initialize USB device" << std::endl;
 					delete dev;
 					dev_ = nullptr;
 					return false;
@@ -58,24 +60,28 @@ namespace xero
 
 				if (!dev->setTimeout(recvPipe, 1))
 				{
+					messages << "XeroPCCableTransfer::init() - setTimeout failed" << std::endl;
 					delete dev;
 					return false;
 				}
 
 				if (!dev->setShortPacketTerminate(sendPipe, true))
 				{
+					messages << "XeroPCCableTransfer::init() - setShortPacketTerminate failed" << std::endl;
 					delete dev;
 					return false;
 				}
 
 				if (!dev->setAutoClearStall(sendPipe, true))
 				{
+					messages << "XeroPCCableTransfer::init(sendPipe, true) - setAutoClearStall failed" << std::endl;
 					delete dev;
 					return false;
 				}
 
 				if (!dev->setAutoClearStall(recvPipe, true))
 				{
+					messages << "XeroPCCableTransfer::init(recvPipe, true) - setAutoClearStall failed" << std::endl;
 					delete dev;
 					return false;
 				}

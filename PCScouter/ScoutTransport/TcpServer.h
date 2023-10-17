@@ -42,7 +42,7 @@ namespace xero
 				virtual ~TcpServer();
 
 				void run() override;
-				bool init() override;
+				bool init(std::stringstream &messages) override;
 				QString name() override { return "TCP"; }
 				virtual QString hwinfo();
 

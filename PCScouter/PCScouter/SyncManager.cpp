@@ -46,10 +46,12 @@ void SyncManager::setDataModel(std::shared_ptr<ScoutingDataModel> dm)
 
 void SyncManager::createTransports()
 {
+	std::stringstream messages;
+
 	std::shared_ptr<ScoutServer> server;
 
 	server = std::make_shared<USBServer>(this);
-	if (server->init())
+	if (server->init(messages))
 	{
 		(void)connect(server.get(), &ScoutServer::connected, this, &SyncManager::syncWithRemote);
 		transport_servers_.push_back(server);
@@ -61,7 +63,7 @@ void SyncManager::createTransports()
 	}
 
 	server = std::make_shared<TcpServer>(this);
-	if (server->init())
+	if (server->init(messages))
 	{
 		(void)connect(server.get(), &ScoutServer::connected, this, &SyncManager::syncWithRemote);
 		transport_servers_.push_back(server);

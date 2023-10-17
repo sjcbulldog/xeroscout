@@ -41,7 +41,7 @@ namespace xero
 
 				QString toString(QAbstractSocket::SocketError err);
 
-				bool init() override { return true; }
+				bool init(std::stringstream &messages) override { return true; }
 				bool write(const QByteArray& data) override ;
 				QByteArray readAll() override;
 				void flush() override;

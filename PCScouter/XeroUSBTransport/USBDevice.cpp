@@ -52,13 +52,15 @@ namespace xero
                 }
             }
 
-            bool USBDevice::init()
+            bool USBDevice::init(std::stringstream &messages)
             {
                 KLST_HANDLE lh;
                 KLST_DEVINFO_HANDLE dh;
 
-                if (!LstK_Init(&lh, KLST_FLAG_NONE))
+                if (!LstK_Init(&lh, KLST_FLAG_NONE)) {
+                    messages << "LstK_Init call failed - check for USBK driver" << std::endl;
                     return false;
+                }
 
                 while (true)
                 {
@@ -90,6 +92,7 @@ namespace xero
                     }
                 }
 
+                messages << "USBDevice::init - not driver found with VID = " << vid_ << " and PID = " << pid_ << std::endl;
                 LstK_Free(lh);
                 return false;
             }

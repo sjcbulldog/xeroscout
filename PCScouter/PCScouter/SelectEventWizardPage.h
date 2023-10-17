@@ -22,9 +22,12 @@
 
 #pragma once
 
+#include <BlueAllianceEngine.h>
 #include "NewEventBlueAllianceWizard.h"
-#include <QWizard>
-#include <QTreeWidget>
+#include <QtWidgets/QWizard>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QBoxLayout>
+#include <QtWidgets/QLineEdit>
 
 class SelectEventWizardPage : public QWizardPage
 {
@@ -42,7 +45,16 @@ private:
 	void eventChanged(QTreeWidgetItem* newitem, QTreeWidgetItem* olditem);
 	void doubleClicked(QTreeWidgetItem* item, int column);
 
+	void filterList(const QString &text);
+
 private:
+	QVBoxLayout* holder_layout_;
+	QWidget* holder_;
+	QWidget* filter_widget_;
+	QHBoxLayout* filter_layout_;
+	QLineEdit* filter_;
+	QTreeWidget *tree_;
 	NewEventBlueAllianceWizard::PropertyMap& props_;
+	xero::ba::BlueAllianceEngine& engine_;
 };
 

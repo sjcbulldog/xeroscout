@@ -24,6 +24,7 @@
 #include "USBServer.h"
 #include <QDebug>
 #include <iostream>
+#include <sstream>
 
 using namespace xero::device::usb;
 
@@ -108,10 +109,10 @@ namespace xero
 				}
 			}
 
-			bool USBTransport::init()
+			bool USBTransport::init(std::stringstream &messages)
 			{
 				std::lock_guard<std::mutex> guard(init_mutex_);
-				inited_ = usb_->init();
+				inited_ = usb_->init(messages);
 
 				return inited_;
 			}

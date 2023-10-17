@@ -27,6 +27,7 @@
 #include <memory>
 #include <string>
 #include <stdint.h>
+#include <sstream>
 
 namespace xero
 {
@@ -45,7 +46,7 @@ namespace xero
 					pid_ = pid;
 				}
 
-				bool init();
+				bool init(std::stringstream &messages);
 
 				bool send(const std::vector<uint8_t>& data);
 				bool receive(std::vector<uint8_t>& data);

@@ -718,11 +718,12 @@ void PCScouter::coachSyncComplete()
 
 void PCScouter::syncWithCentral()
 {
+	std::stringstream messages;
 	if (coach_sync_ != nullptr || sync_mgr_->isBusy())
 		return;
 
 	USBTransport* trans = new USBTransport();
-	if (!trans->init())
+	if (!trans->init(messages))
 	{
 		QMessageBox::critical(this, "Error", "Could not initialize transport");
 		return;
