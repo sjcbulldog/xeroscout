@@ -31,6 +31,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QDebug>
+#include <QtWidgets/QLayout>
 
 namespace xero
 {
@@ -43,15 +44,9 @@ namespace xero
 				const ImageFormItem* fdesc = dynamic_cast<const ImageFormItem*>(desc);
 				assert(fdesc != nullptr);
 
-				FormItemDisplay::setScale(fdesc->scale());
 				image_ = images.get(fdesc->imageTag());
 				if (image_ != nullptr)
 				{
-					QSize s = image_->size();
-					size_ = QSize(s.width() * scale(), s.height() * scale());
-					setMinimumSize(size_);
-					setMaximumSize(size_);
-
 					DataCollection d;
 					setValues(d);
 				}
@@ -59,20 +54,6 @@ namespace xero
 
 			ImageItemDisplay::~ImageItemDisplay()
 			{
-			}
-
-			void ImageItemDisplay::setScale(double sc) 
-			{
-				double current = scale();
-				FormItemDisplay::setScale(sc * current);
-
-				if (image_ != nullptr)
-				{
-					QSize s = image_->size();
-					size_ = QSize(s.width() * scale(), s.height() * scale());
-					setMinimumSize(size_);
-					setMaximumSize(size_);
-				}
 			}
 
 			void ImageItemDisplay::keyPressEvent(QKeyEvent *ev)
@@ -85,7 +66,7 @@ namespace xero
 				assert(fdesc != nullptr);
 
 				QRect r = item->bounds();
-				r = QRect(QPoint(r.x() * scale(), r.y() * scale()), QSize(r.width() * scale(), r.height() * scale()));
+				r = QRect(QPoint(r.x() * multx_, r.y() * multy_), QSize(r.width() * multx_, r.height() * multy_));
 
 				return r;
 			}
@@ -169,6 +150,39 @@ namespace xero
 				count_state_.insert_or_assign(longname, v);
 			}
 
+			void ImageItemDisplay::computeMultiplier()
+			{
+				if (image_ == nullptr)
+				{
+					multx_ = 1.0;
+					multy_ = 1.0;
+				}
+				else
+				{
+					QSize s = image_->size();
+					multx_ = (double)width() / (double)s.width();
+					multy_ = (double)height() / (double)s.height();
+				}
+			}
+
+			void ImageItemDisplay::showEvent(QShowEvent* ev)
+			{
+				if (image_ != nullptr) {
+					QSize ps = parentWidget()->size();
+					setGeometry(0, 0, ps.width(), ps.height());
+				}
+			}
+
+			void ImageItemDisplay::resizeEvent(QResizeEvent* ev)
+			{
+				if (image_ != nullptr) {
+					QSize ps = parentWidget()->size();
+					setGeometry(0, 0, ps.width(), ps.height());
+					computeMultiplier();
+					update();
+				}
+			}
+
 			void ImageItemDisplay::paintEvent(QPaintEvent* ev)
 			{
 				const ImageFormItem* fdesc = dynamic_cast<const ImageFormItem*>(desc());
@@ -180,7 +194,7 @@ namespace xero
 				f.setPointSizeF(6.0);
 				p.setFont(f);
 
-				QRect r(QPoint(0, 0), size_);
+				QRect r(QPoint(0, 0), size());
 				p.drawImage(r, *image_);
 
 				QPen pen(QColor(0, 0, 0));

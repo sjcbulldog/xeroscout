@@ -46,14 +46,6 @@ namespace xero
 					return desc_;
 				}
 				
-				virtual void setScale(double scale) {
-					scale_ = scale;
-				}
-
-				double scale() const {
-					return scale_;
-				}
-
 			protected:
 				ImageSupplier& images() {
 					return images_;
@@ -62,7 +54,6 @@ namespace xero
 			private:
 				const FormItemDesc * desc_;
 				ImageSupplier& images_;
-				double scale_;
 			};
 		}
 	}

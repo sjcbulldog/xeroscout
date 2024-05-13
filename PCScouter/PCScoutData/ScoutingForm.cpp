@@ -658,7 +658,7 @@ namespace xero
 					return nullptr;
 				}
 
-				auto image = std::make_shared<ImageFormItem>(name, tag, obj.value("image").toString(), obj.value("scale").toDouble());
+				auto image = std::make_shared<ImageFormItem>(name, tag, obj.value("image").toString());
 
 				QJsonArray array = obj.value("imageitems").toArray();
 				for (int i = 0; i < array.size(); i++)

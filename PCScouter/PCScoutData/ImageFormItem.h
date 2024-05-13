@@ -37,7 +37,7 @@ namespace xero
 			class ImageFormItem : public FormItemDesc
 			{
 			public:
-				ImageFormItem(const QString& display, const QString& tag, const QString& image, double scale);
+				ImageFormItem(const QString& display, const QString& tag, const QString& image);
 				virtual ~ImageFormItem();
 
 				void getImages(QStringList& imlist) {
@@ -56,10 +56,6 @@ namespace xero
 
 				void addPublishItem(std::shared_ptr<ImageItemPublishInfo> item);
 
-				double scale() const {
-					return scale_;
-				}
-
 				std::list<std::shared_ptr<ImageFormSubItem>> items() const {
 					return sub_items_;
 				}
@@ -74,7 +70,6 @@ namespace xero
 				std::list<std::shared_ptr<ImageFormSubItem>> sub_items_;
 				std::list<std::shared_ptr<ImageItemPublishInfo>> publish_items_;
 				QString image_;
-				double scale_;
 			};
 		}
 	}

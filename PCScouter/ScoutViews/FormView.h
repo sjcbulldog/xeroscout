@@ -64,13 +64,9 @@ namespace xero
 					return form_->formType();
 				}
 
-				void setScale(double s);
-
 			private:
 				void setScoutingForm(std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form);
 				void createSection(std::shared_ptr<const xero::scouting::datamodel::FormSection> section);
-				void plus();
-				void minus();
 
 			private:
 				QTabWidget* tabs_;

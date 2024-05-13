@@ -41,12 +41,12 @@ namespace xero
 
 				virtual DataCollection getValues();
 
-				void setScale(double scale) override;
-
 			protected:
-				void paintEvent(QPaintEvent* ev);
-				void mousePressEvent(QMouseEvent* ev);
-				void keyPressEvent(QKeyEvent* ev);
+				void paintEvent(QPaintEvent* ev) override;
+				void mousePressEvent(QMouseEvent* ev) override;
+				void keyPressEvent(QKeyEvent* ev) override;
+				void resizeEvent(QResizeEvent* ev) override;
+				void showEvent(QShowEvent* ev) override;
 
 			private:
 				void drawOnOff(QPainter& p, std::shared_ptr<ImageFormOnOffSubitem> item, const QString& longname);
@@ -61,12 +61,16 @@ namespace xero
 
 				void drawBoundsCenterLine(QPainter& p, const QRect &r, const QString &txt);
 
+				void computeMultiplier();
+
 				static constexpr const int CenterLineWidth = 10;
 				static constexpr const int CenterFontSize = 8;
 
 			private:
 				std::shared_ptr<QImage> image_;
 				QSize size_;
+				double multx_;
+				double multy_;
 
 				std::map<QString, bool> on_off_state_;
 				std::map<QString, int> count_state_;

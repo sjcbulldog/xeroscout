@@ -28,9 +28,8 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			ImageFormItem::ImageFormItem(const QString& display, const QString& tag, const QString &image, double scale) : FormItemDesc(display, tag)
+			ImageFormItem::ImageFormItem(const QString& display, const QString& tag, const QString &image) : FormItemDesc(display, tag)
 			{
-				scale_ = scale;
 				image_ = image;
 			}
 

@@ -49,13 +49,6 @@ namespace xero
 				QHBoxLayout* hlay = new QHBoxLayout();
 				titlestrip->setLayout(hlay);
 
-				smaller_ = new QPushButton("-", titlestrip);
-				QFont bf = smaller_->font();
-				bf.setPointSizeF(22);
-				bf.setBold(true);
-				smaller_->setFont(bf);
-				hlay->addWidget(smaller_);
-
 				titles_ = new QLabel(title, titlestrip);
 				titles_->setAlignment(Qt::AlignCenter);
 				QPalette pal = titles_->palette();
@@ -64,10 +57,6 @@ namespace xero
 				hlay->addWidget(titles_);
 				QSizePolicy p(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 				titles_->setSizePolicy(p);
-
-				bigger_ = new QPushButton("+", titlestrip);
-				bigger_->setFont(bf);
-				hlay->addWidget(bigger_);
 
 				lay->addWidget(titlestrip);
 
@@ -83,35 +72,10 @@ namespace xero
 				f = tabs_->font();
 				f.setPointSizeF(18.0);
 				tabs_->setFont(f);
-
-				connect(bigger_, &QPushButton::pressed, this, &FormView::plus);
-				connect(smaller_, &QPushButton::pressed, this, &FormView::minus);
 			}
 
 			FormView::~FormView()
 			{
-			}
-
-			void FormView::plus()
-			{
-				setScale(1.1);
-			}
-
-			void FormView::minus()
-			{
-				setScale(0.9);
-			}
-
-			void FormView::setScale(double s)
-			{
-				const auto& sections = form_->sections();
-				for (auto section : sections) {
-					for (auto item : section->items()) {
-						auto disp = instance_->displayItem(item->tag());
-						if (disp != nullptr)
-							disp->setScale(s);
-					}
-				}
 			}
 
 			void FormView::createSection(std::shared_ptr<const FormSection> section)
