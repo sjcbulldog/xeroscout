@@ -5,10 +5,11 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QBoxLayout>
-#include <QFileDialog>
-#include <QLineEdit>
-#include <QMessageBox>
-#include <QSettings>
+#include <QtCore/QSettings>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QSpinBox>
 
 SelectOffseasonRosterPage::SelectOffseasonRosterPage(NewEventOffseasonWizard::PropertyMap& map) : map_(map)
 {
@@ -17,10 +18,26 @@ SelectOffseasonRosterPage::SelectOffseasonRosterPage(NewEventOffseasonWizard::Pr
 	QPushButton* button;
 	QHBoxLayout* rowlayout;
 	QLineEdit* titlewidget;
+	QSpinBox* yearwidget;
 
 	setTitle("Select Offseason Roster");
 
 	QVBoxLayout* layout = new QVBoxLayout();
+
+	rowlayout = new QHBoxLayout();
+	row = new QWidget(this);
+	row->setLayout(rowlayout);
+	layout->addWidget(row);
+	l = new QLabel(row);
+	l->setText("Event Year: ");
+	rowlayout->addWidget(l);
+	yearwidget = new QSpinBox(row);
+	yearwidget->setMinimum(2004);
+	yearwidget->setMaximum(2200);
+	int year = QDateTime::currentDateTime().date().year();
+	yearwidget->setValue(year);
+	rowlayout->addWidget(yearwidget);
+	(void)connect(yearwidget, &QSpinBox::valueChanged, this, &SelectOffseasonRosterPage::yearChanged);
 
 	rowlayout = new QHBoxLayout();
 	row = new QWidget(this);
@@ -69,6 +86,11 @@ SelectOffseasonRosterPage::SelectOffseasonRosterPage(NewEventOffseasonWizard::Pr
 
 SelectOffseasonRosterPage::~SelectOffseasonRosterPage()
 {
+}
+
+void SelectOffseasonRosterPage::yearChanged(int year)
+{
+	map_[YearName] = QVariant(year);
 }
 
 bool SelectOffseasonRosterPage::isValidTeamList(const QString& filename, QString& error)

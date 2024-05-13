@@ -530,6 +530,21 @@ namespace xero
 				/// \param dups a list of duplicate fields found between the two forms
 				bool setScoutingForms(std::shared_ptr<ScoutingForm> teamform, std::shared_ptr<ScoutingForm> matchform, QStringList& dups);
 
+				bool setScoutingForm(std::shared_ptr<ScoutingForm> form) {
+					bool ret = false;
+
+					QStringList dups;
+
+					if (form->formType() == "team") {
+						ret = setScoutingForms(form, nullptr, dups);
+					}
+					else {
+						ret = setScoutingForms(nullptr, form, dups);
+					}
+
+					return ret;
+				}
+
 				/// \brief set the pick list tranlator data
 				/// \param trans the pick list translator object
 				void setPickListTranslator(std::shared_ptr<PickListTranslator> trans) {

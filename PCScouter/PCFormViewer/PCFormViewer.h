@@ -65,6 +65,7 @@ private:
 
 private:
     void updateWindow();
+    void updatePerForm(std::shared_ptr<xero::scouting::datamodel::ScoutingForm> form);
 
 private:
 	QSplitter* left_right_splitter_;
@@ -80,5 +81,6 @@ private:
 
     xero::scouting::datamodel::ImageManager images_;
 
+    std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model_;
     std::shared_ptr<xero::scouting::datamodel::ScoutingForm> form_;
 };

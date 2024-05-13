@@ -53,8 +53,10 @@
 
 #include "NewEventAppController.h"
 #include "NewOffseasonEventAppController.h"
+#include "ImportStatbioticsController.h"
 #include "ImportMatchDataController.h"
 #include "ImportZebraDataController.h"
+#include "ImportStatbioticsController.h"
 #include "AllTeamSummaryController.h"
 #include "ImportMatchScheduleController.h"
 #include "PickListController.h"
@@ -106,43 +108,6 @@ PCScouter::PCScouter(bool coach, QWidget* parent) : QMainWindow(parent), images_
 	summary_progress_ = new QProgressBar();
 	app_controller_ = nullptr;
 	app_disabled_ = false;
-
-	QDate now = QDate::currentDate();
-	year_ = now.year();
-
-
-	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-	QString value = env.value("XEROYEAR", "");
-	QString msg;
-	if (value.length() > 0)
-	{
-		bool ok;
-		int v;
-
-		v = value.toInt(&ok);
-
-		if (ok && v >= 1992 && v < 2100)
-		{
-			msg = "Year set to " + QString::number(v) + " due to the XEROYEAR environment variable";
-			year_ = v;
-		}
-		else
-		{
-			msg = "XEROYEAR environment variable contains '" + value;
-			msg += "' which was invalid, using the current year (" + QString::number(year_) + ")";
-		}
-
-	}
-	else {
-		if (injector.hasData("year") && injector.data("year").type() == QVariant::Int)
-		{
-			year_ = injector.data("year").toInt();
-			msg = "Year set to " + QString::number(year_) + " because of command line override '--inject year=YYYY'";
-		}
-	}
-
-	if (msg.length() > 0)
-		QMessageBox::information(this, "Year Override", msg);
 
 	readPreferences();
 
@@ -198,10 +163,6 @@ PCScouter::PCScouter(bool coach, QWidget* parent) : QMainWindow(parent), images_
 
 void PCScouter::readPreferences()
 {
-	if (settings_.contains("picklist") && settings_.value("picklist").type() == QVariant::Type::String)
-		picklist_program_ = settings_.value("picklist").toString();
-	else
-		picklist_program_ = "picklist" + QString::number(year_) + ".exe";
 }
 
 bool PCScouter::verifyScoutingFormImages(std::shared_ptr<ScoutingDataModel> dm)
@@ -262,7 +223,7 @@ void PCScouter::showEvent(QShowEvent* ev)
 	showIPAddresses();
 
 	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
-	path += "/views" + QString::number(year_) + ".json";
+	path += "/views" + QString::number(year()) + ".json";
 
 	if (!coach_)
 		sync_mgr_->createTransports();
@@ -508,7 +469,7 @@ void PCScouter::createWindows()
 	top_bottom_splitter_->setOrientation(Qt::Orientation::Vertical);
 	left_right_splitter_->addWidget(top_bottom_splitter_);
 
-	view_frame_ = new DocumentView(images_, year_, "", top_bottom_splitter_);
+	view_frame_ = new DocumentView(images_, year(), "", top_bottom_splitter_);
 	connect(view_frame_, &DocumentView::logMessage, this, &PCScouter::logMessage);
 	connect(view_frame_, &DocumentView::switchView, this, &PCScouter::switchView);
 
@@ -629,6 +590,9 @@ void PCScouter::createMenus()
 
 	import_match_data_ = import_menu_->addAction(tr("Match Results"));
 	(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchData);
+
+	import_statbiotics_data_ = import_menu_->addAction(tr("Statbiotics Data"));
+	(void)connect(import_statbiotics_data_, &QAction::triggered, this, &PCScouter::importStatbioticsData);
 
 	import_zebra_data_ = import_menu_->addAction(tr("Zebra Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importZebraData);
@@ -1084,7 +1048,7 @@ void PCScouter::runPicklistProgram()
 	if (answer == QMessageBox::StandardButton::No)
 		return;
 
-	auto ctrl = new PickListController(blue_alliance_, team_number_, year_, data_model_, picklist_program_);
+	auto ctrl = new PickListController(blue_alliance_, team_number_, year(), data_model_, picklist_program_);
 	setAppController(ctrl);
 	(void)connect(ctrl, &ApplicationController::complete, this, &PCScouter::pickListComplete);
 }
@@ -1183,6 +1147,13 @@ void PCScouter::importMatchDataComplete(bool err)
 	updateCurrentView();
 }
 
+void PCScouter::importStatbioticsDataComplete(bool err)
+{
+	saveAndBackup();
+	view_frame_->needsRefreshAll();
+	updateCurrentView();
+}
+
 void PCScouter::importMatchData()
 {
 	const char* maxmatchprop = "bamaxmatch";
@@ -1201,6 +1172,18 @@ void PCScouter::importMatchData()
 	auto ctrl = new ImportMatchDataController(blue_alliance_, data_model_, maxmatch);
 	setAppController(ctrl);
 	connect(ctrl, &ApplicationController::complete, this, &PCScouter::importMatchDataComplete);
+}
+
+void PCScouter::importStatbioticsData()
+{
+	if (data_model_ == nullptr) {
+		QMessageBox::critical(this, "Error", "You can only import statbiotics data into an event.  The currently no open event.  Either open an event with File/Open or create an event with File/New");
+		return;
+	}
+
+	auto ctrl = new ImportStatbioticsController(blue_alliance_, data_model_, year());
+	setAppController(ctrl);
+	connect(ctrl, &ApplicationController::complete, this, &PCScouter::importStatbioticsDataComplete);
 }
 
 void PCScouter::importMatchScheduleComplete(bool err)
@@ -1461,7 +1444,7 @@ void PCScouter::newEventBA()
 	if (settings_.contains(TabletPoolSetting))
 		tablets = settings_.value(TabletPoolSetting).toStringList();
 
-	auto ctlr = new NewEventAppController(images_, blue_alliance_, tablets, year_);
+	auto ctlr = new NewEventAppController(images_, blue_alliance_, tablets);
 	app_controller_ = ctlr;
 
 	TestDataInjector& injector = TestDataInjector::getInstance();
@@ -1484,7 +1467,7 @@ void PCScouter::newEventOffSeason()
 	if (settings_.contains("tablets"))
 		tablets = settings_.value("tablets").toStringList();
 
-	auto ctlr = new NewOffseasonEventAppController(images_, tablets, year_);
+	auto ctlr = new NewOffseasonEventAppController(images_, tablets);
 	app_controller_ = ctlr;
 
 	(void)connect(app_controller_, &NewOffseasonEventAppController::complete, this, &PCScouter::newOffseasonEventComplete);
@@ -1524,7 +1507,6 @@ void PCScouter::openEvent()
 	}
 
 	settings_.setValue(LastFileSettings, filename);
-
 
 	setDataModel(dm);
 	setupViews();
@@ -1834,7 +1816,7 @@ void PCScouter::magicWordTyped(SpecialListWidget::Word w)
 		if (injector.hasData(teampropname) && injector.data(teampropname).type() == QVariant::Int)
 			teammax = injector.data(teampropname).toInt();
 
-		DataGenerator gen(data_model_, year_, redmaxmatch, bluemaxmatch, teammax);
+		DataGenerator gen(data_model_, year(), redmaxmatch, bluemaxmatch, teammax);
 		if (gen.isValid())
 		{
 			connect(&gen, &DataGenerator::logMessage, this, &PCScouter::logMessage);
@@ -1845,7 +1827,7 @@ void PCScouter::magicWordTyped(SpecialListWidget::Word w)
 		}
 		else
 		{
-			QMessageBox::warning(this, "No Generator", "There is no data generator for the year '" + QString::number(year_) + "'");
+			QMessageBox::warning(this, "No Generator", "There is no data generator for the year '" + QString::number(year()) + "'");
 		}
 	}
 	else if (w == SpecialListWidget::Word::MATCH)
@@ -2174,4 +2156,16 @@ void PCScouter::matchRowChanged(int row, int col)
 	QString colname = set.colHeader(col)->name();
 
 	data_model_->changeMatchData(mkey, tkey, colname, set.get(row, col));
+}
+
+int PCScouter::year()
+{
+	int ret = -1;
+	if (data_model_ != nullptr) {
+		QDate start = data_model_->startDate();
+		qDebug() << "StartDate: " << start;
+		ret = start.year();
+	}
+
+	return ret;
 }

@@ -18,6 +18,17 @@ NewEventOffseasonWizard::~NewEventOffseasonWizard()
 {
 }
 
+int NewEventOffseasonWizard::getYear()
+{
+	int result = -1;
+
+	auto it = props_.find(SelectOffseasonRosterPage::YearName);
+	if (it != props_.end())
+		result = it->second.toInt();
+
+	return result;
+}
+
 QString NewEventOffseasonWizard::getRosterForm()
 {
 	QString result;

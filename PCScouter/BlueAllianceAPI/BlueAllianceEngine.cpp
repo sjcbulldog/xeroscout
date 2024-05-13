@@ -108,7 +108,7 @@ namespace xero
 			auto it = events_by_key_.find(key);
 			if (it == events_by_key_.end())
 			{
-				ret = std::make_shared<Event>(key, name, city, state, country, sdate, edate);
+				ret = std::make_shared<Event>(key, name, city, state, country, sdate, edate, year);
 				events_by_key_.insert(std::make_pair(key, ret));
 			}
 			else
@@ -264,6 +264,7 @@ namespace xero
 				result = controller_->finishedResult();
 				controller_ = nullptr;
 				addResult(result);
+				emit done();
 				return;
 			}
 
@@ -309,7 +310,6 @@ namespace xero
 		{
 			log("RequestEvents (" + QString::number(years.front()) + ") : calling");
 
-			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchEventsController>(*this, years.front());
 			auto result = controller_->startResult();
 			if (result != nullptr)
@@ -322,7 +322,6 @@ namespace xero
 		{
 			log("RequestMatches (" + evid + ") : calling");
 
-			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchMatchesController>(*this, evid);
 			auto result = controller_->startResult();
 			if (result != nullptr)
@@ -335,7 +334,6 @@ namespace xero
 		{
 			log("RequestZebra: calling");
 
-			// auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchZebraController>(*this, keys);
 			auto result = controller_->startResult();
 			if (result != nullptr)
@@ -348,7 +346,6 @@ namespace xero
 		{
 			log("RequestTeamEvents: calling");
 
-			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchTeamEventsController>(*this, keys, year);
 			auto result = controller_->startResult();
 			if (result != nullptr)
@@ -361,7 +358,6 @@ namespace xero
 		{
 			log("RequestMatchesDetails: calling");
 
-			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchMatchController>(*this, keys);
 			auto result = controller_->startResult();
 			if (result != nullptr)
@@ -374,7 +370,6 @@ namespace xero
 		{
 			log("RequestRankings: calling");
 
-			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchRankingController>(*this, evkey);
 			auto result = controller_->startResult();
 			if (result != nullptr)
@@ -387,7 +382,6 @@ namespace xero
 		{
 			log("RequestEventTeams: calling");
 
-			auto cb = std::bind(&BlueAllianceEngine::processControllerResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 			controller_ = std::make_shared<FetchEventTeamsController>(*this, evkey);
 			auto result = controller_->startResult();
 			if (result != nullptr)

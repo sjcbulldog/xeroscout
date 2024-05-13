@@ -151,6 +151,7 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
     <ClCompile Include="CsvReader.cpp" />
     <ClCompile Include="ImportMatchDataController.cpp" />
     <ClCompile Include="ImportMatchScheduleController.cpp" />
+    <ClCompile Include="ImportStatbioticsController.cpp" />
     <ClCompile Include="ImportZebraDataController.cpp" />
     <ClCompile Include="KPIController.cpp" />
     <ClCompile Include="main.cpp" />
@@ -185,6 +186,7 @@ copy $(SolutionDir)..\installer\VC_redist.x64.exe $(OutDir)</Command>
     <ClInclude Include="Data.h" />
     <ClInclude Include="ImportMatchScheduleController.h" />
     <QtMoc Include="SyncManager.h" />
+    <ClInclude Include="ImportStatbioticsController.h" />
     <ClInclude Include="MatchScheduleGenerator.h" />
     <QtMoc Include="NewEventOffseasonWizard.h" />
     <ClInclude Include="NewOffseasonEventAppController.h" />

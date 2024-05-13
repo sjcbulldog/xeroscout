@@ -212,12 +212,14 @@ namespace xero
 				team_scouting_form_ = teamform;
 				match_scouting_form_ = matchform;
 
-				for (auto field : team_scouting_form_->fields())
-				{
-					if (match_scouting_form_->itemByName(field->name()) != nullptr)
+				if (match_scouting_form_ != nullptr && team_scouting_form_ != nullptr) {
+					for (auto field : team_scouting_form_->fields())
 					{
-						dups.push_back(field->name());
-						ret = false;
+						if (match_scouting_form_->itemByName(field->name()) != nullptr)
+						{
+							dups.push_back(field->name());
+							ret = false;
+						}
 					}
 				}
 
@@ -520,30 +522,32 @@ namespace xero
 
 			void ScoutingDataModel::createMatchDataSet(ScoutingDataSet& set)
 			{
-				auto scouting_form_fields = match_scouting_form_->fields();
+				if (match_scouting_form_ != nullptr) {
+					auto scouting_form_fields = match_scouting_form_->fields();
 
-				set.clear();
+					set.clear();
 
-				for (auto entry : match_extra_fields_)
-				{
-					set.addHeader(entry);
+					for (auto entry : match_extra_fields_)
+					{
+						set.addHeader(entry);
+					}
+
+
+					for (int f = 0; f < scouting_form_fields.size(); f++)
+					{
+						set.addHeader(scouting_form_fields[f]);
+					}
+
+					//
+					// Generate the data
+					//
+					for (auto m : matches_) {
+						processDataSetAlliance(set, m, Alliance::Red);
+						processDataSetAlliance(set, m, Alliance::Blue);
+					}
+
+					addRulesToDataSet(set);
 				}
-
-
-				for (int f = 0; f < scouting_form_fields.size(); f++)
-				{
-					set.addHeader(scouting_form_fields[f]);
-				}
-
-				//
-				// Generate the data
-				//
-				for (auto m : matches_) {
-					processDataSetAlliance(set, m, Alliance::Red);
-					processDataSetAlliance(set, m, Alliance::Blue);
-				}
-
-				addRulesToDataSet(set);
 			}
 
 			void ScoutingDataModel::createTeamDataSet(ScoutingDataSet& set)

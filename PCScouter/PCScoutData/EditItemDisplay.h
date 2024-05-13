@@ -22,12 +22,8 @@
 
 #pragma once
 
-#include "FormItemDesc.h"
-#include "TextItemDisplay.h"
-#include <QtCore/QString>
-#include <QtWidgets/QBoxLayout>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
+#include "FormItemDisplay.h"
+#include <QtWidgets/QPlainTextEdit>
 
 namespace xero
 {
@@ -35,39 +31,18 @@ namespace xero
 	{
 		namespace datamodel
 		{
-
-			class TextFormItem : public FormItemDesc
+			class EditItemDisplay : public FormItemDisplay
 			{
 			public:
-				TextFormItem(const QString& display, const QString& tag, int maxlen, int width) : FormItemDesc(display, tag)
-				{
-					maxlen_ = maxlen;
-					width_ = width;
-					addField(std::make_shared<FieldDesc>(tag, FieldDesc::Type::String, true));
-				}
+				EditItemDisplay(ImageSupplier& images, const FormItemDesc* desc, QWidget* parent);
+				virtual ~EditItemDisplay();
 
-				virtual ~TextFormItem()
-				{
-				}
-
-				int maxLen() const {
-					return maxlen_;
-				}
-
-				int width() const {
-					return width_;
-				}
-
-				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const
-				{
-					return new TextItemDisplay(images, this, parent);
-				}
+				virtual void setValues(const DataCollection& data);
+				virtual DataCollection getValues();
 
 			private:
-				int maxlen_;
-				int width_;
+				QPlainTextEdit* edit_;
 			};
-
 		}
 	}
 }

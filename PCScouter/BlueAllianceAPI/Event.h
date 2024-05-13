@@ -37,13 +37,14 @@ namespace xero
 		class Event
 		{
 		public:
-			Event(QString key, QString name, QString city, QString state, QString country, QString sdate, QString edate)
+			Event(QString key, QString name, QString city, QString state, QString country, QString sdate, QString edate, int year)
 			{
 				key_ = key;
 				name_ = name;
 				city_ = city;
 				state_ = state;
 				country_ = country;
+				year_ = year;
 
 				sdate_ = QDate::fromString(sdate, "yyyy-MM-dd");
 				edate_ = QDate::fromString(edate, "yyyy-MM-dd");

@@ -107,6 +107,8 @@
     <ClInclude Include="DataSetExprContext.h" />
     <ClInclude Include="DataSetHighlightRules.h" />
     <ClInclude Include="DPRCalculator.h" />
+    <ClInclude Include="EditFormItem.h" />
+    <ClInclude Include="EditItemDisplay.h" />
     <ClInclude Include="FieldRegion.h" />
     <ClInclude Include="PickListEntry.h" />
     <ClInclude Include="PolygonFieldRegion.h" />
@@ -172,6 +174,7 @@
     <ClCompile Include="DataSetExprContext.cpp" />
     <ClCompile Include="DataSetHighlightRules.cpp" />
     <ClCompile Include="DPRCalculator.cpp" />
+    <ClCompile Include="EditItemDisplay.cpp" />
     <ClCompile Include="FormInstance.cpp" />
     <ClCompile Include="FormItemDisplay.cpp" />
     <ClCompile Include="GraphDescriptor.cpp" />

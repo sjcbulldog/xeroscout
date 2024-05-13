@@ -22,6 +22,7 @@ public:
 	QString getPitScoutingForm();
 	QString getMatchScoutingForm();
 	QString getRosterForm();
+	int getYear();
 
 	QStringList getTabletList();
 	QStringList getPitTabletList();

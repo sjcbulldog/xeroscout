@@ -95,11 +95,6 @@ namespace xero
 
 			QString url = reply_->url().toString();
 
-			if (url.contains("2022orwil_qf4m2")) {
-				int bytes = reply_->bytesAvailable();
-				qDebug() << "This match";
-			}
-
 			std::shared_ptr<QJsonDocument> doc;
 			BlueAllianceResult::Status st = BlueAllianceResult::Status::Success;
 

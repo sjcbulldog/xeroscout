@@ -108,6 +108,7 @@ namespace xero
 				std::shared_ptr<FormItemDesc> parseNumeric(const QString& sectname, int i, const QJsonObject& obj);
 				std::shared_ptr<FormItemDesc> parseText(const QString& sectname, int i, const QJsonObject& obj);
 				std::shared_ptr<FormItemDesc> parseImage(const QString& sectname, int i, const QJsonObject& obj);
+				std::shared_ptr<FormItemDesc> parseEdit(const QString& sectname, int i, const QJsonObject& obj);
 
 				bool isStringArray(const QJsonArray& array) {
 					for (int i = 0; i < array.size(); i++) {

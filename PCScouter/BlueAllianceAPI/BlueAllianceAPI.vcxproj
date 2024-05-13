@@ -108,7 +108,7 @@
     <ClInclude Include="BACountResult.h" />
     <ClInclude Include="BlueAlliance.h" />
     <ClInclude Include="blueallianceapi_global.h" />
-    <ClInclude Include="BlueAllianceEngine.h" />
+    <QtMoc Include="BlueAllianceEngine.h" />
     <ClInclude Include="BlueAllianceResult.h" />
     <ClInclude Include="District.h" />
     <ClInclude Include="EngineController.h" />

@@ -23,57 +23,46 @@
 #pragma once
 
 #include "ApplicationController.h"
+#include "BlueAlliance.h"
 #include "ScoutingDataModel.h"
-#include "ImageManager.h"
-#include <QStringList>
+#include <QtNetwork/QNetworkAccessManager>
 
-class NewEventAppController : public ApplicationController
+class ImportStatbioticsController : public ApplicationController
 {
 public:
-	NewEventAppController(xero::scouting::datamodel::ImageManager &mgr, std::shared_ptr<xero::ba::BlueAlliance> ba, const QStringList &tablets);
-	virtual ~NewEventAppController();
+	ImportStatbioticsController(std::shared_ptr<xero::ba::BlueAlliance> ba, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, int year);
+	virtual ~ImportStatbioticsController();
 
 	bool isDone() override;
 	void run() override;
 
-	const QStringList& tablets() {
-		return tablets_;
-	}
-
-	virtual bool shouldDisableApp();
-
-	void simNoMatches() {
-		sim_no_matches_ = true;
-	}
+	virtual bool providesProgress() { return true; }
+	virtual int percentDone();
 
 private:
-	enum class State
-	{
+	void requestNextTeam();
+	void finished();
+	void sslError(QNetworkReply* reply, const QList<QSslError>& errors);
+
+private:
+	static constexpr const char * Server  = "https://api.statbotics.io/v3";
+
+private:
+	enum class State {
 		Start,
-		WaitingForEvents,
-		WaitingForMatches,
-		WaitingForTeams,
-		NoMatches,
-		WaitingForEventTeams,
-		WaitingForTeamDetail,
+		WaitingForData,
 		Done,
-		Error,
+		Error
 	};
 
 private:
-	void promptUser();
-	void start();
-	void gotMatches();
-	void gotTeams();
-	void noMatches();
-	void gotEventTeams();
-	void gotTeamDetail();
-
-private:	
-	int year_;
+	QNetworkAccessManager *netmgr_;
 	State state_;
-	QStringList tablets_;
-	QStringList team_keys_;
-	bool sim_no_matches_;
-	xero::scouting::datamodel::ImageManager& images_;
+	QVector<int> teams_;
+	QNetworkReply* reply_;
+	int year_;
+	int current_team_;
+	int total_teams_;
+	QMap<QString, QJsonDocument> data_;
 };
+

@@ -128,12 +128,33 @@ void PCFormViewer::loadForm()
 
 void PCFormViewer::updateWindow()
 {
+	QListWidgetItem* item;
+
+	model_ = std::make_shared<ScoutingDataModel>("key", "name", QDate::currentDate(), QDate::currentDate());
+	model_->setScoutingForm(form_);
+	view_frame_->setDataModel(model_);
+
+	view_selector_->clear();
+
+	if (form_->formType() == "team") {
+		item = new QListWidgetItem(loadIcon("matchform"), "Team Form", view_selector_);
+		item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamScoutingFormView)));
+		view_selector_->addItem(item);
+	}
+	else {
+		item = new QListWidgetItem(loadIcon("matchform"), "Red Match Form", view_selector_);
+		item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewRed)));
+		view_selector_->addItem(item);
+
+		item = new QListWidgetItem(loadIcon("matchform"), "Blue Match Form", view_selector_);
+		item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewBlue)));
+		view_selector_->addItem(item);
+	}
+	view_frame_->refreshAll();
 }
 
 void PCFormViewer::createWindows()
 {
-	QListWidgetItem* item;
-
 	left_right_splitter_ = new QSplitter();
 	left_right_splitter_->setOrientation(Qt::Orientation::Horizontal);
 	setCentralWidget(left_right_splitter_);
@@ -147,25 +168,24 @@ void PCFormViewer::createWindows()
 
 	view_selector_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
 
-	item = new QListWidgetItem(loadIcon("matchform"), "Red Scouting Form", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewRed)));
-	view_selector_->addItem(item);
 
-	item = new QListWidgetItem(loadIcon("matchform"), "Blue Scouting Form", view_selector_);
-	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::MatchScoutingFormViewBlue)));
-	view_selector_->addItem(item);
 
 	top_bottom_splitter_ = new QSplitter();
 	top_bottom_splitter_->setOrientation(Qt::Orientation::Vertical);
 	left_right_splitter_->addWidget(top_bottom_splitter_);
 
 	QString name = "[None]";
-	view_frame_ = new DocumentView(images_, -1, name, top_bottom_splitter_);
+	view_frame_ = new DocumentView(images_, QDate::currentDate().year(), name, top_bottom_splitter_);
 	view_frame_->setDataModel(nullptr);
 	top_bottom_splitter_->addWidget(view_frame_);
 
 	logwin_ = new QTextEdit(top_bottom_splitter_);
 	top_bottom_splitter_->addWidget(logwin_);
+}
+
+void PCFormViewer::updatePerForm(std::shared_ptr<xero::scouting::datamodel::ScoutingForm> form)
+{
+
 }
 
 void PCFormViewer::createMenus()

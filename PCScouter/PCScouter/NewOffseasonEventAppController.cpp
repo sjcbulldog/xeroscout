@@ -8,11 +8,11 @@
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
-NewOffseasonEventAppController::NewOffseasonEventAppController(ImageManager& mgr, const QStringList& tablets, int year) : ApplicationController(nullptr, nullptr), images_(mgr)
+NewOffseasonEventAppController::NewOffseasonEventAppController(ImageManager& mgr, const QStringList& tablets) : ApplicationController(nullptr, nullptr), images_(mgr)
 {
 	tablets_ = tablets;
 	state_ = State::Start;
-	year_ = year;
+	year_ = -1;
 }
 
 NewOffseasonEventAppController::~NewOffseasonEventAppController()
@@ -41,13 +41,14 @@ void NewOffseasonEventAppController::run()
 void NewOffseasonEventAppController::promptUser()
 {
 	NewEventOffseasonWizard wizard(images_, tablets_);
+	year_ = wizard.getYear();
 
 	if (wizard.exec() == QDialog::DialogCode::Accepted) {
 		bool good = true;
 		QString error;
 
 		auto dm = DataModelBuilder::buildModel(wizard.getPitScoutingForm(), wizard.getMatchScoutingForm(), 
-			wizard.getEventKey(), wizard.getEventName(), error);
+							wizard.getEventKey(), wizard.getEventName(), error);
 
 		setDataModel(dm);
 		if (dataModel() == nullptr)

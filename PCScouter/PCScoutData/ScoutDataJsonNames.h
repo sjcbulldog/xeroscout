@@ -141,6 +141,20 @@ namespace xero
 			constexpr const char* JsonDistParamNameListName = "distnames";
 			constexpr const char* JsonDistParamValueListName = "distvalues";
 			constexpr const char* JsonRobotCapablitiesDataName = "robotcapablities";
+
+			constexpr const char* StatbioticsEPAName = "epa";
+			constexpr const char* StatbioticsTotalPointName = "total_points";
+			constexpr const char* StatbioticsMeanName = "mean";
+			constexpr const char* StatbioticsStandardDeviationName = "sd";
+			constexpr const char* StatbioticsUnitlessName = "unitless";
+			constexpr const char* StatbioticsNormName = "norm";
+			constexpr const char* StatbioticsBreakdownName = "breakdown";
+
+			constexpr const char* StatbioticsRecordName = "record";
+			constexpr const char* StatbioticsSeasonName = "season";
+			constexpr const char* StatbioticsWinsName = "wins";
+			constexpr const char* StatbioticsLossesName = "losses";
+			constexpr const char* StatbioticsTiesName = "ties";
 		}
 	}
 }

@@ -29,11 +29,10 @@
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 
-NewEventAppController::NewEventAppController(ImageManager& mgr, std::shared_ptr<BlueAlliance> ba, const QStringList& tablets, int year) : ApplicationController(ba, nullptr), images_(mgr)
+NewEventAppController::NewEventAppController(ImageManager& mgr, std::shared_ptr<BlueAlliance> ba, const QStringList& tablets) : ApplicationController(ba, nullptr), images_(mgr)
 {
 	tablets_ = tablets;
 	state_ = State::Start;
-	year_ = year;
 	sim_no_matches_ = false;
 }
 
@@ -190,15 +189,7 @@ void NewEventAppController::gotMatches()
 
 void NewEventAppController::start()
 {
-	if (blueAlliance()->getEngine().eventCount() == 0)
-	{
-		blueAlliance()->requestEvents(year_);
-		state_ = State::WaitingForEvents;
-	}
-	else
-	{
-		promptUser();
-	}
+	promptUser();
 }
 
 void NewEventAppController::promptUser()

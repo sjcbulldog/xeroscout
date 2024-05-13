@@ -9,7 +9,7 @@
 class NewOffseasonEventAppController :  public ApplicationController
 {
 public:
-	NewOffseasonEventAppController(xero::scouting::datamodel::ImageManager& mgr, const QStringList& tablets, int year);
+	NewOffseasonEventAppController(xero::scouting::datamodel::ImageManager& mgr, const QStringList& tablets);
 	virtual ~NewOffseasonEventAppController();
 
 	bool isDone() override;

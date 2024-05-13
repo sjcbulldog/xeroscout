@@ -124,6 +124,9 @@
     <ClCompile Include="SelectOffseasonRosterPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ImportStatbioticsController.cpp">
+      <Filter>AppControllers\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="PCScouter.h">
@@ -228,6 +231,9 @@
     </ClInclude>
     <ClInclude Include="SelectOffseasonRosterPage.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportStatbioticsController.h">
+      <Filter>AppControllers\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

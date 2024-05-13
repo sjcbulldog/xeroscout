@@ -75,6 +75,7 @@ private:
 
 
 private:
+	int year();
 	void readPreferences();
 
 	void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm);
@@ -115,6 +116,8 @@ private:
 	void importMatchScheduleComplete(bool err);
 	void importMatchData();
 	void importMatchDataComplete(bool err);
+	void importStatbioticsData();
+	void importStatbioticsDataComplete(bool err);
 	void importZebraData();
 	void importZebraDataComplete(bool err);
 	void importKPIData();
@@ -221,6 +224,7 @@ private:
 	QMenu* import_menu_;
 	QAction *import_calc_opr_;
 	QAction* import_match_data_;
+	QAction* import_statbiotics_data_;
 	QAction* import_zebra_data_;
 	QAction* import_match_schedule_;
 	QAction* import_offseason_schedule_;
@@ -259,7 +263,6 @@ private:
 	bool shutdown_client_connection_ ;
 
 	QString query_;
-	int year_;
 
 	QLabel* data_model_status_;
 	QLabel* ip_addr_label_;

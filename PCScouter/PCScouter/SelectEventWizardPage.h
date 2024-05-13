@@ -22,12 +22,14 @@
 
 #pragma once
 
-#include <BlueAllianceEngine.h>
+#include "BlueAllianceEngine.h"
 #include "NewEventBlueAllianceWizard.h"
+#include "FetchEventsController.h"
 #include <QtWidgets/QWizard>
 #include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QBoxLayout>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QSpinBox>
 
 class SelectEventWizardPage : public QWizardPage
 {
@@ -40,12 +42,19 @@ public:
 public:
 	static constexpr const char* EventKeyFieldName = "key";
 	static constexpr const char* EventNameFieldName = "name";
+	static constexpr const char* YearName = "year";
 
 private:
 	void eventChanged(QTreeWidgetItem* newitem, QTreeWidgetItem* olditem);
 	void doubleClicked(QTreeWidgetItem* item, int column);
+	void itemExpanded(QTreeWidgetItem* item);
 
 	void filterList(const QString &text);
+
+	void yearChanged(int year);
+	void fetchEvents();
+
+	void done();
 
 private:
 	QVBoxLayout* holder_layout_;
@@ -54,7 +63,10 @@ private:
 	QHBoxLayout* filter_layout_;
 	QLineEdit* filter_;
 	QTreeWidget *tree_;
+	QSpinBox* year_widget_;
 	NewEventBlueAllianceWizard::PropertyMap& props_;
 	xero::ba::BlueAllianceEngine& engine_;
+
+	int current_year_;
 };
 

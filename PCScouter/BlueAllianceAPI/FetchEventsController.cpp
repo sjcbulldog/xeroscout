@@ -32,8 +32,6 @@ namespace xero
 {
 	namespace ba
 	{
-
-
 		FetchEventsController::FetchEventsController(BlueAllianceEngine& engine, int year) : EngineController(engine)
 		{
 			year_ = year;

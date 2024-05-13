@@ -25,6 +25,7 @@
 #include "Alliance.h"
 #include "OPRCalculator.h"
 #include "DPRCalculator.h"
+#include "ScoutDataJsonNames.h"
 
 using namespace xero::scouting::datamodel;
 using namespace xero::ba;
@@ -54,6 +55,81 @@ void DataModelBuilder::jsonToPropMap(const QJsonObject& obj, const QString& alli
 		else if (propobj[key].isBool())
 		{
 			map->insert(std::make_pair("ba_" + key, QVariant(propobj[key].toBool())));
+		}
+	}
+}
+
+void DataModelBuilder::addStatbioticsData(std::shared_ptr<ScoutingDataModel> dm, const QMap<QString, QJsonDocument>& data)
+{
+	for (QString tkey : data.keys())
+	{
+		const QJsonDocument& doc = data.value(tkey);
+		if (!doc.isObject())
+			continue;
+
+		QJsonObject obj = doc.object();
+		if (obj.contains(StatbioticsEPAName) && obj.value(StatbioticsEPAName).isObject()) {
+			QJsonObject epa = obj.value(StatbioticsEPAName).toObject();
+			if (epa.contains(StatbioticsTotalPointName) && epa.value(StatbioticsTotalPointName).isObject())
+			{
+				QJsonObject pts = epa.value(StatbioticsTotalPointName).toObject();
+				if (pts.contains(StatbioticsMeanName) && pts.value(StatbioticsMeanName).isDouble() &&
+					pts.contains(StatbioticsStandardDeviationName) && pts.value(StatbioticsStandardDeviationName).isDouble())
+				{
+					dm->addTeamExtraData(tkey, "sb_points_mean", pts.value(StatbioticsMeanName).toDouble());
+					dm->addTeamExtraData(tkey, "sb_points_sd", pts.value(StatbioticsMeanName).toDouble());
+				}
+			}
+
+			if (epa.contains(StatbioticsUnitlessName) && epa.value(StatbioticsUnitlessName).isDouble())
+			{
+				dm->addTeamExtraData(tkey, "sb_unitless", epa.value(StatbioticsUnitlessName).toDouble());
+			}
+
+			if (epa.contains(StatbioticsNormName) && epa.value(StatbioticsNormName).isDouble())
+			{
+				dm->addTeamExtraData(tkey, "sb_norm", epa.value(StatbioticsNormName).toDouble());
+			}
+
+			if (epa.contains(StatbioticsBreakdownName) && epa.value(StatbioticsBreakdownName).isObject())
+			{
+				QJsonObject bdown = epa.value(StatbioticsBreakdownName).toObject();
+				for (const QString& key : bdown.keys())
+				{
+					if (bdown.value(key).isObject()) {
+						QJsonObject item = bdown.value(key).toObject();
+
+						if (item.contains(StatbioticsMeanName) && item.value(StatbioticsMeanName).isDouble() &&
+							item.contains(StatbioticsStandardDeviationName) && item.value(StatbioticsStandardDeviationName).isDouble())
+						{
+							dm->addTeamExtraData(tkey, "sb_breakdown_" + key + "_mean", item.value(StatbioticsMeanName).toDouble());
+							dm->addTeamExtraData(tkey, "sb_breakdown_" + key + "_sd", item.value(StatbioticsStandardDeviationName).toDouble());
+						}
+					}
+				}
+			}
+		}
+		
+		if (obj.contains(StatbioticsRecordName) && obj.value(StatbioticsRecordName).isObject()) {
+			QJsonObject record = obj.value(StatbioticsRecordName).toObject();
+			if (record.contains(StatbioticsSeasonName) && record.value(StatbioticsSeasonName).isObject())
+			{
+				QJsonObject season = record.value(StatbioticsSeasonName).toObject();
+				if (season.contains(StatbioticsWinsName) && season.value(StatbioticsWinsName).isDouble())
+				{
+					dm->addTeamExtraData(tkey, "sb_wins", season.value(StatbioticsWinsName).toDouble());
+				}
+
+				if (season.contains(StatbioticsLossesName) && season.value(StatbioticsLossesName).isDouble())
+				{
+					dm->addTeamExtraData(tkey, "sb_losses", season.value(StatbioticsLossesName).toDouble());
+				}
+
+				if (season.contains(StatbioticsTiesName) && season.value(StatbioticsTiesName).isDouble())
+				{
+					dm->addTeamExtraData(tkey, "sb_ties", season.value(StatbioticsTiesName).toDouble());
+				}
+			}
 		}
 	}
 }

@@ -26,6 +26,7 @@
 #include "UpDownFormItem.h"
 #include "NumericFormItem.h"
 #include "TextFormItem.h"
+#include "EditFormItem.h"
 #include "TimerCountFormItem.h"
 #include "ImageFormItem.h"
 #include "ImageFormCountSubItem.h"
@@ -423,6 +424,13 @@ namespace xero
 
 						section->addItem(item);
 					}
+					else if (type == "edit") {
+						item = parseEdit(sectname, entry, obj);
+						if (item == nullptr)
+							return false;
+
+						section->addItem(item);
+					}
 					else if (type == "choice") {
 						item = parseChoice(sectname, entry, obj);
 						if (item == nullptr)
@@ -590,7 +598,32 @@ namespace xero
 				if (obj.contains("maxlen") && obj.value("maxlen").isDouble())
 					maxlen = obj.value("maxlen").toInt();
 
-				return std::make_shared<TextFormItem>(name, tag, maxlen);
+				int width = std::numeric_limits<int>::max();
+				if (obj.contains("width") && obj.value("width").isDouble())
+					width = obj.value("width").toInt();
+
+				return std::make_shared<TextFormItem>(name, tag, maxlen, width);
+			}
+
+			std::shared_ptr<FormItemDesc> ScoutingForm::parseEdit(const QString& sectname, int i, const QJsonObject& obj)
+			{
+				QString name, tag;
+				if (!parseObjectBase(sectname, i, obj, name, tag))
+					return nullptr;
+
+				int rows = 1;
+				if (obj.contains("rows") && obj.value("rows").isDouble())
+					rows = obj.value("rows").toInt();
+
+				int cols = 32;
+				if (obj.contains("cols") && obj.value("cols").isDouble())
+					cols = obj.value("cols").toInt();
+
+				int width = std::numeric_limits<int>::max();
+				if (obj.contains("width") && obj.value("width").isDouble())
+					width = obj.value("width").toInt();
+
+				return std::make_shared<EditFormItem>(name, tag, rows, cols, width);
 			}
 
 			std::shared_ptr<FormItemDesc> ScoutingForm::parseImage(const QString& sectname, int entry, const QJsonObject& obj)

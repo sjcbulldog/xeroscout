@@ -16,6 +16,7 @@ public:
 	static constexpr const char* EventKeyName = "key";
 	static constexpr const char* EventTitleName = "name";
 	static constexpr const char* RosterFileName = "roster";
+	static constexpr const char* YearName = "year";
 
 private:
 	void keyEdited(const QString& text);
@@ -23,6 +24,8 @@ private:
 	void selectOffseasonRosterForm();
 	void setLabelText(QLabel* label, const QString& str);
 	bool isValidTeamList(const QString& list, QString& err);
+
+	void yearChanged(int year);
 
 private:
 	QString key_;

@@ -39,8 +39,10 @@ namespace xero
 {
 	namespace ba
 	{
-		class BLUEALLIANCEAPI_EXPORT BlueAllianceEngine
+		class BLUEALLIANCEAPI_EXPORT BlueAllianceEngine : public QObject
 		{
+			Q_OBJECT
+
 		public:
 			BlueAllianceEngine(std::ostream *logfile, const QString& server, const QString& authkey);
 			virtual ~BlueAllianceEngine();
@@ -52,6 +54,7 @@ namespace xero
 			void requestTeams(const std::vector<int>& years);
 			void requestTeams(const QStringList& keys);
 			void requestEvents(const std::vector<int>& years);
+			void requestEvents(int year) { requestEvents(std::vector<int>({ year })) ; };
 			void requestMatches(const QString& evkey);
 			void requestZebra(const QStringList& keys);
 			void requestTeamEvents(const QStringList& keys, int year);
@@ -83,6 +86,9 @@ namespace xero
 					(*logfile_) << line.toStdString() << std::endl;
 				}
 			}
+
+		signals:
+			void done();
 
 		private:
 			static constexpr const char* IsDataFeedDownKey = "is_datafeed_down";

@@ -20,8 +20,9 @@
 // FRC robotics team Error Code Xero.
 //
 
+#include "EditItemDisplay.h"
 #include "TextItemDisplay.h"
-#include "TextFormItem.h"
+#include "EditFormItem.h"
 #include <QBoxLayout>
 #include <QLabel>
 
@@ -31,7 +32,7 @@ namespace xero
 	{
 		namespace datamodel
 		{
-			TextItemDisplay::TextItemDisplay(ImageSupplier& images, const FormItemDesc* desc, QWidget* parent) : FormItemDisplay(images, desc, parent)
+			EditItemDisplay::EditItemDisplay(ImageSupplier& images, const FormItemDesc* desc, QWidget* parent) : FormItemDisplay(images, desc, parent)
 			{
 				QHBoxLayout* layout = new QHBoxLayout();
 				setLayout(layout);
@@ -42,36 +43,37 @@ namespace xero
 				font.setPointSizeF(16.0);
 				label->setFont(font);
 
-				auto tdesc = dynamic_cast<const TextFormItem *>(desc);
+				auto tdesc = dynamic_cast<const EditFormItem*>(desc);
 
-				edit_ = new QLineEdit(this);
+				edit_ = new QPlainTextEdit(this);
 				layout->addWidget(edit_);
 				font = edit_->font();
 				font.setPointSizeF(16.0);
 				edit_->setFont(font);
-				edit_->setMaxLength(tdesc->maxLen());
 
-				if (tdesc->width() != std::numeric_limits<int>::max()) {
-					edit_->setFixedWidth(tdesc->width());
-				}
+				QFontMetrics fm(font);
+				int height = fm.lineSpacing() * tdesc->rows();
+				int width = fm.averageCharWidth() * tdesc->cols();
+
+				edit_->setFixedSize(width, height);
 			}
 
-			TextItemDisplay::~TextItemDisplay()
+			EditItemDisplay::~EditItemDisplay()
 			{
 			}
 
-			void TextItemDisplay::setValues(const DataCollection& data)
+			void EditItemDisplay::setValues(const DataCollection& data)
 			{
 				assert(data.count() == 1);
 				assert(data.data(0).type() == QVariant::Type::String);
 
-				edit_->setText(data.data(0).toString());
+				edit_->setPlainText(data.data(0).toString());
 			}
 
-			DataCollection TextItemDisplay::getValues()
+			DataCollection EditItemDisplay::getValues()
 			{
 				DataCollection d;
-				d.add(desc()->tag(), QVariant(edit_->text()));
+				d.add(desc()->tag(), QVariant(edit_->toPlainText()));
 
 				return d;
 			}
