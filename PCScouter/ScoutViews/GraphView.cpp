@@ -62,8 +62,10 @@ namespace xero
 				{ "Qt", QChart::ChartThemeQt },
 			};
 
-			GraphView::GraphView(QWidget *parent) : QWidget(parent), ViewBase("GraphView")
+			GraphView::GraphView(bool team, bool match, QWidget *parent) : QWidget(parent), ViewBase("GraphView")
 			{
+				include_team_ = team;
+				include_match_ = match;
 				bottom_ = nullptr;
 				grid_ = nullptr;
 				top_ = nullptr;
@@ -132,7 +134,6 @@ namespace xero
 					if (it->second == pane)
 					{
 						chart = it->first;
-						qDebug() << "Deleting " << chart->chart()->title();
 						grid_->removeWidget(it->first.get());
 						pane_chart_map_.erase(it);
 						break;
@@ -170,10 +171,31 @@ namespace xero
 				changed_triggered_ = false;
 			}
 
+			std::vector<std::shared_ptr<FieldDesc>> GraphView::getRequiredFields()
+			{
+				std::vector<std::shared_ptr<FieldDesc>> ret;
+
+				if (include_match_ && include_team_)
+				{
+					ret = dataModel()->getAllFields();
+				}
+				else if (include_match_) {
+					ret = dataModel()->getMatchFields();
+				}
+				else if (include_team_) {
+					ret = dataModel()->getTeamFields();
+				}
+				else {
+					assert(false);
+				}
+
+				return ret;
+			}
+
 			void GraphView::addExpr(std::shared_ptr<GraphDescriptor::GraphPane> pane)
 			{
 				QStringList list;
-				for (auto f : dataModel()->getAllFields())
+				for (auto f : getRequiredFields())
 				{
 					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer || f->type() == FieldDesc::Type::Boolean)
 						list.push_back(f->name());
@@ -285,7 +307,7 @@ namespace xero
 						const QStringList& x = pane->x();
 						QMenu* sub = new QMenu("Add Variable");
 
-						for (auto f : dataModel()->getAllFields())
+						for (auto f : getRequiredFields())
 						{
 							if (!x.contains(f->name()) && (f->type() == FieldDesc::Type::Integer || f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Boolean))
 							{
@@ -484,8 +506,8 @@ namespace xero
 				{
 					std::shared_ptr<GraphDescriptor::GraphPane> pane = desc_.pane(i);
 					std::shared_ptr<ChartViewWrapper> chart = createForPane(pane);
-
-					generateOneChart(pane, chart, keys_);
+					generateOneChart(pane, chart);
+					chart->chart()->setTheme(theme_);
 				}
 			}
 
@@ -545,202 +567,6 @@ namespace xero
 				}
 
 				return allused;
-			}
-
-			bool GraphView::getData(std::map<QString, std::vector<QVariant>>& data, const QStringList& teams, const QStringList& exprlist)
-			{
-				ScoutingDataSet ds("$graph");
-				QString err;
-
-				QStringList matchfields, alllist;
-				ScoutingDataMapPtr varvalues = std::make_shared<ScoutingDataMap>();
-
-				for (auto f : dataModel()->getAllFields())
-				{
-					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer || f->type() == FieldDesc::Type::Boolean)
-						alllist.push_back(f->name());
-				}
-				ScoutDataExprContext ctxt(alllist);
-
-				for (auto f : dataModel()->getMatchFields())
-				{
-					if (f->type() == FieldDesc::Type::Double || f->type() == FieldDesc::Type::Integer || f->type() == FieldDesc::Type::Boolean)
-						matchfields.push_back(f->name());
-				}
-
-				data.clear();
-				for (const QString& team : teams)
-				{
-					std::vector<std::shared_ptr<Expr>> exprs;
-					QStringList allused;
-
-					allused = findAllFieldsUsed(ctxt, exprlist, exprs);
-					if (exprs.size() == 0)
-						return false;
-
-					//
-					// For the match fields, find the averages we need
-					//
-					QString query;
-					ds.clear();
-					query = "SELECT ";
-					int count = 0;
-					for (int i = 0; i < allused.count(); i++)
-					{
-						const QString var = allused.at(i);
-						if (!matchfields.contains(var))
-							continue;
-
-						if (i != 0)
-							query += ",";
-
-						query += allused.at(i);
-						count++;
-					}
-
-					if (count > 0)
-					{
-						query += " from matches where " + QString(DataModelMatch::MatchTeamKeyName) + "='" + team + "'";
-						if (!addDataElements(query, varvalues, ds))
-						{
-							data.clear();
-							return false;
-						}
-					}
-
-					//
-					// Now, append the team data elements to the set
-					//
-					query.clear();
-					ds.clear();
-					query = "SELECT ";
-					count = 0;
-					for (int i = 0; i < allused.count(); i++)
-					{
-						const QString var = allused.at(i);
-						if (matchfields.contains(var))
-							continue;
-
-						if (i != 0)
-							query += ",";
-
-						query += allused.at(i);
-						count++;
-					}
-
-					if (count > 0)
-					{
-						query += " from teams where " + QString(DataModelTeam::TeamKeyName) + "='" + team + "'";
-						if (!addDataElements(query, varvalues, ds))
-						{
-							data.clear();
-							return false;
-						}
-					}
-
-					ctxt.addValues(varvalues);
-					std::vector<QVariant> values;
-					for (auto e : exprs)
-					{
-						QVariant v = e->eval(ctxt);
-						values.push_back(v);
-					}
-
-					data.insert_or_assign(team, values);
-				}
-				return true;
-			}
-
-			bool GraphView::generateOneChart(std::shared_ptr<const GraphDescriptor::GraphPane> pane, std::shared_ptr<ChartViewWrapper> chart, const QStringList& teams)
-			{
-				std::map<QString, std::vector<QVariant>> data;
-				double ymax = 0;
-
-				chart->chart()->removeAllSeries();
-				auto axes = chart->chart()->axes();
-				for (auto axis : axes)
-					chart->chart()->removeAxis(axis);
-
-				if (!getData(data, teams, pane->x()))
-					return false;
-
-				QBarSeries* series = new QBarSeries();
-
-				int cnt = 0;
-				for(int i = 0 ; i < pane->x().size() ; i++)
-				{
-					QString var = pane->x()[i];
-					QBarSet* set = new QBarSet(var);
-					for (const QString& team : teams)
-					{
-						double yval;
-						const std::vector<QVariant>& one = data[team];
-
-						if (one[i].type() == QVariant::Type::Int || one[i].type() == QVariant::Type::Double)
-						{
-							yval = one[i].toDouble();
-						}
-						else if (one[i].type() == QVariant::Type::Bool)
-						{
-							if (one[i].toBool())
-								yval = 1.0;
-							else
-								yval = 0.0;
-						}
-						else
-						{
-							yval = 0.0;
-						}
-
-						if (isnan(yval) || isinf(yval))
-							yval = 0.0;
-
-						*set << yval;
-						cnt++;
-						if (yval > ymax)
-							ymax = yval;
-					}
-					series->append(set);
-				}
-				chart->chart()->addSeries(series);
-				chart->chart()->setAnimationOptions(QChart::SeriesAnimations);
-
-				connect(series, &QBarSeries::hovered, chart.get(), &ChartViewWrapper::mouseHovered);
-
-				QBarCategoryAxis* axisX = new QBarCategoryAxis();
-				for (int i = 0; i < teams.count(); i++)
-				{
-					QString label = teams.at(i);
-					if (label.length() > 3 && label.startsWith("frc"))
-						label = label.mid(3);
-
-					if (i < augmentation_.size())
-						label += ":" + augmentation_.at(i) ;
-
-					axisX->append(label);
-				}
-				chart->chart()->addAxis(axisX, Qt::AlignBottom);
-				series->attachAxis(axisX);
-
-				QValueAxis* axisY = new QValueAxis();
-				if (pane->hasRange())
-				{
-					axisY->setRange(pane->minv(), pane->maxv());
-				}
-				else
-				{
-					axisY->setRange(0, ymax);
-					axisY->applyNiceNumbers();
-				}
-
-				chart->chart()->addAxis(axisY, Qt::AlignLeft);
-				series->attachAxis(axisY);
-
-				chart->chart()->legend()->setVisible(true);
-				chart->chart()->legend()->setAlignment(Qt::AlignBottom);
-				chart->chart()->setTheme(theme_);
-
-				return true;
 			}
 		}
 	}

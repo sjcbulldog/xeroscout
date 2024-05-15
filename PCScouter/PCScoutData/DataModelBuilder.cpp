@@ -59,7 +59,7 @@ void DataModelBuilder::jsonToPropMap(const QJsonObject& obj, const QString& alli
 	}
 }
 
-void DataModelBuilder::addStatbioticsData(std::shared_ptr<ScoutingDataModel> dm, const QMap<QString, QJsonDocument>& data)
+void DataModelBuilder::addStatboticsData(std::shared_ptr<ScoutingDataModel> dm, const QMap<QString, QJsonDocument>& data)
 {
 	for (QString tkey : data.keys())
 	{
@@ -68,66 +68,66 @@ void DataModelBuilder::addStatbioticsData(std::shared_ptr<ScoutingDataModel> dm,
 			continue;
 
 		QJsonObject obj = doc.object();
-		if (obj.contains(StatbioticsEPAName) && obj.value(StatbioticsEPAName).isObject()) {
-			QJsonObject epa = obj.value(StatbioticsEPAName).toObject();
-			if (epa.contains(StatbioticsTotalPointName) && epa.value(StatbioticsTotalPointName).isObject())
+		if (obj.contains(StatboticsEPAName) && obj.value(StatboticsEPAName).isObject()) {
+			QJsonObject epa = obj.value(StatboticsEPAName).toObject();
+			if (epa.contains(StatboticsTotalPointName) && epa.value(StatboticsTotalPointName).isObject())
 			{
-				QJsonObject pts = epa.value(StatbioticsTotalPointName).toObject();
-				if (pts.contains(StatbioticsMeanName) && pts.value(StatbioticsMeanName).isDouble() &&
-					pts.contains(StatbioticsStandardDeviationName) && pts.value(StatbioticsStandardDeviationName).isDouble())
+				QJsonObject pts = epa.value(StatboticsTotalPointName).toObject();
+				if (pts.contains(StatboticsMeanName) && pts.value(StatboticsMeanName).isDouble() &&
+					pts.contains(StatboticsStandardDeviationName) && pts.value(StatboticsStandardDeviationName).isDouble())
 				{
-					dm->addTeamExtraData(tkey, "sb_points_mean", pts.value(StatbioticsMeanName).toDouble());
-					dm->addTeamExtraData(tkey, "sb_points_sd", pts.value(StatbioticsMeanName).toDouble());
+					dm->addTeamExtraData(tkey, "sb_points_mean", pts.value(StatboticsMeanName).toDouble());
+					dm->addTeamExtraData(tkey, "sb_points_sd", pts.value(StatboticsStandardDeviationName).toDouble());
 				}
 			}
 
-			if (epa.contains(StatbioticsUnitlessName) && epa.value(StatbioticsUnitlessName).isDouble())
+			if (epa.contains(StatboticsUnitlessName) && epa.value(StatboticsUnitlessName).isDouble())
 			{
-				dm->addTeamExtraData(tkey, "sb_unitless", epa.value(StatbioticsUnitlessName).toDouble());
+				dm->addTeamExtraData(tkey, "sb_unitless", epa.value(StatboticsUnitlessName).toDouble());
 			}
 
-			if (epa.contains(StatbioticsNormName) && epa.value(StatbioticsNormName).isDouble())
+			if (epa.contains(StatboticsNormName) && epa.value(StatboticsNormName).isDouble())
 			{
-				dm->addTeamExtraData(tkey, "sb_norm", epa.value(StatbioticsNormName).toDouble());
+				dm->addTeamExtraData(tkey, "sb_norm", epa.value(StatboticsNormName).toDouble());
 			}
 
-			if (epa.contains(StatbioticsBreakdownName) && epa.value(StatbioticsBreakdownName).isObject())
+			if (epa.contains(StatboticsBreakdownName) && epa.value(StatboticsBreakdownName).isObject())
 			{
-				QJsonObject bdown = epa.value(StatbioticsBreakdownName).toObject();
+				QJsonObject bdown = epa.value(StatboticsBreakdownName).toObject();
 				for (const QString& key : bdown.keys())
 				{
 					if (bdown.value(key).isObject()) {
 						QJsonObject item = bdown.value(key).toObject();
 
-						if (item.contains(StatbioticsMeanName) && item.value(StatbioticsMeanName).isDouble() &&
-							item.contains(StatbioticsStandardDeviationName) && item.value(StatbioticsStandardDeviationName).isDouble())
+						if (item.contains(StatboticsMeanName) && item.value(StatboticsMeanName).isDouble() &&
+							item.contains(StatboticsStandardDeviationName) && item.value(StatboticsStandardDeviationName).isDouble())
 						{
-							dm->addTeamExtraData(tkey, "sb_breakdown_" + key + "_mean", item.value(StatbioticsMeanName).toDouble());
-							dm->addTeamExtraData(tkey, "sb_breakdown_" + key + "_sd", item.value(StatbioticsStandardDeviationName).toDouble());
+							dm->addTeamExtraData(tkey, "sb_breakdown_" + key + "_mean", item.value(StatboticsMeanName).toDouble());
+							dm->addTeamExtraData(tkey, "sb_breakdown_" + key + "_sd", item.value(StatboticsStandardDeviationName).toDouble());
 						}
 					}
 				}
 			}
 		}
 		
-		if (obj.contains(StatbioticsRecordName) && obj.value(StatbioticsRecordName).isObject()) {
-			QJsonObject record = obj.value(StatbioticsRecordName).toObject();
-			if (record.contains(StatbioticsSeasonName) && record.value(StatbioticsSeasonName).isObject())
+		if (obj.contains(StatboticsRecordName) && obj.value(StatboticsRecordName).isObject()) {
+			QJsonObject record = obj.value(StatboticsRecordName).toObject();
+			if (record.contains(StatboticsSeasonName) && record.value(StatboticsSeasonName).isObject())
 			{
-				QJsonObject season = record.value(StatbioticsSeasonName).toObject();
-				if (season.contains(StatbioticsWinsName) && season.value(StatbioticsWinsName).isDouble())
+				QJsonObject season = record.value(StatboticsSeasonName).toObject();
+				if (season.contains(StatboticsWinsName) && season.value(StatboticsWinsName).isDouble())
 				{
-					dm->addTeamExtraData(tkey, "sb_wins", season.value(StatbioticsWinsName).toDouble());
+					dm->addTeamExtraData(tkey, "sb_wins", season.value(StatboticsWinsName).toDouble());
 				}
 
-				if (season.contains(StatbioticsLossesName) && season.value(StatbioticsLossesName).isDouble())
+				if (season.contains(StatboticsLossesName) && season.value(StatboticsLossesName).isDouble())
 				{
-					dm->addTeamExtraData(tkey, "sb_losses", season.value(StatbioticsLossesName).toDouble());
+					dm->addTeamExtraData(tkey, "sb_losses", season.value(StatboticsLossesName).toDouble());
 				}
 
-				if (season.contains(StatbioticsTiesName) && season.value(StatbioticsTiesName).isDouble())
+				if (season.contains(StatboticsTiesName) && season.value(StatboticsTiesName).isDouble())
 				{
-					dm->addTeamExtraData(tkey, "sb_ties", season.value(StatbioticsTiesName).toDouble());
+					dm->addTeamExtraData(tkey, "sb_ties", season.value(StatboticsTiesName).toDouble());
 				}
 			}
 		}

@@ -113,6 +113,8 @@
     <ClCompile Include="FormView.cpp" />
     <ClCompile Include="GameFieldManager.cpp" />
     <ClCompile Include="GraphConfigurationDialog.cpp" />
+    <ClCompile Include="GraphPerMatchView.cpp" />
+    <ClCompile Include="GraphPerTeamView.cpp" />
     <ClCompile Include="GraphView.cpp" />
     <ClCompile Include="ImageView.cpp" />
     <ClCompile Include="IntroView.cpp" />
@@ -129,6 +131,7 @@
     <ClCompile Include="PreMatchGraphView.cpp" />
     <ClCompile Include="RobotActivityEditWidget.cpp" />
     <ClCompile Include="TeamSelectedWidget.cpp" />
+    <ClCompile Include="TeamViewOverTime.cpp" />
     <ClCompile Include="TimeBoundWidget.cpp" />
     <ClCompile Include="QueryViewWidget.cpp" />
     <ClCompile Include="ScoutDataMergeDialog.cpp" />
@@ -157,6 +160,8 @@
     <ClInclude Include="GameField.h" />
     <ClInclude Include="GameFieldManager.h" />
     <ClInclude Include="GraphConfigurationDialog.h" />
+    <ClInclude Include="GraphPerMatchView.h" />
+    <ClInclude Include="GraphPerTeamView.h" />
     <ClInclude Include="GraphView.h" />
     <ClInclude Include="ImageView.h" />
     <ClInclude Include="IntroView.h" />
@@ -174,6 +179,7 @@
     <ClInclude Include="SelectTeamsDialog.h" />
     <QtMoc Include="TeamSummaryWidget.h" />
     <QtMoc Include="TeamSelectedWidget.h" />
+    <ClInclude Include="TeamViewOverTime.h" />
     <ClInclude Include="ZebraAnalysisView.h" />
     <ClInclude Include="ZebraPatternView.h" />
     <ClInclude Include="ZebraRegionEditor.h" />

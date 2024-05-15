@@ -32,7 +32,7 @@ namespace xero
 	{
 		namespace views
 		{
-			AllianceGraphView::AllianceGraphView(QWidget* parent) : GraphView(parent)
+			AllianceGraphView::AllianceGraphView(QWidget* parent) : GraphPerTeamView(parent)
 			{
 			}
 

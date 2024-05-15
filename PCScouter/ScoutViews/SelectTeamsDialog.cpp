@@ -36,7 +36,7 @@ namespace xero
 				headers << "";
 				headers << "Rank";
 				headers << "Number";
-				headers << "Name";
+				headers << "NickName";
 			
 				dm_ = dm;
 				keys_ = keys;
@@ -103,7 +103,7 @@ namespace xero
 						item->setText(index++, "-");
 
 					item->setText(index++, QString::number(t->number()));
-					item->setText(index++, t->name());
+					item->setText(index++, t->nick());
 
 					if (keys_.contains(t->key()))
 						item->setCheckState(0, Qt::CheckState::Checked);

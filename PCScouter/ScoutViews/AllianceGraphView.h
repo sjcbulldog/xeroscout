@@ -23,7 +23,7 @@
 #pragma once
 
 #include "scoutviews_global.h"
-#include "GraphView.h"
+#include "GraphPerTeamView.h"
 #include <QLabel>
 #include <QGroupBox>
 
@@ -33,7 +33,7 @@ namespace xero
 	{
 		namespace views
 		{
-			class SCOUTVIEWS_EXPORT AllianceGraphView : public GraphView
+			class SCOUTVIEWS_EXPORT AllianceGraphView : public GraphPerTeamView
 			{
 			public:
 				AllianceGraphView(QWidget* parent);

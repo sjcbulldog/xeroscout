@@ -27,11 +27,11 @@
 #include "ScoutingDataModel.h"
 #include <QtNetwork/QNetworkAccessManager>
 
-class ImportStatbioticsController : public ApplicationController
+class ImportStatboticsController : public ApplicationController
 {
 public:
-	ImportStatbioticsController(std::shared_ptr<xero::ba::BlueAlliance> ba, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, int year);
-	virtual ~ImportStatbioticsController();
+	ImportStatboticsController(std::shared_ptr<xero::ba::BlueAlliance> ba, std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, int year);
+	virtual ~ImportStatboticsController();
 
 	bool isDone() override;
 	void run() override;

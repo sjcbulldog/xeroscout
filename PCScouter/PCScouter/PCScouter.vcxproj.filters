@@ -124,7 +124,7 @@
     <ClCompile Include="SelectOffseasonRosterPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImportStatbioticsController.cpp">
+    <ClCompile Include="ImportStatboticsController.cpp">
       <Filter>AppControllers\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -232,7 +232,7 @@
     <ClInclude Include="SelectOffseasonRosterPage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ImportStatbioticsController.h">
+    <ClInclude Include="ImportStatboticsController.h">
       <Filter>AppControllers\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

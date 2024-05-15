@@ -37,6 +37,7 @@
 #include "DataModelBuilder.h"
 #include "PreMatchGraphView.h"
 #include "AllianceGraphView.h"
+#include "TeamViewOverTime.h"
 #include "TeamSummaryWidget.h"
 #include "PickListView.h"
 #include "PickListEditor.h"
@@ -53,10 +54,10 @@
 
 #include "NewEventAppController.h"
 #include "NewOffseasonEventAppController.h"
-#include "ImportStatbioticsController.h"
+#include "ImportStatboticsController.h"
 #include "ImportMatchDataController.h"
 #include "ImportZebraDataController.h"
-#include "ImportStatbioticsController.h"
+#include "ImportStatboticsController.h"
 #include "AllTeamSummaryController.h"
 #include "ImportMatchScheduleController.h"
 #include "PickListController.h"
@@ -397,6 +398,10 @@ void PCScouter::createWindows()
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::AllianceGraphView)));
 	view_selector_->addItem(item);
 
+	item = new QListWidgetItem(loadIcon("matchgraphs.png"), "Team Over Time", view_selector_);
+	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::TeamOverTimeView)));
+	view_selector_->addItem(item);
+
 	item = new QListWidgetItem(loadIcon("picklist.png"), "Pick List Program", view_selector_);
 	item->setData(Qt::UserRole, QVariant(static_cast<int>(DocumentView::ViewType::PickListView)));
 	view_selector_->addItem(item);
@@ -591,8 +596,8 @@ void PCScouter::createMenus()
 	import_match_data_ = import_menu_->addAction(tr("Match Results"));
 	(void)connect(import_match_data_, &QAction::triggered, this, &PCScouter::importMatchData);
 
-	import_statbiotics_data_ = import_menu_->addAction(tr("Statbiotics Data"));
-	(void)connect(import_statbiotics_data_, &QAction::triggered, this, &PCScouter::importStatbioticsData);
+	import_statbiotics_data_ = import_menu_->addAction(tr("Statbotics Data"));
+	(void)connect(import_statbiotics_data_, &QAction::triggered, this, &PCScouter::importStatboticsData);
 
 	import_zebra_data_ = import_menu_->addAction(tr("Zebra Data"));
 	(void)connect(import_zebra_data_, &QAction::triggered, this, &PCScouter::importZebraData);
@@ -1147,7 +1152,7 @@ void PCScouter::importMatchDataComplete(bool err)
 	updateCurrentView();
 }
 
-void PCScouter::importStatbioticsDataComplete(bool err)
+void PCScouter::importStatboticsDataComplete(bool err)
 {
 	saveAndBackup();
 	view_frame_->needsRefreshAll();
@@ -1174,16 +1179,16 @@ void PCScouter::importMatchData()
 	connect(ctrl, &ApplicationController::complete, this, &PCScouter::importMatchDataComplete);
 }
 
-void PCScouter::importStatbioticsData()
+void PCScouter::importStatboticsData()
 {
 	if (data_model_ == nullptr) {
 		QMessageBox::critical(this, "Error", "You can only import statbiotics data into an event.  The currently no open event.  Either open an event with File/Open or create an event with File/New");
 		return;
 	}
 
-	auto ctrl = new ImportStatbioticsController(blue_alliance_, data_model_, year());
+	auto ctrl = new ImportStatboticsController(blue_alliance_, data_model_, year());
 	setAppController(ctrl);
-	connect(ctrl, &ApplicationController::complete, this, &PCScouter::importStatbioticsDataComplete);
+	connect(ctrl, &ApplicationController::complete, this, &PCScouter::importStatboticsDataComplete);
 }
 
 void PCScouter::importMatchScheduleComplete(bool err)
@@ -1640,6 +1645,27 @@ void PCScouter::updateCurrentView()
 			GraphView* ds = dynamic_cast<GraphView*>(view_frame_->getWidget(view));
 			assert(ds != nullptr);
 			if (!ds->hasDescriptor() && desc.has(AllianceGraphView::Name))
+			{
+				ds->setDescriptor(desc[AllianceGraphView::Name]);
+				ds->refreshView();
+				ds->refreshCharts();
+				ds->clearNeedRefresh();
+			}
+			else if (ds->needsRefresh())
+			{
+				ds->refreshView();
+				ds->refreshCharts();
+				ds->clearNeedRefresh();
+			}
+		}
+		break;
+
+		case DocumentView::ViewType::TeamOverTimeView:
+		{
+			const GraphDescriptorCollection& desc = data_model_->graphDescriptors();
+			GraphView* ds = dynamic_cast<GraphView*>(view_frame_->getWidget(view));
+			assert(ds != nullptr);
+			if (!ds->hasDescriptor() && desc.has(TeamViewOverTime::Name))
 			{
 				ds->setDescriptor(desc[AllianceGraphView::Name]);
 				ds->refreshView();

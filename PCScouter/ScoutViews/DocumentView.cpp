@@ -30,6 +30,7 @@
 #include "DataMergeListWidget.h"
 #include "ZebraViewWidget.h"
 #include "PreMatchGraphView.h"
+#include "TeamViewOverTime.h"
 #include "AllianceGraphView.h"
 #include "TeamSummaryWidget.h"
 #include "PickListView.h"
@@ -96,31 +97,35 @@ namespace xero
 				gview->create();
 				addWidget(gview);																									// 15
 
-				addWidget(new PickListView("picklist", this));																		// 16
-				addWidget(new ZebraAnalysisView(this));																				// 17
-				addWidget(new ZebraPatternView(images_, this));																		// 18
+				gview = new TeamViewOverTime(this);																					// 16
+				gview->create();
+				addWidget(gview);
+
+				addWidget(new PickListView("picklist", this));																		// 17
+				addWidget(new ZebraAnalysisView(this));																				// 18
+				addWidget(new ZebraPatternView(images_, this));																		// 19
 
 				if (year == -1)
 					addWidget(new QWidget());
 				else
-					addWidget(new ZebraRegionEditor(field_mgr_, yearstr, this));													// 19
+					addWidget(new ZebraRegionEditor(field_mgr_, yearstr, this));													// 20
 
 				iview = new IntroView("Zebra Introduction", this);
 				iview->setFile("zebra.html");
-				addWidget(iview);																									// 20
-				addWidget(new DataSetViewWidget("predictions", true, this));														// 21
+				addWidget(iview);																									// 21
+				addWidget(new DataSetViewWidget("predictions", true, this));														// 22
 
 				if (year == -1)
 					addWidget(new QWidget());
 				else
-					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebraheatmap", PathFieldView::ViewMode::Heatmap));	// 22
+					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebraheatmap", PathFieldView::ViewMode::Heatmap));	// 23
 
 				if (year == -1)
 					addWidget(new QWidget());
 				else
-					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebrareplay", PathFieldView::ViewMode::Replay));		// 23
+					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebrareplay", PathFieldView::ViewMode::Replay));		// 24
 
-				addWidget(new PickListEditor(this, "picklisteditor"));																// 24
+				addWidget(new PickListEditor(this, "picklisteditor"));																// 25
 
 				setCurrentIndex(0);
 				view_ = ViewType::NoModelView;

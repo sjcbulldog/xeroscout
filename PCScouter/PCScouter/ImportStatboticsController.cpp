@@ -1,10 +1,10 @@
-#include "ImportStatbioticsController.h"
+#include "ImportStatboticsController.h"
 #include "DataModelBuilder.h"
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
 
-ImportStatbioticsController::ImportStatbioticsController(std::shared_ptr<xero::ba::BlueAlliance> ba, 
+ImportStatboticsController::ImportStatboticsController(std::shared_ptr<xero::ba::BlueAlliance> ba, 
 	std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, int year) : ApplicationController(ba, dm)
 {
 	state_ = State::Start;
@@ -13,15 +13,15 @@ ImportStatbioticsController::ImportStatbioticsController(std::shared_ptr<xero::b
 	netmgr_ = new QNetworkAccessManager(this);
 	reply_ = nullptr;
 
-	(void)connect(netmgr_, &QNetworkAccessManager::finished, this, &ImportStatbioticsController::finished);
-	(void)connect(netmgr_, &QNetworkAccessManager::sslErrors, this, &ImportStatbioticsController::sslError);
+	(void)connect(netmgr_, &QNetworkAccessManager::finished, this, &ImportStatboticsController::finished);
+	(void)connect(netmgr_, &QNetworkAccessManager::sslErrors, this, &ImportStatboticsController::sslError);
 }
 
-ImportStatbioticsController::~ImportStatbioticsController()
+ImportStatboticsController::~ImportStatboticsController()
 {
 }
 
-int ImportStatbioticsController::percentDone()
+int ImportStatboticsController::percentDone()
 {
 	int ret = 0;
 
@@ -38,12 +38,12 @@ int ImportStatbioticsController::percentDone()
 	return ret;
 }
 
-bool ImportStatbioticsController::isDone()
+bool ImportStatboticsController::isDone()
 {
 	return state_ == State::Done || state_ == State::Error;
 }
 
-void ImportStatbioticsController::requestNextTeam()
+void ImportStatboticsController::requestNextTeam()
 {
 	current_team_ = teams_.front();
 	teams_.pop_front();
@@ -66,7 +66,7 @@ void ImportStatbioticsController::requestNextTeam()
 	}
 }
 
-void ImportStatbioticsController::finished()
+void ImportStatboticsController::finished()
 {
 	QNetworkReply::NetworkError err = reply_->error();
 	if (err != QNetworkReply::NetworkError::NoError)
@@ -101,7 +101,7 @@ void ImportStatbioticsController::finished()
 	}
 
 	if (teams_.count() == 0) {
-		xero::scouting::datamodel::DataModelBuilder::addStatbioticsData(dataModel(), data_);
+		xero::scouting::datamodel::DataModelBuilder::addStatboticsData(dataModel(), data_);
 		state_ = State::Done;
 		emit complete(true);
 	}
@@ -110,11 +110,11 @@ void ImportStatbioticsController::finished()
 	}
 }
 
-void ImportStatbioticsController::sslError(QNetworkReply* reply, const QList<QSslError>& errors)
+void ImportStatboticsController::sslError(QNetworkReply* reply, const QList<QSslError>& errors)
 {
 }
 
-void ImportStatbioticsController::run()
+void ImportStatboticsController::run()
 {
 	if (state_ == State::Start)
 	{

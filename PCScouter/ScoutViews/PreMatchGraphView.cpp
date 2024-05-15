@@ -30,10 +30,9 @@ namespace xero
 	{
 		namespace views
 		{
-			PreMatchGraphView::PreMatchGraphView(QWidget* parent) : GraphView(parent)
+			PreMatchGraphView::PreMatchGraphView(QWidget* parent) : GraphPerTeamView(parent)
 			{
 				box_ = nullptr;
-
 			}
 
 			PreMatchGraphView::~PreMatchGraphView()

@@ -142,19 +142,19 @@ namespace xero
 			constexpr const char* JsonDistParamValueListName = "distvalues";
 			constexpr const char* JsonRobotCapablitiesDataName = "robotcapablities";
 
-			constexpr const char* StatbioticsEPAName = "epa";
-			constexpr const char* StatbioticsTotalPointName = "total_points";
-			constexpr const char* StatbioticsMeanName = "mean";
-			constexpr const char* StatbioticsStandardDeviationName = "sd";
-			constexpr const char* StatbioticsUnitlessName = "unitless";
-			constexpr const char* StatbioticsNormName = "norm";
-			constexpr const char* StatbioticsBreakdownName = "breakdown";
+			constexpr const char* StatboticsEPAName = "epa";
+			constexpr const char* StatboticsTotalPointName = "total_points";
+			constexpr const char* StatboticsMeanName = "mean";
+			constexpr const char* StatboticsStandardDeviationName = "sd";
+			constexpr const char* StatboticsUnitlessName = "unitless";
+			constexpr const char* StatboticsNormName = "norm";
+			constexpr const char* StatboticsBreakdownName = "breakdown";
 
-			constexpr const char* StatbioticsRecordName = "record";
-			constexpr const char* StatbioticsSeasonName = "season";
-			constexpr const char* StatbioticsWinsName = "wins";
-			constexpr const char* StatbioticsLossesName = "losses";
-			constexpr const char* StatbioticsTiesName = "ties";
+			constexpr const char* StatboticsRecordName = "record";
+			constexpr const char* StatboticsSeasonName = "season";
+			constexpr const char* StatboticsWinsName = "wins";
+			constexpr const char* StatboticsLossesName = "losses";
+			constexpr const char* StatboticsTiesName = "ties";
 		}
 	}
 }

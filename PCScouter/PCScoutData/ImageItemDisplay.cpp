@@ -50,15 +50,15 @@ namespace xero
 					DataCollection d;
 					setValues(d);
 				}
+
+				flipped_ = false;
+				setFocusPolicy(Qt::StrongFocus);
 			}
 
 			ImageItemDisplay::~ImageItemDisplay()
 			{
 			}
 
-			void ImageItemDisplay::keyPressEvent(QKeyEvent *ev)
-			{
-			}
 
 			QRect ImageItemDisplay::realBounds(std::shared_ptr<ImageFormSubItem> item)
 			{
@@ -66,9 +66,44 @@ namespace xero
 				assert(fdesc != nullptr);
 
 				QRect r = item->bounds();
-				r = QRect(QPoint(r.x() * multx_, r.y() * multy_), QSize(r.width() * multx_, r.height() * multy_));
+				if (flipped_) {
+					r = QRect(image_->width() - r.x(), r.y(), r.width(), r.height());
+				}
 
+				r = QRect(QPoint(r.x() * multx_, r.y() * multy_), QSize(r.width() * multx_, r.height() * multy_));
 				return r;
+			}
+
+			std::shared_ptr<ImageFormSubItem> ImageItemDisplay::findByPoint(const QPoint& pt)
+			{
+				const ImageFormItem* fdesc = dynamic_cast<const ImageFormItem*>(desc());
+				assert(fdesc != nullptr);
+
+				for (auto item : fdesc->items())
+				{
+
+
+					QRect r = realBounds(item);
+					if (r.contains(pt))
+					{
+						return item;
+					}
+				}
+
+				return NULL;
+			}
+
+			void ImageItemDisplay::mouseDoubleClickEvent(QMouseEvent* ev)
+			{
+				const ImageFormItem* fdesc = dynamic_cast<const ImageFormItem*>(desc());
+				assert(fdesc != nullptr);
+
+				std::shared_ptr<ImageFormSubItem> item = findByPoint(ev->pos());
+				if (item == nullptr)
+				{
+					flipped_ = !flipped_;
+					update();
+				}
 			}
 
 			void ImageItemDisplay::mousePressEvent(QMouseEvent* ev)
@@ -76,31 +111,28 @@ namespace xero
 				const ImageFormItem* fdesc = dynamic_cast<const ImageFormItem*>(desc());
 				assert(fdesc != nullptr);
 
-				for (auto item : fdesc->items())
+				std::shared_ptr<ImageFormSubItem> item = findByPoint(ev->pos());
+				if (item != nullptr)
 				{
 					QString longname = FormItemDesc::genComplexName(fdesc->tag(), item->subname());
 
-					QRect r = realBounds(item);
-					if (r.contains(ev->pos()))
+					auto on_off = std::dynamic_pointer_cast<ImageFormOnOffSubitem>(item);
+					if (on_off != nullptr)
 					{
-						auto on_off = std::dynamic_pointer_cast<ImageFormOnOffSubitem>(item);
-						if (on_off != nullptr)
+						if (on_off->isChoice())
 						{
-							if (on_off->isChoice())
-							{
-								mousePressChoice(on_off, longname, ev);
-							}
-							else
-							{
-								mousePressOnOff(on_off, longname, ev);
-							}
+							mousePressChoice(on_off, longname, ev);
 						}
+						else
+						{
+							mousePressOnOff(on_off, longname, ev);
+						}
+					}
 
-						auto count = std::dynamic_pointer_cast<ImageFormCountSubItem>(item);
-						if (count != nullptr)
-						{
-							mousePressCount(count, longname, ev);
-						}
+					auto count = std::dynamic_pointer_cast<ImageFormCountSubItem>(item);
+					if (count != nullptr)
+					{
+						mousePressCount(count, longname, ev);
 					}
 				}
 
@@ -195,7 +227,11 @@ namespace xero
 				p.setFont(f);
 
 				QRect r(QPoint(0, 0), size());
-				p.drawImage(r, *image_);
+				if (flipped_)
+					p.drawImage(r, image_->mirrored(true,false));
+				else {
+					p.drawImage(r, *image_);
+				}
 
 				QPen pen(QColor(0, 0, 0));
 				pen.setWidth(4);

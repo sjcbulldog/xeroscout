@@ -64,16 +64,17 @@ namespace xero
 					ZebraTrackView = 13,
 					MatchGraphView = 14,
 					AllianceGraphView = 15,
-					PickListView = 16,
-					ZebraAnalysis = 17,
-					ZebraPatternEditor=18,
-					ZebraRegionEditor=19,
-					ZebraIntro=20,
-					Predictions = 21,
-					ZebraHeatmapView = 22,
-					ZebraReplayView = 23,
-					PickListEditor = 24,
-					FirstFormView = 25
+					TeamOverTimeView = 16,
+					PickListView = 17,
+					ZebraAnalysis = 18,
+					ZebraPatternEditor=19,
+					ZebraRegionEditor=20,
+					ZebraIntro=21,
+					Predictions = 22,
+					ZebraHeatmapView = 23,
+					ZebraReplayView = 24,
+					PickListEditor = 25,
+					FirstFormView = 26
 				};
 
 			public:

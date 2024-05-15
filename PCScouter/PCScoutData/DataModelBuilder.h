@@ -71,7 +71,7 @@ namespace xero
 					std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model,
 					const QString& mkey, const QString& tkey, double width);
 
-				static PCSCOUTDATA_EXPORT void addStatbioticsData(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, const QMap<QString, QJsonDocument>& data);
+				static PCSCOUTDATA_EXPORT void addStatboticsData(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, const QMap<QString, QJsonDocument>& data);
 
 			private:
 				static void breakoutBlueAlliancePerRobotData(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm,

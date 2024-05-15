@@ -23,7 +23,7 @@
 #pragma once
 
 #include "scoutviews_global.h"
-#include "GraphView.h"
+#include "GraphPerTeamView.h"
 #include <QLabel>
 #include <QGroupBox>
 #include <QComboBox>
@@ -34,7 +34,7 @@ namespace xero
 	{
 		namespace views
 		{
-			class SCOUTVIEWS_EXPORT PreMatchGraphView : public GraphView
+			class SCOUTVIEWS_EXPORT PreMatchGraphView : public GraphPerTeamView
 			{
 			public:
 				PreMatchGraphView(QWidget* parent);

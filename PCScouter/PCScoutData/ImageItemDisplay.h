@@ -44,7 +44,7 @@ namespace xero
 			protected:
 				void paintEvent(QPaintEvent* ev) override;
 				void mousePressEvent(QMouseEvent* ev) override;
-				void keyPressEvent(QKeyEvent* ev) override;
+				void mouseDoubleClickEvent(QMouseEvent* ev) override;
 				void resizeEvent(QResizeEvent* ev) override;
 				void showEvent(QShowEvent* ev) override;
 
@@ -63,6 +63,8 @@ namespace xero
 
 				void computeMultiplier();
 
+				std::shared_ptr<xero::scouting::datamodel::ImageFormSubItem> findByPoint(const QPoint& pt);
+
 				static constexpr const int CenterLineWidth = 10;
 				static constexpr const int CenterFontSize = 8;
 
@@ -71,6 +73,7 @@ namespace xero
 				QSize size_;
 				double multx_;
 				double multy_;
+				bool flipped_;
 
 				std::map<QString, bool> on_off_state_;
 				std::map<QString, int> count_state_;

@@ -116,8 +116,8 @@ private:
 	void importMatchScheduleComplete(bool err);
 	void importMatchData();
 	void importMatchDataComplete(bool err);
-	void importStatbioticsData();
-	void importStatbioticsDataComplete(bool err);
+	void importStatboticsData();
+	void importStatboticsDataComplete(bool err);
 	void importZebraData();
 	void importZebraDataComplete(bool err);
 	void importKPIData();
