@@ -28,10 +28,16 @@
 #include "USBTransport.h"
 #include "AboutDialog.h"
 #include "ClientServerProtocol.h"
+
+#ifdef _XERO_BLE_CLIENT
+#include "BLETransport.h"
+#endif
+
 #ifdef _XERO_BLUETOOTH_CLIENT
 #include "BluetoothClient.h"
 #include "BluetoothTransport.h"
 #endif
+
 #include "SelectMatch.h"
 #include <QMenuBar>
 #include <QMenu>
@@ -52,7 +58,7 @@ using namespace xero::scouting::datamodel;
 using namespace xero::scouting::views;
 using namespace xero::scouting::transport;
 
-PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
+PCScoutApp::PCScoutApp(QWidget* parent) : QMainWindow(parent), images_(false)
 {
 	server_ = nullptr;
 	ignore_view_select_changes_ = false;
@@ -61,7 +67,7 @@ PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
 	{
 		identity_ = TabletIdentity(QUuid(settings_.value(TabletGUIDKey).toByteArray()));
 	}
-	else 
+	else
 	{
 		//
 		// If there was not a UUID stored in the settings, we don't have one yet, so the one
@@ -171,6 +177,10 @@ PCScoutApp::PCScoutApp(QWidget *parent) : QMainWindow(parent), images_(false)
 
 #ifdef _XERO_BLUETOOTH_CLIENT
 	bt_client_ = nullptr;
+#endif
+
+#ifdef _XERO_BLE_CLIENT
+	ble_client_ = nullptr;
 #endif
 
 	host_addr_valid_ = false;
@@ -461,6 +471,11 @@ void PCScoutApp::createMenus()
 	(void)connect(act, &QAction::triggered, this, &PCScoutApp::syncWithCentralBluetooth);
 #endif
 
+#ifdef _XERO_BLE_CLIENT
+	act = sync_menu_->addAction(tr("BLE Sync"));
+	(void)connect(act, &QAction::triggered, this, &PCScoutApp::syncWithCentralBLE);
+#endif
+
 	settings_menu_ = new QMenu(tr("&Settings"));
 	f = menuBar()->font();
 	f.setPointSizeF(size);
@@ -745,6 +760,11 @@ void PCScoutApp::serverConnectionError(const QString& err)
 	bt_client_ = nullptr;
 #endif
 
+#ifdef _XERO_BLE_CLIENT
+	delete ble_client_;
+	ble_client_ = nullptr;
+#endif
+
 	QMessageBox::critical(this, "Error", "Could not connect to selected central machine - " + err);
 }
 
@@ -783,6 +803,36 @@ void PCScoutApp::syncWithCentralUSB()
 	logwin_->append("USB Connected: " + trans->description());
 	startSync(trans);
 }
+
+#ifdef _XERO_BLE_CLIENT
+void PCScoutApp::syncWithCentralBLE()
+{
+	std::stringstream messages;
+
+	saveAllForms();
+	if (data_model_ != nullptr && data_model_->filename().length() > 0)
+		saveAndBackup();
+
+	setEnabled(false);
+	logwin_->append("Starting BLE scouting data synchronization");
+	auto* trans = new BLETransport(false);
+	if (!trans->init(messages))
+	{
+		std::string msg;
+		messages.seekg(0);
+		while (std::getline(messages, msg)) {
+			logwin_->append(QString::fromStdString(msg));
+		}
+
+		setEnabled(true);
+		QMessageBox::critical(this, "USB Error", "Cannot initialize USB connection to central");
+		return;
+	}
+	logwin_->append("BLE Connected: " + trans->description());
+	startSync(trans);
+}
+#endif
+
 
 void PCScoutApp::debugOutput(const QString& out)
 {

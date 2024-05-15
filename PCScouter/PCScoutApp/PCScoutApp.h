@@ -71,6 +71,9 @@ private:
 	void syncWithCentralNetwork();
 	void syncWithCentralUSB();
 	void syncWithCentralNetworkDirect();
+#ifdef _XERO_BLE_CLIENT
+	void syncWithCentralBLE();
+#endif
 #ifdef _XERO_BLUETOOTH_CLIENT
 	void syncWithCentralBluetooth();
 #endif
@@ -202,6 +205,10 @@ private:
 
 #ifdef _XERO_BLUETOOTH_CLIENT
 	xero::scouting::transport::BluetoothClient* bt_client_;
+#endif
+
+#ifdef _XERO_BLE_CLIENT
+	xero::scouting::transport::BLEClient* ble_client_;
 #endif
 
 	std::map<QString, std::shared_ptr<xero::scouting::datamodel::FormInstance>> form_instances_;

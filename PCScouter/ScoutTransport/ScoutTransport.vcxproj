@@ -43,11 +43,11 @@
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <QtInstall>6.3.1_msvc2019_64</QtInstall>
-    <QtModules>core;network</QtModules>
+    <QtModules>core;network;bluetooth</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <QtInstall>6.3.1_msvc2019_64</QtInstall>
-    <QtModules>core;network</QtModules>
+    <QtModules>core;network;bluetooth</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
     <Import Project="$(QtMsBuild)\qt.props" />
@@ -96,6 +96,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BLEServer.cpp" />
+    <ClCompile Include="BLETransport.cpp" />
     <ClCompile Include="BluetoothClient.cpp" />
     <ClCompile Include="BluetoothIDS.cpp" />
     <ClCompile Include="BluetoothTransport.cpp" />
@@ -110,6 +112,8 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="BluetoothClient.h" />
+    <ClInclude Include="BLEServer.h" />
+    <ClInclude Include="BLETransport.h" />
     <ClInclude Include="BluetoothIDS.h" />
     <QtMoc Include="BluetoothTransport.h" />
     <QtMoc Include="BluetoothServer.h" />

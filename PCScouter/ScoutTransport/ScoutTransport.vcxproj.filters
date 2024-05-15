@@ -54,6 +54,12 @@
     <ClCompile Include="BluetoothClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BLETransport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BLEServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scouttransport_global.h">
@@ -75,6 +81,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BluetoothIDS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BLETransport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BLEServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

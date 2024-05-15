@@ -51,6 +51,7 @@
 #include "TcpServer.h"
 #include "USBTransport.h"
 #include "BluetoothServer.h"
+#include "BLEServer.h"
 
 #include "NewEventAppController.h"
 #include "NewOffseasonEventAppController.h"
@@ -1126,6 +1127,7 @@ void PCScouter::showingImportMenu()
 	if (import_match_schedule_ != nullptr)
 		import_match_schedule_->setEnabled(state);
 	import_kpi_->setEnabled(state);
+	import_statbiotics_data_->setEnabled(data_model_->teams().size() != 0);
 }
 
 void PCScouter::showingExportMenu()

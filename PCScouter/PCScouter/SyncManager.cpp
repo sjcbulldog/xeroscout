@@ -23,6 +23,7 @@
 #include "SyncManager.h"
 #include "USBServer.h"
 #include "TCPServer.h"
+#include "BLEServer.h"
 #include "BluetoothServer.h"
 #include <QDebug>
 
@@ -73,6 +74,20 @@ void SyncManager::createTransports()
 	{
 		emit logMessage("Synchronization transport '" + server->name() + "' failed to initialized");
 	}
+
+#ifdef _XERO_BLE_CLIENT
+	server = std::make_shared<BLEServer>(this);
+	if (server->init(messages))
+	{
+		(void)connect(server.get(), &ScoutServer::connected, this, &SyncManager::syncWithRemote);
+		transport_servers_.push_back(server);
+		emit logMessage("Synchronization transport '" + server->name() + "' initialized - " + server->hwinfo());
+	}
+	else
+	{
+		emit logMessage("Synchronization transport '" + server->name() + "' failed to initialized");
+	}
+#endif
 
 #ifdef _XERO_BLUETOOTH_CLIENT
 	server = std::make_shared<BluetoothServer>(team_number_, this);
