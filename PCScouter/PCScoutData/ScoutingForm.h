@@ -83,7 +83,7 @@ namespace xero
 
 				QStringList images() const;
 
-				bool addSection(const QString& name);
+				bool addSection(const QString& name, const QString& type);
 
 				const std::vector<std::shared_ptr<const DataSetHighlightRules>>& rules() const {
 					return rules_;
@@ -101,6 +101,7 @@ namespace xero
 
 				bool parseSubitemBounds(const QString& secname, int i, const QJsonObject& obj, QRect& r);
 				bool parseObjectBase(const QString& secname, int i, const QJsonObject& obj, QString& name, QString& tag);
+				bool parseObjectGeom(const QString& secname, int i, const QJsonObject& obj, std::shared_ptr<FormItemDesc> item);
 				std::shared_ptr<FormItemDesc> parseBoolean(const QString& sectname, int i, const QJsonObject& obj);
 				std::shared_ptr<FormItemDesc> parseTimerCounter(const QString& sectname, int i, const QJsonObject& obj);
 				std::shared_ptr<FormItemDesc> parseUpDown(const QString& sectname, int i, const QJsonObject& obj);

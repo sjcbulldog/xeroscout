@@ -48,7 +48,8 @@ namespace xero
 
 				vlay->addWidget(top);
 
-				data_view_ = new DataSetViewWidget("query", false, this);
+				QStringList vhdrs;
+				data_view_ = new DataSetViewWidget("query", false, vhdrs, this);
 				data_view_->setDataModel(dataModel());
 				QSizePolicy p(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 				data_view_->setSizePolicy(p);

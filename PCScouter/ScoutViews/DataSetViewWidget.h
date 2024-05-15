@@ -53,8 +53,8 @@ namespace xero
 
 			public:
 				
-				DataSetViewWidget(const QString& name, bool editable, QWidget* parent);
-				DataSetViewWidget(const QString& name, bool editable, std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn, QWidget* parent);
+				DataSetViewWidget(const QString& name, bool editable, const QStringList &vheader, QWidget* parent);
+				DataSetViewWidget(const QString& name, bool editable, std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn, const QStringList& vheader, QWidget* parent);
 				virtual ~DataSetViewWidget();
 
 				void setDataGenerator(std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn) {
@@ -128,6 +128,8 @@ namespace xero
 
 				QByteArray colstate_;
 				QByteArray colgeom_;
+
+				QStringList vheaders_;
 
 				bool editable_;
 			};

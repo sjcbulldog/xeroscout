@@ -72,7 +72,7 @@ private:
 	static constexpr const char* TabletPoolSetting = "tablets";
 	static constexpr const char* DebugSetting = "debug";
 	static constexpr const char* LastFileSettings = "lastfile";
-
+	static constexpr const char* RecentlyOpenedSettings = "recent";
 
 private:
 	int year();
@@ -83,6 +83,9 @@ private:
 
 	void enableApp();
 	void disableApp();
+
+	void readRecentlyOpened();
+	void writeRecentlyOpened(const QString &filename);
 
 	void createWindows();
 	void createMenus();
@@ -100,7 +103,7 @@ private:
 	void newEventBA();
 	void newEventOffSeason();
 
-	void openEvent();
+	void openEvent(QString filename);
 	void saveEvent();
 	void saveEventAs();
 	void closeEventHandler();
@@ -214,6 +217,7 @@ private:
 	QAction* file_save_;
 	QAction* file_save_as_;
 	QAction* file_close_;
+	QMenu* file_recent_menu_;
 
 	QMenu* run_menu_;
 	QAction* run_picklist_program_;
@@ -282,4 +286,6 @@ private:
 
 	QStringList recent_image_views_;
 	QStringList image_views_created_;
+
+	QStringList recently_opened_;
 };

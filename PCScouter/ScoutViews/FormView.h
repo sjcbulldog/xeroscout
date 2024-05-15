@@ -66,7 +66,8 @@ namespace xero
 
 			private:
 				void setScoutingForm(std::shared_ptr<const xero::scouting::datamodel::ScoutingForm> form);
-				void createSection(std::shared_ptr<const xero::scouting::datamodel::FormSection> section);
+				void createFlowSection(std::shared_ptr<const xero::scouting::datamodel::FormSection> section);
+				void createGridSection(std::shared_ptr<const xero::scouting::datamodel::FormSection> section);
 
 			private:
 				QTabWidget* tabs_;

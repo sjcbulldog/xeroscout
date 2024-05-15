@@ -34,12 +34,12 @@ namespace xero
 	{
 		namespace datamodel
 		{
-
 			class FormSection
 			{
 			public:
-				FormSection(const QString& name) {
+				FormSection(const QString& name, const QString &type) {
 					name_ = name;
+					type_ = type;
 				}
 
 				void getImages(QStringList& imlist) {
@@ -50,6 +50,10 @@ namespace xero
 
 				const QString& name() const {
 					return name_;
+				}
+
+				const QString& type() const {
+					return type_;
 				}
 
 				void addItem(std::shared_ptr<FormItemDesc> item) {
@@ -77,6 +81,7 @@ namespace xero
 
 			private:
 				QString name_;
+				QString type_;
 				std::list<std::shared_ptr<FormItemDesc>> items_;
 			};
 

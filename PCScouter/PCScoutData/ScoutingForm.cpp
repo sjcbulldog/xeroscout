@@ -87,7 +87,7 @@ namespace xero
 				}
 			}
 
-			bool ScoutingForm::addSection(const QString& name)
+			bool ScoutingForm::addSection(const QString& name, const QString &type)
 			{
 				for (auto s : sections_)
 				{
@@ -95,7 +95,7 @@ namespace xero
 						return false;
 				}
 
-				sections_.push_back(std::make_shared<FormSection>(name));
+				sections_.push_back(std::make_shared<FormSection>(name, type));
 				return true;
 			}
 
@@ -334,6 +334,8 @@ namespace xero
 
 			bool ScoutingForm::parseSection(const QJsonObject& obj, int index)
 			{
+				QString type = "flow";
+
 				if (!obj.contains("name") || !obj.value("name").isString())
 				{
 					errors_.push_back("in 'sections' array, entry " + QString::number(index) + ", the required 'name' field is missing or is not a string value");
@@ -346,8 +348,13 @@ namespace xero
 					return false;
 				}
 
+				if (obj.contains("type") && obj.value("type").isString())
+				{
+					type = obj.value("type").toString();
+				}
+
 				QString sectname = obj.value("name").toString();
-				std::shared_ptr<FormSection> section = std::make_shared<FormSection>(sectname);
+				std::shared_ptr<FormSection> section = std::make_shared<FormSection>(sectname, type);
 				sections_.push_back(section);
 
 				QJsonArray arr = obj.value("items").toArray();
@@ -393,63 +400,52 @@ namespace xero
 						item = parseBoolean(sectname, entry, obj);
 						if (item == nullptr)
 							return false;
-
-						section->addItem(item);
 					}
 					else if (type == "timercnt") {
 						item = parseTimerCounter(sectname, entry, obj);
 						if (item == nullptr)
 							return false;
-
-						section->addItem(item);
 					}
 					else if (type == "updown") {
 						item = parseUpDown(sectname, entry, obj);
 						if (item == nullptr)
 							return false;
-
-						section->addItem(item);
 					}
 					else if (type == "numeric") {
 						item = parseNumeric(sectname, entry, obj);
 						if (item == nullptr)
 							return false;
-
-						section->addItem(item);
 					}
 					else if (type == "text") {
 						item = parseText(sectname, entry, obj);
 						if (item == nullptr)
 							return false;
-
-						section->addItem(item);
 					}
 					else if (type == "edit") {
 						item = parseEdit(sectname, entry, obj);
 						if (item == nullptr)
 							return false;
-
-						section->addItem(item);
 					}
 					else if (type == "choice") {
 						item = parseChoice(sectname, entry, obj);
 						if (item == nullptr)
 							return false;
-
-						section->addItem(item);
 					}
 					else if (type == "image") {
 						item = parseImage(sectname, entry, obj);
 						if (item == nullptr)
 							return false;
-
-						section->addItem(item);
 					}
 					else {
 						errors_.push_back("in section '" + sectname + "', entry " + QString::number(entry)
 							+ " the type is invalid, got '" + type + "', expected 'updown' or 'choice' or 'numeric' or 'boolean'");
 						return false;
 					}
+
+					if (!parseObjectGeom(sectname, entry, obj, item))
+						return false;
+
+					section->addItem(item);
 
 					Alliance a = Alliance::Both;
 					
@@ -602,7 +598,10 @@ namespace xero
 				if (obj.contains("width") && obj.value("width").isDouble())
 					width = obj.value("width").toInt();
 
-				return std::make_shared<TextFormItem>(name, tag, maxlen, width);
+				auto item = std::make_shared<TextFormItem>(name, tag, maxlen);
+
+
+				return item;
 			}
 
 			std::shared_ptr<FormItemDesc> ScoutingForm::parseEdit(const QString& sectname, int i, const QJsonObject& obj)
@@ -885,6 +884,21 @@ namespace xero
 					int width = nums[2] - nums[0];
 					int height = nums[3] - nums[1];
 					r = QRect(QPoint(nums[0], nums[1]), QSize(width, height));
+				}
+
+				return true;
+			}
+
+			bool ScoutingForm::parseObjectGeom(const QString& secname, int i, const QJsonObject& obj, std::shared_ptr<FormItemDesc> item)
+			{
+				if (obj.contains("row") && obj.value("row").isDouble() && obj.contains("col") && obj.value("col").isDouble())
+				{
+					item->setPos(obj.value("row").toInt(), obj.value("col").toInt());
+				}
+
+				if (obj.contains("width") && obj.value("width").isDouble() && obj.contains("height") && obj.value("height").isDouble()) 
+				{
+					item->setSize(obj.value("width").toInt(), obj.value("height").toInt());
 				}
 
 				return true;

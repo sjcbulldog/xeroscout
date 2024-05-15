@@ -22,8 +22,9 @@
 
 #include "FormView.h"
 #include "FlowLayout.h"
-#include <QBoxLayout>
-#include <QSpinBox>
+#include <QtWidgets/QBoxLayout>
+#include <QtWidgets/QSpinBox>
+#include <QtWidgets/QGridLayout>
 #include <cassert>
 
 using namespace xero::scouting::datamodel;
@@ -78,7 +79,7 @@ namespace xero
 			{
 			}
 
-			void FormView::createSection(std::shared_ptr<const FormSection> section)
+			void FormView::createFlowSection(std::shared_ptr<const FormSection> section)
 			{
 				QWidget* tab = new QWidget(this);
 				FlowLayout* layout = new FlowLayout();
@@ -88,7 +89,35 @@ namespace xero
 					if (item->alliance() == Alliance::Both || item->alliance() == alliance_)
 					{
 						FormItemDisplay* w = item->createDisplay(images_, this);
+						if (item->hasSize()) {
+							w->setFixedSize(item->width(), item->height());
+						}
 						layout->addWidget(w);
+						instance_->addDisplayItem(item->tag(), w);
+					}
+				}
+
+				tabs_->addTab(tab, section->name());
+			}
+
+			void FormView::createGridSection(std::shared_ptr<const FormSection> section)
+			{
+				QWidget* tab = new QWidget(this);
+				QGridLayout* layout = new QGridLayout();
+				tab->setLayout(layout);
+
+				for (auto item : section->items()) {
+					if (item->alliance() == Alliance::Both || item->alliance() == alliance_)
+					{
+						FormItemDisplay* w = item->createDisplay(images_, this);
+						if (item->hasSize()) {
+							w->setFixedSize(item->width(), item->height());
+						}
+
+						if (item->hasPos()) {
+							layout->addWidget(w, item->row() - 1, item->col() - 1);
+						}
+
 						instance_->addDisplayItem(item->tag(), w);
 					}
 				}
@@ -106,7 +135,12 @@ namespace xero
 					instance_ = std::make_shared<FormInstance>(form);
 					const auto& sections = form_->sections();
 					for (auto section : sections) {
-						createSection(section);
+						if (section->type() == "grid") {
+							createGridSection(section);
+						}
+						else {
+							createFlowSection(section);
+						}
 					}
 				}
 			}

@@ -76,11 +76,11 @@ namespace xero
 					FormView::FormType::Match, Alliance::Blue, this));																// 3
 				addWidget(new TeamScheduleViewWidget(tablet, this));																// 4
 				addWidget(new MatchViewWidget(tablet, this));																		// 5
-				addWidget(new DataSetViewWidget("matchdata", true, this));															// 6
-				addWidget(new DataSetViewWidget("teamdata", true, this));			  												// 7
+				addWidget(new DataSetViewWidget("matchdata", true, QStringList({ "MatchKey", "TeamNumber"}), this));															// 6
+				addWidget(new DataSetViewWidget("teamdata", true, QStringList({ "TeamNumber", "NickName"}), this));			  												// 7
 				addWidget(new QueryViewWidget(this));																				// 8
 				addWidget(new TeamSummaryWidget(this));																				// 9
-				addWidget(new DataSetViewWidget("allteam", false, this));															// 10
+				addWidget(new DataSetViewWidget("allteam", false, QStringList({ "TeamNumber", "NickName" }), this));															// 10
 				addWidget(new ChangeHistoryView(this));																				// 11
 				addWidget(new DataMergeListWidget(this));																			// 12
 
@@ -113,7 +113,7 @@ namespace xero
 				iview = new IntroView("Zebra Introduction", this);
 				iview->setFile("zebra.html");
 				addWidget(iview);																									// 21
-				addWidget(new DataSetViewWidget("predictions", true, this));														// 22
+				addWidget(new DataSetViewWidget("predictions", true, QStringList(),this));														// 22
 
 				if (year == -1)
 					addWidget(new QWidget());

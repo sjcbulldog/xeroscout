@@ -50,10 +50,6 @@ namespace xero
 				font.setPointSizeF(16.0);
 				edit_->setFont(font);
 				edit_->setMaxLength(tdesc->maxLen());
-
-				if (tdesc->width() != std::numeric_limits<int>::max()) {
-					edit_->setFixedWidth(tdesc->width());
-				}
 			}
 
 			TextItemDisplay::~TextItemDisplay()

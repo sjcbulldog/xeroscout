@@ -64,13 +64,14 @@ namespace xero
 				return ret;
 			}
 
-			DataSetViewWidget::DataSetViewWidget(const QString &name, bool editable, QWidget* parent) : QSplitter(parent), ViewBase("DataSetViewWidgetItem"), data_(name)
+			DataSetViewWidget::DataSetViewWidget(const QString &name, bool editable, const QStringList &vheaders, QWidget* parent) : QSplitter(parent), ViewBase("DataSetViewWidgetItem"), data_(name)
 			{
 				editable_ = true;
 				name_ = name;
 				direction_ = true;
 				column_ = -1;
 				fn_ = nullptr;
+				vheaders_ = vheaders;
 
 				setOrientation(Qt::Horizontal);
 
@@ -93,7 +94,7 @@ namespace xero
 			}
 
 			DataSetViewWidget::DataSetViewWidget(const QString& name, bool editable, 
-				std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn, QWidget* parent) : DataSetViewWidget(name, editable, parent)
+				std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn, const QStringList& vheaders, QWidget* parent) : DataSetViewWidget(name, editable, vheaders, parent)
 			{
 				fn_ = fn;
 			}
@@ -513,6 +514,24 @@ namespace xero
 					headers.push_back(hdr->name());
 				}
 				table->setHorizontalHeaderLabels(headers);
+
+				if (vheaders_.size() > 0) {
+					headers.clear();
+					for (int i = 0; i < data_.rowCount(); i++)
+					{
+						QString label;
+
+						for (const QString& col : vheaders_) {
+							if (data_.getColumnByName(col) != -1) {
+								if (!label.isEmpty())
+									label += ":";
+								label += data_.get(i, col).toString();
+							}
+						}
+						headers.push_back(label);
+					}
+					table->setVerticalHeaderLabels(headers);
+				}
 
 				table->blockSignals(true);
 				for (int row = 0; row < data_.rowCount(); row++) {

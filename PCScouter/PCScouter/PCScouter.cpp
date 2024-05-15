@@ -112,6 +112,7 @@ PCScouter::PCScouter(bool coach, QWidget* parent) : QMainWindow(parent), images_
 	app_disabled_ = false;
 
 	readPreferences();
+	readRecentlyOpened();
 
 	createWindows();
 	createMenus();
@@ -125,6 +126,8 @@ PCScouter::PCScouter(bool coach, QWidget* parent) : QMainWindow(parent), images_
 		team_number_ = settings_.value("teamnumber").toInt();
 	else
 		team_number_ = -1;
+
+
 
 	if (settings_.contains(GeometrySettings))
 		restoreGeometry(settings_.value(GeometrySettings).toByteArray());
@@ -165,6 +168,25 @@ PCScouter::PCScouter(bool coach, QWidget* parent) : QMainWindow(parent), images_
 
 void PCScouter::readPreferences()
 {
+}
+
+void PCScouter::readRecentlyOpened()
+{
+	if (settings_.contains(RecentlyOpenedSettings))
+	{
+		recently_opened_ = settings_.value(RecentlyOpenedSettings).toStringList();
+	}
+}
+
+void PCScouter::writeRecentlyOpened(const QString &filename)
+{
+	recently_opened_.removeAll(filename);
+	recently_opened_.push_front(filename);
+
+	while (recently_opened_.count() > 5)
+		recently_opened_.pop_back();
+
+	settings_.setValue(RecentlyOpenedSettings, recently_opened_);
 }
 
 bool PCScouter::verifyScoutingFormImages(std::shared_ptr<ScoutingDataModel> dm)
@@ -522,7 +544,15 @@ void PCScouter::createMenus()
 	}
 
 	file_open_event_ = file_menu_->addAction(tr("Open Event"));
-	(void)connect(file_open_event_, &QAction::triggered, this, &PCScouter::openEvent);
+	auto cb = std::bind(&PCScouter::openEvent, this, "");
+	(void)connect(file_open_event_, &QAction::triggered, cb);
+
+	file_recent_menu_ = file_menu_->addMenu(tr("Recently Opened"));
+	for (const QString& str : recently_opened_) {
+		QAction* openfile = file_recent_menu_->addAction(str);
+		auto cb = std::bind(&PCScouter::openEvent, this, str);
+		(void)connect(openfile, &QAction::triggered, this, cb);
+	}
 
 	file_menu_->addSeparator();
 
@@ -1482,7 +1512,7 @@ void PCScouter::newEventOffSeason()
 	(void)connect(app_controller_, &ApplicationController::errorMessage, this, &PCScouter::errorMessage);
 }
 
-void PCScouter::openEvent()
+void PCScouter::openEvent(QString filename)
 {
 	if (data_model_ != nullptr && data_model_->isDirty())
 	{
@@ -1496,10 +1526,15 @@ void PCScouter::openEvent()
 	}
 
 	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
-	QString filename = QFileDialog::getOpenFileName(this, "Open Event Data File", path, "Event Data Files (*.evd);;JSON Files (*.json);;All Files (*.*)");
-	if (filename.length() == 0)
-		return;
+	if (filename.isEmpty()) {
+		filename = QFileDialog::getOpenFileName(this, "Open Event Data File", path, "Event Data Files (*.evd);;JSON Files (*.json);;All Files (*.*)");
+		if (filename.length() == 0)
+			return;
+	}
 
+	writeRecentlyOpened(filename);
+
+	disableApp();
 	auto dm = std::make_shared<ScoutingDataModel>();
 	if (!dm->load(filename)) {
 		QMessageBox::critical(this, "Error", "Could not load event data file");
@@ -1517,6 +1552,8 @@ void PCScouter::openEvent()
 
 	setDataModel(dm);
 	setupViews();
+
+	enableApp();
 }
 
 void PCScouter::saveEvent()
@@ -1533,6 +1570,7 @@ void PCScouter::saveEventAs()
 {
 	QString path = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "", QStandardPaths::LocateDirectory);
 	QString filename = QFileDialog::getSaveFileName(this, "Save Event Data File", path, "Event Data Files (*.evd);;JSON Files (*.json);;All Files (*.*)");
+	writeRecentlyOpened(filename);
 	settings_.setValue(LastFileSettings, filename);
 	data_model_->save(filename);
 }

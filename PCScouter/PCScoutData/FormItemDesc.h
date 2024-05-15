@@ -48,9 +48,37 @@ namespace xero
 				FormItemDesc(const QString& display, const QString& tag) {
 					display_ = display;
 					base_tag_ = tag;
+					row_ = -1;
+					col_ = -1;
+					width_ = -1;
+					height_ = -1;
 				}
 
 				virtual ~FormItemDesc() {
+				}
+
+				bool hasSize() const {
+					return width_ != -1 && height_ != -1;
+				}
+
+				bool hasPos() const {
+					return row_ != -1 && col_ != -1;
+				}
+
+				int width() const {
+					return width_;
+				}
+
+				int height() const {
+					return height_;
+				}
+
+				int row() const {
+					return row_;
+				}
+
+				int col() const {
+					return col_;
 				}
 
 				const QString& display() const {
@@ -101,6 +129,16 @@ namespace xero
 					return tag + FormItemDesc::FieldSeperator + field;
 				}
 
+				void setPos(int row, int col) {
+					row_ = row;
+					col_ = col;
+				}
+
+				void setSize(int width, int height) {
+					width_ = width;
+					height_ = height;
+				}
+
 			protected:
 				const QString& basetag() {
 					return base_tag_;
@@ -121,6 +159,11 @@ namespace xero
 				}
 
 			private:
+				int row_;
+				int col_;
+				int width_;
+				int height_;
+
 				QString base_tag_;
 				QString display_;
 				Alliance alliance_;

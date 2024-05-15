@@ -39,10 +39,9 @@ namespace xero
 			class TextFormItem : public FormItemDesc
 			{
 			public:
-				TextFormItem(const QString& display, const QString& tag, int maxlen, int width) : FormItemDesc(display, tag)
+				TextFormItem(const QString& display, const QString& tag, int maxlen) : FormItemDesc(display, tag)
 				{
 					maxlen_ = maxlen;
-					width_ = width;
 					addField(std::make_shared<FieldDesc>(tag, FieldDesc::Type::String, true));
 				}
 
@@ -54,10 +53,6 @@ namespace xero
 					return maxlen_;
 				}
 
-				int width() const {
-					return width_;
-				}
-
 				virtual FormItemDisplay* createDisplay(ImageSupplier& images, QWidget* parent) const
 				{
 					return new TextItemDisplay(images, this, parent);
@@ -65,7 +60,6 @@ namespace xero
 
 			private:
 				int maxlen_;
-				int width_;
 			};
 
 		}
