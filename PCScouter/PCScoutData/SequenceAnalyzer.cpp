@@ -49,7 +49,7 @@ namespace xero
 				return minv;
 			}
 
-			void SequenceAnalyzer::analyze(std::list<std::pair<QString, QString>>& which, double width)
+			void SequenceAnalyzer::analyze(std::list<std::pair<QString, QString>>& which, double width, double height)
 			{
 				double idle = findShortestIdle();
 				std::vector<std::shared_ptr<ZebraSequence>> sequences;
@@ -71,7 +71,7 @@ namespace xero
 					if (!m->teamToAllianceSlot(t->key(), c, slot))
 						continue;
 
-					auto track = DataModelBuilder::createTrack(dm_, m->key(), t->key(), width);
+					auto track = DataModelBuilder::createTrack(dm_, m->key(), t->key(), width, height);
 					if (track == nullptr && !track->hasData())
 						continue;
 

@@ -56,8 +56,8 @@ namespace xero
 			DocumentView::DocumentView(ImageManager &mgr, int year, const QString &tablet, QWidget* parent): images_(mgr)
 			{
 				bool gamemgr = true;
-				QString yearstr = QString::number(year);
 
+				QString yearstr = QString::number(year);
 				QString exedir = QCoreApplication::applicationDirPath();
 
 				field_mgr_.addDefaultDirectory((exedir + "/fields").toStdString());
@@ -76,18 +76,15 @@ namespace xero
 					FormView::FormType::Match, Alliance::Blue, this));																// 3
 				addWidget(new TeamScheduleViewWidget(tablet, this));																// 4
 				addWidget(new MatchViewWidget(tablet, this));																		// 5
-				addWidget(new DataSetViewWidget("matchdata", true, QStringList({ "MatchKey", "TeamNumber"}), this));															// 6
-				addWidget(new DataSetViewWidget("teamdata", true, QStringList({ "TeamNumber", "NickName"}), this));			  												// 7
+				addWidget(new DataSetViewWidget("matchdata", true, this));															// 6
+				addWidget(new DataSetViewWidget("teamdata", true, this));			  												// 7
 				addWidget(new QueryViewWidget(this));																				// 8
 				addWidget(new TeamSummaryWidget(this));																				// 9
-				addWidget(new DataSetViewWidget("allteam", false, QStringList({ "TeamNumber", "NickName" }), this));															// 10
+				addWidget(new DataSetViewWidget("allteam", false, this));															// 10
 				addWidget(new ChangeHistoryView(this));																				// 11
 				addWidget(new DataMergeListWidget(this));																			// 12
 
-				if (year == -1)
-					addWidget(new QWidget());
-				else
-					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebratrack", PathFieldView::ViewMode::Track));		// 13
+				addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebratrack", PathFieldView::ViewMode::Track));	  	    // 13
 
 				GraphView* gview = new PreMatchGraphView(this);
 				gview->create();
@@ -105,25 +102,16 @@ namespace xero
 				addWidget(new ZebraAnalysisView(this));																				// 18
 				addWidget(new ZebraPatternView(images_, this));																		// 19
 
-				if (year == -1)
-					addWidget(new QWidget());
-				else
-					addWidget(new ZebraRegionEditor(field_mgr_, yearstr, this));													// 20
+				addWidget(new ZebraRegionEditor(field_mgr_, yearstr, this));													    // 20
 
 				iview = new IntroView("Zebra Introduction", this);
 				iview->setFile("zebra.html");
 				addWidget(iview);																									// 21
-				addWidget(new DataSetViewWidget("predictions", true, QStringList(),this));														// 22
+				addWidget(new DataSetViewWidget("predictions", true, this));														// 22
 
-				if (year == -1)
-					addWidget(new QWidget());
-				else
-					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebraheatmap", PathFieldView::ViewMode::Heatmap));	// 23
+				addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebraheatmap", PathFieldView::ViewMode::Heatmap));	    // 23
 
-				if (year == -1)
-					addWidget(new QWidget());
-				else
-					addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebrareplay", PathFieldView::ViewMode::Replay));		// 24
+				addWidget(new ZebraViewWidget(this, field_mgr_, yearstr, "zebrareplay", PathFieldView::ViewMode::Replay));		    // 24
 
 				addWidget(new PickListEditor(this, "picklisteditor"));																// 25
 
@@ -143,13 +131,22 @@ namespace xero
 			{
 			}
 
+			void DocumentView::setYear(const QString& year) 
+			{
+				for (int i = 0; i < count(); i++)
+				{
+					QWidget* w = widget(i);
+					ViewBase* vb = dynamic_cast<ViewBase*>(w);
+					if (vb != nullptr)
+						vb->setYear(year);
+				}
+			}
+
 			void DocumentView::clearAll()
 			{
 				for (int i = 0; i < count(); i++)
 				{
 					QWidget* w = widget(i);
-
-
 					ViewBase* vb = dynamic_cast<ViewBase*>(w);
 					if (vb != nullptr)
 						vb->clearView();

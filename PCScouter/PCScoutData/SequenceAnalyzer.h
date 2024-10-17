@@ -73,7 +73,7 @@ namespace xero
 
 				void clearAll();
 
-				void analyze(std::list<std::pair<QString, QString>>& which, double width);
+				void analyze(std::list<std::pair<QString, QString>>& which, double width, double height);
 
 				const std::list<SequenceAnalyzer::MatchedSequence>& matches() const {
 					return matches_;

@@ -107,12 +107,20 @@ namespace xero
 				/// \brief destroy this data model
 				virtual ~ScoutingDataModel();
 
-				void setInvertZebraData(bool b) {
-					invert_zebra_data_ = b;
+				void setMirrorXZebraData(bool b) {
+					mirrorx_zebra_data_ = b;
 				}
 
-				bool invertZebraData() {
-					return invert_zebra_data_;
+				void setMirrorYZebraData(bool b) {
+					mirrory_zebra_data_ = b;
+				}
+
+				bool mirrorXZebraData() {
+					return mirrorx_zebra_data_;
+				}
+
+				bool mirrorYZebraData() {
+					return mirrory_zebra_data_;
 				}
 
 				void getScoutingFormImages(QStringList& imlist);
@@ -1239,7 +1247,8 @@ namespace xero
 
 				std::list<std::pair<QString, QString>> image_view_list_;
 
-				bool invert_zebra_data_;
+				bool mirrorx_zebra_data_;
+				bool mirrory_zebra_data_;
 			};
 		}
 	}

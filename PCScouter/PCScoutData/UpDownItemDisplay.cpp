@@ -36,14 +36,18 @@ namespace xero
 			UpDownItemDisplay::UpDownItemDisplay(ImageSupplier& images, const FormItemDesc *desc, QWidget* parent) : FormItemDisplay(images, desc, parent)
 			{
 				label_ = new QLabel(desc->display(), this);
+				label_->setToolTip(desc->tag()); ;
 
 				up_ = new QPushButton("-", this);
 				(void)connect(up_, &QPushButton::pressed, this, &UpDownItemDisplay::upButtonPressed);
+				up_->setToolTip(desc->tag());
 
 				down_ = new QPushButton("+", this);
 				(void)connect(down_, &QPushButton::pressed, this, &UpDownItemDisplay::downButtonPressed);
+				down_->setToolTip(desc->tag());
 
 				editor_ = new QLineEdit(this);
+				editor_->setToolTip(desc->tag());
 
 				QFont font = editor_->font();
 				font.setPointSizeF(20.0);

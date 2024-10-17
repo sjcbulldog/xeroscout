@@ -24,6 +24,8 @@ namespace xero
 
 				virtual void madeActive() override;
 
+				void setYear(const QString& year) override;
+
 			private:
 
 				enum class HighlightType

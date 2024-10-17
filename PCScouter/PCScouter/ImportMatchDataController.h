@@ -26,6 +26,12 @@
 #include "ScoutingDataMap.h"
 #include <QStringList>
 #include <map>
+#include <limits>
+
+//
+// Not sure who is defining this, but it is bad
+//
+#undef max 
 
 class ImportMatchDataController : public ApplicationController
 {

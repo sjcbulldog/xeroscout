@@ -42,6 +42,7 @@ namespace xero
 				QFont font = label->font();
 				font.setPointSizeF(16.0);
 				label->setFont(font);
+				label->setToolTip(desc->tag());
 
 				auto tdesc = dynamic_cast<const EditFormItem*>(desc);
 
@@ -50,6 +51,7 @@ namespace xero
 				font = edit_->font();
 				font.setPointSizeF(16.0);
 				edit_->setFont(font);
+				edit_->setToolTip(desc->tag());
 
 				QFontMetrics fm(font);
 				int height = fm.lineSpacing() * tdesc->rows();

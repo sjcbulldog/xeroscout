@@ -43,6 +43,9 @@ namespace xero
 				virtual ~ViewBase() {
 				}
 
+				virtual void setYear(const QString& year) {
+				}
+
 				const QString& name() const {
 					return name_;
 				}

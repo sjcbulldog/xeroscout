@@ -42,11 +42,11 @@
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QtInstall>6.3.1_msvc2019_64</QtInstall>
+    <QtInstall>6.7.1_msvc2019_64</QtInstall>
     <QtModules>bluetooth;core;gui;network;sql;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>6.3.1_msvc2019_64</QtInstall>
+    <QtInstall>6.7.1_msvc2019_64</QtInstall>
     <QtModules>bluetooth;core;gui;network;sql;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
@@ -62,7 +62,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)XeroUSBTransport;$(SolutionDir)ScoutViews;$(SolutionDir)PCScoutData;$(SolutionDir)ScoutTransport;$(Qt_INCLUDEPATH_);.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -86,7 +86,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)XeroUSBTransport;$(SolutionDir)ScoutViews;$(SolutionDir)PCScoutData;$(SolutionDir)ScoutTransport;$(Qt_INCLUDEPATH_);.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>

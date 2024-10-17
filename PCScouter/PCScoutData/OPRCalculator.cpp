@@ -138,7 +138,7 @@ namespace xero
 				MatrixXd rt = mt * scores;
 
 				MatrixXd mp = mt * m;
-				MatrixXd mpinv = mp.inverse();
+				MatrixXd mpinv = mp.completeOrthogonalDecomposition().pseudoInverse();
 				MatrixXd opr = mpinv * rt;
 
 				for (auto pair : team_to_index_)

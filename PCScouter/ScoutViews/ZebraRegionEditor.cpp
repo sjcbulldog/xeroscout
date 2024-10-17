@@ -36,6 +36,11 @@ namespace xero
 			{
 			}
 
+			void ZebraRegionEditor::setYear(const QString& year)
+			{
+				setField(field(), year);
+			}
+
 			void ZebraRegionEditor::clearView()
 			{
 			}

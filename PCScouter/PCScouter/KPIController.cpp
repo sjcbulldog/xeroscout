@@ -51,8 +51,6 @@ KPIController::~KPIController()
 ScoutingDataMapPtr KPIController::evToData(const QString& tkey, const QString& evkey)
 {
 	qDebug() << "evToData: team key " << tkey << " event key " << evkey;
-	if (tkey == "frc1425" && evkey == "2019orore")
-		qDebug() << "Break";
 
 	auto it = models_.find(evkey);
 	if (it == models_.end())

@@ -381,6 +381,7 @@ namespace xero
 			void PathFieldView::doPaint(QPainter& paint)
 			{
 				QRectF rect(0.0f, 0.0f, field_image_.width() * image_scale_, field_image_.height() * image_scale_);
+
 				paint.drawImage(rect, field_image_);
 
 				if (view_mode_ == ViewMode::Track)

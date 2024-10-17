@@ -42,9 +42,11 @@ namespace xero
 				QFont font = label->font();
 				font.setPointSizeF(16.0);
 				label->setFont(font);
+				label->setToolTip(desc->tag());
 
 				const ChoiceFormItem* cdesc = dynamic_cast<const ChoiceFormItem*>(desc);
 				box_ = new QComboBox(this);
+				box_->setToolTip(desc->tag());
 				layout->addWidget(box_);
 				for (const QString& choice : cdesc->choices())
 					box_->addItem(choice);

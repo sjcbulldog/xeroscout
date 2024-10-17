@@ -405,6 +405,10 @@ namespace xero
 				QFontMetrics fm(painter.font());
 				paintTab(painter, act->name(), xpos, act->count());
 
+				painter.save();
+				QPen p(QColor(0, 0, 0));
+				painter.setPen(p);
+
 				QRect r;
 				int ypos = top_bottom_border_ + title_area_height_;
 				for (auto p : act->patterns())
@@ -456,6 +460,8 @@ namespace xero
 
 					ypos += image_size_ + between_item_border_;
 				}
+
+				painter.restore();
 			}
 
 			QRect RobotActivityEditWidget::columnBounds(int col)

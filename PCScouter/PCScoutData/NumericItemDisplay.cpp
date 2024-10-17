@@ -43,6 +43,7 @@ namespace xero
 				QFont font = label->font();
 				font.setPointSizeF(16.0);
 				label->setFont(font);
+				label->setToolTip(desc->tag());
 
 				auto ndesc = dynamic_cast<const NumericFormItem *>(desc);
 
@@ -52,6 +53,7 @@ namespace xero
 				font = edit_->font();
 				font.setPointSizeF(16.0);
 				edit_->setFont(font);
+				edit_->setToolTip(desc->tag());
 
 				edit_->setText(QString::number(ndesc->minValue()));
 			}

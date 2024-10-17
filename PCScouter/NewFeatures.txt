@@ -1,9 +1,14 @@
+- Finished form viewer for more easily creating forms.
 - Grid Layout for sections, widths/heights for some items
 - Flipping image based scouting sections based on double click
 - Image based scouting sections auto scale to window size
-- Graphs over matches in events
+- Team data over a series of matches for a given team
 - Statbotics import data
 - Added year to create event dialog
 - Organized new events by districts
 - Added vertical headers on grid views
 - Added recently opened to file menu
+- Added tooltips on form view to see the underlying data tag
+- Added multiline text entry field ('text')
+- Added the ability to freeze columns (still needs work if you reorder columns)
+- Fixed mirroring on the zebra data

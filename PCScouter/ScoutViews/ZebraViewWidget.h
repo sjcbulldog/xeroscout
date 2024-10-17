@@ -58,6 +58,8 @@ namespace xero
 				void clearView();
 				void refreshView();
 
+				void setYear(const QString& year) override;
+
 				void setDataModel(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model) {
 					ViewBase::setDataModel(model);
 
@@ -84,7 +86,6 @@ namespace xero
 
 				void matchesRobotsSelected();
 				void comboxChanged(const QString& key);
-				void modeChanged(int index);
 
 				void createPlot();
 				void createPlotMatch(const QString& key);

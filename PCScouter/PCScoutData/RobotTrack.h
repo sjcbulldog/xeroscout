@@ -47,9 +47,17 @@ namespace xero
                 virtual ~RobotTrack() {
                 }
 
-                void invert(double width) {
+                void mirrorY(double width) {
                     for (int i = 0; i < points_.size(); i++) {
                         QPointF pt(points_[i].x(), width - points_[i].y());
+                        points_[i] = pt;
+                    }
+                }
+                
+                void mirrorX(double length) {
+                    for (int i = 0; i < points_.size(); i++) {
+                        QPointF pt(length - points_[i].x(), points_[i].y());
+                        points_[i] = pt;
                     }
                 }
 

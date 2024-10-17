@@ -170,6 +170,9 @@
     <ClCompile Include="GraphPerMatchView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FrozenTableWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MatchViewWidget.h">
@@ -330,6 +333,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="TeamSelectedWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="FrozenTableWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

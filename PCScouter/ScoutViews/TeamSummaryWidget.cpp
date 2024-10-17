@@ -228,7 +228,7 @@ namespace xero
 					html += "</style>";
 					html += "<center>";
 					html += "<table border=\"1\">";
-					html += "<tr><th colspan=\"10\">Matches " + rectoken + " </th></tr>";
+					html += "<tr><th colspan=\"11\">Matches</th></tr>";
 					for (int row = 0; row < ds.rowCount(); row++)
 					{
 						bool isred = true;
@@ -238,13 +238,6 @@ namespace xero
 						auto m = dataModel()->findMatchByKey(key.toString());
 						html += "<tr>";
 						html += "<td>";
-
-						QString youtube = m->youtubeKey();
-
-						if (youtube.length() > 0)
-						{
-							html += "<a href=\"https://www.youtube.com/watch?v=" + youtube + "\">";
-						}
 
 						if (m->compType() == "qm")
 						{
@@ -269,10 +262,6 @@ namespace xero
 							html += "Einsteins " + QString::number(m->set()) + " Match " + QString::number(m->match());
 						}
 
-						if (youtube.length() > 0)
-						{
-							html += "</a>";
-						}
 						html += "</td>";
 
 						for (int slot = 1; slot <= 3; slot++)
@@ -281,14 +270,15 @@ namespace xero
 							html += "<td bgcolor=\"#ff9999\">";
 							if (mkey == current_team_)
 							{
-								html += "<p style=\"text-decoration:underline;font-weight:bold;\">";
+								html += "<p style=\"color: black; text-decoration:underline;font-weight:bold;\">";
 								isred = true;
 							}
-							html += mkey.mid(3);
-							if (mkey == current_team_)
+							else
 							{
-								html += "</p>";
+								html += "<p style=\"color: black;\">";
 							}
+							html += mkey.mid(3);
+							html += "</p>";
 							html += "</td>";
 						}
 
@@ -299,15 +289,17 @@ namespace xero
 							if (mkey == current_team_)
 							{
 								isred = false;
-								html += "<p style=\"text-decoration:underline;font-weight:bold;\">";
+								html += "<p style=\"color: black; text-decoration:underline;font-weight:bold;\">";
+							}
+							else
+							{
+								html += "<p style=\"color: black;\">";
 							}
 							html += mkey.mid(3);
-							if (mkey == current_team_)
-							{
-								html += "</p>";
-							}
+							html += "</p>";
 							html += "</td>";
 						}
+
 
 						int bluescore = -1, redscore = -1;
 						ConstScoutingDataMapPtr exdata = m->extraData(Alliance::Red, 1);
@@ -325,7 +317,9 @@ namespace xero
 							html += "<td bgcolor=\"#ff9999\" style=\"text-align:center\">";
 							if (redscore > bluescore)
 								html += "<b>";
+							html += "<p style=\"color: black;\">";
 							html += QString::number(redscore);
+							html += "</p>";
 							if (redscore > bluescore)
 								html += "</b>";
 							html += "</td>";
@@ -340,7 +334,9 @@ namespace xero
 							html += "<td bgcolor=\"#cee5ff\" style=\"text-align:center\">";
 							if (redscore < bluescore)
 								html += "<b>";
+							html += "<p style=\"color: black;\">";
 							html += QString::number(bluescore);
+							html += "</p>";
 							if (redscore < bluescore)
 								html += "</b>";
 							html += "</td>";
@@ -388,7 +384,17 @@ namespace xero
 						}
 
 						html += "<td style=\"text-align:center\"><b>" + status + "</b></td>";
+
+						html += "<td>";
+						int cnt = 1;
+						for (const QString& video : m->videoUrls()) {
+							html += "<a style=\"color:yellow;\" href=\"" + video + "\">Video " + QString::number(cnt++) + " </a>";
+						}
+						html += "</td>";
+
+						html += "</tr>";
 					}
+
 					html += "</table></center>";
 
 					if (won + loss + tie > 0)

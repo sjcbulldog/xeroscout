@@ -4,6 +4,7 @@
 #include "PathFieldView.h"
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QMessageBox>
+#include <QtGui/QKeyEvent>
 
 namespace xero
 {
@@ -16,7 +17,8 @@ namespace xero
 			public:
 				FieldBasedWidget(GameFieldManager &mgr, QWidget* parent) : QWidget(parent), field_mgr_(mgr)
 				{
-
+					field_view_ = nullptr;
+					setFocusPolicy(Qt::StrongFocus);
 				}
 
 				virtual ~FieldBasedWidget()
@@ -40,10 +42,6 @@ namespace xero
 
 					if (fld != nullptr)
 						field->setField(fld);
-					else
-					{
-						QMessageBox::critical(this, "No Field", "There is no field for this target year " + year);
-					}
 				}
 
 				PathFieldView* field() {

@@ -52,7 +52,8 @@ namespace xero
 				dirty_ = false;
 
 				emit_changes_ = true;
-				invert_zebra_data_ = false;
+				mirrorx_zebra_data_ = true;
+				mirrory_zebra_data_ = true;
 
 				addTemporaryFieldDesc();
 			}
@@ -61,7 +62,8 @@ namespace xero
 			{
 				dirty_ = false;
 				emit_changes_ = true;
-				invert_zebra_data_ = false;
+				mirrorx_zebra_data_ = true;
+				mirrory_zebra_data_ = true;
 
 				addTemporaryFieldDesc();
 			}

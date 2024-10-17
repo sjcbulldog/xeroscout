@@ -91,6 +91,8 @@
 #include <QInputDialog>
 #include <QNetworkInterface>
 
+#include <limits>
+
 using namespace xero::ba;
 using namespace xero::scouting::datamodel;
 using namespace xero::scouting::views;
@@ -616,7 +618,7 @@ void PCScouter::createMenus()
 		import_match_schedule_ = import_menu_->addAction(tr("Match Schedule"));
 		(void)connect(import_match_schedule_, &QAction::triggered, this, &PCScouter::importMatchSchedule);
 
-		import_offseason_schedule_ = import_menu_->addAction(tr("Load Offseason Match Schedule"));
+		import_offseason_schedule_ = import_menu_->addAction(tr("Offseason Match Schedule"));
 		(void)connect(import_offseason_schedule_, &QAction::triggered, this, &PCScouter::loadOffseasonMatchSchedule);
 	}
 	else
@@ -655,7 +657,18 @@ void PCScouter::createMenus()
 	(void)connect(export_csv_, &QAction::triggered, this, &PCScouter::exportDataSet);
 
 	settings_menu_ = new QMenu(tr("&Settings"));
+	(void)connect(settings_menu_, &QMenu::aboutToShow, this, &PCScouter::showSettingsMenu);
 	menuBar()->addMenu(settings_menu_);
+
+	mirror_zebra_x_ = settings_menu_->addAction(tr("X Mirror Zebra Data"));
+	mirror_zebra_x_->setCheckable(true);
+	(void)connect(mirror_zebra_x_, &QAction::triggered, this, &PCScouter::mirrorZebraX);
+
+	mirror_zebra_y_ = settings_menu_->addAction(tr("Y Mirror Zebra Data"));
+	mirror_zebra_y_->setCheckable(true);
+	(void)connect(mirror_zebra_y_, &QAction::triggered, this, &PCScouter::mirrorZebraY);
+
+	settings_menu_->addSeparator();
 
 	set_team_number_ = settings_menu_->addAction(tr("Set Team Number"));
 	(void)connect(set_team_number_, &QAction::triggered, this, &PCScouter::setTeamNumber);
@@ -665,10 +678,6 @@ void PCScouter::createMenus()
 	if (settings_.contains("debug") && settings_.value("debug").toBool())
 		debug_act_->setChecked(true);
 	(void)connect(debug_act_, &QAction::triggered, this, &PCScouter::setDebug);
-
-	invert_y_zebra_ = settings_menu_->addAction(tr("Mirror Zebra Tag Data"));
-	invert_y_zebra_->setCheckable(true);
-	(void)connect(invert_y_zebra_, &QAction::triggered, this, &PCScouter::mirrorZebraTag);
 
 	help_menu_ = new QMenu(tr("Help"));
 	menuBar()->addMenu(help_menu_);
@@ -796,6 +805,7 @@ void PCScouter::processAppController()
 			summary_progress_->setMinimum(0);
 			summary_progress_->setMaximum(100);
 			summary_progress_->setValue(app_controller_->percentDone());
+			summary_progress_->setTextVisible(true);
 			statusBar()->addPermanentWidget(summary_progress_);
 		}
 
@@ -941,6 +951,7 @@ void PCScouter::setupViews()
 	{
 		view_frame_->setDataModel(data_model_);
 		view_frame_->needsRefreshAll();
+		view_frame_->setYear(QString::number(year()));
 
 		if (view_frame_->viewType() == DocumentView::ViewType::NoModelView)
 			setMainView(DocumentView::ViewType::MatchView);
@@ -1100,10 +1111,45 @@ void PCScouter::about()
 	about.exec();
 }
 
-void PCScouter::mirrorZebraTag()
+void PCScouter::showSettingsMenu()
 {
-	data_model_->setInvertZebraData(!data_model_->invertZebraData());
-	invert_y_zebra_->setChecked(data_model_->invertZebraData());
+	if (data_model_ == nullptr)
+	{
+		mirror_zebra_x_->setEnabled(false);
+		mirror_zebra_y_->setEnabled(false);
+	}
+	else
+	{
+		mirror_zebra_x_->setEnabled(true);
+		mirror_zebra_x_->setChecked(data_model_->mirrorXZebraData());
+		mirror_zebra_y_->setEnabled(true);
+		mirror_zebra_y_->setChecked(data_model_->mirrorYZebraData());
+	}
+}
+
+void PCScouter::mirrorZebraX()
+{
+	assert(data_model_ != nullptr);
+	data_model_->setMirrorXZebraData(!data_model_->mirrorXZebraData());
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraAnalysis);
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraHeatmapView);
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraPatternEditor);
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraRegionEditor);
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraReplayView);
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraTrackView);
+	view_frame_->refreshAll();
+}
+
+void PCScouter::mirrorZebraY()
+{
+	assert(data_model_ != nullptr);
+	data_model_->setMirrorYZebraData(!data_model_->mirrorYZebraData());
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraAnalysis);
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraHeatmapView);
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraPatternEditor);
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraRegionEditor);
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraReplayView);
+	view_frame_->needsRefresh(DocumentView::ViewType::ZebraTrackView);
 	view_frame_->refreshAll();
 }
 
@@ -1538,6 +1584,7 @@ void PCScouter::openEvent(QString filename)
 	auto dm = std::make_shared<ScoutingDataModel>();
 	if (!dm->load(filename)) {
 		QMessageBox::critical(this, "Error", "Could not load event data file");
+		enableApp();
 		return;
 	}
 

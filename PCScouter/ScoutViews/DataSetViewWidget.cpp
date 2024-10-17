@@ -64,37 +64,38 @@ namespace xero
 				return ret;
 			}
 
-			DataSetViewWidget::DataSetViewWidget(const QString &name, bool editable, const QStringList &vheaders, QWidget* parent) : QSplitter(parent), ViewBase("DataSetViewWidgetItem"), data_(name)
+			DataSetViewWidget::DataSetViewWidget(const QString &name, bool editable, QWidget* parent) : QSplitter(parent), ViewBase("DataSetViewWidgetItem"), data_(name)
 			{
 				editable_ = true;
 				name_ = name;
 				direction_ = true;
 				column_ = -1;
 				fn_ = nullptr;
-				vheaders_ = vheaders;
 
 				setOrientation(Qt::Horizontal);
 
-				table_ = new QTableWidget(this);
-				table_->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Fixed);
+				table_ = new FrozenTableWidget(this);
+				table_->table()->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeMode::Fixed);
 				table_->installEventFilter(this);
 				addWidget(table_);
 
-				connect(table_, &QTableWidget::itemChanged, this, &DataSetViewWidget::itemChanged);
+				connect(table_->table(), &QTableWidget::itemChanged, this, &DataSetViewWidget::itemChanged);
 
-				connect(table_->horizontalHeader(), &QHeaderView::sectionClicked, this, &DataSetViewWidget::sortData);
-				table_->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
-				connect(table_->horizontalHeader(), &QHeaderView::customContextMenuRequested, this, &DataSetViewWidget::contextMenuRequested);
+				table_->table()->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
+				connect(table_->table()->horizontalHeader(), &QHeaderView::customContextMenuRequested, this, &DataSetViewWidget::contextMenuRequestedHorizontal);
 
-				table_->horizontalHeader()->setSectionsMovable(true);
-				connect(table_->horizontalHeader(), &QHeaderView::sectionMoved, this, &DataSetViewWidget::columnMoved);
+				//table_->table()->verticalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
+				//connect(table_->table()->verticalHeader(), &QHeaderView::customContextMenuRequested, this, &DataSetViewWidget::contextMenuRequestedVertical);
 
-				table_->setContextMenuPolicy(Qt::CustomContextMenu);
+				table_->table()->horizontalHeader()->setSectionsMovable(true);
+				connect(table_->table()->horizontalHeader(), &QHeaderView::sectionMoved, this, &DataSetViewWidget::columnMoved);
+
+				table_->table()->setContextMenuPolicy(Qt::CustomContextMenu);
 				connect(table_, &QTableWidget::customContextMenuRequested, this, &DataSetViewWidget::cellContextMenuRequested);
 			}
 
 			DataSetViewWidget::DataSetViewWidget(const QString& name, bool editable, 
-				std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn, const QStringList& vheaders, QWidget* parent) : DataSetViewWidget(name, editable, vheaders, parent)
+				std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn, QWidget* parent) : DataSetViewWidget(name, editable, parent)
 			{
 				fn_ = fn;
 			}
@@ -114,20 +115,20 @@ namespace xero
 					{
 						if (k->key() == Qt::Key::Key_Plus && (k->modifiers() & Qt::ControlModifier) != 0)
 						{
-							QFont f = table_->font();
+							QFont f = table_->table()->font();
 							f.setPointSizeF(f.pointSizeF() + 1.0);
-							table_->setFont(f);
-							table_->resizeColumnsToContents();
-							table_->update();
+							table_->table()->setFont(f);
+							table_->table()->resizeColumnsToContents();
+							table_->table()->update();
 							ret = true;
 						}
 						else if (k->key() == Qt::Key::Key_Minus && (k->modifiers() & Qt::ControlModifier) != 0)
 						{
-							QFont f = table_->font();
+							QFont f = table_->table()->font();
 							f.setPointSizeF(f.pointSizeF() - 1.0);
-							table_->setFont(f);
-							table_->resizeColumnsToContents();
-							table_->update();
+							table_->table()->setFont(f);
+							table_->table()->resizeColumnsToContents();
+							table_->table()->update();
 							ret = true;
 						}
 					}
@@ -138,7 +139,7 @@ namespace xero
 
 			void DataSetViewWidget::cellContextMenuRequested(const QPoint& pt)
 			{
-				QTableWidgetItem* item = table_->itemAt(pt);
+				QTableWidgetItem* item = table_->table()->itemAt(pt);
 				if (item != nullptr && item->column() >= 0 && item->column() < data_.columnCount())
 				{
 					auto hdr = data_.colHeader(item->column());
@@ -264,14 +265,14 @@ namespace xero
 
 			void DataSetViewWidget::updateColumnOrder()
 			{
-				colstate_ = table_->horizontalHeader()->saveState();
-				colgeom_ = table_->horizontalHeader()->saveGeometry();
+				colstate_ = table_->table()->horizontalHeader()->saveState();
+				colgeom_ = table_->table()->horizontalHeader()->saveGeometry();
 				dataModel()->setDatasetColumnOrder(name_, colstate_, colgeom_);
 			}
 
 			void DataSetViewWidget::hideColumn()
 			{
-				QItemSelectionModel* select = table_->selectionModel();
+				QItemSelectionModel* select = table_->table()->selectionModel();
 				QModelIndexList columns = select->selectedColumns();
 
 				if (columns.size() > 0)
@@ -279,7 +280,7 @@ namespace xero
 					for (int i = 0; i < columns.size(); i++)
 					{
 						auto index = columns.at(i);
-						table_->setColumnHidden(index.column(), true);
+						table_->table()->setColumnHidden(index.column(), true);
 					}
 				}
 				updateColumnOrder();
@@ -287,8 +288,8 @@ namespace xero
 
 			void DataSetViewWidget::unhideColumns()
 			{
-				for (int i = 0; i < table_->columnCount(); i++) {
-					table_->setColumnHidden(i, false);
+				for (int i = 0; i < table_->table()->columnCount(); i++) {
+					table_->table()->setColumnHidden(i, false);
 				}
 				updateColumnOrder();
 			}
@@ -301,15 +302,42 @@ namespace xero
 				refreshView();
 			}
 
-			void DataSetViewWidget::contextMenuRequested(const QPoint& pt)
+			void DataSetViewWidget::contextMenuRequestedVertical(const QPoint& pt)
 			{
 				QMenu* menu = new QMenu();
 				QAction* act;
 
-				QItemSelectionModel* select = table_->selectionModel();
+				pt_ = pt;
+
+				if (!table_->frozenRows())
+					act = menu->addAction(tr("Freeze Rows"));
+				else
+					act = menu->addAction(tr("Unfreeze Rows"));
+				connect(act, &QAction::triggered, this, &DataSetViewWidget::freezeRows);
+
+				QPoint p = table_->table()->mapToGlobal(pt);
+				menu->exec(p);
+			}
+
+			void DataSetViewWidget::contextMenuRequestedHorizontal(const QPoint& pt)
+			{
+				QMenu* menu = new QMenu();
+				QAction* act;
+
+				QItemSelectionModel* select = table_->table()->selectionModel();
 				QModelIndexList columns = select->selectedColumns();
 
 				pt_ = pt;
+
+				if (!table_->frozenCols())
+					act = menu->addAction(tr("Freeze Columns"));
+				else
+					act = menu->addAction(tr("Unfreeze Columns"));
+				connect(act, &QAction::triggered, this, &DataSetViewWidget::freezeColumns);
+
+				act = menu->addAction(tr("Sort"));
+				connect(act, &QAction::triggered, this, &DataSetViewWidget::sortData);
+
 				act = menu->addAction(tr("Hide Column(s)"));
 				connect(act, &QAction::triggered, this, &DataSetViewWidget::hideColumn);
 
@@ -328,8 +356,53 @@ namespace xero
 					connect(act, &QAction::triggered, this, &DataSetViewWidget::editHighlightRules);
 				}
 
-				QPoint p = table_->mapToGlobal(pt);
+				QPoint p = table_->table()->mapToGlobal(pt);
 				menu->exec(p);
+			}
+
+			void DataSetViewWidget::freezeRows()
+			{
+				if (!table_->frozenRows()) {
+					QItemSelectionModel* select = table_->table()->selectionModel();
+					QModelIndexList rows = select->selectedRows();
+
+					int rowmax = -1;
+
+					for (int i = 0; i < rows.count(); i++) {
+						int rownum = rows.at(i).row();
+						if (rownum > rowmax)
+							rowmax = rownum;
+					}
+
+					table_->freezeRows(rowmax);
+					
+				}
+				else {
+					table_->unfreezeRows();
+				}
+			}
+
+			void DataSetViewWidget::freezeColumns()
+			{
+				if (!table_->frozenCols()) {
+					QItemSelectionModel* select = table_->table()->selectionModel();
+					QModelIndexList cols = select->selectedColumns();
+
+					int colmax = -1;
+
+					for (int i = 0; i < cols.count(); i++) {
+						int colnum = cols.at(i).column();
+						if (colnum > colmax)
+							colmax = colnum;
+					}
+
+					if (colmax > 0)
+						table_->freezeCols(colmax);
+
+				}
+				else {
+					table_->unfreezeCols();
+				}
 			}
 
 			void DataSetViewWidget::editHighlightRules()
@@ -348,8 +421,15 @@ namespace xero
 				}
 			}
 
-			void DataSetViewWidget::sortData(int col)
+			void DataSetViewWidget::sortData()
 			{
+				QItemSelectionModel* select = table_->table()->selectionModel();
+				QModelIndexList columns = select->selectedColumns();
+
+				if (columns.size() != 1)
+					return;
+
+				int col = columns.at(0).column();
 				if (col == column_)
 				{
 					direction_ = !direction_;
@@ -360,37 +440,40 @@ namespace xero
 					column_ = col;
 				}
 
-				table_->sortItems(column_, direction_ ? Qt::AscendingOrder : Qt::DescendingOrder);
+				table_->table()->sortItems(column_, direction_ ? Qt::AscendingOrder : Qt::DescendingOrder);
 			}
 
 			void DataSetViewWidget::refreshView()
 			{
-				table_->clear();
+				table_->table()->clear();
 				if (dataModel() == nullptr)
+				{
+					table_->syncFrozen();
 					return;
+				}
 
 				if (fn_ != nullptr)
 					fn_(data_);
 
-				updateData(table_);
+				updateData(table_->table());
 				applyRules();
 
 				if (colstate_.size() > 0)
-					table_->horizontalHeader()->restoreState(colstate_);
+					table_->table()->horizontalHeader()->restoreState(colstate_);
 
 				if (colgeom_.size() > 0)
-					table_->horizontalHeader()->restoreGeometry(colgeom_);
+					table_->table()->horizontalHeader()->restoreGeometry(colgeom_);
 			}
 
 			void DataSetViewWidget::applyRules()
 			{
-				table_->blockSignals(true);
+				table_->table()->blockSignals(true);
 
-				for (int row = 0; row < table_->rowCount(); row++)
+				for (int row = 0; row < table_->table()->rowCount(); row++)
 				{
-					for (int col = 0; col < table_->columnCount(); col++)
+					for (int col = 0; col < table_->table()->columnCount(); col++)
 					{
-						auto i = table_->item(row, col);
+						auto i = table_->table()->item(row, col);
 						i->setToolTip("");
 
 						QBrush br = QBrush(QColor(0, 0, 0));
@@ -404,7 +487,7 @@ namespace xero
 				for (auto rule : data_.rules())
 					applyRule(rule);
 
-				table_->blockSignals(false);
+				table_->table()->blockSignals(false);
 			}
 
 			void DataSetViewWidget::applyRule(std::shared_ptr<const DataSetHighlightRules> rule)
@@ -456,7 +539,7 @@ namespace xero
 							{
 								if (!v.isValid() || !v.canConvert(QVariant::Bool))
 								{
-									QTableWidgetItem* item = table_->item(rows[which], col);
+									QTableWidgetItem* item = table_->table()->item(rows[which], col);
 									QBrush br = QBrush(QColor(255, 255, 255));
 									item->setForeground(br);
 
@@ -474,7 +557,7 @@ namespace xero
 								}
 								else if (v.toBool())
 								{
-									QTableWidgetItem* item = table_->item(rows[which], col);
+									QTableWidgetItem* item = table_->table()->item(rows[which], col);
 									QBrush br = QBrush(rule->foreground());
 									item->setForeground(br);
 
@@ -514,24 +597,6 @@ namespace xero
 					headers.push_back(hdr->name());
 				}
 				table->setHorizontalHeaderLabels(headers);
-
-				if (vheaders_.size() > 0) {
-					headers.clear();
-					for (int i = 0; i < data_.rowCount(); i++)
-					{
-						QString label;
-
-						for (const QString& col : vheaders_) {
-							if (data_.getColumnByName(col) != -1) {
-								if (!label.isEmpty())
-									label += ":";
-								label += data_.get(i, col).toString();
-							}
-						}
-						headers.push_back(label);
-					}
-					table->setVerticalHeaderLabels(headers);
-				}
 
 				table->blockSignals(true);
 				for (int row = 0; row < data_.rowCount(); row++) {
@@ -610,11 +675,11 @@ namespace xero
 
 			void DataSetViewWidget::setDelegates()
 			{
-				for (int col = 0; col < table_->columnCount(); col++)
+				for (int col = 0; col < table_->table()->columnCount(); col++)
 				{
 					auto hdr = data_.colHeader(col);
 					DataSetItemDelegate* del = new DataSetItemDelegate(hdr);
-					table_->setItemDelegateForColumn(col, del);
+					table_->table()->setItemDelegateForColumn(col, del);
 				}
 			}
 		}

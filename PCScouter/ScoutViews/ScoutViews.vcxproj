@@ -42,11 +42,11 @@
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QtInstall>6.3.1_msvc2019_64</QtInstall>
+    <QtInstall>6.7.1_msvc2019_64</QtInstall>
     <QtModules>charts;core;network;sql;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>6.3.1_msvc2019_64</QtInstall>
+    <QtInstall>6.7.1_msvc2019_64</QtInstall>
     <QtModules>charts;core;network;sql;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
@@ -63,7 +63,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)PCScoutData;$(SolutionDir)BlueAllianceAPI;$(Qt_INCLUDEPATH_);$(QtDir)\include\QtCharts;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -84,7 +84,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)ExprLib;$(SolutionDir)PCScoutData;$(SolutionDir)BlueAllianceAPI;$(Qt_INCLUDEPATH_);$(QtDir)\include\QtCharts;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -111,6 +111,7 @@
     <ClCompile Include="FieldItemDelegate.cpp" />
     <ClCompile Include="FlowLayout.cpp" />
     <ClCompile Include="FormView.cpp" />
+    <ClCompile Include="FrozenTableWidget.cpp" />
     <ClCompile Include="GameFieldManager.cpp" />
     <ClCompile Include="GraphConfigurationDialog.cpp" />
     <ClCompile Include="GraphPerMatchView.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="ExpressionsEntryDialog.h" />
     <ClInclude Include="FieldBasedWidget.h" />
     <ClInclude Include="FieldItemDelegate.h" />
+    <QtMoc Include="FrozenTableWidget.h" />
     <ClInclude Include="GameField.h" />
     <ClInclude Include="GameFieldManager.h" />
     <ClInclude Include="GraphConfigurationDialog.h" />

@@ -41,6 +41,7 @@ namespace xero
 				QFont font = label->font();
 				font.setPointSizeF(16.0);
 				label->setFont(font);
+				label->setToolTip(desc->tag());
 
 				auto tdesc = dynamic_cast<const TextFormItem *>(desc);
 
@@ -50,6 +51,7 @@ namespace xero
 				font.setPointSizeF(16.0);
 				edit_->setFont(font);
 				edit_->setMaxLength(tdesc->maxLen());
+				edit_->setToolTip(desc->tag());
 			}
 
 			TextItemDisplay::~TextItemDisplay()

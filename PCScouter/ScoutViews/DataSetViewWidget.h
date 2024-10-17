@@ -26,8 +26,8 @@
 #include "ScoutingDataSet.h"
 #include "ViewBase.h"
 #include "DataSetHighlightRules.h"
-#include <QSplitter>
-#include <QTableWidget>
+#include "FrozenTableWidget.h"
+#include <QtWidgets/QSplitter>
 
 namespace xero
 {
@@ -53,8 +53,8 @@ namespace xero
 
 			public:
 				
-				DataSetViewWidget(const QString& name, bool editable, const QStringList &vheader, QWidget* parent);
-				DataSetViewWidget(const QString& name, bool editable, std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn, const QStringList& vheader, QWidget* parent);
+				DataSetViewWidget(const QString& name, bool editable, QWidget* parent);
+				DataSetViewWidget(const QString& name, bool editable, std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn, QWidget* parent);
 				virtual ~DataSetViewWidget();
 
 				void setDataGenerator(std::function<void(xero::scouting::datamodel::ScoutingDataSet& ds)> fn) {
@@ -94,12 +94,15 @@ namespace xero
 				void applyRules();
 				void applyRule(std::shared_ptr<const xero::scouting::datamodel::DataSetHighlightRules> rule);
 				void updateData(QTableWidget* w);
-				void sortData(int column);
-				void contextMenuRequested(const QPoint& pt);
+				void sortData();
+				void contextMenuRequestedHorizontal(const QPoint& pt);
+				void contextMenuRequestedVertical(const QPoint& pt);
 				void cellContextMenuRequested(const QPoint& pt);
 				void hideColumn();
 				void unhideColumns();
 				void resetColumns();
+				void freezeRows();
+				void freezeColumns();
 
 				void columnMoved(int logindex, int oldindex, int newindex);
 				void updateColumnOrder();
@@ -121,15 +124,13 @@ namespace xero
 				// Function to generate data set
 				std::function<void (xero::scouting::datamodel::ScoutingDataSet &ds)> fn_;
 				xero::scouting::datamodel::ScoutingDataSet data_;
-				QTableWidget* table_;
+				FrozenTableWidget * table_;
 
 				int column_;
 				bool direction_;
 
 				QByteArray colstate_;
 				QByteArray colgeom_;
-
-				QStringList vheaders_;
 
 				bool editable_;
 			};

@@ -40,6 +40,7 @@ namespace xero
 				setMinimumSize(QSize(width + 8, 80));
 
 				state_ = false;
+				setToolTip(desc->tag());
 			}
 
 			BooleanItemDisplay::~BooleanItemDisplay()

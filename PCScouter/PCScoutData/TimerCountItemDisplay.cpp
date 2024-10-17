@@ -40,9 +40,11 @@ namespace xero
 
 				QLabel* title = new QLabel(desc->display());
 				vlay->addWidget(title);
+				title->setToolTip(desc->tag());
 
 				QWidget* bottom = new QWidget(this);
 				vlay->addWidget(bottom);
+				bottom->setToolTip(desc->tag());
 
 				QHBoxLayout* layout = new QHBoxLayout();
 				bottom->setLayout(layout);
@@ -51,30 +53,37 @@ namespace xero
 				bottom->setSizePolicy(p);
 
 				left_ = new StartStopWidget(bottom);
+				left_->setToolTip(desc->tag());
 				layout->addWidget(left_);
 				connect(left_, &StartStopWidget::cycleStarted, this, &TimerCountItemDisplay::cycleStarted);
 				connect(left_, &StartStopWidget::cycleCompleted, this, &TimerCountItemDisplay::cycleCompleted);
 				connect(left_, &StartStopWidget::cycleAbandoned, this, &TimerCountItemDisplay::cycleAbandoned);
 
 				right_ = new QWidget(bottom);
+				right_->setToolTip(desc->tag());
 				layout->addWidget(right_);
 
 				vlay = new QVBoxLayout();
 				right_->setLayout(vlay);
 
 				running_time_label_ = new QLabel(right_);
+				running_time_label_->setToolTip(desc->tag());
 				vlay->addWidget(running_time_label_);
 
 				completed_time_label_ = new QLabel(right_);
+				completed_time_label_->setToolTip(desc->tag());
 				vlay->addWidget(completed_time_label_);
 
 				completed_count_label_ = new QLabel(right_);
+				completed_count_label_->setToolTip(desc->tag());
 				vlay->addWidget(completed_count_label_);
 
 				abandoned_time_label_ = new QLabel(right_);
+				abandoned_time_label_->setToolTip(desc->tag());
 				vlay->addWidget(abandoned_time_label_);
 
 				abandoned_count_label_ = new QLabel(right_);
+				abandoned_count_label_->setToolTip(desc->tag());
 				vlay->addWidget(abandoned_count_label_);
 
 				completed_count_ = 0;

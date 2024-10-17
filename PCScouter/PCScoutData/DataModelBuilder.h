@@ -69,7 +69,7 @@ namespace xero
 
 				static PCSCOUTDATA_EXPORT std::shared_ptr<xero::scouting::datamodel::RobotTrack> createTrack(
 					std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> model,
-					const QString& mkey, const QString& tkey, double width);
+					const QString& mkey, const QString& tkey, double width, double height);
 
 				static PCSCOUTDATA_EXPORT void addStatboticsData(std::shared_ptr<xero::scouting::datamodel::ScoutingDataModel> dm, const QMap<QString, QJsonDocument>& data);
 

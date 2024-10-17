@@ -81,6 +81,8 @@ namespace xero
 				DocumentView(xero::scouting::datamodel::ImageManager& mgr, int year, const QString &tablet, QWidget* parent = Q_NULLPTR);
 				~DocumentView();
 
+				void setYear(const QString& year);
+
 				void setTablet(const QString& tablet) {
 					for (int i = 0; i < count(); i++)
 					{
@@ -107,6 +109,11 @@ namespace xero
 				void clearAll();
 				void refreshAll();
 				void needsRefreshAll();
+				void needsRefresh(ViewType t) {
+					QWidget* w = getWidget(t);
+					ViewBase *vb = dynamic_cast<ViewBase*>(w);
+					vb->setNeedRefresh();
+				}
 
 				ViewType viewType() {
 					return view_;

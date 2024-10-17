@@ -31,7 +31,9 @@ int ImportStatboticsController::percentDone()
 			ret = 100;
 		}
 		else {
-			ret = (int)((double)(total_teams_ - teams_.size()) / total_teams_) * 100;
+			int completed = total_teams_ - teams_.size();
+			double pcnt = (double)completed / (double)total_teams_;
+			ret = (int)(pcnt * 100);
 		}
 	}
 

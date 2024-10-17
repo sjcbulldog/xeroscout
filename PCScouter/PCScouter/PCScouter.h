@@ -130,8 +130,10 @@ private:
 	void exportDataSet();
 
 	// Settings menu
+	void showSettingsMenu();
 	void setTeamNumber();
-	void mirrorZebraTag();
+	void mirrorZebraX();
+	void mirrorZebraY();
 
 	// Help menu
 	void about();
@@ -241,7 +243,8 @@ private:
 	QMenu* settings_menu_;
 	QAction* debug_act_;
 	QAction* set_team_number_;
-	QAction* invert_y_zebra_;
+	QAction* mirror_zebra_x_;
+	QAction* mirror_zebra_y_;
 
 	QMenu* help_menu_;
 	QAction* about_;

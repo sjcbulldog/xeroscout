@@ -1146,19 +1146,14 @@ QString PCScoutApp::generateTeamTitle(std::shared_ptr<const DataModelTeam> t)
 
 QString PCScoutApp::generateMatchTitle(std::shared_ptr<const DataModelMatch> m, std::shared_ptr<const DataModelTeam> t)
 {
-	QString qmtxt;
+	Alliance color;
+	int slot;
 
-#ifdef NOTYET
-	qmtxt = m->compType() + " ";
-	if (m->compType() != "qm")
-	{
-		qmtxt += "set " + QString::number(m->set());
-		qmtxt += ", match " + QString::number(m->match());
-	}
-	return qmtxt + ", Team " + QString::number(t->number());
-#endif
+	m->tabletToAllianceSlot(identity_.name(), color, slot);
+	QString colorstr;
 
-	return m->title();
+	colorstr = (color == Alliance::Blue) ? "Blue" : "Red";
+	return m->title() + " - " + colorstr + " - " + QString::number(t->number());
 }
 
 void PCScoutApp::chooseTabletName(const QString &evkey, const QStringList& list, const QStringList &registered, QString& choice)

@@ -339,9 +339,21 @@ namespace xero
 				QString youtubeKey() const {
 					QString ret;
 
-					if (videos_.size() == 1 && videos_.front().first == "youtube")
+					if (videos_.size() > 0 && videos_.front().first == "youtube")
 					{
 						ret = videos_.front().second;
+					}
+
+					return ret;
+				}
+
+				QStringList videoUrls() const {
+					QStringList ret;
+
+					for (const auto& p : videos_) {
+						if (p.first == "youtube") {
+							ret.push_back("https://www.youtube.com/watch?v=" + p.second);
+						}
 					}
 
 					return ret;

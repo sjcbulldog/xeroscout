@@ -110,6 +110,11 @@ namespace xero
 			{
 			}
 
+			void ZebraViewWidget::setYear(const QString& year)
+			{
+				setField(field(), year);
+			}
+
 			void ZebraViewWidget::fieldContextMenu(QPoint pt)
 			{
 				menu_point_ = pt;
@@ -392,7 +397,7 @@ namespace xero
 					title = m->title(true);
 				}
 
-				auto track = DataModelBuilder::createTrack(dataModel(), mkey, tkey, 27.0);
+				auto track = DataModelBuilder::createTrack(dataModel(), mkey, tkey, 54.0, 27.0);
 				if (track == nullptr)
 					return nullptr;
 
